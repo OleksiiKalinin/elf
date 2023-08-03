@@ -42,7 +42,8 @@ const Header = ({route}: DrawerHeaderProps) => {
 };
 
 const screenOptions: DrawerNavigationOptions = {
-  header: props => <Header {...props} />,
+  // header: props => <Header {...props} />,
+  header: props => null,
 };
 
 const TopTabNavigator = () => {
@@ -100,7 +101,7 @@ const InnerApp = () => {
 const App = () => {
   const theme = useColorScheme() || 'light';
   return (
-    <SolitoImageProvider nextJsURL="https://luna-gamma.vercel.app/">
+    <SolitoImageProvider>
       <TamaguiProvider config={config} disableInjectCSS defaultTheme={theme}>
         <InnerApp />
       </TamaguiProvider>

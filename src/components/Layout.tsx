@@ -77,7 +77,6 @@ export const Layout = ({children}: ILayout) => {
         />
         <Logo />
       </XStack>
-      <YStack height={54} w="100%" />
       {children}
     </YStack>
   );

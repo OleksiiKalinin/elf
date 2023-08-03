@@ -8,7 +8,12 @@ const transpilePackages = [
   'react-native-gesture-handler',
   'react-native-swipe-gestures',
   'toggle-switch-react-native',
+  'recyclerlistview',
+  'moment',
   'react-native-calendars',
+  './node_modules_modified/react-native-calendars',
+  'node_modules_modified/react-native-calendars',
+  '/node_modules_modified/react-native-calendars',
 ];
 
 const plugins = [

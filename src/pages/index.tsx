@@ -2,9 +2,9 @@ import {Home} from '../features/Home';
 import {Layout} from '../components';
 
 const HomePage = () => (
-  <Layout>
+  // <Layout>
     <Home />
-  </Layout>
+  // </Layout>
 );
 
 export default HomePage;
