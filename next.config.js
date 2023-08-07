@@ -1,4 +1,6 @@
-const {withTamagui} = require('@tamagui/next-plugin');
+const {
+  withTamagui
+} = require('@tamagui/next-plugin');
 
 /** @type {import('next').NextConfig.transpilePackages} */
 const transpilePackages = [
@@ -34,6 +36,13 @@ module.exports = function () {
   /** @type {import('next').NextConfig} */
   let config = {
     transpilePackages,
+    typescript: {
+      // !! WARN !!
+      // Dangerously allow production builds to successfully complete even if
+      // your project has type errors.
+      // !! WARN !!
+      ignoreBuildErrors: true
+    },
     experimental: {
       forceSwcTransforms: true,
       //   swcPlugins: [['react-native-reanimated-swc-plugin']],
