@@ -9,8 +9,12 @@ const Agenda = () => {
     const [items, setitems] = useState<any>({})
     const [isOpened, setIsOpened] = useState<boolean>(false);
     const [loaded, setloaded] = useState<boolean>(false);
+    const [height, setheight] = useState<number>(Dimensions.get('window').height);
 
     useEffect(() => {
+        Dimensions.addEventListener('change',({window}) => {
+            setheight(window.height);
+        })
         setloaded(true);
     }, [])
 
@@ -53,7 +57,7 @@ const Agenda = () => {
     }
 
     return loaded && (
-        <XStack style={{ height: Platform.OS === 'web' ? Dimensions.get('window').height : undefined }} f={1}>
+        <XStack style={{ height: Platform.OS === 'web' ? height : undefined }} f={1}>
             <Agnd
                 items={items}
                 loadItemsForMonth={loadItems}
