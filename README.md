@@ -1,9 +1,5 @@
 # 🛸 elfemployer
 
-## Template project created with [🌘 Luna](https://github.com/LunatiqueCoder/luna)
-
-> ⚠️ [Please be sure your environment is set up correctly for React Native.][26]
-
 ## ⭐ Features
 
 - [React Native Web][22]
