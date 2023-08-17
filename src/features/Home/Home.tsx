@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
   Anchor,
-  Button,
   H1,
   Paragraph,
   Separator,
@@ -13,16 +12,23 @@ import { View, Text, TouchableOpacity, Alert, Platform, Dimensions } from "react
 import { ArrowDown, ArrowUp, Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons';
 import { useLink } from 'solito/link';
 import Agenda from '../../components/organismes/Agenda';
+import Button from '../../components/molecules/Button';
+import TextField from '../../components/molecules/TextField';
+import { ScrollView } from '../../components/molecules/ScrollView';
 
 // const linkProps = useLink({
 //   href: '/user/nate',
 // });
 
 export function Home() {
+  const [value, setvalue] = useState<string>('');
   const [isOpened, setIsOpened] = useState<boolean>(false);
 
   return (
-    <Agenda />
+    <YStack p='$4'>
+        <ScrollView></ScrollView>
+    </YStack>
+    // <Agenda />
   );
 }
 
@@ -95,42 +101,42 @@ export function Home() {
 //   }
 // });
 
-function SheetDemo() {
-  const [open, setOpen] = useState(false);
-  const [position, setPosition] = useState(0);
-  return (
-    <>
-      <Button
-        aria-label={'toggle-sheet-button'}
-        size="$6"
-        icon={open ? ChevronDown : ChevronUp}
-        circular
-        onPress={() => setOpen(x => !x)}
-      />
-      <Sheet
-        modal
-        open={open}
-        onOpenChange={setOpen}
-        snapPoints={[80]}
-        position={position}
-        onPositionChange={setPosition}
-        dismissOnSnapToBottom>
-        <Sheet.Overlay />
-        <Sheet.Frame ai="center" jc="center">
-          <Sheet.Handle />
-          <H1 ta="center">What is Lorem Ipsum?</H1>
+// function SheetDemo() {
+//   const [open, setOpen] = useState(false);
+//   const [position, setPosition] = useState(0);
+//   return (
+//     <>
+//       <Button
+//         aria-label={'toggle-sheet-button'}
+//         size="$6"
+//         icon={open ? ChevronDown : ChevronUp}
+//         circular
+//         onPress={() => setOpen(x => !x)}
+//       />
+//       <Sheet
+//         modal
+//         open={open}
+//         onOpenChange={setOpen}
+//         snapPoints={[80]}
+//         position={position}
+//         onPositionChange={setPosition}
+//         dismissOnSnapToBottom>
+//         <Sheet.Overlay />
+//         <Sheet.Frame ai="center" jc="center">
+//           <Sheet.Handle />
+//           <H1 ta="center">What is Lorem Ipsum?</H1>
 
-          <Button
-            size="$6"
-            circular
-            icon={ChevronDown}
-            aria-label={'close-sheet-button'}
-            onPress={() => {
-              setOpen(false);
-            }}
-          />
-        </Sheet.Frame>
-      </Sheet>
-    </>
-  );
-}
+//           <Button
+//             size="$6"
+//             circular
+//             icon={ChevronDown}
+//             aria-label={'close-sheet-button'}
+//             onPress={() => {
+//               setOpen(false);
+//             }}
+//           />
+//         </Sheet.Frame>
+//       </Sheet>
+//     </>
+//   );
+// }

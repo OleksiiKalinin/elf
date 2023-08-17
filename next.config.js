@@ -1,6 +1,7 @@
 const {
   withTamagui
 } = require('@tamagui/next-plugin');
+const withFonts = require('next-fonts');
 
 /** @type {import('next').NextConfig.transpilePackages} */
 const transpilePackages = [
@@ -12,10 +13,7 @@ const transpilePackages = [
   'toggle-switch-react-native',
   'recyclerlistview',
   'moment',
-  'react-native-calendars',
-  './node_modules_modified/react-native-calendars',
-  'node_modules_modified/react-native-calendars',
-  '/node_modules_modified/react-native-calendars',
+  'react-native-mask-input',
 ];
 
 const plugins = [
@@ -31,6 +29,12 @@ const plugins = [
     ],
   }),
 ];
+
+module.exports = withFonts({
+  webpack(config, options) {
+    return config;
+  }
+});
 
 module.exports = function () {
   /** @type {import('next').NextConfig} */

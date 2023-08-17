@@ -90,7 +90,8 @@ const InnerApp = () => {
         />
         <NavigationContainer
           theme={isDarkMode ? DarkTheme : DefaultTheme}
-          linking={linking}>
+          linking={linking}
+        >
           <TopTabNavigator />
         </NavigationContainer>
       </GestureHandlerRootView>

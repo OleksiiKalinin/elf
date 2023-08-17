@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert, Platform, Dimensions } from "react-native";
 import { Agenda as Agnd } from '../../../node_modules_modified/react-native-calendars/src';
 import Colors from '../../colors/Colors';
-import { ArrowDown, ArrowUp } from '@tamagui/lucide-icons';
-import { XStack } from 'tamagui';
+import { Separator, XStack, YStack } from 'tamagui';
+import SvgIcon from '../atoms/SvgIcon';
+import { Divider } from 'native-base';
 
 const Agenda = () => {
     const [items, setitems] = useState<any>({})
@@ -28,7 +29,7 @@ const Agenda = () => {
                 if (!items[strTime]) {
                     items[strTime] = [];
 
-                    const numItems = Math.floor(Math.random() * 3 + 1);
+                    const numItems = Math.floor(Math.random() * 3);
                     for (let j = 0; j < numItems; j++) {
                         items[strTime].push({
                             name: 'Item for ' + strTime + ' #' + j,
@@ -109,13 +110,13 @@ const Agenda = () => {
                     )
                 }}
                 calendarInitialOffset={130}
-                renderKnob={() => isOpened ? <ArrowUp color='black' /> : <ArrowDown color='black' />}
-                // renderEmptyDate={() => <View style={{ flex: 1, paddingTop: 45, paddingRight: 14 }}>
-                //     <Divider height='2px' />
-                // </View>}
-                // renderKnob={() => <SvgIcon fill={Colors.Basic500} icon={isOpened ? 'arrowTop' : 'arrowBottom'} />}
+                renderEmptyDate={() => <View style={{ paddingTop: 45, paddingRight: 14 }}>
+                    <View style={{height: 2, backgroundColor: Colors.Basic400}} />
+                </View>}
+                renderKnob={() => <SvgIcon fill={Colors.Basic500} icon={isOpened ? 'arrowTop' : 'arrowBottom'} />}
                 showClosingKnob
                 firstDay={1}
+                day
                 theme={{
                     agendaDayTextColor: Colors.Basic600,
                     agendaDayNumColor: Colors.Basic600,
@@ -167,10 +168,18 @@ const Agenda = () => {
                             top: 0,
                             flexDirection: 'row',
                             justifyContent: 'space-between',
-                            paddingLeft: 24,
-                            paddingRight: 24,
+                            paddingLeft: 15,
+                            paddingRight: 15,
                             paddingBottom: 5,
                             backgroundColor: Colors.White,
+                        },
+                        dayHeader: {
+                            flex: 1,
+                            textAlign: 'center',
+                            fontFamily: 'RedHatDisplay-Medium',
+                            fontWeight: '500',
+                            fontSize: 13,
+                            color: "#b6c1cd",
                         },
                         reservations: {
                             flex: 1,

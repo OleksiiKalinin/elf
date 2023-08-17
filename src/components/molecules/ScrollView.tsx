@@ -1,13 +1,14 @@
-import { View, ScrollView, Platform } from 'react-native';
+import { View, ScrollView as SV, Platform } from 'react-native';
 
-type Props = React.ComponentProps<typeof ScrollView> & {
+type Props = React.ComponentProps<typeof SV> & {
+    /** disableWindowScroll will accept parent height as wrapper */
     disableWindowScroll?: boolean
 }
 
-export function ScreenScrollView({ disableWindowScroll = false, ...props }: Props) {
+export function ScrollView({ disableWindowScroll = false, ...props }: Props) {
     const Component = Platform.select({
-        web: disableWindowScroll ? ScrollView : (View as unknown as typeof ScrollView),
-        default: ScrollView,
+        web: disableWindowScroll ? SV : (View as unknown as typeof SV),
+        default: SV,
     })
     return <Component {...props} />
 }

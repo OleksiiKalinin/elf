@@ -1,0 +1,85 @@
+@font-face {
+    font-family: 'RedHatDisplay-Black';
+    src: url('RedHatDisplay-Black.ttf');
+    font-weight: 900;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'RedHatDisplay-ExtraBold';
+    src: url('RedHatDisplay-ExtraBold.ttf');
+    font-weight: 800;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'RedHatDisplay-Bold';
+    src: url('RedHatDisplay-Bold.ttf');
+    font-weight: 700;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'RedHatDisplay-SemiBold';
+    src: url('RedHatDisplay-SemiBold.ttf');
+    font-weight: 600;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'RedHatDisplay-Medium';
+    src: url('RedHatDisplay-Medium.ttf');
+    font-weight: 500;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'RedHatDisplay-Regular';
+    src: url('RedHatDisplay-Regular.ttf');
+    font-weight: 400;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'RedHatDisplay-Light';
+    src: url('RedHatDisplay-Light.ttf');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'RedHatDisplay-BlackItalic';
+    src: url('RedHatDisplay-BlackItalic.ttf');
+    font-weight: 900;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'RedHatDisplay-ExtraBoldItalic';
+    src: url('RedHatDisplay-ExtraBoldItalic.ttf');
+    font-weight: 800;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'RedHatDisplay-BoldItalic';
+    src: url('RedHatDisplay-BoldItalic.ttf');
+    font-weight: 700;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'RedHatDisplay-SemiBoldItalic';
+    src: url('RedHatDisplay-SemiBoldItalic.ttf');
+    font-weight: 600;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'RedHatDisplay-MediumItalic';
+    src: url('RedHatDisplay-MediumItalic.ttf');
+    font-weight: 500;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'RedHatDisplay-RegularItalic';
+    src: url('RedHatDisplay-RegularItalic.ttf');
+    font-weight: 400;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'RedHatDisplay-LightItalic';
+    src: url('RedHatDisplay-LightItalic.ttf');
+    font-weight: 300;
+    font-style: italic;
+}

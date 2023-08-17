@@ -1,10 +1,11 @@
 import 'raf/polyfill';
 import '@tamagui/core/reset.css';
-import '@tamagui/font-silkscreen/css/400.css';
-import '@tamagui/font-inter/css/400.css';
-import '@tamagui/font-inter/css/700.css';
-import '@tamagui/font-inter/css/800.css';
-import '@tamagui/font-inter/css/900.css';
+// import '@tamagui/font-silkscreen/css/400.css';
+// import '@tamagui/font-inter/css/400.css';
+// import '@tamagui/font-inter/css/700.css';
+// import '@tamagui/font-inter/css/800.css';
+// import '@tamagui/font-inter/css/900.css';
+import '../../public/fonts/style.css';
 
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
