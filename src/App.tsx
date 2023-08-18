@@ -67,7 +67,7 @@ const TopTabNavigator = () => {
 };
 
 const linking = {
-  prefixes: ['criszz77.github.io/luna', 'localhost'],
+  prefixes: ['localhost'],
   config: {
     screens: {
       home: '',
@@ -78,7 +78,8 @@ const linking = {
 
 const InnerApp = () => {
   const colorScheme = useColorScheme() || 'light';
-  const isDarkMode = colorScheme === 'dark';
+  // const isDarkMode = colorScheme === 'dark';
+  const isDarkMode = false;
   const theme = useTheme();
 
   return (
@@ -100,7 +101,9 @@ const InnerApp = () => {
 };
 
 const App = () => {
-  const theme = useColorScheme() || 'light';
+  // const theme = useColorScheme() || 'light';
+  const theme = 'light';
+  
   return (
     <SolitoImageProvider>
       <TamaguiProvider config={config} disableInjectCSS defaultTheme={theme}>

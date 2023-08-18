@@ -5,7 +5,7 @@ import Colors from '../../colors/Colors';
 // import Typography from '../../atoms/Typography/Typography';
 // import AnimatedColorView from 'react-native-animated-colors';
 import { Button as TamaButton, Spinner } from 'tamagui';
-import Typography from '../atoms/Typography/Typography';
+import Typography from '../atoms/Typography';
 // import SvgIcon, { IconTypes } from '../SvgIcon/SvgIcon';
 
 type VariantType = 'primary' | 'secondary' | 'light' | 'info' | 'info_alter' | 'text' | 'disabled' | 'active' | 'white';
@@ -88,7 +88,7 @@ const Button: React.FC<ButtonProps> = ({
 
     return (
         <TamaButton
-            theme={'active'}
+            hoverStyle={{bg: Colors.Basic800}} pressStyle={{bg: Colors.Basic900, opacity: .5}}
             height={50}
             borderRadius={0}
             bg={variants[variant].activeColor}
@@ -97,28 +97,13 @@ const Button: React.FC<ButtonProps> = ({
             width={fullwidth ? '100%' : undefined}
             {...props}
         >
-            {/* <View style={[styles.Button, props.style]}>
-                        {withLoading && disabled && <View style={{position: 'absolute'}}>
-                            <ActivityIndicator size={30} color={Colors.White50} />
-                        </View>} */}
-            {/* {icon && <View style={{ paddingRight: 4 }}>
-                            <SvgIcon icon={icon} color={contentColor || variants[variant].contentColor} />
-                        </View>} */}
-            {/* <Text>{children}</Text> */}
             <Typography variant={contentVariant} weight={contentWeight} color={contentColor || variants[variant].contentColor}>{children}</Typography>
-            {/* </View> */}
         </TamaButton>
     );
 };
 
 const styles = StyleSheet.create({
-    Button: {
-        paddingVertical: 16,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'relative'
-    }
+    
 });
 
 export default Button;

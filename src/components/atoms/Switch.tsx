@@ -1,6 +1,6 @@
 import React, { ComponentProps, FC } from 'react';
 import ToggleSwitch from 'toggle-switch-react-native';
-import Colors from '../../../colors/Colors';
+import Colors from '../../colors/Colors';
 
 
 type SwitchProps = {

@@ -1,11 +1,12 @@
 import 'raf/polyfill';
-import '@tamagui/core/reset.css';
+// import '@tamagui/core/reset.css';
 // import '@tamagui/font-silkscreen/css/400.css';
 // import '@tamagui/font-inter/css/400.css';
 // import '@tamagui/font-inter/css/700.css';
 // import '@tamagui/font-inter/css/800.css';
 // import '@tamagui/font-inter/css/900.css';
 import '../../public/fonts/style.css';
+import '../../public/global.css';
 
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
@@ -16,18 +17,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { TamaguiProvider } from 'tamagui';
 import { NextThemeProvider, useRootTheme } from '@tamagui/next-theme';
 import config from '../../tamagui';
-// import { LocaleConfig as CalendarLocaleConfig } from '../../node_modules_modified/react-native-calendars-new/src';
-// import { LocaleConfig as CalendarLocaleConfig } from 'react-native-calendars';
-
-// CalendarLocaleConfig.locales['pl'] = {
-//   monthNames: ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'],
-//   monthNamesShort: ['STY', 'LUT', 'MAR', 'KWI', 'MAJ', 'CZE', 'LIP', 'SIE', 'WRZ', 'PAŹ', 'LIS', 'GRU'],
-//   dayNames: ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'],
-//   dayNamesShort: ['Ndz.', 'Pon.', 'Wt.', 'Śr.', 'Czw.', 'Pt.', 'Sob.'],
-//   // dayNamesShort: ['N', 'P', 'W', 'Ś', 'C', 'P', 'S'],
-//   // today: "Dzisiaj"
-// };
-// CalendarLocaleConfig.defaultLocale = 'pl';
+import Script from 'next/script';
 
 const insets = {
   top: 0,
@@ -49,11 +39,11 @@ const Providers = ({ children }: { children: ReactNode }) => {
   const [theme, setTheme] = useRootTheme();
 
   return (
-    <NextThemeProvider onChangeTheme={setTheme}>
+    <NextThemeProvider enableSystem={false} onChangeTheme={setTheme}>
       <TamaguiProvider
         config={config}
         disableInjectCSS
-        disableRootThemeClass
+        // disableRootThemeClass
         defaultTheme={theme}
       >
         <SafeAreaProvider
@@ -81,7 +71,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="png" href="/favicon.png" />
       </Head>
-      <script
+      <Script
         key="tamagui-animations-mount"
         type="text/javascript"
         dangerouslySetInnerHTML={{

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text } from 'react-native';
-import Colors from '../../../colors/Colors';
+import Colors from '../../colors/Colors';
 
 type TypographyProps = {
     children: React.ReactNode,

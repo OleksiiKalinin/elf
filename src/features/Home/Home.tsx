@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import {
   Anchor,
   H1,
+  Label,
   Paragraph,
   Separator,
   Sheet,
+  SizeTokens,
   XStack,
   YStack,
 } from 'tamagui';
@@ -12,23 +14,43 @@ import { View, Text, TouchableOpacity, Alert, Platform, Dimensions } from "react
 import { ArrowDown, ArrowUp, Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons';
 import { useLink } from 'solito/link';
 import Agenda from '../../components/organismes/Agenda';
-import Button from '../../components/molecules/Button';
 import TextField from '../../components/molecules/TextField';
 import { ScrollView } from '../../components/molecules/ScrollView';
+import Colors from '../../colors/Colors';
+import Switch from '../../components/atoms/Switch';
+import Typography from '../../components/atoms/Typography';
+import RadioGroup from '../../components/atoms/RadioGroup';
+import Button from '../../components/molecules/Button';
+import SwipeablePanel from '../../components/organismes/SwipeablePanel';
 
 // const linkProps = useLink({
 //   href: '/user/nate',
 // });
 
 export function Home() {
-  const [value, setvalue] = useState<string>('');
+  const [value, setValue] = useState<string>('');
   const [isOpened, setIsOpened] = useState<boolean>(false);
 
-  return (
+  return (<>
     <YStack p='$4'>
-        <ScrollView></ScrollView>
+      <Button onPress={() => setIsOpened(p => !p)}>open</Button>
     </YStack>
-    // <Agenda />
+    <SwipeablePanel title='Pomyślnie się wylogowałeś'
+      buttons={[
+        {
+          children: 'OK',
+          contentColor: Colors.Basic600,
+          onPress: () => { }
+        },
+        // {
+        //   children: 'hej',
+        //   contentColor: Colors.Basic600,
+        //   onPress: () => { }
+        // },
+      ]}
+      onlySmall closeButton isActive={isOpened} onClose={() => setIsOpened(false)}
+    />
+  </>
   );
 }
 
@@ -107,6 +129,7 @@ export function Home() {
 //   return (
 //     <>
 //       <Button
+
 //         aria-label={'toggle-sheet-button'}
 //         size="$6"
 //         icon={open ? ChevronDown : ChevronUp}
@@ -117,16 +140,15 @@ export function Home() {
 //         modal
 //         open={open}
 //         onOpenChange={setOpen}
-//         snapPoints={[80]}
-//         position={position}
-//         onPositionChange={setPosition}
-//         dismissOnSnapToBottom>
+//         snapPoints={[80, 100]}
+//         // position={position}
+//         // onPositionChange={setPosition}
+//         dismissOnSnapToBottom
+//       >
 //         <Sheet.Overlay />
 //         <Sheet.Frame ai="center" jc="center">
 //           <Sheet.Handle />
-//           <H1 ta="center">What is Lorem Ipsum?</H1>
-
-//           <Button
+//           {/* <Button
 //             size="$6"
 //             circular
 //             icon={ChevronDown}
@@ -134,7 +156,7 @@ export function Home() {
 //             onPress={() => {
 //               setOpen(false);
 //             }}
-//           />
+//           /> */}
 //         </Sheet.Frame>
 //       </Sheet>
 //     </>

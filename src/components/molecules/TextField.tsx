@@ -9,7 +9,7 @@ import {
     TextStyle,
 } from 'react-native';
 import TextInput from 'react-native-mask-input';
-import Typography from '../atoms/Typography/Typography';
+import Typography from '../atoms/Typography';
 import Colors from '../../colors/Colors';
 import SvgIcon from '../atoms/SvgIcon';
 import { Button } from 'tamagui';
@@ -102,8 +102,8 @@ const TextField: FC<TextFieldProps> = ({
                         {right ? right :
                             <Button
                                 circular
-                                // borderRadius='full'
-                                // p={0}
+                                bg='transparent'
+                                style={{height: 'auto', width: 'auto', minHeight: 0, minWidth: 0}}
                                 // _pressed={{ bg: Colors.Basic100 }}
                                 onPress={() => setIsSecured(prev => !prev)}
                                 icon={<SvgIcon icon={isSecured ? 'eyeOff' : 'eyeOn'} />}

@@ -1,0 +1,78 @@
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'RedHatDisplay', sans-serif;
+}
+
+html {
+    width: 100%;
+    min-height: 100vh;
+    scrollbar-color: #1C7296 #3E116B;
+    scrollbar-width: thin;
+}
+
+body {
+    width: 100vw;
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#__next {
+    width: 100%;
+    min-height: 100vh;
+}
+
+video {
+    display: block;
+}
+
+input {
+    -webkit-user-select: text;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    background: linear-gradient(360deg, #00001F 0%, #3E116B 109.57%);
+}
+
+html>*::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #1C7296;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #19a5b8;
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: #1BB9CE;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #665084 inset !important;
+    -webkit-text-fill-color: white !important;
+    background-clip: content-box !important;
+}
