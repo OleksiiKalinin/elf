@@ -4,7 +4,6 @@ import { Agenda as Agnd } from '../../../node_modules_modified/react-native-cale
 import Colors from '../../colors/Colors';
 import { Separator, XStack, YStack } from 'tamagui';
 import SvgIcon from '../atoms/SvgIcon';
-import { Divider } from 'native-base';
 
 const Agenda = () => {
     const [items, setitems] = useState<any>({})

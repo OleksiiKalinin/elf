@@ -1,0 +1,93 @@
+import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import React, { useContext, useEffect, useState } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ScrollView } from 'native-base';
+import Typography from '../../components/atoms/Typography/Typography';
+import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
+import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
+import { RootStackParamList } from '../../navigators/RootNavigator';
+import Colors from '../../colors/Colors';
+import CandidateCard from '../../components/organisms/CandidateCard/CandidateCard';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
+import SvgIcon, { IconTypes } from '../../components/molecules/SvgIcon/SvgIcon';
+import HorizontalMenuButton from '../../components/atoms/HorizontalMenuButton/HorizontalMenuButton';
+import { useActions } from '../../hooks/useActions';
+
+type MainScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<CandidatesStackParamList, 'FavouritesScreen'>,
+  NativeStackScreenProps<RootStackParamList, 'CandidatesStack'>
+>;
+
+const FavouritesScreen: React.FC<MainScreenProps> = ({ navigation }) => {
+  const [filter, setFilter] = useState<string>('super');
+
+  const [isPanelActive, setIsPanelActive] = useState<boolean>(false);
+
+  const data = useTypedSelector(state => state.bookmark);
+
+  return (
+    <ScreenHeaderProvider currentStack="CandidatesStack" mainTitlePosition="flex-start"
+      actions={[
+        {
+          icon: <SvgIcon icon="settings" />,
+          onPress: () => navigation.navigate('FavSettingsScreen'),
+        },
+      ]}>
+      <ScrollView style={{ flex: 1, backgroundColor: Colors.Basic100 }}>
+        <ScrollView
+          horizontal
+          style={{ flexDirection: 'row', marginLeft: 19, marginVertical: 15 }}
+          showsHorizontalScrollIndicator={false}
+        >
+          {data.bookmarks.map((item, index) => (
+            <HorizontalMenuButton
+              variant="bookmark"
+              icon="cardFilled"
+              fill={data.bookmarks[index].color}
+              noIcon={data.bookmarks[index].noIcon}
+              name={<Typography>{item.name}</Typography>}
+              selectedColor={data.bookmarks[index].selectedColor}
+              selected={item.category === filter ? true : false}
+              onPress={() => setFilter(item.category)}
+            />
+          ))}
+        </ScrollView>
+        {data.persons
+          .filter(item => item.bookmark == filter)
+          .map(item => (
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('ProfileScreen', {
+                  profileIndex: item.index - 1,
+                })
+              }
+            >
+              <CandidateCard
+                name={item.name}
+                job={item.job}
+                salary={item.salary}
+                experience={item.experience}
+                schedule={item.schedule}
+                available={item.available}
+                distance={item.distance}
+                time={item.time}
+                bookmark={
+                  data.bookmarks[data.bookmarks.map(item => item.category).indexOf(item.bookmark)].color
+                }
+                blank={item.bookmark === "blank" ? true : false}
+                videoCV={item.videoCV}
+                promoted={item.promoted}
+                index={item.index}
+                onPress={() => setIsPanelActive(true)}
+              />
+            </TouchableOpacity>
+          ))}
+      </ScrollView>
+    </ScreenHeaderProvider>
+  );
+};
+
+const styles = StyleSheet.create({});
+
+export default FavouritesScreen;

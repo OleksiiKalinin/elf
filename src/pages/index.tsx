@@ -1,10 +1,7 @@
-import {Home} from '../features/Home';
-import {Layout} from '../components';
+import MainScreen from '../screens/MenuScreens/MainScreen';
 
 const HomePage = () => (
-  // <Layout>
-    <Home />
-  // </Layout>
+  <MainScreen />
 );
 
 export default HomePage;

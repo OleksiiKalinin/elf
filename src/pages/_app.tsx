@@ -18,6 +18,7 @@ import { TamaguiProvider } from 'tamagui';
 import { NextThemeProvider, useRootTheme } from '@tamagui/next-theme';
 import config from '../../tamagui';
 import Script from 'next/script';
+import { Layout } from '../components/Layout';
 
 const insets = {
   top: 0,
@@ -50,7 +51,9 @@ const Providers = ({ children }: { children: ReactNode }) => {
           initialMetrics={initialMetrics} //https://github.com/th3rdwave/react-native-safe-area-context#web-ssr
         >
           <GestureHandlerRootView style={styles.container}>
-            {children}
+            <Layout>
+              {children}
+            </Layout>
           </GestureHandlerRootView>
         </SafeAreaProvider>
       </TamaguiProvider>

@@ -1,7 +1,7 @@
-import {StyleSheet, StatusBar, useColorScheme} from 'react-native';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {TamaguiProvider, useTheme, Stack, H4} from 'tamagui';
-import {SolitoImageProvider} from 'solito/image';
+import { StyleSheet, StatusBar, useColorScheme } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { TamaguiProvider, useTheme, Stack, H4 } from 'tamagui';
+import { SolitoImageProvider } from 'solito/image';
 import {
   initialWindowMetrics,
   SafeAreaProvider,
@@ -18,96 +18,41 @@ import {
   DrawerNavigationOptions,
   DrawerHeaderProps,
 } from '@react-navigation/drawer';
-import {Home} from './features/Home';
-import {Logo} from './components/Logo';
+import { Home } from './features/Home';
+import { Logo } from './components/Logo';
 import config from '../tamagui';
-import {UserDetailScreen} from './features/DetailScreen';
-
-const Drawer = createDrawerNavigator();
-
-const Header = ({route}: DrawerHeaderProps) => {
-  const theme = useTheme();
-
-  return (
-    <SafeAreaView style={styles.headerContainer}>
-      <DrawerToggleButton tintColor={theme.color?.val} />
-      <Stack ai="center" jc={'space-between'} fd={'row'} f={1}>
-        <Logo />
-        <H4 fontFamily={'$silkscreen'} pr={'$7'}>
-          {route.name.toUpperCase()}
-        </H4>
-      </Stack>
-    </SafeAreaView>
-  );
-};
-
-const screenOptions: DrawerNavigationOptions = {
-  // header: props => <Header {...props} />,
-  header: props => null,
-};
-
-const TopTabNavigator = () => {
-  return (
-    <Drawer.Navigator initialRouteName="home" screenOptions={screenOptions}>
-      <Drawer.Screen
-        component={Home}
-        key={'home'}
-        name={'home'}
-        options={{title: 'Home'}}
-      />
-      <Drawer.Screen
-        name="user-detail"
-        component={UserDetailScreen}
-        options={{
-          title: 'User',
-        }}
-      />
-    </Drawer.Navigator>
-  );
-};
-
-const linking = {
-  prefixes: ['localhost'],
-  config: {
-    screens: {
-      home: '',
-      'user-detail': 'user/:id',
-    },
-  },
-};
-
-const InnerApp = () => {
-  const colorScheme = useColorScheme() || 'light';
-  // const isDarkMode = colorScheme === 'dark';
-  const isDarkMode = false;
-  const theme = useTheme();
-
-  return (
-    <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-      <GestureHandlerRootView style={styles.container}>
-        <StatusBar
-          backgroundColor={theme.borderColor?.val}
-          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        />
-        <NavigationContainer
-          theme={isDarkMode ? DarkTheme : DefaultTheme}
-          linking={linking}
-        >
-          <TopTabNavigator />
-        </NavigationContainer>
-      </GestureHandlerRootView>
-    </SafeAreaProvider>
-  );
-};
+import { UserDetailScreen } from './features/DetailScreen';
+import { Provider } from 'react-redux';
+import Colors from './colors/Colors';
+import { store } from './store';
+import RootNavigator from './navigators/RootNavigator';
 
 const App = () => {
-  // const theme = useColorScheme() || 'light';
-  const theme = 'light';
-  
+  // const colorScheme = useColorScheme() || 'light';
+  // const isDarkMode = colorScheme === 'dark';
+  const colorScheme = 'light';
+  const isDarkMode = false;
+
   return (
     <SolitoImageProvider>
-      <TamaguiProvider config={config} disableInjectCSS defaultTheme={theme}>
-        <InnerApp />
+      <TamaguiProvider config={config} disableInjectCSS defaultTheme={colorScheme}>
+        <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+          <GestureHandlerRootView style={styles.container}>
+            <Provider store={store}>
+              <StatusBar
+                animated
+                showHideTransition="slide"
+                backgroundColor={Colors.White}
+                barStyle='dark-content'
+              // backgroundColor={theme.borderColor?.val}
+              // barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+              />
+              <SafeAreaView style={styles.container}>
+                <RootNavigator />
+              </SafeAreaView>
+            </Provider>
+          </GestureHandlerRootView>
+        </SafeAreaProvider>
       </TamaguiProvider>
     </SolitoImageProvider>
   );

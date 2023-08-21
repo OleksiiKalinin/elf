@@ -18,7 +18,7 @@ type ButtonProps = {
     withLoading?: boolean,
     fullwidth?: boolean,
     borderTop?: boolean,
-    children: React.ReactNode,
+    children?: React.ReactNode,
 } & React.ComponentProps<typeof TamaButton>;
 
 const variants: { [k in VariantType]: {
@@ -89,15 +89,15 @@ const Button: React.FC<ButtonProps> = ({
     return (
         <TamaButton
             hoverStyle={{bg: Colors.Basic800}} pressStyle={{bg: Colors.Basic900, opacity: .5}}
-            height={50}
+            height={props.h ?? 50}
             borderRadius={0}
-            bg={variants[variant].activeColor}
+            bg={props.bg || props.backgroundColor || variants[variant].activeColor}
             {...(borderTop ? { style: { borderTopWidth: 1, borderTopColor: Colors.Basic300 } } : {})}
             icon={withLoading ? <Spinner size='large' /> : undefined}
-            width={fullwidth ? '100%' : undefined}
+            width={props.w ?? (fullwidth ? '100%' : undefined)}
             {...props}
         >
-            <Typography variant={contentVariant} weight={contentWeight} color={contentColor || variants[variant].contentColor}>{children}</Typography>
+            {!!children && <Typography variant={contentVariant} weight={contentWeight} color={contentColor || variants[variant].contentColor}>{children}</Typography>}
         </TamaButton>
     );
 };

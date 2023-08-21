@@ -28,28 +28,12 @@ import SwipeablePanel from '../../components/organismes/SwipeablePanel';
 // });
 
 export function Home() {
-  const [value, setValue] = useState<string>('');
+  const [swipeablePanelProps, setSwipeablePanelProps] = useState<any>(null);
   const [isOpened, setIsOpened] = useState<boolean>(false);
 
   return (<>
     <YStack p='$4'>
-      <Button onPress={() => setIsOpened(p => !p)}>open</Button>
     </YStack>
-    <SwipeablePanel title='Pomyślnie się wylogowałeś'
-      buttons={[
-        {
-          children: 'OK',
-          contentColor: Colors.Basic600,
-          onPress: () => { }
-        },
-        // {
-        //   children: 'hej',
-        //   contentColor: Colors.Basic600,
-        //   onPress: () => { }
-        // },
-      ]}
-      onlySmall closeButton isActive={isOpened} onClose={() => setIsOpened(false)}
-    />
   </>
   );
 }
@@ -122,43 +106,3 @@ export function Home() {
 //     marginLeft: 34
 //   }
 // });
-
-// function SheetDemo() {
-//   const [open, setOpen] = useState(false);
-//   const [position, setPosition] = useState(0);
-//   return (
-//     <>
-//       <Button
-
-//         aria-label={'toggle-sheet-button'}
-//         size="$6"
-//         icon={open ? ChevronDown : ChevronUp}
-//         circular
-//         onPress={() => setOpen(x => !x)}
-//       />
-//       <Sheet
-//         modal
-//         open={open}
-//         onOpenChange={setOpen}
-//         snapPoints={[80, 100]}
-//         // position={position}
-//         // onPositionChange={setPosition}
-//         dismissOnSnapToBottom
-//       >
-//         <Sheet.Overlay />
-//         <Sheet.Frame ai="center" jc="center">
-//           <Sheet.Handle />
-//           {/* <Button
-//             size="$6"
-//             circular
-//             icon={ChevronDown}
-//             aria-label={'close-sheet-button'}
-//             onPress={() => {
-//               setOpen(false);
-//             }}
-//           /> */}
-//         </Sheet.Frame>
-//       </Sheet>
-//     </>
-//   );
-// }
