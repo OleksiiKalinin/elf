@@ -24,12 +24,14 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import Button from '../../components/molecules/Button';
 import Typography from '../../components/atoms/Typography';
 import { ScrollView } from '../../components/molecules/ScrollView';
+import { useLink } from 'solito/link';
 // import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
 
-// type MenuScreenProps = CompositeScreenProps<
-//   NativeStackScreenProps<MenuStackParamList, 'MainScreen'>,
-//   NativeStackScreenProps<RootStackParamList, 'MenuStack'>
-// >;
+type MenuScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<MenuStackParamList, 'MainScreen'>,
+  NativeStackScreenProps<RootStackParamList, 'MenuStack'>
+>;
+
 
 // const MainScreen: React.FC<MenuScreenProps> = ({ navigation }) => {
 const MainScreen: React.FC = ({  }) => {
@@ -93,8 +95,11 @@ const MainScreen: React.FC = ({  }) => {
             title: 'Kandydaci',
             backgroundColor: Colors.Blue100,
             icon: 'candidates',
-            onPress: () => {},//navigation.navigate('CandidatesStack', { screen: 'MainScreen' }),
+            // onPress: () => navigation.navigate('CandidatesStack', { screen: 'MainScreen' }),
             missedEvents: 0,
+            ...useLink({
+              href: '/messenger',
+            }),
             badge: ''
           },
           // {
@@ -109,7 +114,10 @@ const MainScreen: React.FC = ({  }) => {
             title: 'Ogłoszenia',
             backgroundColor: Colors.Blue100,
             icon: 'work',
-            onPress: () => {},//navigation.navigate('AdvertStack', { screen: 'MainScreen' }),
+            // onPress: () => navigation.navigate('AdvertStack', { screen: 'MainScreen' }),
+            ...useLink({
+              href: '/messenger/second',
+            }),
             missedEvents: 0,
             badge: '',
           },

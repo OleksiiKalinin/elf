@@ -97,7 +97,7 @@ const BottomTabs: FC<BottomTabsProps> = ({ descriptors, navigation, state, profi
 
     return (
         // <Animated.View style={[{ flexDirection: 'row', backgroundColor: Colors.White, height: isTabbarVisible ? 45 : 0 }]}>
-        <Animated.View style={[{ flexDirection: 'row', backgroundColor: Colors.White, height: true ? 45 : 0 }]}>
+        <Animated.View style={[{ flexDirection: 'row', width: '100%', backgroundColor: Colors.White, height: true ? 45 : 0 }]}>
         {/* <Animated.View style={[{ flexDirection: 'row', backgroundColor: Colors.White }, animationStyle]}> */}
             {state.routes.map((route, index) => {
                 // const { options } = descriptors[route.key];
@@ -127,7 +127,6 @@ const BottomTabs: FC<BottomTabsProps> = ({ descriptors, navigation, state, profi
                         target: route.key,
                     });
                 };
-console.log(Dimensions.get('window').width/5);
 
                 return (
                     <Button
@@ -137,10 +136,9 @@ console.log(Dimensions.get('window').width/5);
                         // accessibilityLabel={options.tabBarAccessibilityLabel}
                         // testID={options.tabBarTestID}
                         onPress={onPress}
-                        width={Dimensions.get('window').width/5}
                         // onLongPress={onLongPress}
                         // containerStyles={{ flex: 1 }}
-                        style={{ height: '100%' }}
+                        style={{ height: '100%', flex: 1 }}
                         // rippleColor={Colors.Basic600}
                     >
                         <View style={{ position: 'relative', width: '100%', height: '100%' }}>

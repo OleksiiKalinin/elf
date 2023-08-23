@@ -1,4 +1,4 @@
-import { DarkTheme, DefaultTheme, NavigationContainer, NavigatorScreenParams, } from '@react-navigation/native';
+import { DarkTheme, DefaultTheme, LinkingOptions, NavigationContainer, NavigatorScreenParams, } from '@react-navigation/native';
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import AuthNavigator, { AuthStackParamList } from './AuthNavigator';
 import CalendarNavigator, { CalendarStackParamList } from './CalendarNavigator';
@@ -6,7 +6,7 @@ import CandidatesNavigator, { CandidatesStackParamList, } from './CandidatesNavi
 import ProfileNavigator, { ProfileStackParamList } from './ProfileNavigator';
 import AdvertNavigator, { AdvertStackParamList } from './AdvertNavigator';
 import MessengerNavigator, { MessengerStackParamList, } from './MessengerNavigator';
-import MenuNavigator, { MenuStackParamList } from './MenuNavigator';
+import MenuNavigator, { MenuStackLinking, MenuStackParamList } from './MenuNavigator';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 // import BottomTabs from '../components/organisms/BottomTabs/BottomTabs';
 import { useTypedSelector } from '../hooks/useTypedSelector';
@@ -40,12 +40,22 @@ export type RootStackParamList = {
 
 const RootStack = createBottomTabNavigator<RootStackParamList>();
 
-const linking = {
+const linking: LinkingOptions<RootStackParamList> = {
   prefixes: ['localhost'],
   config: {
     screens: {
-      home: '',
-      'user-detail': 'user/:id',
+      'MenuStack': {
+        path: '',
+        screens: MenuStackLinking
+      },
+      'MessengerStack': {
+        initialRouteName: 'MainScreen',
+        path: 'messenger',
+        screens: {
+          MainScreen: '',
+          SecondScreen: 'second'
+        },
+      },
     },
   },
 };

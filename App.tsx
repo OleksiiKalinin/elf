@@ -18,14 +18,14 @@ import {
   DrawerNavigationOptions,
   DrawerHeaderProps,
 } from '@react-navigation/drawer';
-import { Home } from './features/Home';
-import { Logo } from './components/Logo';
-import config from '../tamagui';
-import { UserDetailScreen } from './features/DetailScreen';
+import { Home } from './src/features/Home';
+import { Logo } from './src/components/Logo';
+import config from './tamagui';
+import { UserDetailScreen } from './src/features/DetailScreen';
 import { Provider } from 'react-redux';
-import Colors from './colors/Colors';
-import { store } from './store';
-import RootNavigator from './navigators/RootNavigator';
+import Colors from './src/colors/Colors';
+import { store } from './src/store';
+import RootNavigator from './src/navigators/RootNavigator';
 
 const App = () => {
   // const colorScheme = useColorScheme() || 'light';

@@ -9,6 +9,7 @@ import QuestionsScreen from '../screens/MenuScreens/QuestionsScreen';
 import { CandidateDataType } from '../store/reducers/types';
 import ProfileScreen from '../screens/CandidatesScreens/ProfileScreen';
 import VideoScreen from '../screens/CandidatesScreens/VideoScreen';
+import { PathConfigMap } from '@react-navigation/native';
 
 export type MenuStackParamList = {
   MainScreen: undefined;
@@ -20,6 +21,17 @@ export type MenuStackParamList = {
   ProfileScreen: { candidateData: CandidateDataType };
   VideoScreen: { candidateData: CandidateDataType };
 };
+
+export const MenuStackLinking: PathConfigMap<MenuStackParamList> = {
+  MainScreen: '',
+  CallsScreen: 'CallsScreen',
+  EventsScreen: 'EventsScreen',
+  NewsDetailsScreen: 'NewsDetailsScreen',
+  NewsScreen: 'NewsScreen',
+  ProfileScreen: 'ProfileScreen',
+  QuestionsScreen: 'QuestionsScreen',
+  VideoScreen: 'VideoScreen',
+}
 
 const MenuStack = createNativeStackNavigator<MenuStackParamList>();
 
