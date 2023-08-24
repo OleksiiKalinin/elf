@@ -40,27 +40,62 @@ export type RootStackParamList = {
 
 const RootStack = createBottomTabNavigator<RootStackParamList>();
 
-const linking: LinkingOptions<RootStackParamList> = {
+export const mainLinking: LinkingOptions<RootStackParamList> = {
   prefixes: ['localhost'],
   config: {
     screens: {
       'MenuStack': {
-        path: '',
+        initialRouteName: 'MainScreen',
+        path: 'home',
         screens: MenuStackLinking
+      },
+      'CandidatesStack': {
+        initialRouteName: 'MainScreen',
+        path: 'candidates',
+        screens: {
+          MainScreen: '',
+        },
+      },
+      'CalendarStack': {
+        initialRouteName: 'MainScreen',
+        path: 'calendar',
+        screens: {
+          MainScreen: '',
+        },
+      },
+      'AdvertStack': {
+        initialRouteName: 'MainScreen',
+        path: 'adverts',
+        screens: {
+          MainScreen: '',
+        },
       },
       'MessengerStack': {
         initialRouteName: 'MainScreen',
         path: 'messenger',
         screens: {
           MainScreen: '',
-          SecondScreen: 'second'
+        },
+      },
+      'AuthStack': {
+        initialRouteName: 'MainScreen',
+        path: 'auth',
+        screens: {
+          MainScreen: '',
+        },
+      },
+      'ProfileStack': {
+        initialRouteName: 'MainScreen',
+        path: 'profile',
+        screens: {
+          MainScreen: '',
         },
       },
     },
   },
 };
 
-const screens: React.ComponentProps<typeof RootStack.Screen>[] = [
+export const screens: React.ComponentProps<typeof RootStack.Screen>[] = [
   {
     name: 'MenuStack',
     component: MenuNavigator,
@@ -108,7 +143,7 @@ const isDarkMode = false;
 const RootNavigator: React.FC = () => {
   const dispatch = useDispatch();
   const [profileFocused, setProfileFocused] = useState(false);
-  const { appLoading, isTabbarVisible, token, swipeablePanelProps, userCompany, candidateNotes } = useTypedSelector(state => state.general);
+  const { appLoading, isTabbarVisible, token, swipeablePanelProps, userCompany, candidateNotes, currentScreen } = useTypedSelector(state => state.general);
   const { setCurrentScreen, setIsTabbarVisible, setToken, setSwipeablePanelProps, setUserCompany } = useActions();
   const tempKeyboardAccess = useRef<boolean>(false);
   const appDataLoaded = useRef<boolean>(false);
@@ -218,11 +253,15 @@ const RootNavigator: React.FC = () => {
     </View>} */}
     <NavigationContainer
       theme={isDarkMode ? DarkTheme : DefaultTheme}
-      linking={linking}
+      linking={mainLinking}
     >
       <RootStack.Navigator
         backBehavior='history' initialRouteName="MenuStack" screenOptions={{ headerShown: false }}
-        tabBar={(props) => <BottomTabs {...{ profileFocused, setProfileFocused }} {...props} />}
+        tabBar={(props) => {
+          const {state} = props;
+          
+          return <BottomTabs {...{ profileFocused, setProfileFocused, currentScreen, routes: state.routes.map(({name}) => name) }} />
+        }}
       >
         {screens.map(screen =>
           <RootStack.Screen {...screen} listeners={({ route, navigation }) => ({ state: () => setCurrentScreenHandler(route), blur: () => navigation.setParams({ screen: undefined, params: undefined }) })} />

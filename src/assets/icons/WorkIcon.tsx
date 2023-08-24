@@ -1,11 +1,13 @@
 import * as React from "react"
-import { Svg,  SvgProps, Rect, Path, ClipPath, Defs, G } from "react-native-svg"
+import { Svg, SvgProps, Rect, Path, ClipPath, Defs, G } from "react-native-svg"
 
 const WorkIcon = (props: SvgProps) => (
   <Svg
     width={25}
     height={25}
-      >
+    {...props}
+    fill='none'
+  >
     <Rect
       x={3.531}
       y={7.629}

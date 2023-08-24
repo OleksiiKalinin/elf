@@ -4,7 +4,7 @@ import { useRoute } from '@react-navigation/native';
 import React, { FC, useEffect, useState } from 'react';
 import { Keyboard, View, Dimensions } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { RootStackParamList } from '../../navigators/RootNavigator';
+import { RootStackParamList, mainLinking } from '../../navigators/RootNavigator';
 import SvgIcon, { IconTypes } from '../atoms/SvgIcon';
 import { MenuStackParamList } from '../../navigators/MenuNavigator';
 import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
@@ -18,6 +18,7 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import Colors from '../../colors/Colors';
 import Button from '../molecules/Button';
 import Typography from '../atoms/Typography';
+import { useLink } from 'solito/link';
 // import Colors from '../../../colors/Colors';
 // import { useActions } from '../../../hooks/useActions';
 // import { useTypedSelector } from '../../../hooks/useTypedSelector';
@@ -35,8 +36,11 @@ import Typography from '../atoms/Typography';
 
 type BottomTabsProps = {
     profileFocused: boolean;
-    setProfileFocused: (b: boolean) => void
-} & BottomTabBarProps;
+    setProfileFocused: (b: boolean) => void;
+    routes: string[];
+    currentScreen: string;
+};
+// } & BottomTabBarProps;
 
 const icons: { [k in keyof RootStackParamList]: IconTypes } = {
     AdvertStack: 'work',
@@ -66,7 +70,7 @@ const hiddenTabbarScreens: {
     ProfileStack: ['PaymentTemporalScreen', 'SettingsScreen', 'PackagesScreen', 'CompanyInvoiceScreen', 'CompanyDescriptionScreen', 'NoCompanyScreen', 'AddCompanyScreen', 'AddPaymentScreen', 'CompanyScreen', 'CookieScreen', 'EditPaymentScreen', 'HelpCenterScreen', 'JobCategoryScreen', 'JobScreen', 'LanguageScreen', 'MapScreen', 'MethodsScreen', 'NotificationScreen', 'PaymentScreen', 'PointsScreen', 'PrivacyScreen', 'AccountDataScreen', 'ToolsScreen', 'AddConractPersonsScreen'],
 };
 
-const BottomTabs: FC<BottomTabsProps> = ({ descriptors, navigation, state, profileFocused, setProfileFocused }) => {
+const BottomTabs: FC<BottomTabsProps> = ({ routes, currentScreen, profileFocused, setProfileFocused }) => {
     // const animation = useSharedValue({ height: 45 });
     // const { isTabbarVisible, currentScreen } = useTypedSelector(state => state.general);
     // const { setIsTabbarVisible } = useActions();
@@ -99,46 +103,48 @@ const BottomTabs: FC<BottomTabsProps> = ({ descriptors, navigation, state, profi
         // <Animated.View style={[{ flexDirection: 'row', backgroundColor: Colors.White, height: isTabbarVisible ? 45 : 0 }]}>
         <Animated.View style={[{ flexDirection: 'row', width: '100%', backgroundColor: Colors.White, height: true ? 45 : 0 }]}>
         {/* <Animated.View style={[{ flexDirection: 'row', backgroundColor: Colors.White }, animationStyle]}> */}
-            {state.routes.map((route, index) => {
+            {routes.map(route => {
                 // const { options } = descriptors[route.key];
-                const label = route.name as keyof RootStackParamList;
-                const isFocused = state.index === index;
+                const label = route as keyof RootStackParamList;
+                const href = (mainLinking.config?.screens[label] as any)?.path as string;
+                // const isFocused = state.index === index;
+                const isFocused = currentScreen.split('-')[0] === route;
                 if (label === 'ProfileStack') setProfileFocused(isFocused);
 
                 const excludedStacks: Array<keyof RootStackParamList> = ['AuthStack', 'ProfileStack'];
                 if (excludedStacks.includes(label)) return null;
 
-                const onPress = () => {
-                    const event = navigation?.emit({
-                        type: 'tabPress',
-                        target: route.key,
-                        canPreventDefault: true,
-                    });
+                // const onPress = () => {
+                //     const event = navigation?.emit({
+                //         type: 'tabPress',
+                //         target: route.key,
+                //         canPreventDefault: true,
+                //     });
 
-                    if (!isFocused && !event.defaultPrevented) {
-                        //@ts-ignore
-                        navigation?.navigate({ name: route.name, merge: true });
-                    }
-                };
+                //     if (!isFocused && !event.defaultPrevented) {
+                //         //@ts-ignore
+                //         navigation?.navigate({ name: route.name, merge: true });
+                //     }
+                // };
 
-                const onLongPress = () => {
-                    navigation?.emit({
-                        type: 'tabLongPress',
-                        target: route.key,
-                    });
-                };
+                // const onLongPress = () => {
+                //     navigation?.emit({
+                //         type: 'tabLongPress',
+                //         target: route.key,
+                //     });
+                // };
 
                 return (
                     <Button
                         variant='white'
-                        accessibilityRole="button"
                         accessibilityState={isFocused ? { selected: true } : {}}
                         // accessibilityLabel={options.tabBarAccessibilityLabel}
                         // testID={options.tabBarTestID}
-                        onPress={onPress}
+                        // onPress={onPress}
                         // onLongPress={onLongPress}
                         // containerStyles={{ flex: 1 }}
                         style={{ height: '100%', flex: 1 }}
+                        {...(!!href ? useLink({href: '/' + href}) : {})}
                         // rippleColor={Colors.Basic600}
                     >
                         <View style={{ position: 'relative', width: '100%', height: '100%' }}>

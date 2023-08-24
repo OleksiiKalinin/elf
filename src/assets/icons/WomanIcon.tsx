@@ -1,5 +1,6 @@
 import * as React from "react"
-import { Svg, 
+import {
+  Svg,
   SvgProps,
   Path,
 
@@ -10,7 +11,7 @@ const WomanIcon = (props: SvgProps) => (
   <Svg
     width={48}
     height={48}
-        {...props}
+    {...props}
     fill="none"
   >
     <Rect width={48} height={48} rx={24} fill="#E2E6EF" />

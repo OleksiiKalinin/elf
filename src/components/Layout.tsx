@@ -3,15 +3,45 @@ import { View } from 'react-native';
 import BottomTabs from './organismes/BottomTabs';
 import Typography from './atoms/Typography';
 import Colors from '../colors/Colors';
+import { mainLinking, screens } from '../navigators/RootNavigator';
+import { useRouter } from 'next/router';
 
 export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
   const [profileFocused, setProfileFocused] = useState(false);
+  const [currentScreen, setCurrentScreen] = useState<string>('');
+  const router = useRouter();
+
+  useEffect(() => {
+    (() => {
+      const [, routeStack, routeScreen] = router.pathname.split('/');
+      let currentScreen = 'MenuStack-MainScreen';
+
+      if (routeStack) {
+        const screens: any = mainLinking.config?.screens;
+        if (screens) {
+          for (const stackName in screens) {
+            const currStack = screens[stackName];
+            if (currStack?.path === routeStack) {
+              if (routeScreen) {
+                for (const screenName in currStack.screens) {
+                  const currScreen = currStack.screens[screenName];
+                  if (currScreen === routeScreen) {
+                    currentScreen = stackName + '-' + screenName;
+                  }
+                }
+              }
+              currentScreen = stackName + '-' + 'MainScreen';
+            }
+          }
+        }
+      }
+      setCurrentScreen(currentScreen);
+    })();
+  }, [router])
 
   return (
     <View>
-      <View style={{
-        paddingBottom: 45
-      }}>
+      <View style={{ paddingBottom: 45 }}>
         {children}
       </View>
       <View style={{
@@ -23,18 +53,7 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
         // height: 50,
         backgroundColor: Colors.White
       }}>
-        <BottomTabs {...{ profileFocused, setProfileFocused }} state={{
-          index: 1,
-          routes: [
-            {name: 'MenuStack'},
-            {name: 'CandidatesStack'},
-            {name: 'CalendarStack'},
-            {name: 'AdvertStack'},
-            {name: 'MessengerStack'},
-            {name: 'ProfileStack'},
-            {name: 'AuthStack'},
-          ]
-        }} />
+        <BottomTabs {...{ profileFocused, setProfileFocused, currentScreen, routes: Object.keys(mainLinking.config?.screens || {}) }} />
       </View>
     </View>
   );

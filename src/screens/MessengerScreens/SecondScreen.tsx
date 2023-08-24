@@ -26,7 +26,7 @@ const SecondScreen: React.FC = () => {
         <Typography>SecondScreen</Typography>
         <Button
             {...useLink({
-                href: '/',
+                href: '/home',
             })}
         >home</Button>
     </>);

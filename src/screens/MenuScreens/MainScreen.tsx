@@ -34,7 +34,7 @@ type MenuScreenProps = CompositeScreenProps<
 
 
 // const MainScreen: React.FC<MenuScreenProps> = ({ navigation }) => {
-const MainScreen: React.FC = ({  }) => {
+const MainScreen: React.FC = ({ }) => {
   const ScrollViewRef = useRef(null);
   // useScrollToTop(ScrollViewRef);
   // const { isMainMenuFlatList, userData, token, currentScreen } = useTypedSelector(state => state.general);
@@ -58,7 +58,7 @@ const MainScreen: React.FC = ({  }) => {
             title: 'Historia wydarzeń',
             backgroundColor: Colors.Sea300,
             icon: 'eventsHistory',
-            onPress: () => {},//navigation.navigate('EventsScreen'),
+            onPress: () => { },//navigation.navigate('EventsScreen'),
             missedEvents: 0,
             badge: '',
           },
@@ -74,7 +74,7 @@ const MainScreen: React.FC = ({  }) => {
             title: 'Kalendarz',
             backgroundColor: Colors.Sea300,
             icon: 'calendar',
-            onPress: () => {},//navigation.navigate('CalendarStack', { screen: 'MainScreen' }),
+            onPress: () => { },//navigation.navigate('CalendarStack', { screen: 'MainScreen' }),
             missedEvents: 0,
             badge: ''
           },
@@ -125,7 +125,7 @@ const MainScreen: React.FC = ({  }) => {
             title: 'Profil',
             backgroundColor: Colors.Blue100,
             icon: 'user',
-            onPress: () => {},//navigation.navigate('ProfileStack', { screen: 'MainScreen' }),
+            onPress: () => { },//navigation.navigate('ProfileStack', { screen: 'MainScreen' }),
             missedEvents: 0,
             badge: ''
           },
@@ -133,7 +133,7 @@ const MainScreen: React.FC = ({  }) => {
             title: 'Pakiety',
             backgroundColor: Colors.Blue100,
             icon: 'bag',
-            onPress: () => {},//navigation.navigate('ProfileStack', { screen: 'PaymentTemporalScreen' }),
+            onPress: () => { },//navigation.navigate('ProfileStack', { screen: 'PaymentTemporalScreen' }),
             missedEvents: 0,
             badge: ''
           },
@@ -226,11 +226,11 @@ const MainScreen: React.FC = ({  }) => {
             {/* {!!!token && <View style={{ marginRight: 12 }}> */}
             {<View style={{ marginRight: 12 }}>
               <Button
-                style={{ paddingHorizontal: 4, paddingVertical: 4 }}
+                br={4} h={30} px={8.5} w='auto'
                 contentWeight='Regular'
                 variant="secondary"
-                onPress={() => {}//navigation.navigate('AuthStack', { screen: 'MainScreen' })
-              }
+                onPress={() => { }//navigation.navigate('AuthStack', { screen: 'MainScreen' })
+                }
               // containerStyles={{ borderRadius: 4, overflow: 'hidden' }}
               >
                 Zaloguj
@@ -245,39 +245,39 @@ const MainScreen: React.FC = ({  }) => {
             </View> */}
           </View>
         }
-        // otherActions={<View style={styles.LayoutToggler}>
-        //   <TouchableOpacity
-        //     onPress={() => setIsMainMenuFlatList(true)}
-        //     style={{
-        //       backgroundColor: isMainMenuFlatList ? Colors.Basic200 : Colors.White,
-        //       width: 28,
-        //       height: 28,
-        //       justifyContent: 'center',
-        //       alignItems: 'center',
-        //       borderRadius: 50,
-        //       marginRight: 20
-        //     }}>
-        //     <SvgIcon
-        //       icon="horizontal"
-        //       fill={isMainMenuFlatList ? Colors.Basic900 : Colors.Basic400}
-        //     />
-        //   </TouchableOpacity>
-        //   <TouchableOpacity
-        //     onPress={() => setIsMainMenuFlatList(false)}
-        //     style={{
-        //       backgroundColor: isMainMenuFlatList ? Colors.White : Colors.Basic200,
-        //       width: 28,
-        //       height: 28,
-        //       justifyContent: 'center',
-        //       alignItems: 'center',
-        //       borderRadius: 28,
-        //     }}>
-        //     <SvgIcon
-        //       icon="grid"
-        //       fill={isMainMenuFlatList ? Colors.Basic400 : Colors.Basic900}
-        //     />
-        //   </TouchableOpacity>
-        // </View>}
+      // otherActions={<View style={styles.LayoutToggler}>
+      //   <TouchableOpacity
+      //     onPress={() => setIsMainMenuFlatList(true)}
+      //     style={{
+      //       backgroundColor: isMainMenuFlatList ? Colors.Basic200 : Colors.White,
+      //       width: 28,
+      //       height: 28,
+      //       justifyContent: 'center',
+      //       alignItems: 'center',
+      //       borderRadius: 50,
+      //       marginRight: 20
+      //     }}>
+      //     <SvgIcon
+      //       icon="horizontal"
+      //       fill={isMainMenuFlatList ? Colors.Basic900 : Colors.Basic400}
+      //     />
+      //   </TouchableOpacity>
+      //   <TouchableOpacity
+      //     onPress={() => setIsMainMenuFlatList(false)}
+      //     style={{
+      //       backgroundColor: isMainMenuFlatList ? Colors.White : Colors.Basic200,
+      //       width: 28,
+      //       height: 28,
+      //       justifyContent: 'center',
+      //       alignItems: 'center',
+      //       borderRadius: 28,
+      //     }}>
+      //     <SvgIcon
+      //       icon="grid"
+      //       fill={isMainMenuFlatList ? Colors.Basic400 : Colors.Basic900}
+      //     />
+      //   </TouchableOpacity>
+      // </View>}
       >
         <ScrollView ref={ScrollViewRef} contentContainerStyle={{ alignItems: 'center' }} style={{ backgroundColor: Colors.Basic100, flex: 1 }}>
           {sectionButtons.map(({ buttons, sectionTitle }, i) => (
@@ -333,7 +333,9 @@ const MainScreen: React.FC = ({  }) => {
           ))}
         </ScrollView>
         <View style={styles.createIcon}>
-          <Button icon={<SvgIcon icon='addBig' />} w={49} h={49} circular bg='transparent' onPress={optionsHandler} />
+          <TouchableOpacity onPress={optionsHandler}>
+            <SvgIcon icon='addBig' />
+          </TouchableOpacity>
         </View>
       </ScreenHeaderProvider>
     </View>
@@ -372,7 +374,7 @@ const styles = StyleSheet.create({
     padding: 10,
     aspectRatio: 1,
     width: '44%',
-    height: '44%', //any value with ratio
+    height: '44%',
   },
   GridButton: {
     backgroundColor: Colors.White,
