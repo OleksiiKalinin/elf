@@ -14,7 +14,7 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
   useEffect(() => {
     (() => {
       const [, routeStack, routeScreen] = router.pathname.split('/');
-      let currentScreen = 'MenuStack-MainScreen';
+      let currentScreen = '';
 
       if (routeStack) {
         const screens: any = mainLinking.config?.screens;
@@ -27,15 +27,18 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
                   const currScreen = currStack.screens[screenName];
                   if (currScreen === routeScreen) {
                     currentScreen = stackName + '-' + screenName;
+                    break;
                   }
                 }
               }
-              currentScreen = stackName + '-' + 'MainScreen';
+              if (!currentScreen) {
+                currentScreen = stackName + '-' + 'MainScreen';
+              }
             }
           }
         }
       }
-      setCurrentScreen(currentScreen);
+      setCurrentScreen(currentScreen || 'MenuStack-MainScreen');
     })();
   }, [router])
 

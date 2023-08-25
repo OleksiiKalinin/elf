@@ -125,7 +125,10 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Profil',
             backgroundColor: Colors.Blue100,
             icon: 'user',
-            onPress: () => { },//navigation.navigate('ProfileStack', { screen: 'MainScreen' }),
+            // onPress: () => navigation.navigate('ProfileStack', { screen: 'MainScreen' }),
+            ...useLink({
+              href: '/candidates/video',
+            }),
             missedEvents: 0,
             badge: ''
           },

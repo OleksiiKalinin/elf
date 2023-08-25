@@ -3,26 +3,26 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useRef, useState } from 'react';
 import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
-import Typography from '../../components/atoms/Typography/Typography';
 import Video from 'react-native-video';
 import Colors from '../../colors/Colors';
-import { useTypedSelector } from '../../hooks/useTypedSelector';
-import { bookmarkActionTypes } from '../../store/actions';
-import {
-  Menu,
-  MenuOption,
-  MenuOptions,
-  MenuTrigger,
-} from 'react-native-popup-menu';
+// import { useTypedSelector } from '../../hooks/useTypedSelector';
+// import { bookmarkActionTypes } from '../../store/actions';
+// import {
+//   Menu,
+//   MenuOption,
+//   MenuOptions,
+//   MenuTrigger,
+// } from 'react-native-popup-menu';
 import { store } from '../../store';
-import { useActions } from '../../hooks/useActions';
+// import { useActions } from '../../hooks/useActions';
 import { Dimensions, ScrollView, StyleSheet, TouchableHighlight, TouchableOpacity, View, Image } from 'react-native';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
-import MultiSlider from '@ptomasroos/react-native-multi-slider';
+/// import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import { JobPositionType } from '../../store/reducers/types';
-import { Modal } from 'native-base';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import Typography from '../../components/atoms/Typography';
+
+import VideoPlayer from '../../components/organismes/VideoPlayer';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<CandidatesStackParamList, 'VideoScreen'>,
@@ -146,27 +146,34 @@ const noteTitles: { title: string, type: NotesType, color: string }[] = [
   },
 ];
 
-const VideoScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
-  const { candidateData } = route.params;
-  const { jobIndustries, jobExperiences, jobSalaryTaxes, swipeablePanelProps } = useTypedSelector(s => s.general);
+// const VideoScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
+const VideoScreen: React.FC = () => {
+  // const { candidateData } = route.params;
+  // const { jobIndustries, jobExperiences, jobSalaryTaxes, swipeablePanelProps } = useTypedSelector(s => s.general);
   const [jobPositions, setJobPositions] = useState<JobPositionType[]>([]);
   const [paused, setPaused] = useState(false);
   const [progress, setProgress] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
   const VideoRef = useRef<Video>(null);
 
-  const data = useTypedSelector(state => state.bookmark);
-  const bookmarkCategories = data.bookmarks.map(item => item.category);
-  const selectedBookmark = bookmarkCategories.indexOf(data.persons[1].bookmark);
-  const bookmarkCategory = data.bookmarks[selectedBookmark].category;
-  const bookmarkColor = data.bookmarks[selectedBookmark].color;
-  const { setSwipeablePanelProps } = useActions();
+  // const data = useTypedSelector(state => state.bookmark);
+  // const bookmarkCategories = data.bookmarks.map(item => item.category);
+  // const selectedBookmark = bookmarkCategories.indexOf(data.persons[1].bookmark);
+  // const bookmarkCategory = data.bookmarks[selectedBookmark].category;
+  // const bookmarkColor = data.bookmarks[selectedBookmark].color;
+  // const { setSwipeablePanelProps } = useActions();
   const [openNotes, setOpenNotes] = useState<boolean>(false);
   const [candidateNotes, setCandidateNotes] = useState<number[]>([]);
+  const [open, setOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    setJobPositions(jobIndustries.reduce<JobPositionType[]>((prev, curr) => [...prev, ...curr.job_positions], []));
-  }, [jobIndustries]);
+    if (typeof window !== "undefined") setOpen(true);
+  }, []);
+
+
+  // useEffect(() => {
+  //   setJobPositions(jobIndustries.reduce<JobPositionType[]>((prev, curr) => [...prev, ...curr.job_positions], []));
+  // }, [jobIndustries]);
 
   // const contactsHandler = () => {
   //   setSwipeablePanelProps({
@@ -191,11 +198,11 @@ const VideoScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   //   })
   // };
 
-  return (
-    <ScreenHeaderProvider currentStack='CandidatesStack' transparent>
+  return open && (
+    <ScreenHeaderProvider currentStack='CandidatesStack' transparent staticContentHeight>
       <TouchableHighlight onPress={() => setPaused(prev => !prev)} style={{ flex: 1 }}>
-        <View style={{ flex: 1, backgroundColor: Colors.Basic900, position: 'relative' }}>
-          {!!candidateData.video && <Video
+        <View style={{ flex: 1, justifyContent: "center", backgroundColor: Colors.Basic900, position: 'relative' }}>
+          {/* {!!candidateData.video && <Video
             source={{ uri: candidateData.video.path }}
             onLoad={({ duration }) => setDuration(duration)}
             onError={err => console.log(err)}
@@ -206,11 +213,12 @@ const VideoScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
             ref={VideoRef}
             onProgress={({ currentTime }) => setProgress(currentTime)}
             progressUpdateInterval={100}
-          />}
+          />} */}
+          <VideoPlayer paused={paused} />
           {paused && <View style={styles.playIcon} >
             <SvgIcon icon="play" />
           </View>}
-          <View style={{ position: 'absolute', bottom: 34, left: 18 }}>
+          {/* <View style={{ position: 'absolute', bottom: 34, left: 18 }}>
             <Typography style={styles.text} weight="Bold" variant="h4" color={Colors.White}>
               {jobPositions.find(p => p.id === candidateData.job_position_id)?.name}
             </Typography>
@@ -223,26 +231,26 @@ const VideoScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
                 :
                 'Stawka nieustalona'
               }
-            </Typography>
-            {/* <View>
+            </Typography> */}
+          {/* <View>
               {data.persons[1].available && (
                 <Typography style={styles.text} color={Colors.White}>
                   Praca od zaraz
                 </Typography>
               )}
             </View> */}
-          </View>
+          {/* </View> */}
           <View style={{ position: 'absolute', bottom: 34, right: 18, alignItems: 'center' }}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
+            {/* <TouchableOpacity onPress={() => navigation.goBack()}>
               <View style={[styles.iconWithText, {marginBottom: 0}]}>
                 <View style={{ width: 48, height: 48, borderRadius: 24, overflow: 'hidden' }}>
                   <Image source={{ uri: candidateData.logo?.path }} style={{ width: 48, height: 48 }} resizeMode='center' />
-                </View>
-                {/* <Typography color={Colors.White} variant="small">
+                </View> */}
+            {/* <Typography color={Colors.White} variant="small">
                   Profil
                 </Typography> */}
-              </View>
-            </TouchableOpacity>
+            {/* </View>
+            </TouchableOpacity> */}
             {/* <Menu style={{ marginBottom: 35 }}>
               <MenuTrigger>
                 <SvgIcon
@@ -334,7 +342,7 @@ const VideoScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           </View>
         </View>
       </TouchableHighlight>
-      {!!duration && <View style={{ position: 'absolute', width: '100%', alignItems: 'center', bottom: -10 }}>
+      {/* {!!duration && <View style={{ position: 'absolute', width: '100%', alignItems: 'center', bottom: -10 }}>
         <MultiSlider
           enabledTwo={false}
           step={0.1}
@@ -346,7 +354,7 @@ const VideoScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           markerStyle={{ backgroundColor: Colors.White, width: 16, height: 16, top: 2 }}
           selectedStyle={{ backgroundColor: Colors.White, height: 5 }}
         />
-      </View>}
+      </View>} */}
       {/* <Modal isOpen={openNotes} onClose={() => setOpenNotes(false)}>
         <Modal.Header width='full' style={{ backgroundColor: Colors.White }}>
           <Typography variant='h4' weight='Bold' textAlign='center'>Twoje notatki</Typography>

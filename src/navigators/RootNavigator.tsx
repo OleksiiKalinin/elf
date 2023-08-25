@@ -54,6 +54,7 @@ export const mainLinking: LinkingOptions<RootStackParamList> = {
         path: 'candidates',
         screens: {
           MainScreen: '',
+          VideoScreen: 'video',
         },
       },
       'CalendarStack': {

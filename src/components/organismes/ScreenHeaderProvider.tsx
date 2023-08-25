@@ -1,4 +1,4 @@
-import { StyleSheet, View, Platform, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Platform, TouchableOpacity, Dimensions } from 'react-native';
 import React, { useEffect, useRef } from 'react';
 import { CommonActions, useNavigation, useRoute } from '@react-navigation/native';
 import { MenuStackParamList } from '../../navigators/MenuNavigator';
@@ -13,19 +13,7 @@ import SvgIcon, { IconTypes } from '../atoms/SvgIcon';
 import Typography from '../atoms/Typography';
 import Button from '../molecules/Button';
 import Colors from '../../colors/Colors';
-// import Colors from '../../../colors/Colors';
-// import Typography from '../../atoms/Typography/Typography';
-// import { IconButton } from 'native-base';
-// import SvgIcon, { IconTypes } from '../../molecules/SvgIcon/SvgIcon';
-// import LinearGradient from 'react-native-linear-gradient';
-// import { MenuStackParamList } from '../../../navigators/MenuNavigator';
-// import { CandidatesStackParamList } from '../../../navigators/CandidatesNavigator';
-// import { CalendarStackParamList } from '../../../navigators/CalendarNavigator';
-// import { AdvertStackParamList } from '../../../navigators/AdvertNavigator';
-// import { MessengerStackParamList } from '../../../navigators/MessengerNavigator';
-// import { ProfileStackParamList } from '../../../navigators/ProfileNavigator';
-// import { AuthStackParamList } from '../../../navigators/AuthNavigator';
-// import { RootStackParamList } from '../../../navigators/RootNavigator';
+import { useRouter } from 'solito/router';
 
 type ScreensTitlesType = {
   MenuStack: { [k in keyof MenuStackParamList]: string };
@@ -150,6 +138,7 @@ type ScreenHeaderProviderProps = {
   }[];
   otherActions?: Element,
   transparent?: boolean;
+  staticContentHeight?: boolean;
 };
 
 const HEIGHT = 50;
@@ -162,9 +151,11 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   actions = null,
   otherActions = null,
   transparent = false,
+  staticContentHeight = false,
   alterTitle = null,
   currentStack,
 }) => {
+  const { back } = useRouter();
   // const navigation = useNavigation();
   // const history = navigation.getState().routes;
   // const previousScreen: string | null =
@@ -181,15 +172,19 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
       {/* <LinearGradient style={[styles.Header]} {...(transparent ? { locations: [0.1, 0.4, 0.5, 0.65, 0.8, 0.9, 1] } : {})} colors={['rgba(255, 255, 255, 1)', ...(transparent ? ['rgba(255, 255, 255, 0.85)', 'rgba(255, 255, 255, 0.75)', 'rgba(255, 255, 255, 0.6)', 'rgba(255, 255, 255, 0.35)', 'rgba(255, 255, 255, 0.2)', 'rgba(255, 255, 255, 0)'] : ['rgba(255, 255, 255, 1)'])]}> */}
       <View style={[styles.Header]}>
         {mode === 'backAction' && (
-          <View style={{ flex: 1, alignItems: 'flex-start', flexDirection: 'row' }}>
+          <View style={{ flex: 1, height: '100%', alignItems: 'flex-start', flexDirection: 'row' }}>
             <Button
-              circular
-              px='15px'
-              py='14.5px'
+              bg='transparent'
+              // px={15}
+              // py={14.5}
+              p={0}
+              alignItems='center'
+              width={50}
+              height='100%'
               icon={<SvgIcon icon='arrowLeft' />}
-              // onPress={() => navigation.canGoBack() && navigation.goBack()}
+              onPress={back}
             // colorScheme={Colors.Basic300}
-            >{' '}</Button>
+            />
             <Typography variant="h4" weight="Bold" style={{ alignSelf: 'center' }}>
               {title || currentTitle}
             </Typography>
@@ -230,7 +225,14 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
         {/* {otherActions} */}
       </View>
       {/* </LinearGradient> */}
-      <View style={[{ flex: 1, paddingTop: transparent ? 0 : HEIGHT, backgroundColor: Colors.White }]}>{children}</View>
+      <View style={[{
+        height: staticContentHeight ? Dimensions.get('window').height - (transparent ? 0 : HEIGHT) : undefined,
+        flex: !staticContentHeight ? 1 : undefined,
+        paddingTop: transparent ? 0 : HEIGHT,
+        backgroundColor: Colors.White
+      }]}>
+        {children}
+      </View>
     </View>
   );
 };
@@ -238,6 +240,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
 const styles = StyleSheet.create({
   Wrapper: {
     flex: 1,
+    minHeight: Dimensions.get('window').height,
     // ...Platform.select({
     //   ios: {
     //     paddingTop: 30,

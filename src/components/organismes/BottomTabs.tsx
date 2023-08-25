@@ -71,13 +71,14 @@ const hiddenTabbarScreens: {
 };
 
 const BottomTabs: FC<BottomTabsProps> = ({ routes, currentScreen, profileFocused, setProfileFocused }) => {
-    // const animation = useSharedValue({ height: 45 });
+    const animation = useSharedValue({ height: 45 });
     // const { isTabbarVisible, currentScreen } = useTypedSelector(state => state.general);
     // const { setIsTabbarVisible } = useActions();
+    const [isTabbarVisible, setIsTabbarVisible] = useState(false);
 
-    // const animationStyle = useAnimatedStyle(() => ({
-    //     height: withTiming(animation.value.height, { duration: 10 })
-    // }), []);
+    const animationStyle = useAnimatedStyle(() => ({
+        height: withTiming(animation.value.height, { duration: 10 })
+    }), []);
 
     const badgeNumbers: { [k in keyof RootStackParamList]: number } = {
         MenuStack: 0,
@@ -89,63 +90,36 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes, currentScreen, profileFocused
         AuthStack: 0,
     }
 
-    // useEffect(() => {
-    //     const [stack, screen] = currentScreen.split('-');
-    //     //@ts-ignore
-    //     setIsTabbarVisible(!hiddenTabbarScreens[stack].includes(screen));
-    // }, [currentScreen]);
+    useEffect(() => {
+        if (currentScreen) {
+            const [stack, screen] = currentScreen.split('-');
+            //@ts-ignore
+            setIsTabbarVisible(!hiddenTabbarScreens[stack].includes(screen));
+        }
+    }, [currentScreen]);
 
-    // useEffect(() => {
-    //     animation.value = { height: isTabbarVisible ? 45 : 0 };
-    // }, [isTabbarVisible]);
+    useEffect(() => {
+        animation.value = { height: isTabbarVisible ? 45 : 0 };
+    }, [isTabbarVisible]);
 
     return (
-        // <Animated.View style={[{ flexDirection: 'row', backgroundColor: Colors.White, height: isTabbarVisible ? 45 : 0 }]}>
-        <Animated.View style={[{ flexDirection: 'row', width: '100%', backgroundColor: Colors.White, height: true ? 45 : 0 }]}>
-        {/* <Animated.View style={[{ flexDirection: 'row', backgroundColor: Colors.White }, animationStyle]}> */}
+        <Animated.View style={[{ flexDirection: 'row', backgroundColor: Colors.White, height: isTabbarVisible ? 45 : 0, visibility: isTabbarVisible ? 'visible' : 'hidden' }]}>
+            {/* <Animated.View style={[{ flexDirection: 'row', backgroundColor: Colors.White }, animationStyle]}> */}
             {routes.map(route => {
-                // const { options } = descriptors[route.key];
                 const label = route as keyof RootStackParamList;
                 const href = (mainLinking.config?.screens[label] as any)?.path as string;
-                // const isFocused = state.index === index;
                 const isFocused = currentScreen.split('-')[0] === route;
                 if (label === 'ProfileStack') setProfileFocused(isFocused);
 
                 const excludedStacks: Array<keyof RootStackParamList> = ['AuthStack', 'ProfileStack'];
                 if (excludedStacks.includes(label)) return null;
 
-                // const onPress = () => {
-                //     const event = navigation?.emit({
-                //         type: 'tabPress',
-                //         target: route.key,
-                //         canPreventDefault: true,
-                //     });
-
-                //     if (!isFocused && !event.defaultPrevented) {
-                //         //@ts-ignore
-                //         navigation?.navigate({ name: route.name, merge: true });
-                //     }
-                // };
-
-                // const onLongPress = () => {
-                //     navigation?.emit({
-                //         type: 'tabLongPress',
-                //         target: route.key,
-                //     });
-                // };
-
                 return (
                     <Button
                         variant='white'
                         accessibilityState={isFocused ? { selected: true } : {}}
-                        // accessibilityLabel={options.tabBarAccessibilityLabel}
-                        // testID={options.tabBarTestID}
-                        // onPress={onPress}
-                        // onLongPress={onLongPress}
-                        // containerStyles={{ flex: 1 }}
                         style={{ height: '100%', flex: 1 }}
-                        {...(!!href ? useLink({href: '/' + href}) : {})}
-                        // rippleColor={Colors.Basic600}
+                        {...(!!href ? useLink({ href: '/' + href }) : {})}
                     >
                         <View style={{ position: 'relative', width: '100%', height: '100%' }}>
                             {/* {!!badgeNumbers[label] && <Badge px='1.5' py='0' zIndex={1} position='absolute' left={2} top={-9} bgColor={Colors.Basic900} rounded="full">

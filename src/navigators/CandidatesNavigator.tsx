@@ -42,6 +42,10 @@ const CandidatesNavigator: React.FC = () => {
         name="MainScreen"
         component={() => null}
       />
+      <CandidatesStack.Screen
+        name="VideoScreen"
+        component={VideoScreen}
+      />
       {/* <CandidatesStack.Screen
         name="MainScreen"
         component={MainScreen}
@@ -76,10 +80,6 @@ const CandidatesNavigator: React.FC = () => {
           pushedJob: null,
           filters: [undefined, [], [], [], null, false, false, false, null, NaN, NaN]
         }}
-      />
-      <CandidatesStack.Screen
-        name="VideoScreen"
-        component={VideoScreen}
       />
       <CandidatesStack.Screen
         name="MapScreen"
