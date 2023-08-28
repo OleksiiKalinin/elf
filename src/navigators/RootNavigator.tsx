@@ -40,7 +40,7 @@ export type RootStackParamList = {
 
 const RootStack = createBottomTabNavigator<RootStackParamList>();
 
-export const mainLinking: LinkingOptions<RootStackParamList> = {
+export const navigationLinking: LinkingOptions<RootStackParamList> = {
   prefixes: ['localhost'],
   config: {
     screens: {
@@ -254,7 +254,7 @@ const RootNavigator: React.FC = () => {
     </View>} */}
     <NavigationContainer
       theme={isDarkMode ? DarkTheme : DefaultTheme}
-      linking={mainLinking}
+      linking={navigationLinking}
     >
       <RootStack.Navigator
         backBehavior='history' initialRouteName="MenuStack" screenOptions={{ headerShown: false }}

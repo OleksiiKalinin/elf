@@ -4,7 +4,7 @@ import { useRoute } from '@react-navigation/native';
 import React, { FC, useEffect, useState } from 'react';
 import { Keyboard, View, Dimensions } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { RootStackParamList, mainLinking } from '../../navigators/RootNavigator';
+import { RootStackParamList, navigationLinking } from '../../navigators/RootNavigator';
 import SvgIcon, { IconTypes } from '../atoms/SvgIcon';
 import { MenuStackParamList } from '../../navigators/MenuNavigator';
 import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
@@ -107,7 +107,7 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes, currentScreen, profileFocused
             {/* <Animated.View style={[{ flexDirection: 'row', backgroundColor: Colors.White }, animationStyle]}> */}
             {routes.map(route => {
                 const label = route as keyof RootStackParamList;
-                const href = (mainLinking.config?.screens[label] as any)?.path as string;
+                const href = (navigationLinking.config?.screens[label] as any)?.path as string;
                 const isFocused = currentScreen.split('-')[0] === route;
                 if (label === 'ProfileStack') setProfileFocused(isFocused);
 

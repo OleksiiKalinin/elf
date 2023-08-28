@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import BottomTabs from './organismes/BottomTabs';
 import Typography from './atoms/Typography';
 import Colors from '../colors/Colors';
-import { mainLinking, screens } from '../navigators/RootNavigator';
+import { navigationLinking } from '../navigators/RootNavigator';
 import { useRouter } from 'next/router';
 
 export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
@@ -17,7 +17,7 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
       let currentScreen = '';
 
       if (routeStack) {
-        const screens: any = mainLinking.config?.screens;
+        const screens: any = navigationLinking.config?.screens;
         if (screens) {
           for (const stackName in screens) {
             const currStack = screens[stackName];
@@ -56,7 +56,7 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
         // height: 50,
         backgroundColor: Colors.White
       }}>
-        <BottomTabs {...{ profileFocused, setProfileFocused, currentScreen, routes: Object.keys(mainLinking.config?.screens || {}) }} />
+        <BottomTabs {...{ profileFocused, setProfileFocused, currentScreen, routes: Object.keys(navigationLinking.config?.screens || {}) }} />
       </View>
     </View>
   );
