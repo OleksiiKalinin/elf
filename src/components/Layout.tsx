@@ -17,10 +17,10 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
       let currentScreen = '';
 
       if (routeStack) {
-        const screens: any = navigationLinking.config?.screens;
-        if (screens) {
-          for (const stackName in screens) {
-            const currStack = screens[stackName];
+        const linking: any = navigationLinking.config?.screens;
+        if (linking) {
+          for (const stackName in linking) {
+            const currStack = linking[stackName];
             if (currStack?.path === routeStack) {
               if (routeScreen) {
                 for (const screenName in currStack.screens) {
