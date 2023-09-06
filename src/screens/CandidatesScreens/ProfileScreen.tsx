@@ -21,7 +21,7 @@ import {
   MenuOptions,
   MenuTrigger,
 } from 'react-native-popup-menu';
-import { store } from '../../store';
+import { nativeStore } from '../../store';
 import { bookmarkActionTypes } from '../../store/actions';
 import ResumeCard from './ProfileScreenRoutes/ResumeCard/ResumeCard';
 import OpinionCard from './ProfileScreenRoutes/OpinionCard/OpinionCard';

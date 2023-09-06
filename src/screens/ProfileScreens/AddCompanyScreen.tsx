@@ -26,7 +26,7 @@ import TextField from '../../components/molecules/TextField/TextField';
 import HorizontalMenuButton from '../../components/atoms/HorizontalMenuButton/HorizontalMenuButton';
 import SmallMap from '../../components/organisms/SmallMap/SmallMap';
 import Slider from '../../components/organisms/Slider/Slider';
-import { store } from '../../store';
+import { nativeStore } from '../../store';
 import { companyActionTypes } from '../../store/actions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';

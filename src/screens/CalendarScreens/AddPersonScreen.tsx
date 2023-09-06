@@ -10,7 +10,7 @@ import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvide
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
-import { store } from '../../store';
+import { nativeStore } from '../../store';
 import { calendarActionTypes } from '../../store/actions';
 
 type MainScreenProps = CompositeScreenProps<

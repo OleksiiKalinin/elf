@@ -37,7 +37,7 @@ type MenuScreenProps = CompositeScreenProps<
 const MainScreen: React.FC = ({ }) => {
   const ScrollViewRef = useRef(null);
   // useScrollToTop(ScrollViewRef);
-  // const { isMainMenuFlatList, userData, token, currentScreen } = useTypedSelector(state => state.general);
+  const { isMainMenuFlatList, userData, token, currentScreen } = useTypedSelector(state => state.general);
   // const { setIsMainMenuFlatList, setSwipeablePanelProps } = useActions();
 
   const sectionButtons: {

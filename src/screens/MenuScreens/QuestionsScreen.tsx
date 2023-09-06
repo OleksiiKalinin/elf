@@ -12,7 +12,7 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
 import { MenuStackParamList } from '../../navigators/MenuNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
-import { store } from '../../store';
+import { nativeStore } from '../../store';
 import { calendarActionTypes } from '../../store/actions';
 
 type MainScreenProps = CompositeScreenProps<
@@ -170,7 +170,7 @@ const QuestionsScreen: React.FC<MainScreenProps> = ({ navigation }) => {
 
       <ButtonRipple
         onPress={() => (
-          store.dispatch({
+          nativeStore.dispatch({
             type: calendarActionTypes.SAVE_QUESTIONS,
             payload: {
               questionsState: questionsState,

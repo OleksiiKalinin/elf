@@ -38,7 +38,6 @@ type BottomTabsProps = {
     profileFocused: boolean;
     setProfileFocused: (b: boolean) => void;
     routes: string[];
-    currentScreen: string;
 };
 // } & BottomTabBarProps;
 
@@ -70,15 +69,14 @@ const hiddenTabbarScreens: {
     ProfileStack: ['PaymentTemporalScreen', 'SettingsScreen', 'PackagesScreen', 'CompanyInvoiceScreen', 'CompanyDescriptionScreen', 'NoCompanyScreen', 'AddCompanyScreen', 'AddPaymentScreen', 'CompanyScreen', 'CookieScreen', 'EditPaymentScreen', 'HelpCenterScreen', 'JobCategoryScreen', 'JobScreen', 'LanguageScreen', 'MapScreen', 'MethodsScreen', 'NotificationScreen', 'PaymentScreen', 'PointsScreen', 'PrivacyScreen', 'AccountDataScreen', 'ToolsScreen', 'AddConractPersonsScreen'],
 };
 
-const BottomTabs: FC<BottomTabsProps> = ({ routes, currentScreen, profileFocused, setProfileFocused }) => {
-    const animation = useSharedValue({ height: 45 });
-    // const { isTabbarVisible, currentScreen } = useTypedSelector(state => state.general);
-    // const { setIsTabbarVisible } = useActions();
-    const [isTabbarVisible, setIsTabbarVisible] = useState(false);
+const BottomTabs: FC<BottomTabsProps> = ({ routes, profileFocused, setProfileFocused }) => {
+    // const animation = useSharedValue({ height: 45 });
+    const { isTabbarVisible, currentScreen } = useTypedSelector(state => state.general);
+    const { setIsTabbarVisible } = useActions();
 
-    const animationStyle = useAnimatedStyle(() => ({
-        height: withTiming(animation.value.height, { duration: 10 })
-    }), []);
+    // const animationStyle = useAnimatedStyle(() => ({
+    //     height: withTiming(animation.value.height, { duration: 10 })
+    // }), []);
 
     const badgeNumbers: { [k in keyof RootStackParamList]: number } = {
         MenuStack: 0,
@@ -98,9 +96,9 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes, currentScreen, profileFocused
         }
     }, [currentScreen]);
 
-    useEffect(() => {
-        animation.value = { height: isTabbarVisible ? 45 : 0 };
-    }, [isTabbarVisible]);
+    // useEffect(() => {
+    //     animation.value = { height: isTabbarVisible ? 45 : 0 };
+    // }, [isTabbarVisible]);
 
     return (
         <Animated.View style={[{ flexDirection: 'row', backgroundColor: Colors.White, height: isTabbarVisible ? 45 : 0, visibility: isTabbarVisible ? 'visible' : 'hidden' }]}>

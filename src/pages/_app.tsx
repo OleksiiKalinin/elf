@@ -19,6 +19,7 @@ import { NextThemeProvider, useRootTheme } from '@tamagui/next-theme';
 import config from '../../tamagui';
 import Script from 'next/script';
 import { Layout } from '../components/Layout';
+import { nextStore } from '../store/nextstore';
 
 const insets = {
   top: 0,
@@ -61,7 +62,7 @@ const Providers = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export default function MyApp({ Component, pageProps }: AppProps) {
+const MyApp = ({ Component, pageProps }: AppProps) => {
   const contents = useMemo(() => {
     return <Component {...pageProps} />;
   }, [pageProps]);
@@ -86,6 +87,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     </>
   );
 }
+
+// export default MyApp; 
+export default nextStore.withRedux(MyApp);
 
 const styles = StyleSheet.create({
   container: {

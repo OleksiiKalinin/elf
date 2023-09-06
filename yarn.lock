@@ -8659,6 +8659,11 @@
     "file-loader" "^6.0.0"
     "url-loader" "^4.0.0"
 
+"next-redux-wrapper@^8.1.0":
+  "integrity" "sha512-2hIau0hcI6uQszOtrvAFqgc0NkZegKYhBB7ZAKiG3jk7zfuQb4E7OV9jfxViqqojh3SEHdnFfPkN9KErttUKuw=="
+  "resolved" "https://registry.npmjs.org/next-redux-wrapper/-/next-redux-wrapper-8.1.0.tgz"
+  "version" "8.1.0"
+
 "next@^13.2.3":
   "integrity" "sha512-eHfnru9x6NRmTMcjQp6Nz0J4XH9OubmzOa7CkWL+AUrUxpibub3vWwttjduu9No16dug1kq04hiUUpo7J3m3Xw=="
   "resolved" "https://registry.npmjs.org/next/-/next-13.4.12.tgz"

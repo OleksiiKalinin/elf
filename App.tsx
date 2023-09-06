@@ -7,24 +7,10 @@ import {
   SafeAreaProvider,
   SafeAreaView,
 } from 'react-native-safe-area-context';
-import {
-  DefaultTheme,
-  NavigationContainer,
-  DarkTheme,
-} from '@react-navigation/native';
-import {
-  createDrawerNavigator,
-  DrawerToggleButton,
-  DrawerNavigationOptions,
-  DrawerHeaderProps,
-} from '@react-navigation/drawer';
-import { Home } from './src/features/Home';
-import { Logo } from './src/components/Logo';
 import config from './tamagui';
-import { UserDetailScreen } from './src/features/DetailScreen';
 import { Provider } from 'react-redux';
 import Colors from './src/colors/Colors';
-import { store } from './src/store';
+import { nativeStore } from './src/store';
 import RootNavigator from './src/navigators/RootNavigator';
 
 const App = () => {
@@ -38,7 +24,7 @@ const App = () => {
       <TamaguiProvider config={config} disableInjectCSS defaultTheme={colorScheme}>
         <SafeAreaProvider initialMetrics={initialWindowMetrics}>
           <GestureHandlerRootView style={styles.container}>
-            <Provider store={store}>
+            <Provider store={nativeStore}>
               <StatusBar
                 animated
                 showHideTransition="slide"

@@ -19,7 +19,7 @@ import ButtonArrowSelector from '../../components/atoms/ButtonArrowSelector/Butt
 import HorizontalSelector from '../../components/molecules/HorizontalSelector/HorizontalSelector';
 import CheckBox from '../../components/atoms/CheckBox/CheckBox';
 import SmallMap from '../../components/organisms/SmallMap/SmallMap';
-import { store } from '../../store';
+import { nativeStore } from '../../store';
 import { advertActionTypes } from '../../store/actions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { AdvertStackParamList } from '../../navigators/AdvertNavigator';

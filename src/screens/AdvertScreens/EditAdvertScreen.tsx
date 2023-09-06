@@ -16,7 +16,7 @@ import HorizontalSelector from '../../components/molecules/HorizontalSelector/Ho
 import CheckBox from '../../components/atoms/CheckBox/CheckBox';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import SmallMap from '../../components/organisms/SmallMap/SmallMap';
-import { store } from '../../store';
+import { nativeStore } from '../../store';
 import { advertActionTypes } from '../../store/actions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { AdvertStackParamList } from '../../navigators/AdvertNavigator';
@@ -618,7 +618,7 @@ const EditAdvertScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           <ButtonRipple
             variant="primary"
             onPress={() => (
-              store.dispatch({
+              nativeStore.dispatch({
                 type: advertActionTypes.EDIT_ADVERT,
                 payload: {
                   pushedIndex: selectedIndex,

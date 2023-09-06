@@ -15,7 +15,7 @@ import Colors from '../../colors/Colors';
 import MatchCircle from '../../components/molecules/MatchCircle/MatchCircle';
 import AdvertSmall from '../../components/molecules/AdvertSmall/AdvertSmall';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import { store } from '../../store';
+import { nativeStore } from '../../store';
 import { advertActionTypes } from '../../store/actions';
 import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
 import { useActions } from '../../hooks/useActions';
@@ -90,7 +90,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
                 contentColor: Colors.Danger,
                 contentVariant: 'h5',
                 onPress: () => {
-                  store.dispatch({
+                  nativeStore.dispatch({
                     type: advertActionTypes.REMOVE_ADVERT,
                     payload: {
                       pushedIndex: selectedAdvertIndex,

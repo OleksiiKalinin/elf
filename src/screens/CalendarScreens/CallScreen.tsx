@@ -13,7 +13,7 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import DatePicker from 'react-native-date-picker';
-import { store } from '../../store';
+import { nativeStore } from '../../store';
 import { calendarActionTypes } from '../../store/actions';
 
 type MainScreenProps = CompositeScreenProps<
@@ -95,7 +95,7 @@ const CallScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
             passDate &&
             selectedPersons.length > 0 &&
             StartHours &&
-            (store.dispatch({
+            (nativeStore.dispatch({
               type: calendarActionTypes.ADD_EVENT,
               payload: {
                 type: 'Połączenie',

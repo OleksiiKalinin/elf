@@ -12,7 +12,7 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import DatePicker from 'react-native-date-picker';
-import { store } from '../../store';
+import { nativeStore } from '../../store';
 import { calendarActionTypes } from '../../store/actions';
 import SmallMap from '../../components/organisms/SmallMap/SmallMap';
 
@@ -99,7 +99,7 @@ const EditEventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           ),
           onPress: () => {
             navigation.navigate('MainScreen'),
-              store.dispatch({
+              nativeStore.dispatch({
                 type: calendarActionTypes.REMOVE_EVENT,
                 payload: {
                   Index: editIndex,
@@ -360,7 +360,7 @@ const EditEventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           onPress={() =>
             selectedDay &&
             StartHours &&
-            (store.dispatch({
+            (nativeStore.dispatch({
               type: calendarActionTypes.EDIT_EVENT,
               payload: {
                 type: 'Spotkanie',

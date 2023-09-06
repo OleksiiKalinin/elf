@@ -5,10 +5,13 @@ import Typography from './atoms/Typography';
 import Colors from '../colors/Colors';
 import { navigationLinking } from '../navigators/RootNavigator';
 import { useRouter } from 'next/router';
+import { useTypedSelector } from '../hooks/useTypedSelector';
+import { useActions } from '../hooks/useActions';
 
 export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
   const [profileFocused, setProfileFocused] = useState(false);
-  const [currentScreen, setCurrentScreen] = useState<string>('');
+  const {currentScreen, isTabbarVisible} = useTypedSelector(s => s.general);
+  const {setCurrentScreen} = useActions();
   const router = useRouter();
 
   useEffect(() => {
@@ -44,7 +47,7 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
 
   return (
     <View>
-      <View style={{ paddingBottom: 45 }}>
+      <View style={{ paddingBottom: isTabbarVisible ? 45 : 0 }}>
         {children}
       </View>
       <View style={{
@@ -56,7 +59,7 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
         // height: 50,
         backgroundColor: Colors.White
       }}>
-        <BottomTabs {...{ profileFocused, setProfileFocused, currentScreen, routes: Object.keys(navigationLinking.config?.screens || {}) }} />
+        <BottomTabs {...{ profileFocused, setProfileFocused, routes: Object.keys(navigationLinking.config?.screens || {}) }} />
       </View>
     </View>
   );

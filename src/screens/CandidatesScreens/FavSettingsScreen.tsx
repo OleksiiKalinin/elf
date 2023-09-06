@@ -11,7 +11,7 @@ import Colors from '../../colors/Colors';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import SvgIcon, { IconTypes } from '../../components/molecules/SvgIcon/SvgIcon';
 import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-import { store } from '../../store';
+import { nativeStore } from '../../store';
 import { bookmarkActionTypes } from '../../store/actions';
 import HorizontalMenuButton from '../../components/atoms/HorizontalMenuButton/HorizontalMenuButton';
 import { useActions } from '../../hooks/useActions';
@@ -140,7 +140,7 @@ const FavSettingsScreen: React.FC<MainScreenProps> = ({ navigation }) => {
         <ButtonRipple
           onPress={() => {
             navigation.navigate('FavouritesScreen'),
-              store.dispatch({
+              nativeStore.dispatch({
                 type: bookmarkActionTypes.SET_COLOR,
                 payload: {
                   colors: [colors[color0], colors[color1], colors[color2]],

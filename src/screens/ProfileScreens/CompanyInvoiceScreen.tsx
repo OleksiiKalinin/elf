@@ -11,7 +11,7 @@ import TabbarMenu, {
   TabbarRoute,
 } from '../../components/organisms/TabbarMenu/TabbarMenu';
 import { SceneMap } from 'react-native-tab-view';
-import { store } from '../../store';
+import { nativeStore } from '../../store';
 import { advertActionTypes, companyActionTypes } from '../../store/actions';
 import AboutCard from './CompanyScreenRoutes/AboutCard/AboutCard';
 import OpinionCard from './CompanyScreenRoutes/OpinionCard/OpinionCard';

@@ -12,7 +12,7 @@ import TabbarMenu, { TabbarRoute, } from '../../components/organisms/TabbarMenu/
 import { SceneMap } from 'react-native-tab-view';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import AdvertLarge from '../../components/organisms/AdvertLarge/AdvertLarge';
-import { store } from '../../store';
+import { nativeStore } from '../../store';
 import { advertActionTypes } from '../../store/actions';
 import OpinionCard from './AdvertScreenRoutes/OpinionCard/OpinionCard';
 import ResumeCard from './AdvertScreenRoutes/ResumeCard/ResumeCard';
@@ -72,7 +72,7 @@ const AdvertScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           contentVariant: 'h5',
           onPress: () => {
             navigation.navigate('MainScreen');
-            store.dispatch({
+            nativeStore.dispatch({
               type: advertActionTypes.REMOVE_ADVERT,
               payload: {
                 // pushedIndex: advertIndex,
