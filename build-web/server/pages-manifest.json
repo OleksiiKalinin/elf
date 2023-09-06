@@ -1,0 +1,15 @@
+{
+  "/adverts": "pages/adverts.html",
+  "/auth": "pages/auth.html",
+  "/calendar": "pages/calendar.html",
+  "/": "pages/index.html",
+  "/_error": "pages/_error.js",
+  "/home": "pages/home.html",
+  "/_document": "pages/_document.js",
+  "/profile": "pages/profile.html",
+  "/candidates/video": "pages/candidates/video.html",
+  "/_app": "pages/_app.js",
+  "/candidates": "pages/candidates.html",
+  "/messenger": "pages/messenger.html",
+  "/404": "pages/404.html"
+}

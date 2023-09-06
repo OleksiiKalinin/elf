@@ -40,6 +40,8 @@ module.exports = function () {
   /** @type {import('next').NextConfig} */
   let config = {
     transpilePackages,
+    output: 'standalone',
+    distDir: 'build-web',
     typescript: {
       // !! WARN !!
       // Dangerously allow production builds to successfully complete even if
