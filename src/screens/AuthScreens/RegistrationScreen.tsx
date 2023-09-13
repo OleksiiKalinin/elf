@@ -1,18 +1,18 @@
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import Typography from '../../components/atoms/Typography/Typography'
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../navigators/AuthNavigator';
 import { CompositeScreenProps, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-import TextField from '../../components/molecules/TextField/TextField';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import authServices from '../../services/authServices';
 import { useDispatch } from 'react-redux';
 import validateMail from '../../hooks/validateMail';
-import CheckBox from '../../components/atoms/CheckBox/CheckBox';
+import CheckBox from '../../components/atoms/CheckBox';
+import Typography from '../../components/atoms/Typography';
+import TextField from '../../components/molecules/TextField';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import Button from '../../components/molecules/Button';
 
 type AuthRegistrateScreenProps = CompositeScreenProps<
   NativeStackScreenProps<AuthStackParamList, 'RegistrationScreen'>,
@@ -64,7 +64,7 @@ const AuthRegistrateScreen: React.FC<AuthRegistrateScreenProps> = ({ navigation 
   const registrateHandler = async () => {
     if (isDataValid) {
       setLoading(true);
-      await dispatch(authServices.registrate({ ...formData, mobile_number: formData.mobile_number?.length === 12 ? formData.mobile_number : null }));
+      // await dispatch(authServices.registrate({ ...formData, mobile_number: formData.mobile_number?.length === 12 ? formData.mobile_number : null }));
       setLoading(false);
     } else setShowTips(true);
   }
@@ -138,13 +138,13 @@ const AuthRegistrateScreen: React.FC<AuthRegistrateScreenProps> = ({ navigation 
             />
           </View>
           <View style={styles.margin}>
-            <CheckBox
+            {/* <CheckBox
               isChecked={formData.agree_rights}
               onClick={() => changeFormDataHandler('agree_rights', !formData.agree_rights)}
               rightTextView={<View style={{ flex: 1 }}>
                 <Typography {...(showTips && !formData.agree_rights ? { color: Colors.Danger } : {})} style={{ marginLeft: 12 }} variant='small'>Akceptuję regulamin aplikacji Jobassistant oraz zapoznałem się z Polityką Prywatności*.</Typography>
               </View>}
-            />
+            /> */}
           </View>
           <View style={[styles.margin, { marginBottom: 24 }]}>
             <Typography color={Colors.Basic600} variant='small'>
@@ -156,7 +156,7 @@ const AuthRegistrateScreen: React.FC<AuthRegistrateScreenProps> = ({ navigation 
           </View>
         </ScrollView>
         <View>
-          <ButtonRipple disabled={loading} onPress={registrateHandler}>Potwierdź</ButtonRipple>
+          <Button disabled={loading} onPress={registrateHandler}>Potwierdź</Button>
         </View>
       </View>
     </ScreenHeaderProvider>

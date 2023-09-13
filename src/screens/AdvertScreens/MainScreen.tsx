@@ -7,25 +7,23 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import Typography from '../../components/atoms/Typography/Typography';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { AdvertStackParamList } from '../../navigators/AdvertNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import MatchCircle from '../../components/molecules/MatchCircle/MatchCircle';
-import AdvertSmall from '../../components/molecules/AdvertSmall/AdvertSmall';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { nativeStore } from '../../store';
 import { advertActionTypes } from '../../store/actions';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
 import { useActions } from '../../hooks/useActions';
-import TabbarMenu, { TabbarRoute } from '../../components/organisms/TabbarMenu/TabbarMenu';
 import { SceneMap } from 'react-native-tab-view';
-import LoadingScreen from '../../components/atoms/LoadingScreen/LoadingScreen';
-import { Divider } from 'native-base';
 import { useDispatch } from 'react-redux';
 import advertsServices from '../../services/advertsServices';
 import { UserAdvertType } from '../../store/reducers/types';
+import TabbarMenu, { TabbarRoute } from '../../components/organismes/TabbarMenu';
+import Typography from '../../components/atoms/Typography';
+import AdvertSmall from '../../components/organismes/AdvertSmall';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import LoadingScreen from '../../components/atoms/LoadingScreen';
+import SvgIcon from '../../components/atoms/SvgIcon';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<AdvertStackParamList, 'MainScreen'>,
@@ -34,7 +32,7 @@ type MainScreenProps = CompositeScreenProps<
 
 const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
   const SectionListRef = useRef<SectionList>(null);
-  useScrollToTop(SectionListRef);
+  // useScrollToTop(SectionListRef);
   const dispatch = useDispatch();
   const { token, userCompany, userAdverts } = useTypedSelector(state => state.general);
   const { setSwipeablePanelProps } = useActions();
@@ -52,7 +50,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
     if (token && userCompany?.id && (!advertsRequested.current || granted)) {
       advertsRequested.current = true;
       setLoading(true);
-      await dispatch(advertsServices.getUserAdverts(token, userCompany.id));
+      // await dispatch(advertsServices.getUserAdverts(token, userCompany.id));
     }
     setLoading(false);
   }
@@ -90,12 +88,12 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
                 contentColor: Colors.Danger,
                 contentVariant: 'h5',
                 onPress: () => {
-                  nativeStore.dispatch({
-                    type: advertActionTypes.REMOVE_ADVERT,
-                    payload: {
-                      pushedIndex: selectedAdvertIndex,
-                    },
-                  });
+                  // nativeStore.dispatch({
+                  //   type: advertActionTypes.REMOVE_ADVERT,
+                  //   payload: {
+                  //     pushedIndex: selectedAdvertIndex,
+                  //   },
+                  // });
                 },
               },
             ]
@@ -202,11 +200,11 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
       renderSectionFooter={({ section: { index, data } }) => {
         const titles = ['Brak ofert aktywnych', 'Brak ofert w edycji', 'Brak ofert wygasłych'];
         return !data.length ? (<>
-          <Divider />
+          {/* <Divider /> */}
           <View style={{ paddingVertical: 5, marginHorizontal: 16 }}>
             <Typography variant='h5' weight='SemiBold' color={Colors.Basic600} textAlign='center'>{titles[index]}</Typography>
           </View>
-          <Divider />
+          {/* <Divider /> */}
         </>) : null
       }}
     />

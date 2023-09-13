@@ -4,26 +4,25 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Dimensions, Image, ScrollView, StyleSheet, View } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import Colors from '../../colors/Colors';
-import HorizontalMenuButton from '../../components/atoms/HorizontalMenuButton/HorizontalMenuButton';
-import Typography from '../../components/atoms/Typography/Typography';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
-import DatePicker from 'react-native-date-picker';
-import SmallMap from '../../components/organisms/SmallMap/SmallMap';
+// import DatePicker from 'react-native-date-picker';
+// import SmallMap from '../../components/organisms/SmallMap/SmallMap';
 import { useActions } from '../../hooks/useActions';
-import SplashScreen from '../../components/atoms/Splashscreen/SplashScreen';
-import { Divider, Radio, Switch } from 'native-base';
-import Calendar from '../../components/organisms/Calendar/Calendar';
-import LoadingScreen from '../../components/atoms/LoadingScreen/LoadingScreen';
+// import Calendar from '../../components/organisms/Calendar/Calendar';
 import { AddressType, CandidateDataType, UserAdvertType } from '../../store/reducers/types';
-import AdvertSmall from '../../components/molecules/AdvertSmall/AdvertSmall';
+// import AdvertSmall from '../../components/molecules/AdvertSmall/AdvertSmall';
 import { useDispatch } from 'react-redux';
 import calendarServices from '../../services/calendarServices';
-import CandidateCard from '../../components/organisms/CandidateCard/CandidateCard';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import Typography from '../../components/atoms/Typography';
+import Button from '../../components/molecules/Button';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import CandidateCard from '../../components/organismes/CandidateCard';
+import RadioGroup from '../../components/atoms/RadioGroup';
+import AdvertSmall from '../../components/organismes/AdvertSmall';
+// import CandidateCard from '../../components/organisms/CandidateCard/CandidateCard';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<CalendarStackParamList, 'EventScreen'>,
@@ -103,18 +102,18 @@ const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   const addEventHandler = async () => {
     if (selectedCandidate && selectedAdvert) {
       setLoading(true);
-      await dispatch(calendarServices.createUserEvent({
-        is_phone: eventType === 'call',
-        location,
-        candidate_id: selectedCandidate?.id,
-        candidate_first_name: selectedCandidate?.first_name,
-        candidate_second_name: selectedCandidate?.last_name,
-        company_name: userCompany?.short_name as string,
-        start_time: startDate + 'T' + startTime.toISOString().split('T')[1],
-        end_time: endDate + 'T' + endTime.toISOString().split('T')[1],
-        job_offer: selectedAdvert?.id as number,
-        job_position: selectedAdvert?.job_position_id as number,
-      }, token, userEvents));
+      // await dispatch(calendarServices.createUserEvent({
+      //   is_phone: eventType === 'call',
+      //   location,
+      //   candidate_id: selectedCandidate?.id,
+      //   candidate_first_name: selectedCandidate?.first_name,
+      //   candidate_second_name: selectedCandidate?.last_name,
+      //   company_name: userCompany?.short_name as string,
+      //   start_time: startDate + 'T' + startTime.toISOString().split('T')[1],
+      //   end_time: endDate + 'T' + endTime.toISOString().split('T')[1],
+      //   job_offer: selectedAdvert?.id as number,
+      //   job_position: selectedAdvert?.job_position_id as number,
+      // }, token, userEvents));
       navigation.goBack();
     }
 
@@ -139,7 +138,7 @@ const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
         <View style={{ margin: 18 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <View>
-              <ButtonRipple
+              <Button
                 style={{ paddingHorizontal: 6, paddingVertical: 5 }}
                 contentWeight='SemiBold'
                 contentVariant='h5'
@@ -148,11 +147,12 @@ const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
                   setShowCalendar(prev => prev === 'start' ? false : 'start');
                   setShowTimepicker(false);
                 }}
-                containerStyles={{ borderRadius: 4, overflow: 'hidden', marginVertical: 5, }}
+                borderRadius={4}
+                // containerStyles={{ borderRadius: 4, overflow: 'hidden', marginVertical: 5, }}
               >
                 {startDate}
-              </ButtonRipple>
-              <ButtonRipple
+              </Button>
+              <Button
                 style={{ paddingHorizontal: 6, paddingVertical: 5 }}
                 contentWeight='SemiBold'
                 contentVariant='h5'
@@ -161,18 +161,19 @@ const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
                   setShowTimepicker(prev => prev === 'start' ? false : 'start');
                   setShowCalendar(false);
                 }}
-                containerStyles={{ borderRadius: 4, overflow: 'hidden', marginVertical: 5, }}
+                borderRadius={4}
+                // containerStyles={{ borderRadius: 4, overflow: 'hidden', marginVertical: 5, }}
               >
                 {(displayStartHours < 10 ? `0${displayStartHours}` : displayStartHours)}
                 {':'}
                 {(displayStartMinutes < 10 ? `0${displayStartMinutes}` : displayStartMinutes)}
-              </ButtonRipple>
+              </Button>
             </View>
             <View style={{ justifyContent: 'center' }}>
               <SvgIcon icon='arrowRight' fill={Colors.Basic500} />
             </View>
             <View>
-              <ButtonRipple
+              <Button
                 style={{ paddingHorizontal: 6, paddingVertical: 5 }}
                 contentWeight='SemiBold'
                 contentVariant='h5'
@@ -181,11 +182,12 @@ const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
                   setShowCalendar(prev => prev === 'end' ? false : 'end');
                   setShowTimepicker(false);
                 }}
-                containerStyles={{ borderRadius: 4, overflow: 'hidden', marginVertical: 5, }}
+                borderRadius={4}
+                // containerStyles={{ borderRadius: 4, overflow: 'hidden', marginVertical: 5, }}
               >
                 {endDate}
-              </ButtonRipple>
-              <ButtonRipple
+              </Button>
+              <Button
                 style={{ paddingHorizontal: 6, paddingVertical: 5 }}
                 contentWeight='SemiBold'
                 contentVariant='h5'
@@ -194,18 +196,19 @@ const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
                   setShowTimepicker(prev => prev === 'end' ? false : 'end');
                   setShowCalendar(false);
                 }}
-                containerStyles={{ borderRadius: 4, overflow: 'hidden', marginVertical: 5, }}
+                borderRadius={4}
+                // containerStyles={{ borderRadius: 4, overflow: 'hidden', marginVertical: 5, }}
               >
                 {(displayEndHours < 10 ? `0${displayEndHours}` : displayEndHours)}
                 {':'}
                 {(displayEndMinutes < 10 ? `0${displayEndMinutes}` : displayEndMinutes)}
-              </ButtonRipple>
+              </Button>
             </View>
           </View>
         </View>
         <View style={{ marginBottom: showTimepicker || showCalendar ? 25 : 0 }}>
           {showTimepicker && <View>
-            <DatePicker
+            {/* <DatePicker
               date={showTimepicker === 'start' ? startTime : endTime}
               onDateChange={date => showTimepicker === 'start' ? setStartTime(date) : setEndTime(date)}
               fadeToColor='none'
@@ -216,11 +219,11 @@ const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
               locale="pl"
               minuteInterval={5}
               style={{ width: Dimensions.get('screen').width }}
-            />
+            /> */}
           </View>}
           {!isFirstLoad.current && <View>
             {/* there was a problem with rerendering - the only way below */}
-            <Calendar
+            {/* <Calendar
               dateInit={startDate}
               isVisible={showCalendar === 'start'}
               onDateChanged={setStartDate}
@@ -231,10 +234,10 @@ const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
               isVisible={showCalendar === 'end'}
               onDateChanged={setEndDate}
               renderOnly='month' backgroundColor={Colors.Basic100}
-            />
+            /> */}
           </View>}
         </View>
-        <Divider />
+        {/* <Divider /> */}
         <View style={{ marginVertical: 24 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}>
             <Typography weight="Bold" variant='h5' style={[styles.Title, { marginTop: 0 }]}>
@@ -249,9 +252,9 @@ const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           {selectedAdvert ?
             <AdvertSmall {...selectedAdvert} />
             :
-            <ButtonRipple variant='secondary' onPress={() => navigation.navigate('ChooseAdvertScreen', { callback: setSelectedAdvert })}>
+            <Button variant='secondary' onPress={() => navigation.navigate('ChooseAdvertScreen', { callback: setSelectedAdvert })}>
               Wybierz Ogłoszenie
-            </ButtonRipple>
+            </Button>
           }
         </View>
         {!!selectedAdvert && <View style={{ marginBottom: 24 }}>
@@ -270,31 +273,31 @@ const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
               <CandidateCard {...selectedCandidate} />
             </TouchableOpacity>
             :
-            <ButtonRipple variant='secondary' onPress={() => navigation.navigate('ChooseCandidateScreen', { callback: setSelectedCandidate, candidates: selectedAdvert.candidate_data })}>
+            <Button variant='secondary' onPress={() => navigation.navigate('ChooseCandidateScreen', { callback: setSelectedCandidate, candidates: selectedAdvert.candidate_data })}>
               Wybierz Kandydata
-            </ButtonRipple>
+            </Button>
           }
         </View>}
-        <Divider />
+        {/* <Divider /> */}
         <View>
           <Typography weight="Bold" variant='h5' style={[styles.Title, { marginTop: 24 }]}>
             Wybierz rodzaj wydarzenia
           </Typography>
-          <Radio.Group
-            name='eventType' colorScheme='trueGray' ml='18px' mt='10px' mb='15px'
-            value={eventType} onChange={nextValue => setEventType(nextValue as 'meeting' | 'call')}
+          <RadioGroup
+            name='eventType' ml='18px' mt='10px' mb='15px'
+            value={eventType} onValueChange={value => setEventType(value as 'meeting' | 'call')}
           >
-            <Radio value="call" my={1}>Połaczenie telefoniczne</Radio>
-            <Radio value="meeting" my={1}>Spotkanie pod adresem</Radio>
-          </Radio.Group>
+            <RadioGroup.Item value="call" my={1}>Połaczenie telefoniczne</RadioGroup.Item>
+            <RadioGroup.Item value="meeting" my={1}>Spotkanie pod adresem</RadioGroup.Item>
+          </RadioGroup>
         </View>
         {eventType === 'meeting' && <>
-          <Divider />
+          {/* <Divider /> */}
           <Typography weight="Bold" style={{ marginBottom: 8, marginLeft: 18, marginTop: 25 }} variant="h4">
             Lokalizacja*
           </Typography>
           <View style={{ marginBottom: 30 }}>
-            <SmallMap
+            {/* <SmallMap
               place={location?.formattedAddress}
               latitude={location?.position?.lat}
               longitude={location?.position?.lng}
@@ -302,11 +305,11 @@ const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
                 callback: (address) => setLocation(address),
                 initialAddress: location
               })}
-            />
+            /> */}
           </View>
         </>}
       </ScrollView>
-      <ButtonRipple disabled={!token || loading} withLoading={!!token} variant="primary" onPress={addEventHandler}>Zaplanuj</ButtonRipple>
+      <Button disabled={!token || loading} withLoading={!!token} variant="primary" onPress={addEventHandler}>Zaplanuj</Button>
 
       {/* {splashscreen && (
         <SplashScreen

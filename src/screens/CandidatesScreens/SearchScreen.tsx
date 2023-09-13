@@ -2,17 +2,16 @@ import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { ScrollView } from 'native-base';
-import Typography from '../../components/atoms/Typography/Typography';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import TextField from '../../components/molecules/TextField/TextField';
-import SvgIcon, { IconTypes } from '../../components/molecules/SvgIcon/SvgIcon';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import ButtonArrowSelector from '../../components/atoms/ButtonArrowSelector/ButtonArrowSelector';
 import { useActions } from '../../hooks/useActions';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { ScrollView } from '../../components/molecules/ScrollView';
+import TextField from '../../components/molecules/TextField';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import Typography from '../../components/atoms/Typography';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<CandidatesStackParamList, 'SearchScreen'>,
@@ -21,8 +20,8 @@ type MainScreenProps = CompositeScreenProps<
 
 const SearchScreen: React.FC<MainScreenProps> = ({ navigation }) => {
   const [search, setSearch] = useState<string>('');
-  const dataCompanies = useTypedSelector(state => state.company);
-  const dataBookmarks = useTypedSelector(state => state.bookmark);
+  // const dataCompanies = useTypedSelector(state => state.company);
+  // const dataBookmarks = useTypedSelector(state => state.bookmark);
 
   // console.log(
   //   dataBookmarks.persons.filter(item => item.category === 'restauracja')
@@ -49,7 +48,7 @@ const SearchScreen: React.FC<MainScreenProps> = ({ navigation }) => {
 
         <View style={{ height: 40 }}></View>
 
-        <View style={{ paddingBottom: 40 }}>
+        {/* <View style={{ paddingBottom: 40 }}>
           {dataCompanies.professions.map(
             (category, index) =>
               category.text.includes(search) &&
@@ -98,7 +97,7 @@ const SearchScreen: React.FC<MainScreenProps> = ({ navigation }) => {
                 </View>
               ),
           )}
-        </View>
+        </View> */}
       </ScrollView>
     </ScreenHeaderProvider>
   );

@@ -1,18 +1,15 @@
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import Typography from '../../components/atoms/Typography/Typography';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CompositeScreenProps, useIsFocused, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
-import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
-import ButtonArrowSelector from '../../components/atoms/ButtonArrowSelector/ButtonArrowSelector';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import Typography from '../../components/atoms/Typography';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 
 type PaymentScreenProps = CompositeScreenProps<
   NativeStackScreenProps<ProfileStackParamList, 'PaymentScreen'>,
@@ -54,7 +51,7 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({ navigation }) => {
             </Typography>
           </View>
 
-          <ButtonArrowSelector
+          {/* <ButtonArrowSelector
             text={
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <SvgIcon icon="visa" style={{ marginRight: 9 }} />
@@ -90,7 +87,7 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({ navigation }) => {
             marginBottom={false}
             borderTop={false}
             onPress={() => navigation.navigate('AddPaymentScreen')}
-          />
+          /> */}
         </ScrollView>
 
       </View>

@@ -12,6 +12,7 @@ import { AddressType, CandidateDataType, UserAdvertType } from '../store/reducer
 import ChooseCandidateScreen from '../screens/CalendarScreens/ChooseCandidateScreen';
 import ProfileScreen from '../screens/CandidatesScreens/ProfileScreen';
 import VideoScreen from '../screens/CandidatesScreens/VideoScreen';
+import { PathConfigMap } from '@react-navigation/native';
 
 export type CalendarStackParamList = {
   MainScreen: undefined;
@@ -32,16 +33,28 @@ export type CalendarStackParamList = {
   VideoScreen: { candidateData: CandidateDataType };
 };
 
+export const CalendarStackLinking: PathConfigMap<CalendarStackParamList> = {
+  MainScreen: '',
+  AddPersonScreen: 'AddPersonScreen',
+  CallScreen: 'CallScreen',
+  ChooseAdvertScreen: 'ChooseAdvertScreen',
+  ChooseCandidateScreen: 'ChooseCandidateScreen',
+  EditEventScreen: 'EditEventScreen',
+  EventScreen: 'EventScreen',
+  MapScreen: 'MapScreen',
+  ProfileScreen: 'ProfileScreen',
+  QuestionsScreen: 'QuestionsScreen',
+  ResumesScreen: 'ResumesScreen',
+  VacationScreen: 'VacationScreen',
+  VideoScreen: 'VideoScreen',
+}
+
 const CalendarStack = createNativeStackNavigator<CalendarStackParamList>();
 
 const CalendarNavigator: React.FC = () => {
   return (
     <CalendarStack.Navigator initialRouteName="MainScreen" screenOptions={{ headerShown: false }}>
-    <CalendarStack.Screen
-      name="MainScreen"
-      component={() => null}
-    />
-      {/* <CalendarStack.Screen name="MainScreen" component={MainScreen} />
+      <CalendarStack.Screen name="MainScreen" component={MainScreen} />
       <CalendarStack.Screen name="EventScreen" component={EventScreen} />
       <CalendarStack.Screen name="EditEventScreen" component={EditEventScreen} />
       <CalendarStack.Screen name="CallScreen" component={CallScreen} />
@@ -51,7 +64,7 @@ const CalendarNavigator: React.FC = () => {
       <CalendarStack.Screen name="ChooseAdvertScreen" component={ChooseAdvertScreen} />
       <CalendarStack.Screen name="ChooseCandidateScreen" component={ChooseCandidateScreen} />
       <CalendarStack.Screen name="ProfileScreen" component={ProfileScreen} />
-      <CalendarStack.Screen name="VideoScreen" component={VideoScreen} /> */}
+      <CalendarStack.Screen name="VideoScreen" component={VideoScreen} />
     </CalendarStack.Navigator>
   );
 };

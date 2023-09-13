@@ -1,22 +1,20 @@
 import { Linking, ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import React, { Children, useEffect, useState } from 'react'
-import Typography from '../../components/atoms/Typography/Typography'
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../navigators/AuthNavigator';
 import { CompositeScreenProps, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-import TextField from '../../components/molecules/TextField/TextField';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import authServices from '../../services/authServices';
 import { useDispatch } from 'react-redux';
 import validateMail from '../../hooks/validateMail';
-import CheckBox from '../../components/atoms/CheckBox/CheckBox';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import generalServices from '../../services/generalServices';
 import { useActions } from '../../hooks/useActions';
+import TextField from '../../components/molecules/TextField';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import Button from '../../components/molecules/Button';
 
 type AccountDataScreenProps = CompositeScreenProps<
   NativeStackScreenProps<ProfileStackParamList, 'AccountDataScreen'>,
@@ -81,20 +79,20 @@ const AccountDataScreen: React.FC<AccountDataScreenProps> = ({ navigation }) => 
           diff = true;
         }
       });
-      if (diff) {
-        const isOk = await dispatch(generalServices.setUserData(data, token, 'put'));
-        if (!!isOk) {
-          setSwipeablePanelProps({
-            title: 'Dane zostały zmienione!',
-            closeButton: false,
-            buttons: [{
-              children: 'OK',
-              onPress: () => { }
-            }]
-          })
-        }
-      }
-      setLoading(false);
+      // if (diff) {
+      //   const isOk = await dispatch(generalServices.setUserData(data, token, 'put'));
+      //   if (!!isOk) {
+      //     setSwipeablePanelProps({
+      //       title: 'Dane zostały zmienione!',
+      //       closeButton: false,
+      //       buttons: [{
+      //         children: 'OK',
+      //         onPress: () => { }
+      //       }]
+      //     })
+      //   }
+      // }
+      // setLoading(false);
     } else setShowTips(true);
   }
 
@@ -184,7 +182,7 @@ const AccountDataScreen: React.FC<AccountDataScreenProps> = ({ navigation }) => 
           </>} */}
         </ScrollView>
         <View>
-          <ButtonRipple withLoading={!!token} disabled={!token || loading} onPress={changeHandler}>Zaktualizuj</ButtonRipple>
+          <Button withLoading={!!token} disabled={!token || loading} onPress={changeHandler}>Zaktualizuj</Button>
         </View>
       </View>
     </ScreenHeaderProvider>

@@ -1,32 +1,31 @@
-import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { ScrollView } from 'native-base';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { AdvertStackParamList } from '../../navigators/AdvertNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
-import TabbarMenu, { TabbarRoute, } from '../../components/organisms/TabbarMenu/TabbarMenu';
+// import TabbarMenu, { TabbarRoute, } from '../../components/organisms/TabbarMenu/TabbarMenu';
 import { SceneMap } from 'react-native-tab-view';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import AdvertLarge from '../../components/organisms/AdvertLarge/AdvertLarge';
+// import AdvertLarge from '../../components/organisms/AdvertLarge/AdvertLarge';
 import { nativeStore } from '../../store';
 import { advertActionTypes } from '../../store/actions';
 import OpinionCard from './AdvertScreenRoutes/OpinionCard/OpinionCard';
 import ResumeCard from './AdvertScreenRoutes/ResumeCard/ResumeCard';
 import { useActions } from '../../hooks/useActions';
-import Typography from '../../components/atoms/Typography/Typography';
 import MainDataCard from '../ProfileScreens/CompanyScreenRoutes/MainDataCard/MainDataCard';
 import AboutCard from '../ProfileScreens/CompanyScreenRoutes/AboutCard/AboutCard';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { ScrollView } from '../../components/molecules/ScrollView';
+import Typography from '../../components/atoms/Typography';
+import AdvertLarge from '../../components/organismes/AdvertLarge';
+import TabbarMenu, { TabbarRoute } from '../../components/organismes/TabbarMenu';
+import { useLink } from 'solito/link';
+import { createParam } from 'solito';
 
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<AdvertStackParamList, 'AdvertScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'AdvertStack'>
->;
+const { useParam } = createParam();
 
-const AdvertScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
+const AdvertScreen: React.FC = (props) => {
   const { userAdverts, userCompany } = useTypedSelector(state => state.general);
   const [tabbarIndex, setTabbarIndex] = React.useState(0);
   const [routes] = React.useState<TabbarRoute[]>([
@@ -38,10 +37,10 @@ const AdvertScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   const [isPanelActive, setIsPanelActive] = useState(false);
   const [isPanelActive2, setIsPanelActive2] = useState(false);
 
-  const { id } = route.params;
+  const [id] = useParam('id')
   const advert = userAdverts.find(curr => curr.id === id);
 
-  const data = useTypedSelector(state => state.adverts);
+  // const data = useTypedSelector(state => state.adverts);
 
   const moreOptionsHandler = () => {
     setSwipeablePanelProps({
@@ -70,15 +69,15 @@ const AdvertScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           children: 'Tak',
           contentColor: Colors.Danger,
           contentVariant: 'h5',
-          onPress: () => {
-            navigation.navigate('MainScreen');
-            nativeStore.dispatch({
-              type: advertActionTypes.REMOVE_ADVERT,
-              payload: {
-                // pushedIndex: advertIndex,
-              },
-            });
-          },
+          ...useLink({
+            href: '/adverts',
+          }),
+          // nativeStore.dispatch({
+          //   type: advertActionTypes.REMOVE_ADVERT,
+          //   payload: {
+          //     // pushedIndex: advertIndex,
+          //   },
+          // });
         },
       ]
     })
@@ -89,12 +88,12 @@ const AdvertScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
       currentStack="AdvertStack"
       mode='backAction'
       transparent
-      // actions={[
-      //   {
-      //     icon: <SvgIcon icon="moreVert" />,
-      //     onPress: moreOptionsHandler,
-      //   },
-      // ]}
+    // actions={[
+    //   {
+    //     icon: <SvgIcon icon="moreVert" />,
+    //     onPress: moreOptionsHandler,
+    //   },
+    // ]}
     >
       <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
         {advert ? <AdvertLarge {...advert} /> : <Typography>Nie ma informacji</Typography>}

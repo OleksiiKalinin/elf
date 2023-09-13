@@ -1,21 +1,18 @@
 import React, { ComponentProps, FC, useState } from 'react';
-import { IconButton, Radio } from 'native-base';
-import { View, StyleSheet, Image, Linking } from 'react-native';
-import colors from 'native-base/lib/typescript/theme/base/colors';
-import { ScrollView } from 'native-base';
+import { View, StyleSheet } from 'react-native';
 import Colors from '../../../../colors/Colors';
 import { useTypedSelector } from '../../../../hooks/useTypedSelector';
-import SvgIcon, { IconTypes } from '../../../../components/molecules/SvgIcon/SvgIcon';
-import SmallMap from '../../../../components/organisms/SmallMap/SmallMap';
-import Typography from '../../../../components/atoms/Typography/Typography';
+// import SmallMap from '../../../../components/organisms/SmallMap/SmallMap';
 import { UserAdvertType } from '../../../../store/reducers/types';
 import { useNavigation } from '@react-navigation/native';
+import { IconTypes } from '../../../../components/atoms/SvgIcon';
+import Typography from '../../../../components/atoms/Typography';
 
 const ResumeCard: FC<UserAdvertType> = (props) => {
   const navigation = useNavigation();
   const { benefits_ids, company_id, description, duties_ids, expiration_time, job_experience_id, job_mode_id, job_position_id, job_start_id, known_language_id, location, requirements_ids, salary_amount_low, salary_amount_up, salary_tax_type_id, salary_time_type_id, trial_time_id, trial_type_id, type_of_contract_id, working_hour_down, working_hour_up, id } = props;
   const { jobIndustries, userCompany, jobSalaryTaxes, jobExperiences } = useTypedSelector(state => state.general);
-  const data = useTypedSelector(state => state.adverts);
+  // const data = useTypedSelector(state => state.adverts);
   const socialMediaLinks = [userCompany?.account_facebook, userCompany?.account_instagram, userCompany?.account_youtube, userCompany?.website];
   const socialMediaIcons: IconTypes[] = ['facebook', 'instagram', 'telegram', 'internet'];
 
@@ -26,7 +23,7 @@ const ResumeCard: FC<UserAdvertType> = (props) => {
 
   return (
     <View style={{ backgroundColor: Colors.Basic100, marginTop: 16 }}>
-      <SmallMap
+      {/* <SmallMap
         place={location?.formattedAddress}
         //@ts-ignore
         onPress={() => navigation.navigate('MapScreen', {
@@ -36,7 +33,7 @@ const ResumeCard: FC<UserAdvertType> = (props) => {
         })}
         latitude={location?.position?.lat}
         longitude={location?.position?.lng}
-      />
+      /> */}
       <View style={{ marginLeft: 19, marginBottom: 5 }}>
         <Typography style={styles.Header}>
           Wymagania
@@ -152,9 +149,9 @@ const ResumeCard: FC<UserAdvertType> = (props) => {
         {!!socialMedia.length && <View style={{ paddingHorizontal: 19 }}>
           <Typography variant='h5' weight='Bold'>Social media</Typography>
           <View style={{ flexDirection: "row", marginLeft: -14 }}>
-            {socialMedia.map(({ icon, url }) =>
+            {/* {socialMedia.map(({ icon, url }) =>
               <IconButton mr='5px' onPress={() => url && Linking.openURL("http://" + url)} icon={<SvgIcon icon={icon} />} />
-            )}
+            )} */}
           </View>
         </View>}
       </View>

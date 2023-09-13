@@ -8,28 +8,22 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Divider, ScrollView } from 'native-base';
-import Typography from '../../components/atoms/Typography/Typography';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-import HorizontalMenuButton from '../../components/atoms/HorizontalMenuButton/HorizontalMenuButton';
-import ButtonArrowSelector from '../../components/atoms/ButtonArrowSelector/ButtonArrowSelector';
-import HorizontalSelector from '../../components/molecules/HorizontalSelector/HorizontalSelector';
-import CheckBox from '../../components/atoms/CheckBox/CheckBox';
-import SmallMap from '../../components/organisms/SmallMap/SmallMap';
+// import SmallMap from '../../components/organisms/SmallMap/SmallMap';
 import { nativeStore } from '../../store';
 import { advertActionTypes } from '../../store/actions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { AdvertStackParamList } from '../../navigators/AdvertNavigator';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
-import Slider from '../../components/organisms/Slider/Slider';
-import { TextInput } from 'react-native-paper';
 import { AddressType, UserAdvertType } from '../../store/reducers/types';
-import TextField from '../../components/molecules/TextField/TextField';
 import { useDispatch } from 'react-redux';
 import advertsServices from '../../services/advertsServices';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { ScrollView } from '../../components/molecules/ScrollView';
+import Typography from '../../components/atoms/Typography';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import Button from '../../components/molecules/Button';
+import TextField from '../../components/molecules/TextField';
 
 
 var width = Dimensions.get('window').width;
@@ -105,13 +99,13 @@ const NewAdvertScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   };
 
   const createAdvertHandler = async () => {
-    if (userCompany?.id && advertData.job_position_id && advertData.location) {
-      setLoading(true);
-      const isOk = await dispatch(advertsServices.createUserAdvert(advertData, token, userCompany?.id, userAdverts));
-      setLoading(false);
-      if (!!isOk) navigation.navigate('MainScreen');
-      else Alert.alert('Błąd', 'Wykorzystałeś 5 darmowych ogłoszeń, kup pakiet!');
-    } else Alert.alert('Błąd', 'Podaj wszystkie dane!');
+    // if (userCompany?.id && advertData.job_position_id && advertData.location) {
+    //   setLoading(true);
+    //   const isOk = await dispatch(advertsServices.createUserAdvert(advertData, token, userCompany?.id, userAdverts));
+    //   setLoading(false);
+    //   if (!!isOk) navigation.navigate('MainScreen');
+    //   else Alert.alert('Błąd', 'Wykorzystałeś 5 darmowych ogłoszeń, kup pakiet!');
+    // } else Alert.alert('Błąd', 'Podaj wszystkie dane!');
   }
 
   return (
@@ -142,7 +136,7 @@ const NewAdvertScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingLeft: 16 }}>
           {jobExperiences.map(({ id, name }) => (
             <View style={{ marginRight: 16 }}>
-              <ButtonRipple
+              <Button
                 color={advertData.job_experience_id === id ? Colors.Basic500 : Colors.Basic300}
                 contentVariant='h5'
                 contentWeight='SemiBold'
@@ -152,7 +146,7 @@ const NewAdvertScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
                 borderRadius={4}
               >
                 {name}
-              </ButtonRipple>
+              </Button>
             </View>
           ))}
         </ScrollView>
@@ -234,17 +228,17 @@ const NewAdvertScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingLeft: 16 }}>
           {jobSalaryModes.map(({ id, name }) => (
             <View style={{ marginRight: 20 }}>
-              <ButtonRipple
+              <Button
                 color='transparent'
                 contentVariant='h5'
                 contentWeight={advertData.salary_time_type_id === id ? 'Bold' : 'SemiBold'}
                 contentColor={advertData.salary_time_type_id === id ? Colors.Basic900 : Colors.Basic700}
                 style={{ paddingVertical: 2 }}
-                containerStyles={advertData.salary_time_type_id === id ? { borderBottomColor: Colors.Basic900, borderBottomWidth: 2 } : {}}
+                // containerStyles={advertData.salary_time_type_id === id ? { borderBottomColor: Colors.Basic900, borderBottomWidth: 2 } : {}}
                 onPress={() => changeAdvertDataHandler('salary_time_type_id', id)}
               >
                 {name}
-              </ButtonRipple>
+              </Button>
             </View>
           ))}
         </ScrollView>
@@ -252,7 +246,7 @@ const NewAdvertScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           <View style={{ paddingLeft: 16, marginVertical: 16, flexDirection: 'row' }}>
             {jobSalaryTaxes.map(({ id, name }, index) => (
               <View style={{ marginRight: 16, flex: 1 }}>
-                <ButtonRipple
+                <Button
                   color={advertData.salary_tax_type_id === id ? Colors.Basic500 : Colors.Basic300}
                   contentVariant='h5'
                   contentWeight='SemiBold'
@@ -262,7 +256,7 @@ const NewAdvertScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
                   borderRadius={4}
                 >
                   {name}
-                </ButtonRipple>
+                </Button>
               </View>
             ))}
           </View>
@@ -492,8 +486,11 @@ const NewAdvertScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           onClick={() => setOnlineRecruitment(prev => !prev)}
           style={{ padding: 16 }}
         /> */}
+
+
+
         <View style={{ marginVertical: 32 }}>
-          <SmallMap
+          {/* <SmallMap
             place={advertData.location?.formattedAddress}
             latitude={advertData.location?.position?.lat}
             longitude={advertData.location?.position?.lng}
@@ -501,8 +498,12 @@ const NewAdvertScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
               callback: (address) => changeAdvertDataHandler('location', address),
               initialAddress: advertData.location
             })}
-          />
+          /> */}
         </View>
+
+
+
+
 
         {/* <View style={{ marginLeft: 9, marginBottom: 20 }}>
           {!selectedJob && (
@@ -527,9 +528,9 @@ const NewAdvertScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           )}
         </View> */}
       </ScrollView>
-      <ButtonRipple variant="primary" onPress={createAdvertHandler} disabled={!token || loading} withLoading={!!token}>
+      <Button variant="primary" onPress={createAdvertHandler} disabled={!token || loading} withLoading={!!token}>
         DODAJ OGŁOSZENIE
-      </ButtonRipple>
+      </Button>
     </ScreenHeaderProvider>
   );
 };

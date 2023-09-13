@@ -1,24 +1,21 @@
-import { Alert, Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
-import Typography from '../../components/atoms/Typography/Typography';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CompositeScreenProps, useIsFocused, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
-import ButtonArrowSelector from '../../components/atoms/ButtonArrowSelector/ButtonArrowSelector';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import Clipboard, { useClipboard } from '@react-native-clipboard/clipboard';
-import TextField from '../../components/molecules/TextField/TextField';
 import { useDispatch } from 'react-redux';
 import advertsServices from '../../services/advertsServices';
 import { InvoiceType } from '../../store/reducers/types';
-import LoadingScreen from '../../components/atoms/LoadingScreen/LoadingScreen';
+import LoadingScreen from '../../components/atoms/LoadingScreen';
+import Typography from '../../components/atoms/Typography';
+import TextField from '../../components/molecules/TextField';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import Button from '../../components/molecules/Button';
 
 type PaymentTemporalScreenProps = CompositeScreenProps<
   NativeStackScreenProps<ProfileStackParamList, 'PaymentTemporalScreen'>,
@@ -43,7 +40,7 @@ const PaymentTemporalScreen: React.FC<PaymentTemporalScreenProps> = ({ navigatio
     if (token && userCompany?.id && (!invoicesRequested.current || granted)) {
       invoicesRequested.current = true;
       setLoading(true);
-      await dispatch(advertsServices.getUserInvoices());
+      // await dispatch(advertsServices.getUserInvoices());
     }
     setLoading(false);
   }
@@ -69,8 +66,8 @@ const PaymentTemporalScreen: React.FC<PaymentTemporalScreenProps> = ({ navigatio
 
   const createUserInvoice = async () => {
     setLoading(true);
-    const isOk = await dispatch(advertsServices.createUserInvoice({ email: email || null, nip: nip || null, company_id: userCompany?.id }));
-    if (!isOk) Alert.alert('Błąd', 'Nieprawidłowy numer NIP');
+    // const isOk = await dispatch(advertsServices.createUserInvoice({ email: email || null, nip: nip || null, company_id: userCompany?.id }));
+    // if (!isOk) Alert.alert('Błąd', 'Nieprawidłowy numer NIP');
     setLoading(false);
   }
 
@@ -105,7 +102,7 @@ const PaymentTemporalScreen: React.FC<PaymentTemporalScreenProps> = ({ navigatio
                       onChangeText={setEmail}
                     />
                   </View>
-                  <ButtonRipple onPress={createUserInvoice} disabled={loading} withLoading borderRadius={4}>Zapisz</ButtonRipple>
+                  <Button onPress={createUserInvoice} disabled={loading} withLoading borderRadius={4}>Zapisz</Button>
                   <Typography style={{ marginBottom: 10, marginTop: 24 }} variant='h5' weight='Bold'>Numer konta odbiorcy płatności:</Typography>
                   <Typography variant='h4'>{bankNumber}</Typography>
                   <TouchableOpacity style={{ marginBottom: 24 }} onPress={() => Clipboard.setString(bankNumber)}>
@@ -146,7 +143,7 @@ const PaymentTemporalScreen: React.FC<PaymentTemporalScreenProps> = ({ navigatio
                       onChangeText={setEmail}
                     />
                   </View>
-                  <ButtonRipple onPress={createUserInvoice} disabled={loading} withLoading borderRadius={4}>Kupuję</ButtonRipple>
+                  <Button onPress={createUserInvoice} disabled={loading} withLoading borderRadius={4}>Kupuję</Button>
                 </View>
               }
             </View>

@@ -1,19 +1,18 @@
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import Typography from '../../components/atoms/Typography/Typography'
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../navigators/AuthNavigator';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-import TextField from '../../components/molecules/TextField/TextField';
-import ScreenHeader from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { useDispatch } from 'react-redux';
 import validateMail from '../../hooks/validateMail';
 import authServices from '../../services/authServices';
 import { useActions } from '../../hooks/useActions';
+import Typography from '../../components/atoms/Typography';
+import TextField from '../../components/molecules/TextField';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import Button from '../../components/molecules/Button';
 
 type AuthLoginScreenProps = CompositeScreenProps<
   NativeStackScreenProps<AuthStackParamList, 'RememberPasswordScreen'>,
@@ -42,16 +41,16 @@ const RememberPasswordScreen: React.FC<AuthLoginScreenProps> = ({ navigation }) 
   const rememberPasswordHandler = async () => {
     if (isDataValid) {
       setLoading(true);
-      const isOk = await dispatch(authServices.resetPassword(email));
-      setLoading(false);
-      !!isOk && setSwipeablePanelProps({
-        title: 'Wiadomość do resetowania hasła została wysłana na wskazany adres email.',
-        closeButton: false,
-        buttons: [{
-          children: 'OK',
-          onPress: () => navigation.goBack()
-        }]
-      })
+      // const isOk = await dispatch(authServices.resetPassword(email));
+      // setLoading(false);
+      // !!isOk && setSwipeablePanelProps({
+      //   title: 'Wiadomość do resetowania hasła została wysłana na wskazany adres email.',
+      //   closeButton: false,
+      //   buttons: [{
+      //     children: 'OK',
+      //     onPress: () => navigation.goBack()
+      //   }]
+      // })
     } else setShowTips(true);
   }
 
@@ -81,7 +80,7 @@ const RememberPasswordScreen: React.FC<AuthLoginScreenProps> = ({ navigation }) 
           </View>
         </View>
         <View>
-          <ButtonRipple withLoading disabled={loading} onPress={rememberPasswordHandler}>Potwierdź</ButtonRipple>
+          <Button withLoading disabled={loading} onPress={rememberPasswordHandler}>Potwierdź</Button>
         </View>
       </View>
     </ScreenHeaderProvider>

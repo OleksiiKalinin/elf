@@ -1,14 +1,13 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { View, Image } from 'native-base';
 import React, { useEffect, useState } from 'react';
 import {
   BackHandler,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  View,
 } from 'react-native';
 import Colors from '../../colors/Colors';
-import Typography from '../../components/atoms/Typography/Typography';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import {
   CompositeScreenProps,
@@ -17,11 +16,12 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import { MenuStackParamList } from '../../navigators/MenuNavigator';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useActions } from '../../hooks/useActions';
-import { LocaleConfig as CalendarLocaleConfig } from '../../../node_modules_modified/react-native-calendars/src';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import Typography from '../../components/atoms/Typography';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+// import { LocaleConfig as CalendarLocaleConfig } from '../../../node_modules_modified/react-native-calendars/src';
 
 type MenuScreenProps = CompositeScreenProps<
   NativeStackScreenProps<MenuStackParamList, 'CallsScreen'>,
@@ -29,7 +29,7 @@ type MenuScreenProps = CompositeScreenProps<
 >;
 
 const CallsScreen: React.FC<MenuScreenProps> = ({ navigation }) => {
-  const dataCalendar = useTypedSelector(state => state.calendar);
+  // const dataCalendar = useTypedSelector(state => state.calendar);
   const {userEvents} = useTypedSelector(state => state.general);
 
   return (
@@ -44,12 +44,12 @@ const CallsScreen: React.FC<MenuScreenProps> = ({ navigation }) => {
                 color={Colors.Basic600}
                 style={{ marginTop: 16, marginLeft: 19 }}
               >
-                {CalendarLocaleConfig.locales['pl'].dayNames[new Date(item.start_time).getDay()]}
+                {/* {CalendarLocaleConfig.locales['pl'].dayNames[new Date(item.start_time).getDay()]}
                 {', '}
-                {new Date(item.start_time).getDate()} {CalendarLocaleConfig.locales['pl'].monthNamesShort[new Date(item.start_time).getMonth()].toLowerCase()}
+                {new Date(item.start_time).getDate()} {CalendarLocaleConfig.locales['pl'].monthNamesShort[new Date(item.start_time).getMonth()].toLowerCase()} */}
               </Typography>
 
-              {dataCalendar.calendar
+              {/* {dataCalendar.calendar
                 .filter(k => k.date === item)
                 .filter(a => a.details[0].type === 'Połączenie')
                 .map(i => (
@@ -98,7 +98,7 @@ const CallsScreen: React.FC<MenuScreenProps> = ({ navigation }) => {
                       </View>
                     </View>
                   </TouchableOpacity>
-                ))}
+                ))} */}
             </View>
           ))}
         </ScrollView>

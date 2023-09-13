@@ -1,15 +1,9 @@
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Image, Dimensions } from 'react-native';
-import { ScrollView } from 'native-base';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
+import { StyleSheet, View, Image, Dimensions, ScrollView } from 'react-native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
-import TabbarMenu, {
-  TabbarRoute,
-} from '../../components/organisms/TabbarMenu/TabbarMenu';
 import { SceneMap } from 'react-native-tab-view';
 import { nativeStore } from '../../store';
 import { advertActionTypes, companyActionTypes } from '../../store/actions';
@@ -18,17 +12,14 @@ import OpinionCard from './CompanyScreenRoutes/OpinionCard/OpinionCard';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import Carousel from '../../components/organisms/Carousel/Carousel';
-import LoadingScreen from '../../components/atoms/LoadingScreen/LoadingScreen';
 import { CompanyDataType, MediaType, ContactPersonType } from '../../store/reducers/types';
 import { useDispatch } from 'react-redux';
 import generalServices from '../../services/generalServices';
 import { baseURL } from '../../services';
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { SvgUri } from 'react-native-svg';
-import Typography from '../../components/atoms/Typography/Typography';
 import companyServices from '../../services/companyServices';
 import MainDataCard from './CompanyScreenRoutes/MainDataCard/MainDataCard';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 
 const companyExample: CompanyDataType = {
   account_facebook: null,
@@ -120,24 +111,24 @@ const CompanyScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
                 contentColor: Colors.Danger,
                 noCloseAction: true,
                 onPress: () => {
-                  (async () => {
-                    if (companyData?.id) {
-                      const isOk = await dispatch(companyServices.deleteUserCompany(companyData.id, token));
-                      if (!!isOk) {
-                        setSwipeablePanelProps({
-                          title: 'Firma została usunięta!',
-                          closeButton: false,
-                          buttons: [
-                            {
-                              children: 'OK',
-                              onPress: () => { }
-                            }
-                          ]
-                        });
-                        navigation.navigate('NoCompanyScreen');
-                      }
-                    }
-                  })();
+                  // (async () => {
+                  //   if (companyData?.id) {
+                  //     const isOk = await dispatch(companyServices.deleteUserCompany(companyData.id, token));
+                  //     if (!!isOk) {
+                  //       setSwipeablePanelProps({
+                  //         title: 'Firma została usunięta!',
+                  //         closeButton: false,
+                  //         buttons: [
+                  //           {
+                  //             children: 'OK',
+                  //             onPress: () => { }
+                  //           }
+                  //         ]
+                  //       });
+                  //       navigation.navigate('NoCompanyScreen');
+                  //     }
+                  //   }
+                  // })();
                 }
               }
             ]
@@ -155,7 +146,7 @@ const CompanyScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   return (
     <ScreenHeaderProvider currentStack="ProfileStack" transparent
       actions={userCompany ? [{
-        icon: <SvgIcon icon="moreVert" />,
+        icon: 'moreVert',
         onPress: moreOptionsHandler,
       }] : []}
     >

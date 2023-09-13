@@ -1,14 +1,10 @@
 import React, { ComponentProps, FC, useState } from 'react';
-import { Radio, TextField } from 'native-base';
 import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import colors from 'native-base/lib/typescript/theme/base/colors';
-import { ScrollView } from 'native-base';
-import StarRating from 'react-native-star-rating';
-import Typography from '../../../../components/atoms/Typography/Typography';
 import Colors from '../../../../colors/Colors';
-import SvgIcon from '../../../../components/molecules/SvgIcon/SvgIcon';
-import ButtonRipple from '../../../../components/molecules/ButtonRipple/ButtonRipple';
-import Svg from 'react-native-svg';
+import SvgIcon from '../../../../components/atoms/SvgIcon';
+import Typography from '../../../../components/atoms/Typography';
+import TextField from '../../../../components/molecules/TextField';
+// import StarRating from 'react-native-star-rating';
 
 type OpinionCardProps = {
   onPress: () => void;
@@ -107,12 +103,12 @@ const OpinionCard: FC<OpinionCardProps> = ({ ...props }) => {
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Typography style={{ marginBottom: 18 }}>{name}</Typography>
             <View style={{ flexDirection: 'row' }}>
-              <StarRating
+              {/* <StarRating
                 starSize={18}
                 disabled={false}
                 maxStars={5}
                 rating={rating}
-              />
+              /> */}
               <View style={{ width: 40 }}>
                 <Typography style={{ textAlign: 'right' }}>{rating}</Typography>
               </View>
@@ -137,7 +133,7 @@ const OpinionCard: FC<OpinionCardProps> = ({ ...props }) => {
                 <Typography>{item.time}</Typography>
               </View>
               <View style={{ flexDirection: 'row' }}>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   style={{
                     width: 40,
                     height: 40,
@@ -157,15 +153,15 @@ const OpinionCard: FC<OpinionCardProps> = ({ ...props }) => {
                         : Colors.Basic400
                     }
                   />
-                </TouchableOpacity>
-                <Typography
+                </TouchableOpacity> */}
+                {/* <Typography
                   style={{
                     fontSize: 14,
                     textAlignVertical: 'center',
                     marginLeft: 10,
                   }}>
                   {item.likes + (likesArray.includes(index) ? 1 : 0)}
-                </Typography>
+                </Typography> */}
               </View>
             </View>
             <Typography style={{ marginTop: 6 }}>{item.text}</Typography>
@@ -174,18 +170,18 @@ const OpinionCard: FC<OpinionCardProps> = ({ ...props }) => {
               justifyContent: 'space-between',
               marginTop: 8,
             }}>
-              <TouchableOpacity onPress={() => {
+              {/* <TouchableOpacity onPress={() => {
                 answer === false ? toggleAnswer(true) : '', setIndex(i);
               }}>
                 <Typography style={{ color: Colors.Basic600 }}>Odpowiedz</Typography>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
               <TouchableOpacity onPress={props.onPress}>
                 <Typography style={{ color: Colors.Basic600 }}>Zgłoś</Typography>
               </TouchableOpacity>
             </View>
           </View>
 
-          {i === index && answer && (
+          {/* {i === index && answer && (
             <View
               style={{
                 width: '100%',
@@ -265,7 +261,7 @@ const OpinionCard: FC<OpinionCardProps> = ({ ...props }) => {
                 Potwierdź
               </ButtonRipple>
             </View>
-          )}
+          )} */}
         </View>
       ))}
     </View>

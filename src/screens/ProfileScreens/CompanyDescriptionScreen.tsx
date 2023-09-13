@@ -2,14 +2,8 @@ import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Image, Dimensions } from 'react-native';
-import { ScrollView } from 'native-base';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
-import TabbarMenu, {
-  TabbarRoute,
-} from '../../components/organisms/TabbarMenu/TabbarMenu';
 import { SceneMap } from 'react-native-tab-view';
 import { nativeStore } from '../../store';
 import { advertActionTypes, companyActionTypes } from '../../store/actions';
@@ -18,9 +12,9 @@ import OpinionCard from './CompanyScreenRoutes/OpinionCard/OpinionCard';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import Carousel from '../../components/organisms/Carousel/Carousel';
-import TextField from '../../components/molecules/TextField/TextField';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
+import TextField from '../../components/molecules/TextField';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import Button from '../../components/molecules/Button';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<ProfileStackParamList, 'CompanyDescriptionScreen'>,
@@ -45,14 +39,14 @@ const CompanyDescriptionScreen: React.FC<MainScreenProps> = ({ navigation, route
           onChangeText={setValue}
         />
       </View>
-      <ButtonRipple
+      <Button
         onPress={() => {
           callback(value);
           navigation.goBack();
         }}
       >
         Zapisz
-      </ButtonRipple>
+      </Button>
     </ScreenHeaderProvider>
   );
 };

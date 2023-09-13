@@ -4,17 +4,17 @@ import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import Colors from '../../colors/Colors';
-import HorizontalMenuButton from '../../components/atoms/HorizontalMenuButton/HorizontalMenuButton';
-import Typography from '../../components/atoms/Typography/Typography';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
-import DatePicker from 'react-native-date-picker';
+// import DatePicker from 'react-native-date-picker';
 import { nativeStore } from '../../store';
 import { calendarActionTypes } from '../../store/actions';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import Typography from '../../components/atoms/Typography';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { SwipeablePanelProps } from '../../components/organismes/SwipeablePanel';
+import Button from '../../components/molecules/Button';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<CalendarStackParamList, 'CallScreen'>,
@@ -22,8 +22,8 @@ type MainScreenProps = CompositeScreenProps<
 >;
 
 const CallScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
-  const dataBookmark = useTypedSelector(state => state.bookmark);
-  const dataCalendar = useTypedSelector(state => state.calendar);
+  // const dataBookmark = useTypedSelector(state => state.bookmark);
+  // const dataCalendar = useTypedSelector(state => state.calendar);
   const [selectedPersons, setSelectedPersons] = useState([]);
   const [showCalendar, setShowCalendar] = useState(true);
   const [showTimepicker, setShowTimepicker] = useState(false);
@@ -43,17 +43,17 @@ const CallScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
       endTime < startTime && setEndTime(startTime);
   });
 
-  const selectedPersonsNames = dataBookmark.persons
-    .filter(item => selectedPersons.includes(item.index))
-    .map(item => item.name);
+  // const selectedPersonsNames = dataBookmark.persons
+  //   .filter(item => selectedPersons.includes(item.index))
+  //   .map(item => item.name);
 
-  const jobsCategories = dataBookmark.persons
-    .filter(item => item.bookmark !== 'blank')
-    .map(a => a.job);
-  const unique = {};
-  const jobsCategoriesFiltered = jobsCategories.filter(
-    item => !unique[item] && (unique[item] = true),
-  );
+  // const jobsCategories = dataBookmark.persons
+  //   .filter(item => item.bookmark !== 'blank')
+  //   .map(a => a.job);
+  // const unique = {};
+  // const jobsCategoriesFiltered = jobsCategories.filter(
+  //   item => !unique[item] && (unique[item] = true),
+  // );
 
   const StartHours = startTime.getHours();
   const StartMinutes = startTime.getMinutes();
@@ -65,7 +65,7 @@ const CallScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
     new Date().toISOString().split('T')[0],
   );
 
-  const childToParent = childData => {
+  const childToParent = (childData: any) => {
     setPassDate(childData.toISOString().split('T')[0]);
   };
 
@@ -91,34 +91,34 @@ const CallScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
               </View>
             </>
           ),
-          onPress: () =>
-            passDate &&
-            selectedPersons.length > 0 &&
-            StartHours &&
-            (nativeStore.dispatch({
-              type: calendarActionTypes.ADD_EVENT,
-              payload: {
-                type: 'Połączenie',
-                name: selectedPersonsNames,
-                date: passDate,
-                job: jobsCategoriesFiltered[selectedJobCategory],
-                start: startTime,
-                end: endTime,
-                time:
-                  StartHours.toString() +
-                  ':' +
-                  (StartMinutes < 10
-                    ? '0' + StartMinutes.toString()
-                    : StartMinutes.toString()) +
-                  ' - ' +
-                  EndHours.toString() +
-                  ':' +
-                  (EndMinutes < 10
-                    ? '0' + EndMinutes.toString()
-                    : EndMinutes.toString()),
-              },
-            }),
-              navigation.navigate('MainScreen')),
+          // onPress: () =>
+          //   passDate &&
+          //   selectedPersons.length > 0 &&
+          //   StartHours &&
+          //   (nativeStore.dispatch({
+          //     type: calendarActionTypes.ADD_EVENT,
+          //     payload: {
+          //       type: 'Połączenie',
+          //       name: selectedPersonsNames,
+          //       date: passDate,
+          //       job: jobsCategoriesFiltered[selectedJobCategory],
+          //       start: startTime,
+          //       end: endTime,
+          //       time:
+          //         StartHours.toString() +
+          //         ':' +
+          //         (StartMinutes < 10
+          //           ? '0' + StartMinutes.toString()
+          //           : StartMinutes.toString()) +
+          //         ' - ' +
+          //         EndHours.toString() +
+          //         ':' +
+          //         (EndMinutes < 10
+          //           ? '0' + EndMinutes.toString()
+          //           : EndMinutes.toString()),
+          //     },
+          //   }),
+          //     navigation.navigate('MainScreen')),
         },
       ],
     },
@@ -171,7 +171,7 @@ const CallScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   return (
     <ScreenHeaderProvider
       currentStack="CalendarStack"
-            mainTitlePosition="flex-start"
+      mainTitlePosition="flex-start"
       alterTitle={
         <View style={{ flexDirection: 'row' }}>
           <SvgIcon icon="meeting" />
@@ -186,7 +186,7 @@ const CallScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
       }
       actions={[
         {
-          icon: <SvgIcon icon="threeDots" />,
+          icon: 'threeDots',
           onPress: () => setIsPanelActive5(true),
         },
       ]}>
@@ -196,7 +196,7 @@ const CallScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
             Wybierz ogłoszenia
             <Typography style={{ color: Colors.Danger }}>*</Typography>
           </Typography>
-          <ScrollView
+          {/* <ScrollView
             style={styles.jobCategories}
             horizontal
             showsHorizontalScrollIndicator={false}>
@@ -213,7 +213,7 @@ const CallScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
               />
 
             ))}
-          </ScrollView>
+          </ScrollView> */}
         </View>
 
         <View style={styles.candidatesSlider}>
@@ -234,7 +234,7 @@ const CallScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
               horizontal
               showsHorizontalScrollIndicator={false}
               style={{ marginTop: 9 }}>
-              {dataBookmark.persons.map(
+              {/* {dataBookmark.persons.map(
                 (item, index) =>
 
                   item.bookmark !== 'blank' &&
@@ -272,7 +272,7 @@ const CallScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
                       </View>
                     </TouchableOpacity>
                   ),
-              )}
+              )} */}
             </ScrollView>
           </View>
         </View>
@@ -294,7 +294,7 @@ const CallScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
               </Typography>
             )}
           </View>
-          {selectedPersons.length < 1 ? (
+          {/* {selectedPersons.length < 1 ? (
             <Typography
               weight="Regular"
               style={[styles.Title, { marginTop: 4 }]}>
@@ -342,11 +342,11 @@ const CallScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
                   </TouchableOpacity>
                 ))}
             </ScrollView>
-          )}
+          )} */}
         </View>
 
         <View style={{ marginTop: 24 }}>
-          <ButtonRipple
+          <Button
             variant="secondary"
             onPress={() =>
               navigation.navigate('ResumesScreen', {
@@ -354,7 +354,7 @@ const CallScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
               })
             }>
             Zobacz CV kandydatów
-          </ButtonRipple>
+          </Button>
         </View>
 
         <View style={{ marginBottom: 19 }}>
@@ -452,7 +452,7 @@ const CallScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           </View>
         </View>
 
-        {showTimepicker && (
+        {/* {showTimepicker && (
           <View style={styles.timePicker}>
             <DatePicker
               style={{
@@ -471,14 +471,15 @@ const CallScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
               fadeToColor={Colors.Basic100}
             />
           </View>
-        )}
-        <ButtonRipple
+        )} */}
+        <Button
           variant="primary"
           onPress={() =>
             setIsPanelActive4(true)
-          }>
+          }
+        >
           Potwierdź
-        </ButtonRipple>
+        </Button>
       </ScrollView>
     </ScreenHeaderProvider>
   );

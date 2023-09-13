@@ -1,4 +1,4 @@
-import { SwipeablePanelNoControlProps } from "../../components/organisms/SwipeablePanel/SwipeablePanel"
+import { SwipeablePanelNoControlProps } from "../../components/organismes/SwipeablePanel"
 
 export interface generalReducerState {
     isTabbarVisible: boolean,

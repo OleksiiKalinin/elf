@@ -1,12 +1,10 @@
 import React, { FC } from 'react';
 import { View, Dimensions, Image, TouchableOpacity, Linking } from 'react-native'
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { SvgUri } from 'react-native-svg';
 import Colors from '../../../../colors/Colors';
-import Typography from '../../../../components/atoms/Typography/Typography';
-import Carousel from '../../../../components/organisms/Carousel/Carousel';
 import { useTypedSelector } from '../../../../hooks/useTypedSelector';
 import { CompanyDataType } from '../../../../store/reducers/types';
+import Typography from '../../../../components/atoms/Typography';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -22,7 +20,7 @@ const MainDataCard: FC<CompanyDataType> = (companyData) => {
 
     return (
         <>
-            <Carousel
+            {/* <Carousel
                 data={companyData?.id ? [
                     ...(companyData.logo ? [companyData.logo.path] : []),
                     ...(companyData.photos?.length ? companyData.photos.sort((a, b) => Number(a.order) - Number(b.order)).map(el => el.path) : []),
@@ -33,14 +31,14 @@ const MainDataCard: FC<CompanyDataType> = (companyData) => {
                         <Image source={companyData?.id ? { uri: item } : item} style={{ height: screenWidth / 1.5, width: screenWidth }} />
                     </View>
                 )}
-            />
+            /> */}
             <View style={{ marginTop: 30, paddingHorizontal: 19 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 14 }}>
                     <View style={{ width: 34, height: 34, position: 'relative' }}>
                         <View style={{ position: 'absolute' }}>
-                            <SkeletonPlaceholder borderRadius={17}>
+                            {/* <SkeletonPlaceholder borderRadius={17}>
                                 <View style={{ width: 34, height: 34 }} />
-                            </SkeletonPlaceholder>
+                            </SkeletonPlaceholder> */}
                         </View>
                         {currentIndustry?.icon && <SvgUri width={34} height={34} uri={currentIndustry?.icon} />}
                     </View>

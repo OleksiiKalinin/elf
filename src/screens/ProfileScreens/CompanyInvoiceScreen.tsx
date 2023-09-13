@@ -1,15 +1,9 @@
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Image, Dimensions } from 'react-native';
-import { ScrollView } from 'native-base';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
+import { StyleSheet, View, Image, Dimensions, ScrollView } from 'react-native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
-import TabbarMenu, {
-  TabbarRoute,
-} from '../../components/organisms/TabbarMenu/TabbarMenu';
 import { SceneMap } from 'react-native-tab-view';
 import { nativeStore } from '../../store';
 import { advertActionTypes, companyActionTypes } from '../../store/actions';
@@ -18,11 +12,10 @@ import OpinionCard from './CompanyScreenRoutes/OpinionCard/OpinionCard';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import Carousel from '../../components/organisms/Carousel/Carousel';
-import TextField from '../../components/molecules/TextField/TextField';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
+import TextField from '../../components/molecules/TextField';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { AddressType } from '../../store/reducers/types';
-import SmallMap from '../../components/organisms/SmallMap/SmallMap';
+import Button from '../../components/molecules/Button';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<ProfileStackParamList, 'CompanyInvoiceScreen'>,
@@ -60,14 +53,14 @@ const CompanyInvoiceScreen: React.FC<MainScreenProps> = ({ navigation, route }) 
           />
         </View>
         <View style={{ marginBottom: 15 }}>
-          <SmallMap
+          {/* <SmallMap
             label='Adres do faktury'
             place={address?.formattedAddress}
             onPress={() => navigation.navigate('MapScreen', {
               callback: setAddress,
               initialAddress: address
             })}
-          />
+          /> */}
         </View>
         {/* {companyData.main_address && <View style={{ marginHorizontal: 19, marginBottom: 15 }}>
           <TextField
@@ -77,14 +70,14 @@ const CompanyInvoiceScreen: React.FC<MainScreenProps> = ({ navigation, route }) 
           />
         </View>} */}
       </ScrollView>
-      <ButtonRipple
+      <Button
         onPress={() => {
           callback(address, NIP, full_name);
           navigation.goBack();
         }}
       >
         Zapisz
-      </ButtonRipple>
+      </Button>
     </ScreenHeaderProvider>
   );
 };

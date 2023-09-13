@@ -2,35 +2,28 @@ import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
-import { Modal, ScrollView } from 'native-base';
-import Typography from '../../components/atoms/Typography/Typography';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
-import CandidateCardLarge from '../../components/organisms/CandidateCardLarge/CandidateCardLarge';
-import TabbarMenu, {
-  TabbarRoute,
-} from '../../components/organisms/TabbarMenu/TabbarMenu';
 import { SceneMap } from 'react-native-tab-view';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import {
-  Menu,
-  MenuOption,
-  MenuOptions,
-  MenuTrigger,
-} from 'react-native-popup-menu';
+// import {
+//   Menu,
+//   MenuOption,
+//   MenuOptions,
+//   MenuTrigger,
+// } from 'react-native-popup-menu';
 import { nativeStore } from '../../store';
 import { bookmarkActionTypes } from '../../store/actions';
 import ResumeCard from './ProfileScreenRoutes/ResumeCard/ResumeCard';
 import OpinionCard from './ProfileScreenRoutes/OpinionCard/OpinionCard';
 import { useActions } from '../../hooks/useActions';
-import LoadingScreen from '../../components/atoms/LoadingScreen/LoadingScreen';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
 import { NoteDataType } from '../../store/reducers/types';
 import { useDispatch } from 'react-redux';
 import candidatesServices from '../../services/candidatesServices';
+import { TabbarRoute } from '../../components/organismes/TabbarMenu';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { ScrollView } from '../../components/molecules/ScrollView';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<CandidatesStackParamList, 'ProfileScreen'>,
@@ -79,13 +72,13 @@ const ProfileScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   useEffect(() => {
     if (firstLoad.current) firstLoad.current = false;
     else if (prevMark.current !== candidateMark) {
-      dispatch(candidatesServices.setCandidateMarks(
-        token,
-        candidateMark,
-        { candidate_id: candidateData.id, company_id: userCompany?.id as number },
-        initMarks,
-        existedMark?.id
-      ));
+      // dispatch(candidatesServices.setCandidateMarks(
+      //   token,
+      //   candidateMark,
+      //   { candidate_id: candidateData.id, company_id: userCompany?.id as number },
+      //   initMarks,
+      //   existedMark?.id
+      // ));
       prevMark.current = candidateMark;
     }
   }, [candidateMark, initNotes]);
@@ -93,13 +86,13 @@ const ProfileScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   const saveNotes = () => {
     setOpenNotes(false);
     if (prevNotes.current?.length !== candidateNotes.length) {
-      dispatch(candidatesServices.setCandidateNotes(
-        token,
-        candidateNotes,
-        { candidate_id: candidateData.id, company_id: userCompany?.id as number },
-        initNotes,
-        existedNotes?.id
-      ));
+      // dispatch(candidatesServices.setCandidateNotes(
+      //   token,
+      //   candidateNotes,
+      //   { candidate_id: candidateData.id, company_id: userCompany?.id as number },
+      //   initNotes,
+      //   existedNotes?.id
+      // ));
       prevNotes.current = candidateNotes;
     }
   }
@@ -155,48 +148,49 @@ const ProfileScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   // }
 
   return (
-    <ScreenHeaderProvider currentStack="CandidatesStack" transparent={false}
-      otherActions={<View style={{ flexDirection: 'row', height: '100%', alignItems: 'center' }}>
-        <Menu>
-          <MenuTrigger>
-            <SvgIcon
-              icon={!candidateMark ? 'cardOutlined' : 'cardFilled'}
-              fill={!candidateMark ? Colors.Basic900 : marksData.find(e => e.id === candidateMark)?.color}
-              style={{ transform: [{ scale: 1.5 }] }}
-            />
-          </MenuTrigger>
-          <MenuOptions optionsContainerStyle={{ marginLeft: -30, marginTop: -10 }}>
-            {marksData.map(({ color, title, id }) => (
-              <MenuOption style={styles.menuOption} onSelect={() => setCandidateMark(id)}>
-                <SvgIcon
-                  style={{ marginRight: 8, alignSelf: 'center' }}
-                  icon="cardFilled"
-                  fill={color}
-                />
-                <Typography weight='Bold'>{title}</Typography>
-              </MenuOption>
-            ))}
-            {/* <MenuOption style={styles.menuOption}
-              onSelect={() => setCandidateMark(null)}>
-              <SvgIcon
-                fill={Colors.Danger}
-                style={{ marginRight: 12, marginLeft: 5, alignSelf: 'center' }}
-                icon="crossBig"
-              />
-              <Typography weight='Bold' color={Colors.Danger}>Usuń ocenę</Typography>
-            </MenuOption> */}
-          </MenuOptions>
-        </Menu>
-        <TouchableOpacity style={{ marginHorizontal: 16 }} onPress={() => setOpenNotes(true)}>
-          <SvgIcon icon="pinBig" />
-        </TouchableOpacity>
-      </View>}
+    <ScreenHeaderProvider
+      currentStack="CandidatesStack" transparent={false}
+  //     otherActions={<View style={{ flexDirection: 'row', height: '100%', alignItems: 'center' }}>
+  //       <Menu>
+  //         <MenuTrigger>
+  //           <SvgIcon
+  //             icon={!candidateMark ? 'cardOutlined' : 'cardFilled'}
+  //             fill={!candidateMark ? Colors.Basic900 : marksData.find(e => e.id === candidateMark)?.color}
+  //             style={{ transform: [{ scale: 1.5 }] }}
+  //           />
+  //         </MenuTrigger>
+  //         <MenuOptions optionsContainerStyle={{ marginLeft: -30, marginTop: -10 }}>
+  //           {marksData.map(({ color, title, id }) => (
+  //             <MenuOption style={styles.menuOption} onSelect={() => setCandidateMark(id)}>
+  //               <SvgIcon
+  //                 style={{ marginRight: 8, alignSelf: 'center' }}
+  //                 icon="cardFilled"
+  //                 fill={color}
+  //               />
+  //               <Typography weight='Bold'>{title}</Typography>
+  //             </MenuOption>
+  //           ))}
+  //           {/* <MenuOption style={styles.menuOption}
+  //             onSelect={() => setCandidateMark(null)}>
+  //             <SvgIcon
+  //               fill={Colors.Danger}
+  //               style={{ marginRight: 12, marginLeft: 5, alignSelf: 'center' }}
+  //               icon="crossBig"
+  //             />
+  //             <Typography weight='Bold' color={Colors.Danger}>Usuń ocenę</Typography>
+  //           </MenuOption> */}
+  //     </MenuOptions>
+  //       </Menu >
+  // < TouchableOpacity style = {{ marginHorizontal: 16 }} onPress = {() => setOpenNotes(true)}>
+  //   <SvgIcon icon="pinBig" />
+  //       </ >
+  //     </View >}
     >
       <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
-        <CandidateCardLarge
+        {/* <CandidateCardLarge
           {...candidateData}
           onPressBackground={() => navigation.navigate('VideoScreen', { candidateData })}
-        />
+        /> */}
         {/* <TabbarMenu
           navigationState={{ index: tabbarIndex, routes }}
           onIndexChange={setTabbarIndex}
@@ -207,7 +201,7 @@ const ProfileScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           // 1: <OpinionCard onPress={() => sendClaimHandler()} />
         }[tabbarIndex]}</View>
       </ScrollView>
-      <Modal isOpen={openNotes} onClose={() => setOpenNotes(false)}>
+      {/* <Modal isOpen={openNotes} onClose={() => setOpenNotes(false)}>
         <Modal.Header width='full' style={{ backgroundColor: Colors.White }}>
           <Typography variant='h4' weight='Bold' textAlign='center'>Twoje notatki</Typography>
         </Modal.Header>
@@ -250,8 +244,8 @@ const ProfileScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
             Zapisz i zamknij
           </ButtonRipple>
         </Modal.Footer>
-      </Modal>
-    </ScreenHeaderProvider>
+      </Modal> */}
+    </ScreenHeaderProvider >
   );
 };
 

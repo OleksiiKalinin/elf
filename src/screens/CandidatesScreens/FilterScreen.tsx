@@ -2,19 +2,17 @@ import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Touchable, View, Text } from 'react-native';
-import { Divider, IconButton, ScrollView } from 'native-base';
-import Typography from '../../components/atoms/Typography/Typography';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
-import HorizontalMenuButton from '../../components/atoms/HorizontalMenuButton/HorizontalMenuButton';
-import ButtonArrowSelector from '../../components/atoms/ButtonArrowSelector/ButtonArrowSelector';
-import HorizontalSelector from '../../components/molecules/HorizontalSelector/HorizontalSelector';
+// import HorizontalMenuButton from '../../components/atoms/HorizontalMenuButton/HorizontalMenuButton';
+// import ButtonArrowSelector from '../../components/atoms/ButtonArrowSelector/ButtonArrowSelector';
+// import HorizontalSelector from '../../components/molecules/HorizontalSelector/HorizontalSelector';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import CheckBox from '../../components/atoms/CheckBox/CheckBox';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { ScrollView } from '../../components/molecules/ScrollView';
+import Typography from '../../components/atoms/Typography';
+import Button from '../../components/molecules/Button';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<CandidatesStackParamList, 'FilterScreen'>,
@@ -59,38 +57,38 @@ const contractType: Array<string> = [
 const sortingTypes: Array<string> = ['Najnowsi', 'Najbliżsi', 'Najdroższe'];
 
 const FilterScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
-  const dataCompanies = useTypedSelector(state => state.company);
-  const dataBookmarks = useTypedSelector(state => state.bookmark);
-  const [checkbox0, setCheckbox0] = useState(false);
-  const [checkbox1, setCheckbox1] = useState(false);
-  const [checkbox2, setCheckbox2] = useState(false);
-  const [checkbox3, setCheckbox3] = useState(false);
-  const [sorting, setSorting] = useState<any>();
-  const [selectedDistance, setSelectedDistance] = useState<any>();
-  const [selectedExperience, setSelectedExperience] = useState<any>([]);
-  const [selectedWorkload, setSelectedWorkload] = useState<any>([]);
-  const [selectedContractType, setSelectedContractType] = useState<any>([]);
-  const { index, pushedJob, place } = route.params;
-  const [selectedJob, setSelectedJob] = useState(null);
-  const [selectedPlace, setSelectedPlace] = useState(null);
-  const [salaryMin, setSalaryMin] = useState<number>();
-  const [salaryMax, setSalaryMax] = useState<number>();
+  // const dataCompanies = useTypedSelector(state => state.company);
+  // const dataBookmarks = useTypedSelector(state => state.bookmark);
+  // const [checkbox0, setCheckbox0] = useState(false);
+  // const [checkbox1, setCheckbox1] = useState(false);
+  // const [checkbox2, setCheckbox2] = useState(false);
+  // const [checkbox3, setCheckbox3] = useState(false);
+  // const [sorting, setSorting] = useState<any>();
+  // const [selectedDistance, setSelectedDistance] = useState<any>();
+  // const [selectedExperience, setSelectedExperience] = useState<any>([]);
+  // const [selectedWorkload, setSelectedWorkload] = useState<any>([]);
+  // const [selectedContractType, setSelectedContractType] = useState<any>([]);
+  // const { index, pushedJob, place } = route.params;
+  // const [selectedJob, setSelectedJob] = useState(null);
+  // const [selectedPlace, setSelectedPlace] = useState(null);
+  // const [salaryMin, setSalaryMin] = useState<number>();
+  // const [salaryMax, setSalaryMax] = useState<number>();
 
-  useEffect(() => {
-    index !== null && setSelectedJob(pushedJob);
-  });
+  // useEffect(() => {
+  //   index !== null && setSelectedJob(pushedJob);
+  // });
 
-  useEffect(() => {
-    place && setSelectedPlace(place);
-  });
+  // useEffect(() => {
+  //   place && setSelectedPlace(place);
+  // });
 
-  useEffect(() => {
-    checkbox0 && (setSelectedPlace(null), setSelectedDistance(null));
-  });
+  // useEffect(() => {
+  //   checkbox0 && (setSelectedPlace(null), setSelectedDistance(null));
+  // });
 
   return (
     <ScreenHeaderProvider currentStack="CandidatesStack">
-      <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
+      {/* <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
         <Typography variant="h4" weight="Bold" style={{ marginLeft: 19, marginBottom: 10, marginTop: 30 }}>
           Sortuj po
         </Typography>
@@ -136,7 +134,7 @@ const FilterScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           onPress={() => navigation.navigate('MapScreen')}
         />
 
-        {/* <HorizontalSelector
+        <HorizontalSelector
           title={'Odległość'}
           star={false}
           buttons={Distance.map((item, index) => (
@@ -150,7 +148,7 @@ const FilterScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
               }
             />
           ))}
-        /> */}
+        />
 
         <View style={{ marginBottom: 36 }}>
           <CheckBox
@@ -246,7 +244,7 @@ const FilterScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           ))}
         />
 
-        {/* <ButtonArrowSelector text="Znajomość języków" /> */}
+        <ButtonArrowSelector text="Znajomość języków" />
 
         <CheckBox
           leftTextView={
@@ -290,9 +288,9 @@ const FilterScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           style={{ padding: 16 }}
         />
         <Divider />
-      </ScrollView>
-      <View >
-        <ButtonRipple
+      </ScrollView> */}
+      {/* <View >
+        <Button
           variant="primary"
           onPress={() =>
             navigation.navigate('MainScreen', {
@@ -312,8 +310,8 @@ const FilterScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
             })
           }>
           SZUKAJ
-        </ButtonRipple>
-      </View>
+        </Button>
+      </View> */}
     </ScreenHeaderProvider>
   );
 };

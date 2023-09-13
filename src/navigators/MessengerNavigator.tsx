@@ -1,11 +1,14 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MainScreen from '../screens/MessengerScreens/MainScreen';
-import Typography from '../components/atoms/Typography';
-import SecondScreen from '../screens/MessengerScreens/SecondScreen';
+import { PathConfigMap } from '@react-navigation/native';
 
 export type MessengerStackParamList = {
     MainScreen: undefined,
+}
+
+export const MessengerStackLinking: PathConfigMap<MessengerStackParamList> = {
+    MainScreen: '',
 }
 
 const MessengerStack = createNativeStackNavigator<MessengerStackParamList>();

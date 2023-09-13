@@ -1,12 +1,10 @@
 import React, { ComponentProps, FC, useState } from 'react';
 import { View, StyleSheet, Image, Linking, Dimensions } from 'react-native';
 import Colors from '../../../../colors/Colors';
-import SvgIcon, { IconTypes } from '../../../../components/molecules/SvgIcon/SvgIcon';
-import Typography from '../../../../components/atoms/Typography/Typography';
-import { useTypedSelector } from '../../../../hooks/useTypedSelector';
-import { Divider, IconButton } from 'native-base';
-import Carousel from '../../../../components/organisms/Carousel/Carousel';
 import { CompanyDataType } from '../../../../store/reducers/types';
+import SvgIcon, { IconTypes } from '../../../../components/atoms/SvgIcon';
+import Typography from '../../../../components/atoms/Typography';
+import Button from '../../../../components/molecules/Button';
 
 const ImagesCerts: any[] = [
   require('../../../../assets/images/certificate.png'),
@@ -81,7 +79,7 @@ const AboutCard: FC<CompanyDataType> = (props) => {
         }
       </View>
 
-      <Divider />
+      {/* <Divider /> */}
       <View style={{ paddingHorizontal: 19 }}>
         <Typography style={{ marginTop: 12, marginBottom: 10 }} variant='h5' weight='Bold'>Opis</Typography>
         <Typography style={{ marginBottom: 12 }} variant="h5" color={Colors.Basic600}>
@@ -106,7 +104,7 @@ const AboutCard: FC<CompanyDataType> = (props) => {
         <Typography variant='h5' weight='Bold'>Social media</Typography>
         <View style={{ flexDirection: "row", marginLeft: -14 }}>
           {socialMedia.map(({ icon, url }) =>
-            <IconButton mr='5px' onPress={() => url && Linking.openURL("http://" + url)} icon={<SvgIcon icon={icon} />} />
+            <Button circular mr='5px' onPress={() => url && Linking.openURL("http://" + url)} icon={<SvgIcon icon={icon} />} />
           )}
         </View>
       </View>}

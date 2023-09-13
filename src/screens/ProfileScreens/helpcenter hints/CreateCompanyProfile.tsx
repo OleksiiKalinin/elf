@@ -4,10 +4,9 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CompositeScreenProps, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../../navigators/RootNavigator';
 import Colors from '../../../colors/Colors';
-import ScreenHeaderProvider from '../../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
+import Typography from '../../../components/atoms/Typography';
+import ScreenHeaderProvider from '../../../components/organismes/ScreenHeaderProvider';
 import { ProfileStackParamList } from '../../../navigators/ProfileNavigator';
-import ButtonArrowSelector from '../../../components/atoms/ButtonArrowSelector/ButtonArrowSelector';
-import Typography from '../../../components/atoms/Typography/Typography';
 
 type CreateCompanyProfileProps = CompositeScreenProps<
   NativeStackScreenProps<ProfileStackParamList, 'CreateCompanyProfile'>,
@@ -83,7 +82,7 @@ const CreateCompanyProfile: React.FC<CreateCompanyProfileProps> = ({ navigation 
             Powiązane pytanie:
           </Typography>
 
-          <ButtonArrowSelector text={'Jak dodać ogłoszenie?'} onPress={() => navigation.navigate("AddAdvert")} />
+          {/* <ButtonArrowSelector text={'Jak dodać ogłoszenie?'} onPress={() => navigation.navigate("AddAdvert")} /> */}
 
           <View style={[styles.marginHorizontal, { marginBottom: 30 }]}>
             <Typography color={Colors.Basic600} weight="Bold">

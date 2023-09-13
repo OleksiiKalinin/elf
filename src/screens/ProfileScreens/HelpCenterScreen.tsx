@@ -1,15 +1,13 @@
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import Typography from '../../components/atoms/Typography/Typography';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CompositeScreenProps, useIsFocused, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
-import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
-import ButtonArrowSelector from '../../components/atoms/ButtonArrowSelector/ButtonArrowSelector';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 
 type HelpCenterScreenProps = CompositeScreenProps<
   NativeStackScreenProps<ProfileStackParamList, 'HelpCenterScreen'>,
@@ -32,7 +30,7 @@ const HelpCenterScreen: React.FC<HelpCenterScreenProps> = ({ navigation }) => {
         <ScrollView style={styles.Content}>
 
           <View style={{ borderBottomWidth: 1, borderColor: Colors.Basic300, marginTop: 33 }}></View>
-          {hints.map(item =>
+          {/* {hints.map(item =>
             <ButtonArrowSelector
               marginBottom={false}
               marginTop={false}
@@ -40,7 +38,7 @@ const HelpCenterScreen: React.FC<HelpCenterScreenProps> = ({ navigation }) => {
               text={item.text}
               onPress={() => navigation.navigate(item.route)}
             />
-          )}
+          )} */}
 
         </ScrollView>
       </View>

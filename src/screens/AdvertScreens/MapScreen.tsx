@@ -3,7 +3,7 @@ import { CompositeScreenProps } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
-import GoogleMap from '../../components/organisms/GoogleMap/GoogleMap';
+// import GoogleMap from '../../components/organisms/GoogleMap/GoogleMap';
 import { AdvertStackParamList } from '../../navigators/AdvertNavigator';
 
 type MapScreenProps = CompositeScreenProps<
@@ -14,7 +14,8 @@ type MapScreenProps = CompositeScreenProps<
 const MapScreen: React.FC<MapScreenProps> = ({ navigation, route }) => {
   const { callback, initialAddress, hideControls } = route.params;
 
-  return <GoogleMap {...{ callback, initialAddress, hideControls }} />;
+  return <></>
+  // return <GoogleMap {...{ callback, initialAddress, hideControls }} />;
 };
 
 export default MapScreen;

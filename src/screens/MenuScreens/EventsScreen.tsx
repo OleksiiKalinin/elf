@@ -1,14 +1,13 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { View, Image } from 'native-base';
 import React, { useEffect, useState } from 'react';
 import {
   BackHandler,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  View,
 } from 'react-native';
 import Colors from '../../colors/Colors';
-import Typography from '../../components/atoms/Typography/Typography';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import {
   CompositeScreenProps,
@@ -17,15 +16,16 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import { MenuStackParamList } from '../../navigators/MenuNavigator';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useActions } from '../../hooks/useActions';
-import { LocaleConfig as CalendarLocaleConfig } from '../../../node_modules_modified/react-native-calendars/src';
+// import { LocaleConfig as CalendarLocaleConfig } from '../../../node_modules_modified/react-native-calendars/src';
 import { CandidateDataType, JobPositionType } from '../../store/reducers/types';
 import { useDispatch } from 'react-redux';
 import advertsServices from '../../services/advertsServices';
-import LoadingScreen from '../../components/atoms/LoadingScreen/LoadingScreen';
+import LoadingScreen from '../../components/atoms/LoadingScreen';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import Typography from '../../components/atoms/Typography';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 
 type MenuScreenProps = CompositeScreenProps<
   NativeStackScreenProps<MenuStackParamList, 'EventsScreen'>,
@@ -43,10 +43,10 @@ const EventsScreen: React.FC<MenuScreenProps> = ({ navigation }) => {
   }, [jobIndustries]);
 
   const openProfile = async (id: number) => {
-    setLoading(true);
-    const res = await dispatch(advertsServices.getAdvertCandidates(token, [id])) as unknown as CandidateDataType[];
-    setLoading(false);
-    if (res[0]) navigation.navigate('ProfileScreen', { candidateData: res[0] })
+    // setLoading(true);
+    // const res = await dispatch(advertsServices.getAdvertCandidates(token, [id])) as unknown as CandidateDataType[];
+    // setLoading(false);
+    // if (res[0]) navigation.navigate('ProfileScreen', { candidateData: res[0] })
   }
 
   return (
@@ -72,9 +72,9 @@ const EventsScreen: React.FC<MenuScreenProps> = ({ navigation }) => {
                     color={Colors.Basic600}
                     style={{ marginVertical: 8, paddingHorizontal: 19 }}
                   >
-                    {CalendarLocaleConfig.locales['pl'].dayNames[new Date(event.start_time).getDay()]}
+                    {/* {CalendarLocaleConfig.locales['pl'].dayNames[new Date(event.start_time).getDay()]}
                     {', '}
-                    {new Date(event.start_time).getDate()} {CalendarLocaleConfig.locales['pl'].monthNamesShort[new Date(event.start_time).getMonth()].toLowerCase()}
+                    {new Date(event.start_time).getDate()} {CalendarLocaleConfig.locales['pl'].monthNamesShort[new Date(event.start_time).getMonth()].toLowerCase()} */}
                   </Typography>}
                   <TouchableOpacity onPress={() => openProfile(event.attendees[0].candidate.candidate_id)} style={{
                     flex: 1,

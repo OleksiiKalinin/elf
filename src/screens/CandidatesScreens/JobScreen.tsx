@@ -2,16 +2,15 @@ import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { ScrollView } from 'native-base';
-import Typography from '../../components/atoms/Typography/Typography';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import TextField from '../../components/molecules/TextField/TextField';
-import SvgIcon, { IconTypes } from '../../components/molecules/SvgIcon/SvgIcon';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useActions } from '../../hooks/useActions';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { ScrollView } from '../../components/molecules/ScrollView';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import Typography from '../../components/atoms/Typography';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<CandidatesStackParamList, 'JobScreen'>,
@@ -19,21 +18,17 @@ type MainScreenProps = CompositeScreenProps<
 >;
 
 const JobScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
-  const dataBookmarks = useTypedSelector(state => state.bookmark);
+  // const dataBookmarks = useTypedSelector(state => state.bookmark);
 
   const [search, setSearch] = useState<string>('');
   const [subcategory, setSubcategory] = useState<string>('');
 
-  const data = useTypedSelector(state => state.company);
+  // const data = useTypedSelector(state => state.company);
 
   const { index } = route.params;
 
   return (
-    <ScreenHeaderProvider
-      currentStack="CandidatesStack"
-            mainTitlePosition="flex-start"
-      actions={[]}
-    >
+    <ScreenHeaderProvider currentStack="CandidatesStack" mainTitlePosition="flex-start">
       <ScrollView
         style={{
           backgroundColor: Colors.Basic100,
@@ -41,21 +36,20 @@ const JobScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
         }}>
         <TouchableOpacity
           style={styles.Button}
-          onPress={() => navigation.navigate('SearchScreen')}>
-          <SvgIcon
+          onPress={() => navigation.navigate('SearchScreen')}
+        >
+          {/* <SvgIcon
             icon={data.professions[index].icon}
             style={{ alignSelf: 'center', marginHorizontal: 19 }}
-          />
-          <Typography
-            variant="h4"
-            style={{ alignSelf: 'center', textTransform: 'capitalize' }}>
-            {data.professions[index].text}
+          /> */}
+          <Typography variant="h4" style={{ alignSelf: 'center', textTransform: 'capitalize' }}>
+            {/* {data.professions[index].text} */}
           </Typography>
         </TouchableOpacity>
 
         <View style={{ height: 40 }}></View>
 
-        {data.professions[index].list.map((item, i) => (
+        {/* {data.professions[index].list.map((item, i) => (
           <View style={{ borderBottomWidth: 1, borderColor: Colors.Basic300 }}>
             <TouchableOpacity
               style={styles.Category}
@@ -87,7 +81,7 @@ const JobScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
               </Typography>
             </TouchableOpacity>
           </View>
-        ))}
+        ))} */}
 
         <View style={{ marginBottom: 40 }}></View>
       </ScrollView>

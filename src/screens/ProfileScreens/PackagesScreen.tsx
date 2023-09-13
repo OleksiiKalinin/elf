@@ -2,14 +2,14 @@ import { CompositeScreenProps } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { FC } from 'react';
 import { Dimensions, ScrollView, View } from 'react-native';
-import SelectDropdown from 'react-native-select-dropdown';
-import Colors from '../../colors/Colors';
-import Typography from '../../components/atoms/Typography/Typography';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
+// import SelectDropdown from 'react-native-select-dropdown';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import Typography from '../../components/atoms/Typography';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import Button from '../../components/molecules/Button';
+import Colors from '../../colors/Colors';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -57,7 +57,7 @@ const PackagesScreen: FC<MainScreenProps> = () => {
                                 {item.type}
                             </Typography>
                             <View>
-                                <SelectDropdown
+                                {/* <SelectDropdown
                                     data={packageTimes}
                                     renderDropdownIcon={() => <SvgIcon icon='arrowBottom' />}
                                     dropdownOverlayColor='transparent'
@@ -74,7 +74,7 @@ const PackagesScreen: FC<MainScreenProps> = () => {
                                         return item;
                                     }}
                                     defaultValueByIndex={0}
-                                />
+                                /> */}
                             </View>
                             <View style={{ paddingVertical: 8, paddingHorizontal: 19 }}>
                                 {packages[0].active.map(item => (
@@ -94,7 +94,7 @@ const PackagesScreen: FC<MainScreenProps> = () => {
                                     </View>
                                 ))}
                             </View>
-                            <ButtonRipple variant="secondary">Twój pakiet</ButtonRipple>
+                            <Button variant="secondary">Twój pakiet</Button>
                         </View>
                     )}
                 </ScrollView>

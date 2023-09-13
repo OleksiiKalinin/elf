@@ -1,15 +1,13 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { View, Image } from 'native-base';
 import React, { useEffect, useState } from 'react';
 import {
   BackHandler,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  View,
 } from 'react-native';
 import Colors from '../../colors/Colors';
-import Typography from '../../components/atoms/Typography/Typography';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import {
   CompositeScreenProps,
@@ -18,10 +16,10 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import { MenuStackParamList } from '../../navigators/MenuNavigator';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useActions } from '../../hooks/useActions';
+import Typography from '../../components/atoms/Typography';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 
 type MenuScreenProps = CompositeScreenProps<
   NativeStackScreenProps<MenuStackParamList, 'NewsScreen'>,
@@ -56,20 +54,18 @@ const NewsScreen: React.FC<MenuScreenProps> = ({ navigation }) => {
 
   return (
     <View style={styles.Wrapper}>
-      <ScreenHeaderProvider
-                currentStack="MenuStack"
-        actions={[]}>
+      <ScreenHeaderProvider currentStack="MenuStack">
         <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
           <View style={{ height: 20 }}></View>
 
           {articles.map((item, index) => (
             <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('NewsDetailsScreen', { title: item.title, content: item.content }),
-                  articleRead.includes(item.id)
-                    ? ''
-                    : toggleArticleRead(state => [...state, item.id]);
-              }}
+              // onPress={() => {
+              //   navigation.navigate('NewsDetailsScreen', { title: item.title, content: item.content }),
+              //     articleRead.includes(item.id)
+              //       ? ''
+              //       : toggleArticleRead(state => [...state, item.id]);
+              // }}
               style={styles.newsItem}>
               <Typography
                 variant="h5"
@@ -78,11 +74,11 @@ const NewsScreen: React.FC<MenuScreenProps> = ({ navigation }) => {
                 {item.title}
               </Typography>
               <Typography weight="Regular">{item.content}</Typography>
-              {!articleRead.includes(item.id) && (
+              {/* {!articleRead.includes(item.id) && (
                 <Typography style={styles.badge} weight="Regular">
                   Nowe
                 </Typography>
-              )}
+              )} */}
             </TouchableOpacity>
           ))}
         </ScrollView>

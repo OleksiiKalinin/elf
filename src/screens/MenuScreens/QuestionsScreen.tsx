@@ -1,19 +1,18 @@
 import { CompositeScreenProps } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Divider } from 'native-base';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import Colors from '../../colors/Colors';
-import CheckBox from '../../components/atoms/CheckBox/CheckBox';
-import Typography from '../../components/atoms/Typography/Typography';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
 import { MenuStackParamList } from '../../navigators/MenuNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import { nativeStore } from '../../store';
 import { calendarActionTypes } from '../../store/actions';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import Typography from '../../components/atoms/Typography';
+import CheckBox from '../../components/atoms/CheckBox';
+import Button from '../../components/molecules/Button';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<MenuStackParamList, 'QuestionsScreen'>,
@@ -47,8 +46,8 @@ const Questions = [
 ];
 
 const QuestionsScreen: React.FC<MainScreenProps> = ({ navigation }) => {
-  const data = useTypedSelector(state => state.calendar);
-  const [questionsState, setQuestionsState] = useState<any>(data.questions);
+  // const data = useTypedSelector(state => state.calendar);
+  // const [questionsState, setQuestionsState] = useState<any>(data.questions);
 
   return (
     <ScreenHeaderProvider currentStack="MenuStack" mainTitlePosition="flex-start">
@@ -57,7 +56,7 @@ const QuestionsScreen: React.FC<MainScreenProps> = ({ navigation }) => {
           <Typography weight="Bold" style={styles.Title}>
             Doświadczenie
           </Typography>
-          {Questions.map(
+          {/* {Questions.map(
             (item, index) => index < 5 && (<>
               <CheckBox
                 leftText={item}
@@ -72,14 +71,14 @@ const QuestionsScreen: React.FC<MainScreenProps> = ({ navigation }) => {
                 style={{ padding: 16 }}
               />
               <Divider />
-            </>))}
+            </>))} */}
         </View>
 
         <View>
           <Typography weight="Bold" style={styles.Title}>
             Wykształcenie
           </Typography>
-          {Questions.map(
+          {/* {Questions.map(
             (item, index) => index > 4 && index < 9 && (<>
               <CheckBox
                 leftText={item}
@@ -94,14 +93,14 @@ const QuestionsScreen: React.FC<MainScreenProps> = ({ navigation }) => {
                 style={{ padding: 16 }}
               />
               <Divider />
-            </>))}
+            </>))} */}
         </View>
 
         <View>
           <Typography weight="Bold" style={styles.Title}>
             Umiejętności
           </Typography>
-          {Questions.map(
+          {/* {Questions.map(
             (item, index) => index > 8 && index < 14 && (<>
               <CheckBox
                 leftText={item}
@@ -116,14 +115,14 @@ const QuestionsScreen: React.FC<MainScreenProps> = ({ navigation }) => {
                 style={{ padding: 16 }}
               />
               <Divider />
-            </>))}
+            </>))} */}
         </View>
 
         <View>
           <Typography weight="Bold" style={styles.Title}>
             Współpraca
           </Typography>
-          {Questions.map(
+          {/* {Questions.map(
             (item, index) => index > 13 && index < 18 && (<>
               <CheckBox
                 leftText={item}
@@ -138,14 +137,14 @@ const QuestionsScreen: React.FC<MainScreenProps> = ({ navigation }) => {
                 style={{ padding: 16 }}
               />
               <Divider />
-            </>))}
+            </>))} */}
         </View>
 
         <View>
           <Typography weight="Bold" style={styles.Title}>
             Dodatkowe
           </Typography>
-          {Questions.map(
+          {/* {Questions.map(
             (item, index) => index > 17 && (<>
               <CheckBox
                 leftText={item}
@@ -160,7 +159,7 @@ const QuestionsScreen: React.FC<MainScreenProps> = ({ navigation }) => {
                 style={{ padding: 16 }}
               />
               <Divider />
-            </>))}
+            </>))} */}
         </View>
 
         <View style={{ marginBottom: 40 }}>
@@ -168,18 +167,18 @@ const QuestionsScreen: React.FC<MainScreenProps> = ({ navigation }) => {
         </View>
       </ScrollView>
 
-      <ButtonRipple
+      <Button
         onPress={() => (
-          nativeStore.dispatch({
-            type: calendarActionTypes.SAVE_QUESTIONS,
-            payload: {
-              questionsState: questionsState,
-            },
-          }),
+          // nativeStore.dispatch({
+          //   type: calendarActionTypes.SAVE_QUESTIONS,
+          //   payload: {
+          //     questionsState: questionsState,
+          //   },
+          // }),
           navigation.navigate('MainScreen')
         )}>
         Potwierdź wybory
-      </ButtonRipple>
+      </Button>
     </ScreenHeaderProvider>
   );
 };

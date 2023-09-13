@@ -1,18 +1,17 @@
 import React, { Fragment, useState } from 'react';
-import { View, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { View, ScrollView, TouchableOpacity, Dimensions, Slider } from 'react-native';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CompositeScreenProps } from '@react-navigation/native';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
-import Typography from '../../components/atoms/Typography/Typography';
-import TextField from '../../components/molecules/TextField/TextField';
-import Colors from '../../colors/Colors';
-import Slider from '../../components/organisms/Slider/Slider';
 import { ContactPersonType } from '../../store/reducers/types';
 import minutesToHours from '../../hooks/minutesToHours';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
 import hoursToMinutes from '../../hooks/hoursToMinutes';
+import Typography from '../../components/atoms/Typography';
+import TextField from '../../components/molecules/TextField';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import Button from '../../components/molecules/Button';
+import Colors from '../../colors/Colors';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -119,7 +118,7 @@ const AddConractPersonsScreen: React.FC<AddConractPersonsScreenProps> = ({ route
                     </Typography>
                 </View>
                 <View style={{ alignItems: 'center' }}>
-                    <Slider
+                    {/* <Slider
                         min={0}
                         max={23 * 60 + 59} //23:59
                         values={contactHours.split('-').map(e => hoursToMinutes(e))} //08:00-18:00
@@ -128,17 +127,17 @@ const AddConractPersonsScreen: React.FC<AddConractPersonsScreenProps> = ({ route
                         step={5}
                         sliderLength={windowWidth - 19 * 2}
                         onValuesChangeFinish={([start, end]) => setContactHours(`${minutesToHours(start)}-${minutesToHours(end)}`)}
-                    />
+                    /> */}
                 </View>
             </ScrollView>
             <View>
-                <ButtonRipple onPress={() => {
+                <Button onPress={() => {
                     changeContactPersonsHandler(contactPersons);
                     changeCompanyDataHandler('contact_hours', contactHours);
                     navigation.goBack();
                 }}>
                     Potwierdź
-                </ButtonRipple>
+                </Button>
             </View>
         </ScreenHeaderProvider>
     );

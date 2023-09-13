@@ -10,26 +10,17 @@ import {
   Alert
 } from 'react-native';
 import React, { Fragment, useCallback, useEffect, useState, useRef } from 'react';
-import Typography from '../../components/atoms/Typography/Typography';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   CompositeScreenProps,
 } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
-import ButtonArrowSelector from '../../components/atoms/ButtonArrowSelector/ButtonArrowSelector';
-import SvgIcon, { IconTypes } from '../../components/molecules/SvgIcon/SvgIcon';
-import TextField from '../../components/molecules/TextField/TextField';
-import HorizontalMenuButton from '../../components/atoms/HorizontalMenuButton/HorizontalMenuButton';
-import SmallMap from '../../components/organisms/SmallMap/SmallMap';
-import Slider from '../../components/organisms/Slider/Slider';
 import { nativeStore } from '../../store';
 import { companyActionTypes } from '../../store/actions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+// import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import tip1 from '../../assets/images/tip1.png';
 import tip2 from '../../assets/images/tip2.png';
 import tip3 from '../../assets/images/tip3.png';
@@ -37,19 +28,22 @@ import tip4 from '../../assets/images/tip4.png';
 import tip5 from '../../assets/images/tip5.png';
 import tip6 from '../../assets/images/tip6.png';
 import { useActions } from '../../hooks/useActions';
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+// import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { SvgUri } from 'react-native-svg';
 import minutesToHours from '../../hooks/minutesToHours';
 import { AddressType, CompanyDataType, MediaType, ContactPersonType } from '../../store/reducers/types';
-import ImageCropPicker, { Options as OptionsType } from 'react-native-image-crop-picker';
-import Carousel, { Pagination } from 'react-native-snap-carousel';
+// import ImageCropPicker, { Options as OptionsType } from 'react-native-image-crop-picker';
+// import Carousel, { Pagination } from 'react-native-snap-carousel';
 import generalServices from '../../services/generalServices';
 import { useDispatch } from 'react-redux';
-import { IconButton } from 'native-base';
 import DraggableFlatList, { ScaleDecorator, RenderItemParams } from 'react-native-draggable-flatlist';
-import { Badge } from 'native-base';
 import companyServices from '../../services/companyServices';
 import { isNumber } from 'lodash';
+import SvgIcon, { IconTypes } from '../../components/atoms/SvgIcon';
+import Typography from '../../components/atoms/Typography';
+import TextField from '../../components/molecules/TextField';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import Button from '../../components/molecules/Button';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -163,17 +157,17 @@ const AddCompanyScreen: React.FC<AddCompanyScreenProps> = ({ navigation, route }
   const submitCompanyCreation = async () => {
     const { other_address, job_industry, short_name, full_decription } = companyData;
     if (other_address && job_industry && short_name && full_decription) {
-      setLoading(true);
-      const isOk = await dispatch(companyServices[editMode ?
-        'editUserCompany' :
-        'createUserCompany'
-      ]({
-        companyData: { ...companyData, employees_amount: companyData.employees_amount?.split('-').filter(el => el).length === 2 ? companyData.employees_amount : null },
-        companyLogo, companyVideo, companyPhotos, companyCertificates, contactPersons, oldCompanyData: userCompany || companyData
-      }, token)
-      );
-      setLoading(false);
-      if (!!isOk) navigation.navigate('CompanyScreen');
+      // setLoading(true);
+      // const isOk = await dispatch(companyServices[editMode ?
+      //   'editUserCompany' :
+      //   'createUserCompany'
+      // ]({
+      //   companyData: { ...companyData, employees_amount: companyData.employees_amount?.split('-').filter(el => el).length === 2 ? companyData.employees_amount : null },
+      //   companyLogo, companyVideo, companyPhotos, companyCertificates, contactPersons, oldCompanyData: userCompany || companyData
+      // }, token)
+      // );
+      // setLoading(false);
+      // if (!!isOk) navigation.navigate('CompanyScreen');
     } else {
       Alert.alert('Błąd', 'Uzupełnij wszystkie obowiązkowe pola!')
     }
@@ -236,64 +230,64 @@ const AddCompanyScreen: React.FC<AddCompanyScreenProps> = ({ navigation, route }
   // ];
 
   const attachMediaHandler = (mode: 'logo' | 'photos' | 'certificates' | 'video') => {
-    if (mode) {
-      const initOptions: OptionsType = {
-        width: windowWidth,
-        height: windowWidth / 1.5,
-        cropperStatusBarColor: 'black',
-        cropperToolbarTitle: 'Wytnij fragment',
-        mediaType: 'photo',
-        cropperActiveWidgetColor: 'black',
-        cropperToolbarColor: 'white',
-        cropperToolbarWidgetColor: 'black',
-        hideBottomControls: true,
-        enableRotationGesture: true,
-      }
-      const setUniqueImages = (prevImages: MediaType[]) => (newImages: MediaType[]): MediaType[] => {
-        const slicedNewImages = newImages.slice(0, 20);
-        if (prevImages.length >= 20) return prevImages;
-        if (!prevImages.length) return slicedNewImages;
-        const existedImages = prevImages.map(image => image.path);
-        const filtered = slicedNewImages.filter(curr => !existedImages.includes(curr.path));
-        return [...prevImages, ...filtered].slice(0, 20);
-      }
+    // if (mode) {
+    //   const initOptions: OptionsType = {
+    //     width: windowWidth,
+    //     height: windowWidth / 1.5,
+    //     cropperStatusBarColor: 'black',
+    //     cropperToolbarTitle: 'Wytnij fragment',
+    //     mediaType: 'photo',
+    //     cropperActiveWidgetColor: 'black',
+    //     cropperToolbarColor: 'white',
+    //     cropperToolbarWidgetColor: 'black',
+    //     hideBottomControls: true,
+    //     enableRotationGesture: true,
+    //   }
+    //   const setUniqueImages = (prevImages: MediaType[]) => (newImages: MediaType[]): MediaType[] => {
+    //     const slicedNewImages = newImages.slice(0, 20);
+    //     if (prevImages.length >= 20) return prevImages;
+    //     if (!prevImages.length) return slicedNewImages;
+    //     const existedImages = prevImages.map(image => image.path);
+    //     const filtered = slicedNewImages.filter(curr => !existedImages.includes(curr.path));
+    //     return [...prevImages, ...filtered].slice(0, 20);
+    //   }
 
-      const data: { [k in typeof mode]: { options: OptionsType, callback: any } } = {
-        logo: {
-          callback: setCompanyLogo,
-          options: { cropping: true, }
-        },
-        certificates: {
-          callback: (images: MediaType[]) => setCompanyCertificates(prev => setUniqueImages(prev)(images)),
-          options: { multiple: true }
-        },
-        photos: {
-          callback: (images: MediaType[]) => setCompanyPhotos(prev => setUniqueImages(prev)(images)),
-          options: { multiple: true }
-        },
-        video: {
-          callback: setCompanyVideo,
-          options: { mediaType: 'video' }
-        }
-      }
-      const options: OptionsType = { ...initOptions, ...data[mode].options };
-      const open = (thing: 'Camera' | 'Picker') => {
-        ImageCropPicker[`open${thing}`](options).then(data[mode].callback).catch(() => { });
-      }
-      if (mode === 'logo' || mode === 'video')
-        setSwipeablePanelProps({
-          title: 'W jaki sposób chcesz dodać media?',
-          buttons: [{
-            children: 'Zrób teraz',
-            onPress: () => open('Camera')
-          },
-          {
-            children: 'Wybierz z galerii',
-            onPress: () => open('Picker')
-          },]
-        });
-      else if (mode === 'photos' || mode === 'certificates') open('Picker');
-    }
+    //   const data: { [k in typeof mode]: { options: OptionsType, callback: any } } = {
+    //     logo: {
+    //       callback: setCompanyLogo,
+    //       options: { cropping: true, }
+    //     },
+    //     certificates: {
+    //       callback: (images: MediaType[]) => setCompanyCertificates(prev => setUniqueImages(prev)(images)),
+    //       options: { multiple: true }
+    //     },
+    //     photos: {
+    //       callback: (images: MediaType[]) => setCompanyPhotos(prev => setUniqueImages(prev)(images)),
+    //       options: { multiple: true }
+    //     },
+    //     video: {
+    //       callback: setCompanyVideo,
+    //       options: { mediaType: 'video' }
+    //     }
+    //   }
+    //   const options: OptionsType = { ...initOptions, ...data[mode].options };
+    //   const open = (thing: 'Camera' | 'Picker') => {
+    //     ImageCropPicker[`open${thing}`](options).then(data[mode].callback).catch(() => { });
+    //   }
+    //   if (mode === 'logo' || mode === 'video')
+    //     setSwipeablePanelProps({
+    //       title: 'W jaki sposób chcesz dodać media?',
+    //       buttons: [{
+    //         children: 'Zrób teraz',
+    //         onPress: () => open('Camera')
+    //       },
+    //       {
+    //         children: 'Wybierz z galerii',
+    //         onPress: () => open('Picker')
+    //       },]
+    //     });
+    //   else if (mode === 'photos' || mode === 'certificates') open('Picker');
+    // }
   }
 
   const deletePhotoHandler = (index: number, mode: 'photos' | 'certificates') => {
@@ -315,7 +309,6 @@ const AddCompanyScreen: React.FC<AddCompanyScreenProps> = ({ navigation, route }
 
   const showTipsHandler = () => {
     setSwipeablePanelProps({
-      onlySmall: false,
       closeButton: false,
       children: (
         <ScrollView style={styles.tipsView}>
@@ -408,7 +401,7 @@ const AddCompanyScreen: React.FC<AddCompanyScreenProps> = ({ navigation, route }
           style={{ opacity: isActive ? 0.5 : 1, marginRight: 19, position: 'relative' }}
         >
           <View style={{ position: 'absolute', top: -12, right: -12, zIndex: 1 }}>
-            <IconButton p='5px'
+            <Button p='5px' circular
               onPress={() => index !== undefined && deletePhotoHandler(index, mode)}
               icon={<SvgIcon icon='crossSmall' />}
             />
@@ -447,14 +440,14 @@ const AddCompanyScreen: React.FC<AddCompanyScreenProps> = ({ navigation, route }
           />
         </View>
         <View style={{ marginBottom: 24 }}>
-          <SmallMap
+          {/* <SmallMap
             label='Lokalizacja*'
             place={companyData.other_address?.formattedAddress}
             onPress={() => navigation.navigate('MapScreen', {
               callback: (address) => changeCompanyDataHandler('other_address', address),
               initialAddress: companyData.other_address
             })}
-          />
+          /> */}
           {/* {companyData.other_address && <View style={{ marginHorizontal: 19, marginVertical: 15 }}>
             <TextField
               label="Numer mieszkania/biura (opcjonalne)"
@@ -464,7 +457,7 @@ const AddCompanyScreen: React.FC<AddCompanyScreenProps> = ({ navigation, route }
           </View>} */}
         </View>
         <View style={{ marginBottom: 32 }}>
-          <ButtonArrowSelector
+          {/* <ButtonArrowSelector
             text='Dane do kontaktu'
             onPress={() => navigation.navigate('AddConractPersonsScreen', {
               contactPersons,
@@ -472,7 +465,7 @@ const AddCompanyScreen: React.FC<AddCompanyScreenProps> = ({ navigation, route }
               companyData,
               changeCompanyDataHandler
             })}
-          />
+          /> */}
         </View>
         <View style={{ marginHorizontal: 19, marginBottom: 5 }}>
           <Typography weight="Bold" variant="h5">
@@ -681,9 +674,9 @@ const AddCompanyScreen: React.FC<AddCompanyScreenProps> = ({ navigation, route }
         >
           {isNumber(companyData.job_industry) && <View style={{ width: 34, height: 34, position: 'relative', marginRight: 19 }}>
             <View style={{ position: 'absolute' }}>
-              <SkeletonPlaceholder borderRadius={17}>
+              {/* <SkeletonPlaceholder borderRadius={17}>
                 <View style={{ width: 34, height: 34 }} />
-              </SkeletonPlaceholder>
+              </SkeletonPlaceholder> */}
             </View>
             <SvgUri width={34} height={34} uri={jobIndustries.find(curr => curr.id === companyData.job_industry)?.icon || null} />
           </View>}
@@ -701,7 +694,7 @@ const AddCompanyScreen: React.FC<AddCompanyScreenProps> = ({ navigation, route }
           marginBottom={false}
           borderTop={false}
         /> */}
-        <ButtonArrowSelector
+        {/* <ButtonArrowSelector
           text='Opis firmy*'
           marginTop={false}
           marginBottom={false}
@@ -711,7 +704,7 @@ const AddCompanyScreen: React.FC<AddCompanyScreenProps> = ({ navigation, route }
             description: companyData.full_decription,
             title: 'Dodaj opis firmy'
           })}
-        />
+        /> */}
         {/* <ButtonArrowSelector
           text='Dane do faktury'
           marginTop={false}
@@ -807,9 +800,9 @@ const AddCompanyScreen: React.FC<AddCompanyScreenProps> = ({ navigation, route }
         ))}
       </ScrollView>
       <View>
-        <ButtonRipple withLoading disabled={loading} onPress={submitCompanyCreation}>
+        <Button withLoading disabled={loading} onPress={submitCompanyCreation}>
           {editMode ? 'Zaktualizuj' : 'Utwórz'}
-        </ButtonRipple>
+        </Button>
       </View>
     </ScreenHeaderProvider>
   );

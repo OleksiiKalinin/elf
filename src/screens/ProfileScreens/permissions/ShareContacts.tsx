@@ -1,17 +1,13 @@
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useState } from 'react';
-import Typography from '../../../components/atoms/Typography/Typography';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CompositeScreenProps, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../../navigators/RootNavigator';
 import Colors from '../../../colors/Colors';
-import ButtonRipple from '../../../components/molecules/ButtonRipple/ButtonRipple';
-import ScreenHeaderProvider from '../../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
+import Switch from '../../../components/atoms/Switch';
+import Typography from '../../../components/atoms/Typography';
+import ScreenHeaderProvider from '../../../components/organismes/ScreenHeaderProvider';
 import { ProfileStackParamList } from '../../../navigators/ProfileNavigator';
-import ButtonArrowSelector from '../../../components/atoms/ButtonArrowSelector/ButtonArrowSelector';
-import SvgIcon from '../../../components/molecules/SvgIcon/SvgIcon';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import Switch from '../../../components/atoms/Switch/Switch';
 
 type ShareContactsProps = CompositeScreenProps<
   NativeStackScreenProps<ProfileStackParamList, 'ShareContacts'>,

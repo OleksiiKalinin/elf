@@ -1,11 +1,9 @@
 import React, {ComponentProps, FC, useState} from 'react';
 import {View, StyleSheet, Image} from 'react-native';
-import {ScrollView} from 'native-base';
-import StarRating from 'react-native-star-rating';
-import Colors from '../../../../colors/Colors';
-import Typography from '../../../../components/atoms/Typography/Typography';
-import SvgIcon from '../../../../components/molecules/SvgIcon/SvgIcon';
 import { useTypedSelector } from '../../../../hooks/useTypedSelector';
+import SvgIcon from '../../../../components/atoms/SvgIcon';
+import Typography from '../../../../components/atoms/Typography';
+import Colors from '../../../../colors/Colors';
 
 type OpinionCardProps = {
   // companyIndex: number
@@ -84,7 +82,7 @@ const OpinionCard: FC<OpinionCardProps> = ({...props}) => {
     require('../../../../assets/images/company.png'),
   ];
 
-  const data = useTypedSelector(state => state.company);
+  // const data = useTypedSelector(state => state.company);
 
   // const selectedCompany = null;
 
@@ -109,12 +107,12 @@ const OpinionCard: FC<OpinionCardProps> = ({...props}) => {
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             <Typography style={{marginBottom: 18}}>{name}</Typography>
             <View style={{flexDirection: 'row'}}>
-              <StarRating
+              {/* <StarRating
                 starSize={18}
                 disabled={false}
                 maxStars={5}
                 rating={rating}
-              />
+              /> */}
               <View style={{width: 40}}>
                 <Typography style={{textAlign: 'right'}}>{rating}</Typography>
               </View>

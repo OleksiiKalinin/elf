@@ -8,8 +8,9 @@ import JobScreen from '../screens/CandidatesScreens/JobScreen';
 import ProfileScreen from '../screens/CandidatesScreens/ProfileScreen';
 import FavSettingsScreen from '../screens/CandidatesScreens/FavSettingsScreen';
 import VideoScreen from '../screens/CandidatesScreens/VideoScreen';
-import MapScreen from '../screens/CandidatesScreens/MapScreen';
+// import MapScreen from '../screens/CandidatesScreens/MapScreen';
 import { CandidateDataType } from '../store/reducers/types';
+import { PathConfigMap } from '@react-navigation/native';
 
 export type CandidatesStackParamList = {
   MainScreen: { filters?: any } | undefined;
@@ -30,6 +31,18 @@ export type CandidatesStackParamList = {
   MapScreen: undefined;
 };
 
+export const CandidatesStackLinking: PathConfigMap<CandidatesStackParamList> = {
+  MainScreen: '',
+  FavouritesScreen: 'FavouritesScreen',
+  FavSettingsScreen: 'FavSettingsScreen',
+  FilterScreen: 'FilterScreen',
+  JobScreen: 'JobScreen',
+  MapScreen: 'MapScreen',
+  ProfileScreen: 'ProfileScreen',
+  SearchScreen: 'SearchScreen',
+  VideoScreen: 'VideoScreen',
+}
+
 const CandidatesStack = createNativeStackNavigator<CandidatesStackParamList>();
 
 const CandidatesNavigator: React.FC = () => {
@@ -40,18 +53,14 @@ const CandidatesNavigator: React.FC = () => {
     >
       <CandidatesStack.Screen
         name="MainScreen"
-        component={() => null}
-      />
-      <CandidatesStack.Screen
-        name="VideoScreen"
-        component={VideoScreen}
-      />
-      {/* <CandidatesStack.Screen
-        name="MainScreen"
         component={MainScreen}
         initialParams={{
           filters: [undefined, [], [], [], null, false, false, false, null, NaN, NaN],
         }}
+      />
+      <CandidatesStack.Screen
+        name="VideoScreen"
+        component={VideoScreen}
       />
       <CandidatesStack.Screen
         name="SearchScreen"
@@ -81,7 +90,7 @@ const CandidatesNavigator: React.FC = () => {
           filters: [undefined, [], [], [], null, false, false, false, null, NaN, NaN]
         }}
       />
-      <CandidatesStack.Screen
+      {/* <CandidatesStack.Screen
         name="MapScreen"
         component={MapScreen}
       /> */}

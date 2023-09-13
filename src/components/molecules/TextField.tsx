@@ -1,4 +1,3 @@
-// import { IconButton } from 'native-base';
 import React, { useEffect, useState, useRef, FC, ComponentProps, ReactNode } from 'react';
 import {
     View,

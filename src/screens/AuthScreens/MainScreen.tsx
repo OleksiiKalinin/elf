@@ -1,5 +1,4 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-// import { View, Image, Spinner } from 'native-base';
 import React, { FC, useEffect, useState } from 'react';
 import { BackHandler, ScrollView, StyleSheet, View } from 'react-native';
 import Colors from '../../colors/Colors';

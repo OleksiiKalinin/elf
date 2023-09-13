@@ -1,11 +1,10 @@
 import React, {ComponentProps, FC, useState} from 'react';
 import {View, StyleSheet, Image} from 'react-native';
-import {ScrollView} from 'native-base';
-import StarRating from 'react-native-star-rating';
+// import StarRating from 'react-native-star-rating';
+import Typography from '../../../../components/atoms/Typography';
 import Colors from '../../../../colors/Colors';
-import Typography from '../../../../components/atoms/Typography/Typography';
-import SvgIcon from '../../../../components/molecules/SvgIcon/SvgIcon';
-import { SliderBox } from "react-native-image-slider-box";
+import SvgIcon from '../../../../components/atoms/SvgIcon';
+// import { SliderBox } from "react-native-image-slider-box";
 
 
 type OpinionCardProps = {};
@@ -86,11 +85,11 @@ const OpinionCard: FC<OpinionCardProps> = ({...props}) => {
   return (
     <View style={{backgroundColor: Colors.Basic100}}>
 
-<SliderBox
+{/* <SliderBox
         sliderBoxHeight={240}
         images={ImagesPortfolio}
         style={{marginTop: 23, width: '100%'}}
-      />
+      /> */}
 
       <Typography weight="Bold" style={styles.Header}>
         Beauty sp. z o.o.
@@ -110,12 +109,12 @@ const OpinionCard: FC<OpinionCardProps> = ({...props}) => {
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             <Typography style={{marginBottom: 18}}>{name}</Typography>
             <View style={{flexDirection: 'row'}}>
-              <StarRating
+              {/* <StarRating
                 starSize={18}
                 disabled={false}
                 maxStars={5}
                 rating={rating}
-              />
+              /> */}
               <View style={{width: 40}}>
                 <Typography style={{textAlign: 'right'}}>{rating}</Typography>
               </View>

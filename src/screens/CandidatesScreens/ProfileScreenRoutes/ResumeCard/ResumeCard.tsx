@@ -1,15 +1,11 @@
 import React, { ComponentProps, FC, useEffect, useState } from 'react';
-import { IconButton, Radio } from 'native-base';
 import { View, StyleSheet, Image, Dimensions, Linking } from 'react-native';
-import colors from 'native-base/lib/typescript/theme/base/colors';
-import { ScrollView } from 'native-base';
-import Typography from '../../../../components/atoms/Typography/Typography';
-import SvgIcon, { IconTypes } from '../../../../components/molecules/SvgIcon/SvgIcon';
 import Colors from '../../../../colors/Colors';
-import ButtonRipple from '../../../../components/molecules/ButtonRipple/ButtonRipple';
 import { CandidateDataType, JobPositionType } from '../../../../store/reducers/types';
 import { useTypedSelector } from '../../../../hooks/useTypedSelector';
-import Carousel from '../../../../components/organisms/Carousel/Carousel';
+import { IconTypes } from '../../../../components/atoms/SvgIcon';
+import Typography from '../../../../components/atoms/Typography';
+// import Carousel from '../../../../components/organisms/Carousel/Carousel';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -35,7 +31,7 @@ const ResumeCard: FC<CandidateDataType> = (props) => {
     <View style={{ backgroundColor: Colors.Basic100 }}>
       {photos && <>
         <Typography weight='Bold' style={styles.Header}>Portfolio</Typography>
-        <Carousel
+        {/* <Carousel
           data={photos}
           inactiveSlideScale={1}
           renderItem={({ item }) => (
@@ -43,7 +39,7 @@ const ResumeCard: FC<CandidateDataType> = (props) => {
               <Image source={{ uri: item.path }} style={{ height: screenWidth / 1.5, width: screenWidth }} />
             </View>
           )}
-        />
+        /> */}
       </>}
       {/* <Typography weight='Bold' style={styles.Header}>Doświadczenie zawodowe</Typography>
       {Experience.map(({ job, seniority, company, time, period }) =>

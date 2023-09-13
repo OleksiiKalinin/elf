@@ -2,16 +2,16 @@ import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { IconButton, ScrollView } from 'native-base';
-import Typography from '../../components/atoms/Typography/Typography';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import TextField from '../../components/molecules/TextField/TextField';
-import SvgIcon, { IconTypes } from '../../components/molecules/SvgIcon/SvgIcon';
 import { AdvertStackParamList } from '../../navigators/AdvertNavigator';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { ScrollView } from '../../components/molecules/ScrollView';
+import TextField from '../../components/molecules/TextField';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import Typography from '../../components/atoms/Typography';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<AdvertStackParamList, 'JobScreen'>,
@@ -245,11 +245,11 @@ const JobScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
               value={search}
               onChangeText={setSearch}
               left={<SvgIcon icon='search' />}
-              right={<IconButton
-                p='7px' mr='-7px' borderRadius={0}
-                icon={<SvgIcon icon='crossBig' />}
-                onPress={() => setSearch('')}
-              />}
+              // right={<IconButton
+              //   p='7px' mr='-7px' borderRadius={0}
+              //   icon={<SvgIcon icon='crossBig' />}
+              //   onPress={() => setSearch('')}
+              // />}
             />
           </View>
 

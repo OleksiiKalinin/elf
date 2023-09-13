@@ -1,16 +1,15 @@
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { Divider, ScrollView } from 'native-base';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import TextField from '../../components/molecules/TextField/TextField';
-import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
+import CheckBox from '../../components/atoms/CheckBox';
+import TextField from '../../components/molecules/TextField';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import CheckBox from '../../components/atoms/CheckBox/CheckBox';
+import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
+import Button from '../../components/molecules/Button';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<ProfileStackParamList, 'MethodsScreen'>,
@@ -18,11 +17,11 @@ type MainScreenProps = CompositeScreenProps<
 >;
 
 const MethodsScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
-  const { languages, category, subcategories, methods, tools } = route.params;
+  // const { languages, category, subcategories, methods, tools } = route.params;
 
   const [search, setSearch] = useState<string>('');
-  const [selectedItems, setSelectedItems] = useState<any>(methods);
-  const data = useTypedSelector(state => state.company);
+  // const [selectedItems, setSelectedItems] = useState<any>(methods);
+  // const data = useTypedSelector(state => state.company);
 
   return (
     <ScreenHeaderProvider
@@ -46,7 +45,7 @@ const MethodsScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           />
         </View>
 
-        {data.methods[0].beauty.map((item, index) => (
+        {/* {data.methods[0].beauty.map((item, index) => (
           <View>
             <Divider />
             <CheckBox
@@ -62,17 +61,21 @@ const MethodsScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
               style={{ padding: 16 }}
             />
           </View>
-        ))}
+        ))} */}
 
         <View style={{ marginBottom: 40 }}></View>
       </ScrollView>
-      <ButtonRipple onPress={() => navigation.navigate("ToolsScreen", {
-        methods: selectedItems,
-        languages: languages,
-        category: category,
-        subcategories: subcategories,
-        tools: tools
-      })}>Zatwierdź</ButtonRipple>
+      <Button
+        // onPress={() => navigation.navigate("ToolsScreen", {
+        //   methods: selectedItems,
+        //   languages: languages,
+        //   category: category,
+        //   subcategories: subcategories,
+        //   tools: tools
+        // })}
+      >
+        Zatwierdź
+      </Button>
 
     </ScreenHeaderProvider>
   );

@@ -4,19 +4,16 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView, SectionList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import Colors from '../../colors/Colors';
-import HorizontalMenuButton from '../../components/atoms/HorizontalMenuButton/HorizontalMenuButton';
-import LoadingScreen from '../../components/atoms/LoadingScreen/LoadingScreen';
-import Typography from '../../components/atoms/Typography/Typography';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
-import CandidateCard from '../../components/organisms/CandidateCard/CandidateCard';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { AdvertStackParamList } from '../../navigators/AdvertNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import advertsServices from '../../services/advertsServices';
 import { CandidateDataType } from '../../store/reducers/types';
+import LoadingScreen from '../../components/atoms/LoadingScreen';
+import Typography from '../../components/atoms/Typography';
+import CandidateCard from '../../components/organismes/CandidateCard';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<AdvertStackParamList, 'CandidatesScreen'>,
@@ -33,8 +30,8 @@ const CandidatesScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   useEffect(() => {
     (async () => {
       if (candidatesWithRating.length) {
-        const res = await dispatch(advertsServices.getAdvertCandidates(token, candidatesWithRating.map(e => e.candidate_id)));
-        setCandidates(res as unknown as CandidateDataType[]);
+        // const res = await dispatch(advertsServices.getAdvertCandidates(token, candidatesWithRating.map(e => e.candidate_id)));
+        // setCandidates(res as unknown as CandidateDataType[]);
       }
       setLoading(false);
     })();

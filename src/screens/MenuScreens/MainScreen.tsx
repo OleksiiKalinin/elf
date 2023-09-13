@@ -1,5 +1,4 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-// import { Badge } from 'native-base';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Dimensions,
@@ -58,7 +57,9 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Historia wydarzeń',
             backgroundColor: Colors.Sea300,
             icon: 'eventsHistory',
-            onPress: () => { },//navigation.navigate('EventsScreen'),
+            ...useLink({
+              href: '/home/EventsScreen',
+            }),
             missedEvents: 0,
             badge: '',
           },
@@ -74,7 +75,9 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Kalendarz',
             backgroundColor: Colors.Sea300,
             icon: 'calendar',
-            onPress: () => { },//navigation.navigate('CalendarStack', { screen: 'MainScreen' }),
+            ...useLink({
+              href: '/calendar',
+            }),
             missedEvents: 0,
             badge: ''
           },
@@ -95,10 +98,9 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Kandydaci',
             backgroundColor: Colors.Blue100,
             icon: 'candidates',
-            // onPress: () => navigation.navigate('CandidatesStack', { screen: 'MainScreen' }),
             missedEvents: 0,
             ...useLink({
-              href: '/messenger',
+              href: '/candidates',
             }),
             badge: ''
           },
@@ -114,9 +116,8 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Ogłoszenia',
             backgroundColor: Colors.Blue100,
             icon: 'work',
-            // onPress: () => navigation.navigate('AdvertStack', { screen: 'MainScreen' }),
             ...useLink({
-              href: '/messenger/second',
+              href: '/adverts',
             }),
             missedEvents: 0,
             badge: '',
@@ -125,9 +126,8 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Profil',
             backgroundColor: Colors.Blue100,
             icon: 'user',
-            // onPress: () => navigation.navigate('ProfileStack', { screen: 'MainScreen' }),
             ...useLink({
-              href: '/candidates/video',
+              href: '/profile',
             }),
             missedEvents: 0,
             badge: ''
@@ -136,7 +136,9 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Pakiety',
             backgroundColor: Colors.Blue100,
             icon: 'bag',
-            onPress: () => { },//navigation.navigate('ProfileStack', { screen: 'PaymentTemporalScreen' }),
+            ...useLink({
+              href: '/profile/PaymentTemporalScreen',
+            }),
             missedEvents: 0,
             badge: ''
           },

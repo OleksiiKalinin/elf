@@ -2,18 +2,18 @@ import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { Fragment, useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { Divider, IconButton, ScrollView } from 'native-base';
-import Typography from '../../components/atoms/Typography/Typography';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import TextField from '../../components/molecules/TextField/TextField';
-import SvgIcon, { IconTypes } from '../../components/molecules/SvgIcon/SvgIcon';
 import { AdvertStackParamList } from '../../navigators/AdvertNavigator';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { SvgUri } from 'react-native-svg';
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { ScrollView } from '../../components/molecules/ScrollView';
+import TextField from '../../components/molecules/TextField';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import Typography from '../../components/atoms/Typography';
+// import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<AdvertStackParamList, 'JobCategoryScreen'>,
@@ -45,11 +45,11 @@ const JobCategoryScreen: React.FC<MainScreenProps> = ({ navigation, route }) => 
             value={search}
             onChangeText={setSearch}
             left={<SvgIcon icon='search' />}
-            right={<IconButton
-              p='7px' mr='-7px' borderRadius={0}
-              icon={<SvgIcon icon='crossBig' />}
-              onPress={() => setSearch('')}
-            />}
+            // right={<IconButton
+            //   p='7px' mr='-7px' borderRadius={0}
+            //   icon={<SvgIcon icon='crossBig' />}
+            //   onPress={() => setSearch('')}
+            // />}
           />
         </View>
         <Typography color={Colors.Basic600} style={{ marginTop: 16, marginBottom: 10, marginLeft: 19 }}>
@@ -63,9 +63,9 @@ const JobCategoryScreen: React.FC<MainScreenProps> = ({ navigation, route }) => 
             }}>
               <View style={{ width: 34, height: 34, position: 'relative' }}>
                 <View style={{ position: 'absolute' }}>
-                  <SkeletonPlaceholder borderRadius={17}>
+                  {/* <SkeletonPlaceholder borderRadius={17}>
                     <View style={{ width: 34, height: 34 }} />
-                  </SkeletonPlaceholder>
+                  </SkeletonPlaceholder> */}
                 </View>
                 <SvgUri width={34} height={34} uri={icon} />
               </View>
@@ -76,7 +76,7 @@ const JobCategoryScreen: React.FC<MainScreenProps> = ({ navigation, route }) => 
                 <SvgIcon icon="arrowRightSmall" style={{ alignSelf: 'center' }} />
               </View>
             </TouchableOpacity>
-            <Divider />
+            {/* <Divider /> */}
           </Fragment>))}
         </View>
       </ScrollView>

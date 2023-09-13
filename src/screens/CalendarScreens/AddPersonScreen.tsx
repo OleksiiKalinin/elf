@@ -3,15 +3,15 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import Colors from '../../colors/Colors';
-import Typography from '../../components/atoms/Typography/Typography';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-import TextField from '../../components/molecules/TextField/TextField';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import { nativeStore } from '../../store';
 import { calendarActionTypes } from '../../store/actions';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import Typography from '../../components/atoms/Typography';
+import TextField from '../../components/molecules/TextField';
+import Button from '../../components/molecules/Button';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<CalendarStackParamList, 'AddPersonScreen'>,
@@ -68,12 +68,14 @@ const AddPersonScreen: React.FC<MainScreenProps> = ({ navigation }) => {
         <View style={{ marginBottom: 40 }}></View>
       </ScrollView>
 
-      <ButtonRipple onPress={() => navigation.navigate('EventScreen', {
-        name: formData.fullName,
-        phone: formData.phone
-      })}>
+      <Button 
+      // onPress={() => navigation.navigate('EventScreen', {
+      //   name: formData.fullName,
+      //   phone: formData.phone
+      // })}
+      >
         Potwierdź
-      </ButtonRipple>
+      </Button>
     </ScreenHeaderProvider>
   );
 };

@@ -1,20 +1,18 @@
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import Typography from '../../components/atoms/Typography/Typography'
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../navigators/AuthNavigator';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-import TextField from '../../components/molecules/TextField/TextField';
-import ScreenHeader from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useDispatch } from 'react-redux';
 import validateMail from '../../hooks/validateMail';
 import generalServices from '../../services/generalServices';
-import LoadingScreen from '../../components/atoms/LoadingScreen/LoadingScreen';
+import Typography from '../../components/atoms/Typography';
+import TextField from '../../components/molecules/TextField';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import Button from '../../components/molecules/Button';
 
 type ScreenProps = CompositeScreenProps<
   NativeStackScreenProps<AuthStackParamList, 'FillUserDataScreen'>,
@@ -52,9 +50,9 @@ const FillUserDataScreen: React.FC<ScreenProps> = ({ navigation }) => {
       if (email) data.email = email;
       if (first_name) data.first_name = first_name;
       if (last_name) data.last_name = last_name;
-      const isOk = await dispatch(generalServices.setUserData(data, token, 'post'));
+      // const isOk = await dispatch(generalServices.setUserData(data, token, 'post'));
       setLoading(false);
-      !!isOk && navigation.navigate('MenuStack', { screen: 'MainScreen' });
+      // !!isOk && navigation.navigate('MenuStack', { screen: 'MainScreen' });
     } else setShowTips(true);
   }
 
@@ -96,7 +94,7 @@ const FillUserDataScreen: React.FC<ScreenProps> = ({ navigation }) => {
           </View>}
         </ScrollView>
         <View>
-          <ButtonRipple withLoading disabled={loading} onPress={fillDataHandler}>Potwierdź</ButtonRipple>
+          <Button withLoading disabled={loading} onPress={fillDataHandler}>Potwierdź</Button>
         </View>
       </View>
     </ScreenHeaderProvider>

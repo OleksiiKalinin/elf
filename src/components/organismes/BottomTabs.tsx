@@ -1,6 +1,5 @@
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useRoute } from '@react-navigation/native';
-// import { Badge } from 'native-base';
 import React, { FC, useEffect, useState } from 'react';
 import { Keyboard, View, Dimensions } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -105,7 +104,7 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes, profileFocused, setProfileFoc
             {/* <Animated.View style={[{ flexDirection: 'row', backgroundColor: Colors.White }, animationStyle]}> */}
             {routes.map(route => {
                 const label = route as keyof RootStackParamList;
-                const href = (navigationLinking.config?.screens[label] as any)?.path as string;
+                const href = ((navigationLinking.config?.screens[label] as any)?.path || '') as string;
                 const isFocused = currentScreen.split('-')[0] === route;
                 if (label === 'ProfileStack') setProfileFocused(isFocused);
 

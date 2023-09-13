@@ -4,10 +4,9 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CompositeScreenProps, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../../navigators/RootNavigator';
 import Colors from '../../../colors/Colors';
-import ScreenHeaderProvider from '../../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
+import Typography from '../../../components/atoms/Typography';
+import ScreenHeaderProvider from '../../../components/organismes/ScreenHeaderProvider';
 import { ProfileStackParamList } from '../../../navigators/ProfileNavigator';
-import Typography from '../../../components/atoms/Typography/Typography';
-import ButtonArrowSelector from '../../../components/atoms/ButtonArrowSelector/ButtonArrowSelector';
 
 type AddEventProps = CompositeScreenProps<
   NativeStackScreenProps<ProfileStackParamList, 'AddEvent'>,
@@ -67,9 +66,9 @@ const AddEvent: React.FC<AddEventProps> = ({ navigation }) => {
               style={{ marginTop: 14, marginLeft: 19, marginBottom: 12 }}>
               Powiązane pytanie:
             </Typography>
-            <ButtonArrowSelector
+            {/* <ButtonArrowSelector
               text={'Jak zaplanować wydarzenie w kalendarzu?'}
-            />
+            /> */}
             <View style={[styles.marginHorizontal, { marginBottom: 30 }]}>
               <Typography color={Colors.Basic600} weight="Bold">
                 Czy ta odpowiedź była pomocna?

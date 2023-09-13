@@ -1,17 +1,17 @@
 import { Keyboard, Linking, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import Typography from '../../components/atoms/Typography/Typography'
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../navigators/AuthNavigator';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-import TextField from '../../components/molecules/TextField/TextField';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { useDispatch } from 'react-redux';
 import validateMail from '../../hooks/validateMail';
 import authServices from '../../services/authServices';
+import Typography from '../../components/atoms/Typography';
+import TextField from '../../components/molecules/TextField';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import Button from '../../components/molecules/Button';
 
 type AuthLoginScreenProps = CompositeScreenProps<
   NativeStackScreenProps<AuthStackParamList, 'LoginScreen'>,
@@ -48,7 +48,7 @@ const AuthLoginScreen: React.FC<AuthLoginScreenProps> = ({ navigation }) => {
     if (isDataValid) {
       Keyboard.dismiss();
       setLoading(true);
-      await dispatch(authServices.login(formData));
+      // await dispatch(authServices.login(formData));
       setLoading(false);
     } else setShowTips(true);
   }
@@ -83,13 +83,13 @@ const AuthLoginScreen: React.FC<AuthLoginScreenProps> = ({ navigation }) => {
           <Typography color={Colors.Link} style={{ borderBottomWidth: 1, borderBottomColor: Colors.Link }} variant='small' onPress={() => navigation.navigate('RememberPasswordScreen')}>Nie pamiętam hasła</Typography>
         </View>
         <View style={{ marginVertical: 24 }}>
-          <ButtonRipple disabled={loading} onPress={loginHandler}>Zaloguj się</ButtonRipple>
+          <Button disabled={loading} onPress={loginHandler}>Zaloguj się</Button>
         </View>
         <View style={styles.margin}>
           <Typography textAlign='center' weight='SemiBold' variant='h4'>Nie masz konta? Zarejestruj się.</Typography>
         </View>
         <View style={{ marginBottom: 12 }}>
-          <ButtonRipple variant='secondary' onPress={() => navigation.navigate('RegistrationScreen')}>Zarejestruj się</ButtonRipple>
+          <Button variant='secondary' onPress={() => navigation.navigate('RegistrationScreen')}>Zarejestruj się</Button>
         </View>
       </ScrollView >
     </ScreenHeaderProvider>

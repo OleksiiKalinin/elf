@@ -4,28 +4,22 @@ import React, { useEffect, useState } from 'react';
 import {
     Dimensions,
     Image,
+    ScrollView,
     StyleSheet,
     TouchableOpacity,
     View,
 } from 'react-native';
 import { SceneMap } from 'react-native-tab-view';
 import Colors from '../../colors/Colors';
-import Typography from '../../components/atoms/Typography/Typography';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
-import TabbarMenu, {
-    TabbarRoute,
-} from '../../components/organisms/TabbarMenu/TabbarMenu';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
-import { Modal, ScrollView } from 'native-base';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import AsyncStorage from '@react-native-community/async-storage';
 import { useDispatch } from 'react-redux';
-import ButtonArrowSelector from '../../components/atoms/ButtonArrowSelector/ButtonArrowSelector';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
-import HorizontalSelector from '../../components/molecules/HorizontalSelector/HorizontalSelector';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-import ProgressBar from '../../components/atoms/ProgressBar/ProgressBar';
+import Typography from '../../components/atoms/Typography';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import Button from '../../components/molecules/Button';
+import SvgIcon from '../../components/atoms/SvgIcon';
 
 type NoCompanyScreenProps = CompositeScreenProps<
     NativeStackScreenProps<ProfileStackParamList, 'NoCompanyScreen'>,
@@ -71,9 +65,9 @@ const NoCompanyScreen: React.FC<NoCompanyScreenProps> = ({ navigation }) => {
                     <Typography textAlign='center'>74% Respondentów deklaruje, że uzupełnione profile bardziej przyciągają ich uwagę.</Typography>
                 </View> */}
                 <View style={{ paddingHorizontal: 19, marginBottom: 34 }}>
-                    <ButtonRipple
+                    <Button
                         disabled={!token}
-                        icon='createCircleSmall'
+                        icon={<SvgIcon icon='createCircleSmall' />}
                         borderRadius={4}
                         variant='secondary'
                         contentWeight='Medium'
@@ -82,7 +76,7 @@ const NoCompanyScreen: React.FC<NoCompanyScreenProps> = ({ navigation }) => {
                         onPress={() => navigation.navigate('AddCompanyScreen', { editMode: false })}
                     >
                         Dodaj profil firmy
-                    </ButtonRipple>
+                    </Button>
                     {!token && <Typography color={Colors.Danger}>Zaloguj się!</Typography>}
                 </View>
                 {/* <ButtonArrowSelector

@@ -1,19 +1,17 @@
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import Typography from '../../components/atoms/Typography/Typography';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CompositeScreenProps, useIsFocused, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
-import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
-import ButtonArrowSelector from '../../components/atoms/ButtonArrowSelector/ButtonArrowSelector';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import TextField from '../../components/molecules/TextField/TextField';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import Typography from '../../components/atoms/Typography';
+import TextField from '../../components/molecules/TextField';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
+import Button from '../../components/molecules/Button';
 
 type AddPaymentScreen = CompositeScreenProps<
   NativeStackScreenProps<ProfileStackParamList, 'AddPaymentScreen'>,
@@ -102,9 +100,9 @@ const AddPaymentScreen: React.FC<AddPaymentScreen> = ({ navigation }) => {
 
         </ScrollView>
         <View style={{ marginVertical: 24 }}>
-          <ButtonRipple onPress={() => navigation.navigate("PaymentScreen")}>
+          <Button onPress={() => navigation.navigate("PaymentScreen")}>
             Zapisz
-          </ButtonRipple>
+          </Button>
         </View>
       </View>
     </ScreenHeaderProvider>

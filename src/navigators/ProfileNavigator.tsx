@@ -37,6 +37,7 @@ import CompanyInvoiceScreen from '../screens/ProfileScreens/CompanyInvoiceScreen
 import PackagesScreen from '../screens/ProfileScreens/PackagesScreen';
 import SettingsScreen from '../screens/ProfileScreens/SettingsScreen';
 import PaymentTemporalScreen from '../screens/ProfileScreens/PaymentTemporalScreen';
+import { PathConfigMap } from '@react-navigation/native';
 
 export type ProfileStackParamList = {
   MainScreen: undefined,
@@ -88,16 +89,51 @@ export type ProfileStackParamList = {
   }
 }
 
+export const ProfileStackLinking: PathConfigMap<ProfileStackParamList> = {
+  MainScreen: '',
+  AccountDataScreen: 'AccountDataScreen',
+  AddAdvert: 'AddAdvert',
+  AddCall: 'AddCall',
+  AddCompanyScreen: 'AddCompanyScreen',
+  AddConractPersonsScreen: 'AddConractPersonsScreen',
+  AddEvent: 'AddEvent',
+  AddPaymentScreen: 'AddPaymentScreen',
+  CompanyDescriptionScreen: 'CompanyDescriptionScreen',
+  CompanyInvoiceScreen: 'CompanyInvoiceScreen',
+  CompanyScreen: 'CompanyScreen',
+  CookieScreen: 'CookieScreen',
+  CreateCompanyProfile: 'CreateCompanyProfile',
+  EditPaymentScreen: 'EditPaymentScreen',
+  HelpCenterScreen: 'HelpCenterScreen',
+  JobCategoryScreen: 'JobCategoryScreen',
+  JobScreen: 'JobScreen',
+  LanguageScreen: 'LanguageScreen',
+  MapScreen: 'MapScreen',
+  MethodsScreen: 'MethodsScreen',
+  NoCompanyScreen: 'NoCompanyScreen',
+  NotificationScreen: 'NotificationScreen',
+  PackagesScreen: 'PackagesScreen',
+  PaymentMethods: 'PaymentMethods',
+  PaymentScreen: 'PaymentScreen',
+  PaymentTemporalScreen: 'PaymentTemporalScreen',
+  PointsScreen: 'PointsScreen',
+  PrivacyScreen: 'PrivacyScreen',
+  Register: 'Register',
+  RODO: 'RODO',
+  SendingOffers: 'SendingOffers',
+  SettingsScreen: 'SettingsScreen',
+  ShareCamera: 'ShareCamera',
+  ShareContacts: 'ShareContacts',
+  ShareLocation: 'ShareLocation',
+  ToolsScreen: 'ToolsScreen',
+}
+
 const ProfileStack = createNativeStackNavigator<ProfileStackParamList>();
 
 const ProfileNavigator: React.FC = () => {
   return (
     <ProfileStack.Navigator initialRouteName="MainScreen" screenOptions={{ headerShown: false }}>
-    <ProfileStack.Screen
-      name="MainScreen"
-      component={() => null}
-    />
-      {/* <ProfileStack.Screen name="MainScreen" component={MainScreen} />
+      <ProfileStack.Screen name="MainScreen" component={MainScreen} />
       <ProfileStack.Screen name="CompanyScreen" component={CompanyScreen} />
       <ProfileStack.Screen name="AccountDataScreen" component={AccountDataScreen} />
       <ProfileStack.Screen name="AddConractPersonsScreen" component={AddConractPersonsScreen} />
@@ -132,7 +168,7 @@ const ProfileNavigator: React.FC = () => {
       <ProfileStack.Screen name="JobCategoryScreen" component={JobCategoryScreen}/>
       <ProfileStack.Screen name="MethodsScreen" component={MethodsScreen} />
       <ProfileStack.Screen name="ToolsScreen" component={ToolsScreen} />
-      <ProfileStack.Screen name="PaymentTemporalScreen" component={PaymentTemporalScreen} /> */}
+      <ProfileStack.Screen name="PaymentTemporalScreen" component={PaymentTemporalScreen} />
     </ProfileStack.Navigator>
   );
 };

@@ -1,18 +1,16 @@
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { Divider, ScrollView } from 'native-base';
-import Typography from '../../components/atoms/Typography/Typography';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import TextField from '../../components/molecules/TextField/TextField';
-import SvgIcon, { IconTypes } from '../../components/molecules/SvgIcon/SvgIcon';
+import CheckBox from '../../components/atoms/CheckBox';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import Typography from '../../components/atoms/Typography';
+import TextField from '../../components/molecules/TextField';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-import { useTypedSelector } from '../../hooks/useTypedSelector';
-import CheckBox from '../../components/atoms/CheckBox/CheckBox';
+import Button from '../../components/molecules/Button';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<ProfileStackParamList, 'JobScreen'>,
@@ -37,12 +35,13 @@ const JobScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           paddingTop: 16,
         }}
       >
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.Button}
-          onPress={() => navigation.navigate("JobCategoryScreen")}>
+          onPress={() => navigation.navigate("JobCategoryScreen")}
+          >
           <SvgIcon icon={data.jobs[index].icon} style={{ alignSelf: "center", marginHorizontal: 19 }} />
           <Typography variant="h4" style={{ textAlignVertical: "center" }}>{data.jobs[index].text}</Typography>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <View style={styles.Textfield}>
           <TextField
@@ -54,7 +53,7 @@ const JobScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           />
         </View>
 
-        {data.jobs[index].list.map((item, index) => (
+        {/* {data.jobs[index].list.map((item, index) => (
           <View>
             <Divider />
             <CheckBox
@@ -70,11 +69,11 @@ const JobScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
               style={{ padding: 16 }}
             />
           </View>
-        ))}
+        ))} */}
 
         <View style={{ marginBottom: 40 }}></View>
       </ScrollView>
-      <ButtonRipple onPress={() => { }}>Zatwierdź</ButtonRipple>
+      <Button onPress={() => { }}>Zatwierdź</Button>
 
     </ScreenHeaderProvider>
   );
@@ -101,3 +100,7 @@ const styles = StyleSheet.create({
 });
 
 export default JobScreen;
+function useTypedSelector(arg0: (state: any) => any) {
+  throw new Error('Function not implemented.');
+}
+

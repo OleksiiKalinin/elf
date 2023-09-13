@@ -1,7 +1,7 @@
 import axios, { errorHandler, pythonAdmin } from './index';
 import { Dispatch } from 'react';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
-import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
+// import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
 import { RegistDataType } from '../screens/AuthScreens/RegistrationScreen';
 import generalActions from '../store/actionCreators/general/actions';
 import { LoginDataType } from '../screens/AuthScreens/LoginScreen';
@@ -102,41 +102,41 @@ const googleSignin = () => async (dispatch: Dispatch<any>) => {
 };
 
 const facebookSignin = () => async (dispatch: Dispatch<any>) => {
-    dispatch(generalActions.setAppLoading(true));
-    let result = null;
-    try {
-        LoginManager.setLoginBehavior('native_only');
-        result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
-    } catch (nativeError) {
-        try {
-            LoginManager.setLoginBehavior('web_only');
-            result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
-        } catch (webError) {
-            // show error message to the user if none of the FB screens
-            // did not open
-            console.log('webError: ' + webError);
-            await errorHandler(webError, dispatch);
-        }
-    }  // handle the case that users clicks cancel button in Login view
-    if (result?.isCancelled) {
+    // dispatch(generalActions.setAppLoading(true));
+    // let result = null;
+    // try {
+    //     LoginManager.setLoginBehavior('native_only');
+    //     result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
+    // } catch (nativeError) {
+    //     try {
+    //         LoginManager.setLoginBehavior('web_only');
+    //         result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
+    //     } catch (webError) {
+    //         // show error message to the user if none of the FB screens
+    //         // did not open
+    //         console.log('webError: ' + webError);
+    //         await errorHandler(webError, dispatch);
+    //     }
+    // }  // handle the case that users clicks cancel button in Login view
+    // if (result?.isCancelled) {
 
-    } else {
-        try {
-            const accessData = await AccessToken.getCurrentAccessToken();
-            if (accessData) {
-                console.log(accessData.accessToken);
+    // } else {
+    //     try {
+    //         const accessData = await AccessToken.getCurrentAccessToken();
+    //         if (accessData) {
+    //             console.log(accessData.accessToken);
 
-                const res = await axios.post(`/api-auth/convert-token/`, { ...pythonAdmin, grant_type: 'convert_token', token: accessData.accessToken, backend: 'facebook' });
-                const { access_token, refresh_token } = res.data as { access_token: string | null, refresh_token: string | null };
-                dispatch(generalActions.setToken({ token: access_token, refresh_token }));
-                dispatch(generalActions.setAppLoading(false));
-            } else {
-                throw new Error('');
-            }
-        } catch (error) {
-            await errorHandler(error, dispatch);
-        }
-    }
+    //             const res = await axios.post(`/api-auth/convert-token/`, { ...pythonAdmin, grant_type: 'convert_token', token: accessData.accessToken, backend: 'facebook' });
+    //             const { access_token, refresh_token } = res.data as { access_token: string | null, refresh_token: string | null };
+    //             dispatch(generalActions.setToken({ token: access_token, refresh_token }));
+    //             dispatch(generalActions.setAppLoading(false));
+    //         } else {
+    //             throw new Error('');
+    //         }
+    //     } catch (error) {
+    //         await errorHandler(error, dispatch);
+    //     }
+    // }
 };
 
 export default {

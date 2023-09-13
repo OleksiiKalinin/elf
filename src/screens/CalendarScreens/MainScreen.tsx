@@ -1,21 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, TimerMixin, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
 import { CompositeScreenProps } from '@react-navigation/native';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
 import { TouchableOpacity } from 'react-native';
-import LoadingScreen from '../../components/atoms/LoadingScreen/LoadingScreen';
-import CalendarWithAgenda from '../../components/organisms/CalendarWithAgenda/CalendarWithAgenda';
 import { useDispatch } from 'react-redux';
 import calendarServices from '../../services/calendarServices';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { JobPositionType, UserEventType } from '../../store/reducers/types';
 import { useActions } from '../../hooks/useActions';
 import Colors from '../../colors/Colors';
-import Typography from '../../components/atoms/Typography/Typography';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import Typography from '../../components/atoms/Typography';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import Agenda from '../../components/organismes/Agenda';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<CalendarStackParamList, 'MainScreen'>,
@@ -110,7 +109,9 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
 
   return (
     <ScreenHeaderProvider currentStack="CalendarStack" mode="mainTitle" title={monthTitle}>
-      <CalendarWithAgenda getCurrentDate={setMonthTitle} events={userEvents} />
+      <Agenda 
+      // getCurrentDate={setMonthTitle} events={userEvents} 
+      />
       <View style={styles.createIcon}>
         <TouchableOpacity activeOpacity={.7} onPress={() => navigation.navigate('EventScreen')}>
           <SvgIcon icon='addBig' />

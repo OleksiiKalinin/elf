@@ -3,13 +3,14 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Colors from '../../colors/Colors';
-import Typography from '../../components/atoms/Typography/Typography';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
-import CandidateCard from '../../components/organisms/CandidateCard/CandidateCard';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import Typography from '../../components/atoms/Typography';
+import CandidateCard from '../../components/organismes/CandidateCard';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { SwipeablePanelProps } from '../../components/organismes/SwipeablePanel';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<CalendarStackParamList, 'ResumesScreen'>,
@@ -17,20 +18,20 @@ type MainScreenProps = CompositeScreenProps<
 >;
 
 const ResumesScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
-  const data = useTypedSelector(state => state.bookmark);
+  // const data = useTypedSelector(state => state.bookmark);
 
   const [isPanelActive, setIsPanelActive] = useState<boolean>(false);
 
-  const { selectedPersons } = route.params;
+  // const { selectedPersons } = route.params;
 
-  const jobsCategories = data.persons
-    .filter(item => selectedPersons.includes(item.index))
-    .map(a => a.job);
+  // const jobsCategories = data.persons
+  //   .filter(item => selectedPersons.includes(item.index))
+  //   .map(a => a.job);
 
-  const uniq = {};
-  const jobsCategoriesFiltered = jobsCategories.filter(
-    obj => !uniq[obj] && (uniq[obj] = true),
-  );
+  // const uniq = {};
+  // const jobsCategoriesFiltered = jobsCategories.filter(
+  //   obj => !uniq[obj] && (uniq[obj] = true),
+  // );
 
 
   const swipePanels: SwipeablePanelProps[] = [
@@ -74,16 +75,16 @@ const ResumesScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
     <ScreenHeaderProvider currentStack="CalendarStack" mainTitlePosition="flex-start"
       actions={[
         {
-          icon: <SvgIcon icon="search" />,
+          icon: 'search',
           onPress: () => navigation.navigate('CandidatesStack', { screen: 'MainScreen' }),
         },
         {
-          icon: <SvgIcon icon="cardOutlined" />,
+          icon: 'cardOutlined',
           onPress: () => navigation.navigate('CandidatesStack', { screen: 'FavouritesScreen' }),
         },
       ]}
     >
-      <ScrollView style={{ backgroundColor: Colors.Basic100, paddingTop: 19 }}>
+      {/* <ScrollView style={{ backgroundColor: Colors.Basic100, paddingTop: 19 }}>
         {data.persons
           .map((item, index) =>
             (selectedPersons.includes(item.index)) &&
@@ -120,7 +121,7 @@ const ResumesScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
                 />
               </TouchableOpacity>
             ))}
-      </ScrollView>
+      </ScrollView> */}
     </ScreenHeaderProvider>
   );
 };

@@ -1,17 +1,16 @@
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import Typography from '../../components/atoms/Typography/Typography';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CompositeScreenProps, useIsFocused, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
+import CheckBox from '../../components/atoms/CheckBox';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import Typography from '../../components/atoms/Typography';
+import TextField from '../../components/molecules/TextField';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
-import TextField from '../../components/molecules/TextField/TextField';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-import CheckBox from '../../components/atoms/CheckBox/CheckBox';
-import { Divider } from 'native-base';
+import Button from '../../components/molecules/Button';
 
 type LanguageScreenProps = CompositeScreenProps<
   NativeStackScreenProps<ProfileStackParamList, 'LanguageScreen'>,
@@ -21,9 +20,9 @@ type LanguageScreenProps = CompositeScreenProps<
 const LanguageScreen: React.FC<LanguageScreenProps> = ({ navigation, route }) => {
   const [index, setIndex] = useState(0);
 
-  const { languages, category, subcategories, methods, tools } = route.params;
+  // const { languages, category, subcategories, methods, tools } = route.params;
 
-  const [languageState, setLanguageState] = useState(languages);
+  // const [languageState, setLanguageState] = useState(languages);
 
   const languagesList = [
     { language: "Polski", flag: "polish" },
@@ -52,8 +51,8 @@ const LanguageScreen: React.FC<LanguageScreenProps> = ({ navigation, route }) =>
           </Typography>
 
           {languagesList.map((item, index) => (<>
-            <Divider />
-            <CheckBox
+            {/* <Divider /> */}
+            {/* <CheckBox
               leftTextView={
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <SvgIcon icon={item.flag} />
@@ -69,11 +68,11 @@ const LanguageScreen: React.FC<LanguageScreenProps> = ({ navigation, route }) =>
                   )
               }
               style={{ padding: 16 }}
-            />
+            /> */}
           </>))}
 
         </ScrollView>
-        <ButtonRipple onPress={() => {}}>Potwierdź</ButtonRipple>
+        <Button onPress={() => {}}>Potwierdź</Button>
 
       </View>
     </ScreenHeaderProvider>

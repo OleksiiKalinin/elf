@@ -1,12 +1,9 @@
 import React, { ComponentProps, FC, useState } from 'react';
-import { Radio } from 'native-base';
 import { View, StyleSheet, Image } from 'react-native';
-import colors from 'native-base/lib/typescript/theme/base/colors';
-import { ScrollView } from 'native-base';
 import Colors from '../../../../colors/Colors';
-import { IconTypes } from '../../../../components/molecules/SvgIcon/SvgIcon';
-import Typography from '../../../../components/atoms/Typography/Typography';
-import all, { SliderBox } from "react-native-image-slider-box";
+// import all, { SliderBox } from "react-native-image-slider-box";
+import Typography from '../../../../components/atoms/Typography';
+import { IconTypes } from '../../../../components/atoms/SvgIcon';
 
 type ResumeCardProps = {};
 
@@ -108,11 +105,11 @@ const ResumeCard: FC<ResumeCardProps> = ({ ...props }) => {
 
   return (
     <View style={{ backgroundColor: Colors.Basic100, marginBottom: 20 }}>
-      <SliderBox
+      {/* <SliderBox
         sliderBoxHeight={240}
         images={ImagesPortfolio}
         style={{ marginTop: 23, width: '100%' }}
-      />
+      /> */}
       <Typography weight="Bold" style={styles.Header}>
         Beauty sp. z o.o.
       </Typography>
@@ -175,11 +172,11 @@ const ResumeCard: FC<ResumeCardProps> = ({ ...props }) => {
       <Typography weight="Bold" style={styles.Header}>
         Certyfikaty
       </Typography>
-      <SliderBox
+      {/* <SliderBox
         resizeMode="contain"
         sliderBoxHeight={240}
         images={ImagesCerts}
-      />
+      /> */}
     </View>
   );
 };

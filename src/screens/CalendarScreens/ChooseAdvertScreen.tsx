@@ -3,11 +3,11 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { FC } from 'react';
 import { ScrollView, View } from 'react-native';
 import Colors from '../../colors/Colors';
-import AdvertSmall from '../../components/molecules/AdvertSmall/AdvertSmall';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
+import AdvertSmall from '../../components/organismes/AdvertSmall';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 
 type MainScreenProps = CompositeScreenProps<
     NativeStackScreenProps<CalendarStackParamList, 'ChooseAdvertScreen'>,

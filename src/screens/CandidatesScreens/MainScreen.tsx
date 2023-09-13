@@ -12,21 +12,20 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import Typography from '../../components/atoms/Typography/Typography';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import CandidateCard from '../../components/organisms/CandidateCard/CandidateCard';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import HorizontalMenuButton from '../../components/atoms/HorizontalMenuButton/HorizontalMenuButton';
 import { useScrollToTop } from '@react-navigation/native';
-import LoadingScreen from '../../components/atoms/LoadingScreen/LoadingScreen';
 import { useActions } from '../../hooks/useActions';
 import { CandidateDataType } from '../../store/reducers/types';
 import advertsServices from '../../services/advertsServices';
 import { useDispatch } from 'react-redux';
+import LoadingScreen from '../../components/atoms/LoadingScreen';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import Typography from '../../components/atoms/Typography';
+import CandidateCard from '../../components/organismes/CandidateCard';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<CandidatesStackParamList, 'MainScreen'>,
@@ -35,7 +34,7 @@ type MainScreenProps = CompositeScreenProps<
 
 const MainScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   const SectionListRef = useRef(null);
-  useScrollToTop(SectionListRef);
+  // useScrollToTop(SectionListRef);
   const dispatch = useDispatch();
   const { setSwipeablePanelProps } = useActions();
   const [loading, setLoading] = useState<boolean>(true);
@@ -93,7 +92,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   const getUserAdverts = async () => {
     if (token && userCompany?.id) {
       setLoading(true);
-      await dispatch(advertsServices.getUserAdverts(token, userCompany?.id));
+      // await dispatch(advertsServices.getUserAdverts(token, userCompany?.id));
     }
   }
 
@@ -103,8 +102,8 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
         setLoading(true);
         const candidatesId = Array.from(new Set(userAdverts.reduce<number[]>((prev, curr) => [...prev, ...curr.candidate_data.map(e => e.candidate_id)], [])));
         if (candidatesId.length) {
-          const res = await dispatch(advertsServices.getAdvertCandidates(token, candidatesId));
-          setCandidates(res as unknown as CandidateDataType[]);
+          // const res = await dispatch(advertsServices.getAdvertCandidates(token, candidatesId));
+          // setCandidates(res as unknown as CandidateDataType[]);
         }
       }
       setLoading(false)

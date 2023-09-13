@@ -2,27 +2,24 @@ import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-
-import { Divider, ScrollView } from 'native-base';
-import Typography from '../../components/atoms/Typography/Typography';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
-
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-import HorizontalMenuButton from '../../components/atoms/HorizontalMenuButton/HorizontalMenuButton';
-import ButtonArrowSelector from '../../components/atoms/ButtonArrowSelector/ButtonArrowSelector';
-import HorizontalSelector from '../../components/molecules/HorizontalSelector/HorizontalSelector';
-import CheckBox from '../../components/atoms/CheckBox/CheckBox';
-import MultiSlider from '@ptomasroos/react-native-multi-slider';
-import SmallMap from '../../components/organisms/SmallMap/SmallMap';
+// import HorizontalMenuButton from '../../components/atoms/HorizontalMenuButton/HorizontalMenuButton';
+// import ButtonArrowSelector from '../../components/atoms/ButtonArrowSelector/ButtonArrowSelector';
+// import HorizontalSelector from '../../components/molecules/HorizontalSelector/HorizontalSelector';
+// import MultiSlider from '@ptomasroos/react-native-multi-slider';
+// import SmallMap from '../../components/organisms/SmallMap/SmallMap';
 import { nativeStore } from '../../store';
 import { advertActionTypes } from '../../store/actions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { AdvertStackParamList } from '../../navigators/AdvertNavigator';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
 import { useActions } from '../../hooks/useActions';
-import Slider from '../../components/organisms/Slider/Slider';
+import { ScrollView } from '../../components/molecules/ScrollView';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import Typography from '../../components/atoms/Typography';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import CheckBox from '../../components/atoms/CheckBox';
+import Button from '../../components/molecules/Button';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<AdvertStackParamList, 'EditAdvertScreen'>,
@@ -41,179 +38,179 @@ buttons: [
 */
 
 const EditAdvertScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
-  const data = useTypedSelector(state => state.adverts);
-  const { setSwipeablePanelProps } = useActions();
-  const {
-    selectedJob,
-    jobCategory,
-    iconCategory,
-    place,
-    latitude,
-    longitude,
-    selectedRequirements,
-    selectedDuties,
-    selectedLanguages,
-    selectedBenefits,
-    advertIndex,
-  } = route.params;
+  // const data = useTypedSelector(state => state.adverts);
+  // const { setSwipeablePanelProps } = useActions();
+  // const {
+  //   selectedJob,
+  //   jobCategory,
+  //   iconCategory,
+  //   place,
+  //   latitude,
+  //   longitude,
+  //   selectedRequirements,
+  //   selectedDuties,
+  //   selectedLanguages,
+  //   selectedBenefits,
+  //   advertIndex,
+  // } = route.params;
 
-  const Experience: Array<any> = [
-    'Bez doświadczenia',
-    'Do roku',
-    '2 lata',
-    '3 lata',
-    '4 lata',
-    '5 lata i więcej',
-  ];
+  // const Experience: Array<any> = [
+  //   'Bez doświadczenia',
+  //   'Do roku',
+  //   '2 lata',
+  //   '3 lata',
+  //   '4 lata',
+  //   '5 lata i więcej',
+  // ];
 
-  const Workload: Array<any> = [
-    '1/4 etatu',
-    '1/2 etatu',
-    '3/4 etatu',
-    'Pełny etat',
-    'Tymczasowa',
-  ];
+  // const Workload: Array<any> = [
+  //   '1/4 etatu',
+  //   '1/2 etatu',
+  //   '3/4 etatu',
+  //   'Pełny etat',
+  //   'Tymczasowa',
+  // ];
 
-  const contractTypes: Array<any> = [
-    'Nie podawać',
-    'Umowa o pracę',
-    'B2B',
-    'Umowa zlecenie',
-    'Umowa o dzieło',
-    'Staż',
-    'Praktyki',
-  ];
+  // const contractTypes: Array<any> = [
+  //   'Nie podawać',
+  //   'Umowa o pracę',
+  //   'B2B',
+  //   'Umowa zlecenie',
+  //   'Umowa o dzieło',
+  //   'Staż',
+  //   'Praktyki',
+  // ];
 
-  const workStartTime: Array<{}> = [
-    'Od zaraz',
-    'Za tydzień',
-    'Za 2 tygodnie',
-    'Za 3 tygodnie',
-    'Za miesiąc',
-  ];
+  // const workStartTime: Array<{}> = [
+  //   'Od zaraz',
+  //   'Za tydzień',
+  //   'Za 2 tygodnie',
+  //   'Za 3 tygodnie',
+  //   'Za miesiąc',
+  // ];
 
-  const probationTime: Array<{}> = [
-    'Dzień',
-    'Do trzech dni',
-    '1 tydzień',
-    '2 tygodnie',
-    'Miesiąc',
-  ];
+  // const probationTime: Array<{}> = [
+  //   'Dzień',
+  //   'Do trzech dni',
+  //   '1 tydzień',
+  //   '2 tygodnie',
+  //   'Miesiąc',
+  // ];
 
-  const probationType: Array<{}> = ['Brak', 'Darmowy', 'Płatny'];
+  // const probationType: Array<{}> = ['Brak', 'Darmowy', 'Płatny'];
 
-  const salaryType: Array<{}> = ['Bez informacji', 'Miesięcznie', 'Na godzinę'];
+  // const salaryType: Array<{}> = ['Bez informacji', 'Miesięcznie', 'Na godzinę'];
 
-  const taxType: Array<{}> = ['netto', 'brutto'];
+  // const taxType: Array<{}> = ['netto', 'brutto'];
 
-  useEffect(() => {
-    (pushedJob === null || selectedJob) &&
-      (setPushedJob(selectedJob),
-        setPushedJobCategory(jobCategory),
-        setPushedIconCategory(iconCategory));
-  });
+  // useEffect(() => {
+  //   (pushedJob === null || selectedJob) &&
+  //     (setPushedJob(selectedJob),
+  //       setPushedJobCategory(jobCategory),
+  //       setPushedIconCategory(iconCategory));
+  // });
 
-  useEffect(() => {
-    selectedRequirements.length > 0 &&
-      setRequirementsState(selectedRequirements);
-  });
+  // useEffect(() => {
+  //   selectedRequirements.length > 0 &&
+  //     setRequirementsState(selectedRequirements);
+  // });
 
-  useEffect(() => {
-    selectedDuties.length > 0 && setDutiesState(selectedDuties);
-  });
+  // useEffect(() => {
+  //   selectedDuties.length > 0 && setDutiesState(selectedDuties);
+  // });
 
-  useEffect(() => {
-    selectedLanguages.length > 0 && setLanguagesState(selectedLanguages);
-  });
+  // useEffect(() => {
+  //   selectedLanguages.length > 0 && setLanguagesState(selectedLanguages);
+  // });
 
-  useEffect(() => {
-    selectedBenefits.length > 0 && setBenefitsState(selectedBenefits);
-  });
+  // useEffect(() => {
+  //   selectedBenefits.length > 0 && setBenefitsState(selectedBenefits);
+  // });
 
-  useEffect(() => {
-    advertIndex && setSelectedIndex(advertIndex);
-  });
+  // useEffect(() => {
+  //   advertIndex && setSelectedIndex(advertIndex);
+  // });
 
-  useEffect(() => {
-    place && setSelectedLocation(place);
-    latitude && setSelectedLatitude(latitude);
-    longitude && setSelectedLongitude(longitude);
-  });
-  const [scrollEnabled, setScrollEnabled] = useState(true);
-  const enableScroll = () => setScrollEnabled(true);
-  const disableScroll = () => setScrollEnabled(false);
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const selectedItem = data.adverts[advertIndex ? advertIndex : selectedIndex];
-  const [pushedJob, setPushedJob] = useState(selectedItem.job);
-  const [pushedJobCategory, setPushedJobCategory] = useState(
-    selectedItem.jobCategory,
-  );
-  const [pushedIconCategory, setPushedIconCategory] = useState(
-    selectedItem.iconCategory,
-  );
-  const [selectedExperience, setSelectedExperience] = useState<any>(
-    Experience.indexOf(selectedItem.experience),
-  );
-  const [selectedWorkload, setSelectedWorkload] = useState<any>(
-    Workload.indexOf(selectedItem.workload),
-  );
-  const [selectedWorkStartTime, setSelectedWorkStartTime] = useState<any>(
-    workStartTime.indexOf(selectedItem.workstart),
-  );
-  const [selectedProbationTime, setSelectedProbationTime] = useState<any>(
-    probationTime.indexOf(selectedItem.probation),
-  );
-  const [selectedProbationType, setSelectedProbationType] = useState<any>(
-    probationType.indexOf(selectedItem.probationType),
-  );
-  const [selectedContractType, setSelectedContractType] = useState<any>(
-    contractTypes.indexOf(selectedItem.contract),
-  );
-  const [selectedTaxType, setSelectedTaxType] = useState<any>(
-    taxType.indexOf(selectedItem.tax),
-  );
-  const [withoutResume, setWithoutResume] = useState(
-    selectedItem.withoutResume,
-  );
-  const [forUkraine, setForUkraine] = useState(selectedItem.forUkraine);
-  const [Salary, setSalary] = useState([
-    selectedItem.salary[0],
-    selectedItem.salary[1],
-  ]);
-  const [selectedSalaryType, setSelectedSalaryType] = useState(
-    salaryType.indexOf(selectedItem.salaryType),
-  );
-  const [workingHours, setWorkingHours] = useState([
-    selectedItem.workingHours[0],
-    selectedItem.workingHours[1],
-  ]);
-  const [requirementsState, setRequirementsState] = useState(
-    selectedItem.requirements,
-  );
-  const [dutiesState, setDutiesState] = useState(selectedItem.duties);
-  const [languagesState, setLanguagesState] = useState(selectedItem.languages);
-  const [benefitsState, setBenefitsState] = useState(selectedItem.benefits);
-  const [selectedLocation, setSelectedLocation] = useState(
-    selectedItem.location,
-  );
-  const [selectedLatitude, setSelectedLatitude] = useState(
-    selectedItem.latitude,
-  );
-  const [selectedLongitude, setSelectedLongitude] = useState(
-    selectedItem.longitude,
-  );
-  const expireDate = new Date(new Date().setDate(new Date().getDate() + 30));
-  const expireDateFormated =
-    (expireDate.getDate() < 10 ? '0' : '') +
-    expireDate.getDate() +
-    '-' +
-    ((expireDate.getMonth() < 10 ? '0' : '') + (expireDate.getMonth() + 1)) +
-    '-' +
-    expireDate.getFullYear();
+  // useEffect(() => {
+  //   place && setSelectedLocation(place);
+  //   latitude && setSelectedLatitude(latitude);
+  //   longitude && setSelectedLongitude(longitude);
+  // });
+  // const [scrollEnabled, setScrollEnabled] = useState(true);
+  // const enableScroll = () => setScrollEnabled(true);
+  // const disableScroll = () => setScrollEnabled(false);
+  // const [selectedIndex, setSelectedIndex] = useState(0);
+  // const selectedItem = data.adverts[advertIndex ? advertIndex : selectedIndex];
+  // const [pushedJob, setPushedJob] = useState(selectedItem.job);
+  // const [pushedJobCategory, setPushedJobCategory] = useState(
+  //   selectedItem.jobCategory,
+  // );
+  // const [pushedIconCategory, setPushedIconCategory] = useState(
+  //   selectedItem.iconCategory,
+  // );
+  // const [selectedExperience, setSelectedExperience] = useState<any>(
+  //   Experience.indexOf(selectedItem.experience),
+  // );
+  // const [selectedWorkload, setSelectedWorkload] = useState<any>(
+  //   Workload.indexOf(selectedItem.workload),
+  // );
+  // const [selectedWorkStartTime, setSelectedWorkStartTime] = useState<any>(
+  //   workStartTime.indexOf(selectedItem.workstart),
+  // );
+  // const [selectedProbationTime, setSelectedProbationTime] = useState<any>(
+  //   probationTime.indexOf(selectedItem.probation),
+  // );
+  // const [selectedProbationType, setSelectedProbationType] = useState<any>(
+  //   probationType.indexOf(selectedItem.probationType),
+  // );
+  // const [selectedContractType, setSelectedContractType] = useState<any>(
+  //   contractTypes.indexOf(selectedItem.contract),
+  // );
+  // const [selectedTaxType, setSelectedTaxType] = useState<any>(
+  //   taxType.indexOf(selectedItem.tax),
+  // );
+  // const [withoutResume, setWithoutResume] = useState(
+  //   selectedItem.withoutResume,
+  // );
+  // const [forUkraine, setForUkraine] = useState(selectedItem.forUkraine);
+  // const [Salary, setSalary] = useState([
+  //   selectedItem.salary[0],
+  //   selectedItem.salary[1],
+  // ]);
+  // const [selectedSalaryType, setSelectedSalaryType] = useState(
+  //   salaryType.indexOf(selectedItem.salaryType),
+  // );
+  // const [workingHours, setWorkingHours] = useState([
+  //   selectedItem.workingHours[0],
+  //   selectedItem.workingHours[1],
+  // ]);
+  // const [requirementsState, setRequirementsState] = useState(
+  //   selectedItem.requirements,
+  // );
+  // const [dutiesState, setDutiesState] = useState(selectedItem.duties);
+  // const [languagesState, setLanguagesState] = useState(selectedItem.languages);
+  // const [benefitsState, setBenefitsState] = useState(selectedItem.benefits);
+  // const [selectedLocation, setSelectedLocation] = useState(
+  //   selectedItem.location,
+  // );
+  // const [selectedLatitude, setSelectedLatitude] = useState(
+  //   selectedItem.latitude,
+  // );
+  // const [selectedLongitude, setSelectedLongitude] = useState(
+  //   selectedItem.longitude,
+  // );
+  // const expireDate = new Date(new Date().setDate(new Date().getDate() + 30));
+  // const expireDateFormated =
+  //   (expireDate.getDate() < 10 ? '0' : '') +
+  //   expireDate.getDate() +
+  //   '-' +
+  //   ((expireDate.getMonth() < 10 ? '0' : '') + (expireDate.getMonth() + 1)) +
+  //   '-' +
+  //   expireDate.getFullYear();
 
   return (
     <ScreenHeaderProvider currentStack="AdvertStack" mainTitlePosition="flex-start">
-      <ScrollView
+      {/* <ScrollView
         scrollEnabled={scrollEnabled}
         style={{
           backgroundColor: Colors.Basic100,
@@ -615,44 +612,44 @@ const EditAdvertScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
         />
 
         <View style={{ marginVertical: 40 }}>
-          <ButtonRipple
+          <Button
             variant="primary"
             onPress={() => (
-              nativeStore.dispatch({
-                type: advertActionTypes.EDIT_ADVERT,
-                payload: {
-                  pushedIndex: selectedIndex,
-                  job: pushedJob,
-                  jobCategory: pushedJobCategory,
-                  iconCategory: pushedIconCategory,
-                  salary: [Salary[0], Salary[1]],
-                  salaryType: salaryType[selectedSalaryType],
-                  tax: taxType[selectedTaxType],
-                  location: selectedLocation,
-                  latitude: selectedLatitude,
-                  longitude: selectedLongitude,
-                  experience: Experience[selectedExperience],
-                  contract: contractTypes[selectedContractType],
-                  workload: Workload[selectedWorkload],
-                  workstart: workStartTime[selectedWorkStartTime],
-                  probation: probationTime[selectedProbationTime],
-                  probationType: probationType[selectedProbationType],
-                  workingHours: workingHours,
-                  withoutResume: withoutResume,
-                  forUkraine: forUkraine,
-                  expireDate: expireDateFormated,
-                  requirements: requirementsState,
-                  duties: dutiesState,
-                  languages: languagesState,
-                  benefits: benefitsState,
-                },
-              }),
+              // nativeStore.dispatch({
+              //   type: advertActionTypes.EDIT_ADVERT,
+              //   payload: {
+              //     pushedIndex: selectedIndex,
+              //     job: pushedJob,
+              //     jobCategory: pushedJobCategory,
+              //     iconCategory: pushedIconCategory,
+              //     salary: [Salary[0], Salary[1]],
+              //     salaryType: salaryType[selectedSalaryType],
+              //     tax: taxType[selectedTaxType],
+              //     location: selectedLocation,
+              //     latitude: selectedLatitude,
+              //     longitude: selectedLongitude,
+              //     experience: Experience[selectedExperience],
+              //     contract: contractTypes[selectedContractType],
+              //     workload: Workload[selectedWorkload],
+              //     workstart: workStartTime[selectedWorkStartTime],
+              //     probation: probationTime[selectedProbationTime],
+              //     probationType: probationType[selectedProbationType],
+              //     workingHours: workingHours,
+              //     withoutResume: withoutResume,
+              //     forUkraine: forUkraine,
+              //     expireDate: expireDateFormated,
+              //     requirements: requirementsState,
+              //     duties: dutiesState,
+              //     languages: languagesState,
+              //     benefits: benefitsState,
+              //   },
+              // }),
               navigation.navigate('MainScreen')
             )}>
             POTWIERDŹ ZMIANY
-          </ButtonRipple>
+          </Button>
         </View>
-      </ScrollView>
+      </ScrollView> */}
     </ScreenHeaderProvider>
   );
 };

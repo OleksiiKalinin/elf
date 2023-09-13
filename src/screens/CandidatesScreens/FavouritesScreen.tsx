@@ -2,17 +2,17 @@ import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { ScrollView } from 'native-base';
-import Typography from '../../components/atoms/Typography/Typography';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import CandidateCard from '../../components/organisms/CandidateCard/CandidateCard';
+// import CandidateCard from '../../components/organisms/CandidateCard/CandidateCard';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import SvgIcon, { IconTypes } from '../../components/molecules/SvgIcon/SvgIcon';
-import HorizontalMenuButton from '../../components/atoms/HorizontalMenuButton/HorizontalMenuButton';
+// import HorizontalMenuButton from '../../components/atoms/HorizontalMenuButton/HorizontalMenuButton';
 import { useActions } from '../../hooks/useActions';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import { ScrollView } from '../../components/molecules/ScrollView';
+import CandidateCard from '../../components/organismes/CandidateCard';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<CandidatesStackParamList, 'FavouritesScreen'>,
@@ -24,13 +24,13 @@ const FavouritesScreen: React.FC<MainScreenProps> = ({ navigation }) => {
 
   const [isPanelActive, setIsPanelActive] = useState<boolean>(false);
 
-  const data = useTypedSelector(state => state.bookmark);
+  // const data = useTypedSelector(state => state.bookmark);
 
   return (
     <ScreenHeaderProvider currentStack="CandidatesStack" mainTitlePosition="flex-start"
       actions={[
         {
-          icon: <SvgIcon icon="settings" />,
+          icon: 'settings',
           onPress: () => navigation.navigate('FavSettingsScreen'),
         },
       ]}>
@@ -40,7 +40,7 @@ const FavouritesScreen: React.FC<MainScreenProps> = ({ navigation }) => {
           style={{ flexDirection: 'row', marginLeft: 19, marginVertical: 15 }}
           showsHorizontalScrollIndicator={false}
         >
-          {data.bookmarks.map((item, index) => (
+          {/* {data.bookmarks.map((item, index) => (
             <HorizontalMenuButton
               variant="bookmark"
               icon="cardFilled"
@@ -51,9 +51,9 @@ const FavouritesScreen: React.FC<MainScreenProps> = ({ navigation }) => {
               selected={item.category === filter ? true : false}
               onPress={() => setFilter(item.category)}
             />
-          ))}
+          ))} */}
         </ScrollView>
-        {data.persons
+        {/* {data.persons
           .filter(item => item.bookmark == filter)
           .map(item => (
             <TouchableOpacity
@@ -82,7 +82,7 @@ const FavouritesScreen: React.FC<MainScreenProps> = ({ navigation }) => {
                 onPress={() => setIsPanelActive(true)}
               />
             </TouchableOpacity>
-          ))}
+          ))} */}
       </ScrollView>
     </ScreenHeaderProvider>
   );

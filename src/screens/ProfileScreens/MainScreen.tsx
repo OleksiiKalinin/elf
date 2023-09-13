@@ -4,32 +4,27 @@ import React, { useEffect, useState } from 'react';
 import {
   Dimensions,
   Image,
+  Modal,
+  ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { SceneMap } from 'react-native-tab-view';
 import Colors from '../../colors/Colors';
-import Typography from '../../components/atoms/Typography/Typography';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
-import TabbarMenu, {
-  TabbarRoute,
-} from '../../components/organisms/TabbarMenu/TabbarMenu';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
-import { Modal, ScrollView } from 'native-base';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import AsyncStorage from '@react-native-community/async-storage';
 import { useDispatch } from 'react-redux';
-import ButtonArrowSelector from '../../components/atoms/ButtonArrowSelector/ButtonArrowSelector';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
-import HorizontalSelector from '../../components/molecules/HorizontalSelector/HorizontalSelector';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-import ProgressBar from '../../components/atoms/ProgressBar/ProgressBar';
 import companyServices from '../../services/companyServices';
 import { MediaType, ContactPersonType } from '../../store/reducers/types';
 import { useActions } from '../../hooks/useActions';
 import authServices from '../../services/authServices';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import Typography from '../../components/atoms/Typography';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { TabbarRoute } from '../../components/organismes/TabbarMenu';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<ProfileStackParamList, 'MainScreen'>,
@@ -61,7 +56,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
   const { setSwipeablePanelProps } = useActions();
 
   const logoutHandler = async () => {
-    await dispatch(authServices.logout(token));
+    // await dispatch(authServices.logout(token));
     setSwipeablePanelProps({
       title: 'Pomyślnie się wylogowałeś',
       closeButton: false,
@@ -83,7 +78,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
           children: 'TAK',
           contentColor: Colors.Danger,
           onPress: async () => {
-            await dispatch(authServices.deleteAccount(token));
+            // await dispatch(authServices.deleteAccount(token));
             setSwipeablePanelProps({
               title: 'Twoje konto usunięte!',
               closeButton: false,
@@ -116,7 +111,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
     // }]}
     >
       <View style={{ flex: 1, backgroundColor: Colors.Basic100, paddingTop: 24 }}>
-        <ButtonArrowSelector
+        {/* <ButtonArrowSelector
           text={<View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <SvgIcon icon='user' />
             <Typography style={{ marginLeft: 10 }} weight='SemiBold' variant='h5'>Dane konta</Typography>
@@ -144,7 +139,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
           onPress={() => navigation.navigate('PaymentTemporalScreen')}
           marginBottom={false}
           marginTop={false}
-        />
+        /> */}
         {!!token && <View style={{ flex: 1, marginVertical: 20, alignItems: 'center', justifyContent: 'flex-end' }}>
           <TouchableOpacity onPress={logoutHandler}>
             <Typography color={Colors.Danger} variant="h4" weight='SemiBold' style={{ textDecorationLine: 'underline', textAlign: 'center', }}>
@@ -232,7 +227,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
           3: FourthRoute,
         })}
       /> */}
-      <Modal isOpen={showHelp} onClose={() => setShowHelp(false)}>
+      {/* <Modal isOpen={showHelp} onClose={() => setShowHelp(false)}>
         <ScrollView style={{ backgroundColor: Colors.White, width: '100%' }}>
           <Image
             source={
@@ -295,7 +290,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
             <Typography variant="h5">DALEJ</Typography>
           </TouchableOpacity>
         </Modal.Footer>
-      </Modal>
+      </Modal> */}
     </ScreenHeaderProvider>
   );
 };

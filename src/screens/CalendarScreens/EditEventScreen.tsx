@@ -4,17 +4,16 @@ import React, { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Touchable, View } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import Colors from '../../colors/Colors';
-import Typography from '../../components/atoms/Typography/Typography';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-import SvgIcon from '../../components/molecules/SvgIcon/SvgIcon';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
-import DatePicker from 'react-native-date-picker';
 import { nativeStore } from '../../store';
 import { calendarActionTypes } from '../../store/actions';
-import SmallMap from '../../components/organisms/SmallMap/SmallMap';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import Typography from '../../components/atoms/Typography';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { SwipeablePanelProps } from '../../components/organismes/SwipeablePanel';
+import Button from '../../components/molecules/Button';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<CalendarStackParamList, 'EditEventScreen'>,
@@ -22,57 +21,57 @@ type MainScreenProps = CompositeScreenProps<
 >;
 
 const EditEventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
-  const { latitude, longitude, place, editDay, editIndex } = route.params;
+  // const { latitude, longitude, place, editDay, editIndex } = route.params;
 
-  const dataBookmark = useTypedSelector(state => state.bookmark);
-  const dataCalendar = useTypedSelector(state => state.calendar);
+  // const dataBookmark = useTypedSelector(state => state.bookmark);
+  // const dataCalendar = useTypedSelector(state => state.calendar);
 
   const [selectedPersons, setSelectedPersons] = useState([]);
   const [showCalendar, setShowCalendar] = useState(true);
   const [showTimepicker, setShowTimepicker] = useState(false);
   const [selectedTimeChange, setSelectedTimeChange] = useState('start');
-  const [selectedDay, setSelectedDay] = useState(editDay);
-  const [changedDay, setChangedDay] = useState(editDay);
+  // const [selectedDay, setSelectedDay] = useState(editDay);
+  // const [changedDay, setChangedDay] = useState(editDay);
   const [deletePersonsActive, setDeletePersonsActive] = useState(false);
   const [isPanelActive, setIsPanelActive] = useState(false);
 
-  const selectedEvent = dataCalendar.calendar.filter(
-    item => item.date === editDay,
-  )[editIndex].details[0];
+  // const selectedEvent = dataCalendar.calendar.filter(
+  //   item => item.date === editDay,
+  // )[editIndex].details[0];
 
   // console.log(editDay)
 
-  const [startTime, setStartTime] = useState(selectedEvent.start);
-  const [endTime, setEndTime] = useState(selectedEvent.end);
+  // const [startTime, setStartTime] = useState(selectedEvent.start);
+  // const [endTime, setEndTime] = useState(selectedEvent.end);
 
-  const selectedPersonsNames = dataBookmark.persons
-    .filter(item => selectedPersons.includes(item.index))
-    .map(item => item.name);
+  // const selectedPersonsNames = dataBookmark.persons
+  //   .filter(item => selectedPersons.includes(item.index))
+  //   .map(item => item.name);
 
-  useEffect(() => {
-    selectedPersons.length < 1 && setDeletePersonsActive(false),
-      endTime < startTime && setEndTime(startTime);
-  });
+  // useEffect(() => {
+  //   selectedPersons.length < 1 && setDeletePersonsActive(false),
+  //     endTime < startTime && setEndTime(startTime);
+  // });
 
-  const jobsCategories = dataBookmark.persons
-    .filter(item => item.name == selectedEvent.name)
-    .map(a => a.job);
-  const uniq = {};
-  const jobsCategoriesFiltered = jobsCategories.filter(
-    obj => !uniq[obj] && (uniq[obj] = true),
-  );
+  // const jobsCategories = dataBookmark.persons
+  //   .filter(item => item.name == selectedEvent.name)
+  //   .map(a => a.job);
+  // const uniq = {};
+  // const jobsCategoriesFiltered = jobsCategories.filter(
+  //   obj => !uniq[obj] && (uniq[obj] = true),
+  // );
 
-  const StartHours = startTime.getHours();
-  const StartMinutes = startTime.getMinutes();
+  // const StartHours = startTime.getHours();
+  // const StartMinutes = startTime.getMinutes();
 
-  const EndHours = endTime.getHours();
-  const EndMinutes = endTime.getMinutes();
+  // const EndHours = endTime.getHours();
+  // const EndMinutes = endTime.getMinutes();
 
   const [passDate, setPassDate] = useState(
     new Date().toISOString().split('T')[0],
   );
 
-  const childToParent = childData => {
+  const childToParent = (childData: any) => {
     setPassDate(childData.toISOString().split('T')[0]);
   };
 
@@ -98,14 +97,14 @@ const EditEventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
             </>
           ),
           onPress: () => {
-            navigation.navigate('MainScreen'),
-              nativeStore.dispatch({
-                type: calendarActionTypes.REMOVE_EVENT,
-                payload: {
-                  Index: editIndex,
-                  Day: editDay,
-                },
-              });
+            // navigation.navigate('MainScreen'),
+            //   nativeStore.dispatch({
+            //     type: calendarActionTypes.REMOVE_EVENT,
+            //     payload: {
+            //       Index: editIndex,
+            //       Day: editDay,
+            //     },
+            //   });
           },
         },
         {
@@ -144,7 +143,7 @@ const EditEventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
       }
       actions={[
         {
-          icon: <SvgIcon icon="threeDots" />,
+          icon: 'threeDots',
           onPress: () => setIsPanelActive(true),
         },
       ]}
@@ -168,7 +167,7 @@ const EditEventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
               </Typography>
             )}
           </View>
-          <ScrollView
+          {/* <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             style={{ marginTop: 9 }}>
@@ -211,7 +210,7 @@ const EditEventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
                     </View>
                   </TouchableOpacity>
                 ))}
-          </ScrollView>
+          </ScrollView> */}
         </View>
 
         <View style={{ marginTop: 24 }}>
@@ -259,9 +258,9 @@ const EditEventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
                     ? setShowCalendar(true)
                     : setShowCalendar(false)
                 )}>
-                {selectedDay !== new Date().toISOString().split('T')[0]
+                {/* {selectedDay !== new Date().toISOString().split('T')[0]
                   ? selectedDay
-                  : 'Dzisiaj'}
+                  : 'Dzisiaj'} */}
               </Typography>
             </View>
             <View style={{ flexDirection: 'row', marginRight: 38 }}>
@@ -286,9 +285,9 @@ const EditEventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
                       ? setShowTimepicker(false)
                       : setShowTimepicker(true)
                   )}>
-                  {StartHours +
+                  {/* {StartHours +
                     ':' +
-                    (StartMinutes > 9 ? StartMinutes : '0' + StartMinutes)}
+                    (StartMinutes > 9 ? StartMinutes : '0' + StartMinutes)} */}
                 </Typography>
               </View>
               <View>
@@ -312,16 +311,16 @@ const EditEventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
                       ? setShowTimepicker(false)
                       : setShowTimepicker(true)
                   )}>
-                  {EndHours +
+                  {/* {EndHours +
                     ':' +
-                    (EndMinutes > 9 ? EndMinutes : '0' + EndMinutes)}
+                    (EndMinutes > 9 ? EndMinutes : '0' + EndMinutes)} */}
                 </Typography>
               </View>
             </View>
           </View>
         </View>
 
-        {showTimepicker && (
+        {/* {showTimepicker && (
           <View style={styles.timePicker}>
             <DatePicker
               style={{
@@ -340,9 +339,9 @@ const EditEventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
               fadeToColor={Colors.Basic100}
             />
           </View>
-        )}
+        )} */}
 
-        <SmallMap
+        {/* <SmallMap
           place={place}
           onPress={
             (() => navigation.navigate('MapScreen',
@@ -354,41 +353,42 @@ const EditEventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           }
           latitude={latitude}
           longitude={longitude}
-        />
-        <ButtonRipple
+        /> */}
+        <Button
           variant="primary"
-          onPress={() =>
-            selectedDay &&
-            StartHours &&
-            (nativeStore.dispatch({
-              type: calendarActionTypes.EDIT_EVENT,
-              payload: {
-                type: 'Spotkanie',
-                name: selectedPersonsNames,
-                date: passDate,
-                job: jobsCategoriesFiltered[0],
-                start: startTime,
-                end: endTime,
-                latitude: latitude,
-                longitude: longitude,
-                time:
-                  StartHours.toString() +
-                  ':' +
-                  (StartMinutes < 10
-                    ? '0' + StartMinutes.toString()
-                    : StartMinutes.toString()) +
-                  ' - ' +
-                  EndHours.toString() +
-                  ':' +
-                  (EndMinutes < 10
-                    ? '0' + EndMinutes.toString()
-                    : EndMinutes.toString()),
-              },
-            }),
-              navigation.navigate('MainScreen'))
-          }>
+        // onPress={() =>
+        //   selectedDay &&
+        //   StartHours &&
+        //   (nativeStore.dispatch({
+        //     type: calendarActionTypes.EDIT_EVENT,
+        //     payload: {
+        //       type: 'Spotkanie',
+        //       name: selectedPersonsNames,
+        //       date: passDate,
+        //       job: jobsCategoriesFiltered[0],
+        //       start: startTime,
+        //       end: endTime,
+        //       latitude: latitude,
+        //       longitude: longitude,
+        //       time:
+        //         StartHours.toString() +
+        //         ':' +
+        //         (StartMinutes < 10
+        //           ? '0' + StartMinutes.toString()
+        //           : StartMinutes.toString()) +
+        //         ' - ' +
+        //         EndHours.toString() +
+        //         ':' +
+        //         (EndMinutes < 10
+        //           ? '0' + EndMinutes.toString()
+        //           : EndMinutes.toString()),
+        //     },
+        //   }),
+        //     navigation.navigate('MainScreen'))
+        // }
+        >
           Potwierdź
-        </ButtonRipple>
+        </Button>
       </ScrollView>
     </ScreenHeaderProvider>
   );

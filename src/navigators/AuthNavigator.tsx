@@ -1,4 +1,3 @@
-// import { Spinner } from 'native-base';
 import React from 'react';
 import { View } from 'react-native';
 import MainScreen from '../screens/AuthScreens/MainScreen';
@@ -9,6 +8,7 @@ import RememberPasswordScreen from '../screens/AuthScreens/RememberPasswordScree
 import FillUserDataScreen from '../screens/AuthScreens/FillUserDataScreen';
 import { useTypedSelector } from '../hooks/useTypedSelector';
 import Colors from '../colors/Colors';
+import { PathConfigMap } from '@react-navigation/native';
 
 export type AuthStackParamList = {
     MainScreen: undefined,
@@ -18,6 +18,13 @@ export type AuthStackParamList = {
     FillUserDataScreen: undefined,
 }
 
+export const AuthStackLinking: PathConfigMap<AuthStackParamList> = {
+    MainScreen: '',
+    FillUserDataScreen: 'FillUserDataScreen',
+    LoginScreen: 'LoginScreen',
+    RegistrationScreen: 'RegistrationScreen',
+    RememberPasswordScreen: 'RememberPasswordScreen',
+}
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 
 const AuthNavigator: React.FC = () => {
@@ -25,13 +32,13 @@ const AuthNavigator: React.FC = () => {
 
     return (
         <AuthStack.Navigator initialRouteName="MainScreen" screenOptions={{ headerShown: false }}>
-            {/* {!token && <> */}
+            {!token && <>
                 <AuthStack.Screen name="MainScreen" component={MainScreen} />
-                {/* <AuthStack.Screen name="LoginScreen" component={LoginScreen} />
+                <AuthStack.Screen name="LoginScreen" component={LoginScreen} />
                 <AuthStack.Screen name="RegistrationScreen" component={RegistrationScreen} />
                 <AuthStack.Screen name="RememberPasswordScreen" component={RememberPasswordScreen} />
             </>}
-            <AuthStack.Screen name="FillUserDataScreen" component={FillUserDataScreen} /> */}
+            <AuthStack.Screen name="FillUserDataScreen" component={FillUserDataScreen} />
         </AuthStack.Navigator>
     );
 };

@@ -1,11 +1,11 @@
 import { DarkTheme, DefaultTheme, LinkingOptions, NavigationContainer, NavigatorScreenParams, } from '@react-navigation/native';
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
-import AuthNavigator, { AuthStackParamList } from './AuthNavigator';
-import CalendarNavigator, { CalendarStackParamList } from './CalendarNavigator';
-import CandidatesNavigator, { CandidatesStackParamList, } from './CandidatesNavigator';
-import ProfileNavigator, { ProfileStackParamList } from './ProfileNavigator';
-import AdvertNavigator, { AdvertStackParamList } from './AdvertNavigator';
-import MessengerNavigator, { MessengerStackParamList, } from './MessengerNavigator';
+import AuthNavigator, { AuthStackLinking, AuthStackParamList } from './AuthNavigator';
+import CalendarNavigator, { CalendarStackLinking, CalendarStackParamList } from './CalendarNavigator';
+import CandidatesNavigator, { CandidatesStackLinking, CandidatesStackParamList, } from './CandidatesNavigator';
+import ProfileNavigator, { ProfileStackLinking, ProfileStackParamList } from './ProfileNavigator';
+import AdvertNavigator, { AdvertStackLinking, AdvertStackParamList } from './AdvertNavigator';
+import MessengerNavigator, { MessengerStackLinking, MessengerStackParamList, } from './MessengerNavigator';
 import MenuNavigator, { MenuStackLinking, MenuStackParamList } from './MenuNavigator';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 // import BottomTabs from '../components/organisms/BottomTabs/BottomTabs';
@@ -21,12 +21,12 @@ import { useDispatch } from 'react-redux';
 import authServices from '../services/authServices';
 import generalServices from '../services/generalServices';
 import Colors from '../colors/Colors';
-// import { Spinner } from 'native-base';
 import { MediaType, ContactPersonType } from '../store/reducers/types';
 import companyServices from '../services/companyServices';
 import candidatesServices from '../services/candidatesServices';
 import BottomTabs from '../components/organismes/BottomTabs';
 import SwipeablePanel from '../components/organismes/SwipeablePanel';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export type RootStackParamList = {
   MenuStack: NavigatorScreenParams<MenuStackParamList>;
@@ -52,45 +52,32 @@ export const navigationLinking: LinkingOptions<RootStackParamList> = {
       'CandidatesStack': {
         initialRouteName: 'MainScreen',
         path: 'candidates',
-        screens: {
-          MainScreen: '',
-          VideoScreen: 'video',
-        },
+        screens: CandidatesStackLinking
       },
       'CalendarStack': {
         initialRouteName: 'MainScreen',
         path: 'calendar',
-        screens: {
-          MainScreen: '',
-        },
+        screens: CalendarStackLinking
       },
       'AdvertStack': {
         initialRouteName: 'MainScreen',
         path: 'adverts',
-        screens: {
-          MainScreen: '',
-        },
+        screens: AdvertStackLinking
       },
       'MessengerStack': {
         initialRouteName: 'MainScreen',
         path: 'messenger',
-        screens: {
-          MainScreen: '',
-        },
-      },
-      'AuthStack': {
-        initialRouteName: 'MainScreen',
-        path: 'auth',
-        screens: {
-          MainScreen: '',
-        },
+        screens: MessengerStackLinking
       },
       'ProfileStack': {
         initialRouteName: 'MainScreen',
         path: 'profile',
-        screens: {
-          MainScreen: '',
-        },
+        screens: ProfileStackLinking
+      },
+      'AuthStack': {
+        initialRouteName: 'MainScreen',
+        path: 'auth',
+        screens: AuthStackLinking
       },
     },
   },
@@ -258,11 +245,7 @@ const RootNavigator: React.FC = () => {
     >
       <RootStack.Navigator
         backBehavior='history' initialRouteName="MenuStack" screenOptions={{ headerShown: false }}
-        tabBar={(props) => {
-          const {state} = props;
-          
-          return <BottomTabs {...{ profileFocused, setProfileFocused, currentScreen, routes: state.routes.map(({name}) => name) }} />
-        }}
+        tabBar={({ state }) => <BottomTabs {...{ profileFocused, setProfileFocused, currentScreen, routes: state.routes.map(({ name }) => name) }} />}
       >
         {screens.map(screen =>
           <RootStack.Screen {...screen} listeners={({ route, navigation }) => ({ state: () => setCurrentScreenHandler(route), blur: () => navigation.setParams({ screen: undefined, params: undefined }) })} />
@@ -270,7 +253,7 @@ const RootNavigator: React.FC = () => {
       </RootStack.Navigator>
     </NavigationContainer>
     {useMemo(() => (
-      <SwipeablePanel onlySmall closeButton isActive={!!swipeablePanelProps} onClose={() => setSwipeablePanelProps(null)} {...swipeablePanelProps} />
+      <SwipeablePanel closeButton isActive={!!swipeablePanelProps} onClose={() => setSwipeablePanelProps(null)} {...swipeablePanelProps} />
     ), [swipeablePanelProps])}
   </>);
 };

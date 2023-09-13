@@ -12,9 +12,10 @@ import CandidatesScreen from '../screens/AdvertScreens/CandidatesScreen';
 import { AddressType, CandidateDataType, JobPositionType, UserAdvertType } from '../store/reducers/types';
 import ProfileScreen from '../screens/CandidatesScreens/ProfileScreen';
 import VideoScreen from '../screens/CandidatesScreens/VideoScreen';
+import { PathConfigMap } from '@react-navigation/native';
 
 type JobCategoryScreenCallbackProps = {
-  industryId: number, 
+  industryId: number,
   positionId: number
 }
 
@@ -54,31 +55,41 @@ export type AdvertStackParamList = {
     selectedBenefits?: any;
     advertIndex?: number;
   };
-  CandidatesScreen: {candidates: UserAdvertType['candidate_data']};
+  CandidatesScreen: { candidates: UserAdvertType['candidate_data'] };
   ProfileScreen: { candidateData: CandidateDataType };
   VideoScreen: { candidateData: CandidateDataType };
 };
+
+export const AdvertStackLinking: PathConfigMap<AdvertStackParamList> = {
+  MainScreen: '',
+  AdvertScreen: 'AdvertScreen',
+  CandidatesScreen: 'CandidatesScreen',
+  EditAdvertScreen: 'EditAdvertScreen',
+  JobCategoryScreen: 'JobCategoryScreen',
+  JobScreen: 'JobScreen',
+  MapScreen: 'MapScreen',
+  NewAdvertScreen: 'NewAdvertScreen',
+  OptionsDrawerScreen: 'OptionsDrawerScreen',
+  ProfileScreen: 'ProfileScreen',
+  VideoScreen: 'VideoScreen',
+}
 
 const AdvertStack = createNativeStackNavigator<AdvertStackParamList>();
 
 const AdvertNavigator: React.FC = () => {
   return (
     <AdvertStack.Navigator initialRouteName="MainScreen" screenOptions={{ headerShown: false }}>
-    <AdvertStack.Screen
-      name="MainScreen"
-      component={() => null}
-    />
-      {/* <AdvertStack.Screen name="MainScreen" component={MainScreen} />
+      <AdvertStack.Screen name="MainScreen" component={MainScreen} />
       <AdvertStack.Screen name="NewAdvertScreen" component={NewAdvertScreen} />
       <AdvertStack.Screen name="JobCategoryScreen" component={JobCategoryScreen} />
       <AdvertStack.Screen name="JobScreen" component={JobScreen} />
-      <AdvertStack.Screen name="MapScreen" component={MapScreen} initialParams={{hideControls: false}} />
+      <AdvertStack.Screen name="MapScreen" component={MapScreen} initialParams={{ hideControls: false }} />
       <AdvertStack.Screen name="AdvertScreen" component={AdvertScreen} />
       <AdvertStack.Screen name="OptionsDrawerScreen" component={OptionsDrawerScreen} />
       <AdvertStack.Screen name="EditAdvertScreen" component={EditAdvertScreen} />
       <AdvertStack.Screen name="CandidatesScreen" component={CandidatesScreen} />
       <AdvertStack.Screen name="ProfileScreen" component={ProfileScreen} />
-      <AdvertStack.Screen name="VideoScreen" component={VideoScreen} /> */}
+      <AdvertStack.Screen name="VideoScreen" component={VideoScreen} />
     </AdvertStack.Navigator>
   );
 };

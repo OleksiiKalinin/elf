@@ -2,19 +2,18 @@ import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import { Input, ScrollView, TextField } from 'native-base';
-import Typography from '../../components/atoms/Typography/Typography';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import SvgIcon, { IconTypes } from '../../components/molecules/SvgIcon/SvgIcon';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
 import { nativeStore } from '../../store';
 import { bookmarkActionTypes } from '../../store/actions';
-import HorizontalMenuButton from '../../components/atoms/HorizontalMenuButton/HorizontalMenuButton';
 import { useActions } from '../../hooks/useActions';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { ScrollView } from '../../components/molecules/ScrollView';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import Typography from '../../components/atoms/Typography';
+import Button from '../../components/molecules/Button';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<CandidatesStackParamList, 'FavSettingsScreen'>,
@@ -22,7 +21,7 @@ type MainScreenProps = CompositeScreenProps<
 >;
 
 const FavSettingsScreen: React.FC<MainScreenProps> = ({ navigation }) => {
-  const data = useTypedSelector(state => state.bookmark);
+  // const data = useTypedSelector(state => state.bookmark);
 
   const colors = [
     Colors.Green500,
@@ -46,9 +45,9 @@ const FavSettingsScreen: React.FC<MainScreenProps> = ({ navigation }) => {
     'rgba(23, 25, 55, 0.2)',
   ];
 
-  const [color0, setColor0] = useState(colors.indexOf(data.bookmarks[0].color));
-  const [color1, setColor1] = useState(colors.indexOf(data.bookmarks[1].color));
-  const [color2, setColor2] = useState(colors.indexOf(data.bookmarks[2].color));
+  // const [color0, setColor0] = useState(colors.indexOf(data.bookmarks[0].color));
+  // const [color1, setColor1] = useState(colors.indexOf(data.bookmarks[1].color));
+  // const [color2, setColor2] = useState(colors.indexOf(data.bookmarks[2].color));
 
 
   return (
@@ -57,16 +56,16 @@ const FavSettingsScreen: React.FC<MainScreenProps> = ({ navigation }) => {
         <View style={{ marginTop: 25 }}></View>
         <View>
           <View style={[styles.categoryContainer]}>
-            <SvgIcon
+            {/* <SvgIcon
               icon="cardFilled"
               fill={colors[color0] ? colors[color0] : data.bookmarks[0].color}
             />
             <Typography color={Colors.Basic600} variant='h5' style={styles.categoryText}>
               {data.bookmarks[0].name}
-            </Typography>
+            </Typography> */}
           </View>
           <View style={styles.colorPicker}>
-            {colors.map((item, i) => (
+            {/* {colors.map((item, i) => (
               <SvgIcon
                 style={[styles.color]}
                 icon={i === color0 ? 'colorCircleSelected' : 'colorCircle'}
@@ -75,21 +74,21 @@ const FavSettingsScreen: React.FC<MainScreenProps> = ({ navigation }) => {
                   setColor0(i);
                 }}
               />
-            ))}
+            ))} */}
           </View>
         </View>
         <View>
           <View style={[styles.categoryContainer]}>
-            <SvgIcon
+            {/* <SvgIcon
               icon="cardFilled"
               fill={colors[color1] ? colors[color1] : data.bookmarks[1].color}
             />
             <Typography color={Colors.Basic600} variant='h5' style={styles.categoryText}>
               {data.bookmarks[1].name}
-            </Typography>
+            </Typography> */}
           </View>
           <View style={styles.colorPicker}>
-            {colors.map((item, i) => (
+            {/* {colors.map((item, i) => (
               <SvgIcon
                 style={[styles.color]}
                 icon={i === color1 ? 'colorCircleSelected' : 'colorCircle'}
@@ -98,22 +97,22 @@ const FavSettingsScreen: React.FC<MainScreenProps> = ({ navigation }) => {
                   setColor1(i);
                 }}
               />
-            ))}
+            ))} */}
           </View>
         </View>
 
         <View>
           <View style={[styles.categoryContainer]}>
-            <SvgIcon
+            {/* <SvgIcon
               icon="cardFilled"
               fill={colors[color2] ? colors[color2] : data.bookmarks[2].color}
             />
             <Typography color={Colors.Basic600} variant='h5' style={styles.categoryText}>
               {data.bookmarks[2].name}
-            </Typography>
+            </Typography> */}
           </View>
           <View style={styles.colorPicker}>
-            {colors.map((item, i) => (
+            {/* {colors.map((item, i) => (
               <SvgIcon
                 style={[styles.color]}
                 icon={i === color2 ? 'colorCircleSelected' : 'colorCircle'}
@@ -122,38 +121,40 @@ const FavSettingsScreen: React.FC<MainScreenProps> = ({ navigation }) => {
                   setColor2(i);
                 }}
               />
-            ))}
+            ))} */}
           </View>
         </View>
       </ScrollView>
       <View style={{ backgroundColor: Colors.Basic100 }}>
         <View style={{ marginBottom: 19, alignItems: 'center' }}>
-          <ButtonRipple
+          <Button
             variant='white'
-            onPress={() => { setColor0(0), setColor1(6), setColor2(1) }}
-            style={{paddingHorizontal: 16}}
-            containerStyles={{borderRadius: 4, overflow: 'hidden'}}
+            // onPress={() => { setColor0(0), setColor1(6), setColor2(1) }}
+            style={{ paddingHorizontal: 16 }}
+            borderRadius={4}
+          // containerStyles={{borderRadius: 4, overflow: 'hidden'}}
           >
             Przywróć domyślne
-          </ButtonRipple>
+          </Button>
         </View>
-        <ButtonRipple
+        <Button
           onPress={() => {
-            navigation.navigate('FavouritesScreen'),
-              nativeStore.dispatch({
-                type: bookmarkActionTypes.SET_COLOR,
-                payload: {
-                  colors: [colors[color0], colors[color1], colors[color2]],
-                  selectedColors: [
-                    selectedColors[color0],
-                    selectedColors[color1],
-                    selectedColors[color2],
-                  ],
-                },
-              });
-          }}>
+            // navigation.navigate('FavouritesScreen'),
+            //   nativeStore.dispatch({
+            //     type: bookmarkActionTypes.SET_COLOR,
+            //     payload: {
+            //       colors: [colors[color0], colors[color1], colors[color2]],
+            //       selectedColors: [
+            //         selectedColors[color0],
+            //         selectedColors[color1],
+            //         selectedColors[color2],
+            //       ],
+            //     },
+            //   });
+          }}
+        >
           Zapisz
-        </ButtonRipple>
+        </Button>
       </View>
     </ScreenHeaderProvider>
   );

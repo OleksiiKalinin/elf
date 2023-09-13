@@ -3,10 +3,10 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import Colors from '../../colors/Colors';
-import Typography from '../../components/atoms/Typography/Typography';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
 import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
+import Typography from '../../components/atoms/Typography';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<RootStackParamList, 'CalendarStack'>,
@@ -17,7 +17,7 @@ const VacationScreen: React.FC<MainScreenProps> = ({ navigation }) => {
   return (
     <ScreenHeaderProvider
       currentStack="CalendarStack"
-            mainTitlePosition="flex-start"
+      mainTitlePosition="flex-start"
     >
 
       <ScrollView style={{ backgroundColor: Colors.Basic100 }}>

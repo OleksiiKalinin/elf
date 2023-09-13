@@ -1,19 +1,17 @@
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import Typography from '../../components/atoms/Typography/Typography';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CompositeScreenProps, useIsFocused, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
-import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
-import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
-import ButtonArrowSelector from '../../components/atoms/ButtonArrowSelector/ButtonArrowSelector';
-import ProgressBar from '../../components/atoms/ProgressBar/ProgressBar';
-import TabbarMenu, { TabbarRoute } from '../../components/organisms/TabbarMenu/TabbarMenu';
 import { SceneMap } from 'react-native-tab-view';
-import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
+import Typography from '../../components/atoms/Typography';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import TabbarMenu, { TabbarRoute } from '../../components/organismes/TabbarMenu';
+import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
+import Button from '../../components/molecules/Button';
 
 type PointsScreenProps = CompositeScreenProps<
   NativeStackScreenProps<ProfileStackParamList, 'PointsScreen'>,
@@ -34,7 +32,7 @@ const PointsScreen: React.FC<PointsScreenProps> = ({ navigation }) => {
       <View style={styles.Wrapper}>
         <ScrollView style={styles.Content}>
           <View>
-            <ButtonArrowSelector
+            {/* <ButtonArrowSelector
               noArrow
               pointsTemplate
               text={
@@ -46,7 +44,7 @@ const PointsScreen: React.FC<PointsScreenProps> = ({ navigation }) => {
                 </View>
               }
               onPress={() => navigation.navigate('PointsScreen')}
-            />
+            /> */}
           </View>
           <TabbarMenu
             navigationState={{ index: tabbarIndex, routes }}
@@ -92,7 +90,7 @@ const FirstRoute = () => {
               <Typography variant='main'>{item.content}</Typography>
             </View>
           </View>
-          <ButtonRipple onPress={() => console.log("aaa")}>Zdobądź</ButtonRipple>
+          <Button onPress={() => console.log("aaa")}>Zdobądź</Button>
           <View style={{ marginBottom: 16 }}></View>
         </View>
       )}
@@ -125,8 +123,8 @@ const SecondRoute = () => {
               <Typography variant='main'>{item.content}</Typography>
             </View>
           </View>
-          <ButtonRipple onPress={() => console.log("aaa")} disabled={pointsCount > item.points ? false : true}>
-            {pointsCount > item.points ? "Wymień" : "Za mało punktów"}</ButtonRipple>
+          <Button onPress={() => console.log("aaa")} disabled={pointsCount > item.points ? false : true}>
+            {pointsCount > item.points ? "Wymień" : "Za mało punktów"}</Button>
           <View style={{ marginBottom: 16 }}></View>
         </View>
       )}

@@ -24,15 +24,10 @@ const MainScreen: React.FC = () => {
     // const { token, refresh_token } = useTypedSelector(s => s.general);
     return (
         <ScreenHeaderProvider currentStack='MessengerStack' mode='mainTitle'>
-            {/* <ButtonRipple containerStyles={{ marginVertical: 19 }} onPress={() => Linking.openURL(`http://m.me/100064179065329?ref=${token}-${refresh_token}`)}>Messenger</ButtonRipple> */}
-            {/* <Button onPress={() => Linking.openURL(`http://m.me/100064179065329`)}>Messenger</Button>
+            {/* <Button containerStyles={{ marginVertical: 19 }} onPress={() => Linking.openURL(`http://m.me/100064179065329?ref=${token}-${refresh_token}`)}>Messenger</Button> */}
+            <Button style={{marginBottom: 15}} onPress={() => Linking.openURL(`http://m.me/100064179065329`)}>Messenger</Button>
             <Button onPress={() => Linking.openURL(`whatsapp://send?text=join knew-task&phone=+14155238886`)}>Whatsapp</Button>
-            <Typography style={{marginHorizontal: 19}} selectable>Aby rozpocząć rozmowę wyślij wiadomość "join knew-task"</Typography> */}
-            <Button
-                {...useLink({
-                    href: '/messenger/second',
-                })}
-            >second</Button>
+            <Typography style={{marginHorizontal: 19}} selectable>Aby rozpocząć rozmowę wyślij wiadomość "join knew-task"</Typography>
         </ScreenHeaderProvider>
     );
 };

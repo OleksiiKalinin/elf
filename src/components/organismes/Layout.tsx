@@ -1,12 +1,11 @@
+import { useRouter } from 'next/router';
 import { ReactNode, FC, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import BottomTabs from './organismes/BottomTabs';
-import Typography from './atoms/Typography';
-import Colors from '../colors/Colors';
-import { navigationLinking } from '../navigators/RootNavigator';
-import { useRouter } from 'next/router';
-import { useTypedSelector } from '../hooks/useTypedSelector';
-import { useActions } from '../hooks/useActions';
+import { useActions } from '../../hooks/useActions';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
+import { navigationLinking } from '../../navigators/RootNavigator';
+import BottomTabs from './BottomTabs';
+import Colors from '../../colors/Colors';
 
 export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
   const [profileFocused, setProfileFocused] = useState(false);
