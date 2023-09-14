@@ -26,6 +26,7 @@ import LoadingScreen from '../../components/atoms/LoadingScreen';
 import SvgIcon from '../../components/atoms/SvgIcon';
 import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
 type MenuScreenProps = CompositeScreenProps<
   NativeStackScreenProps<MenuStackParamList, 'EventsScreen'>,
@@ -33,7 +34,7 @@ type MenuScreenProps = CompositeScreenProps<
 >;
 
 const EventsScreen: React.FC<MenuScreenProps> = ({ navigation }) => {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const { userEvents, jobIndustries, token } = useTypedSelector(state => state.general);
   const [jobPositions, setJobPositions] = useState<JobPositionType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -51,7 +52,7 @@ const EventsScreen: React.FC<MenuScreenProps> = ({ navigation }) => {
 
   return (
     <View style={styles.Wrapper}>
-      <ScreenHeaderProvider currentStack="MenuStack">
+      <ScreenHeaderProvider>
         {loading ? <LoadingScreen /> :
           <ScrollView contentContainerStyle={{paddingBottom: 24}} style={{ backgroundColor: Colors.Basic100 }}>
             {!!userEvents.length ? userEvents.sort((a, b) => new Date(b.start_time).getTime() - new Date(a.start_time).getTime()).map((event, index, array) => {

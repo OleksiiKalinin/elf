@@ -18,6 +18,7 @@ import { useDispatch } from 'react-redux';
 import { IconTypes } from '../../components/atoms/SvgIcon';
 import Typography from '../../components/atoms/Typography';
 import Button from '../../components/molecules/Button';
+import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
 type AuthScreenProps = CompositeScreenProps<
   NativeStackScreenProps<AuthStackParamList, 'MainScreen'>,
@@ -25,7 +26,7 @@ type AuthScreenProps = CompositeScreenProps<
 >;
 
 const AuthScreen: FC<AuthScreenProps> = ({ navigation }) => {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
 
   // const additionalButtons: Array<{ icon: IconTypes; color: string; onPress: () => void; }> = [
   //   {

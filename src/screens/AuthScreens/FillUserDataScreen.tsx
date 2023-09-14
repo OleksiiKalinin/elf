@@ -13,6 +13,7 @@ import Typography from '../../components/atoms/Typography';
 import TextField from '../../components/molecules/TextField';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Button from '../../components/molecules/Button';
+import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
 type ScreenProps = CompositeScreenProps<
   NativeStackScreenProps<AuthStackParamList, 'FillUserDataScreen'>,
@@ -20,7 +21,7 @@ type ScreenProps = CompositeScreenProps<
 >;
 
 const FillUserDataScreen: React.FC<ScreenProps> = ({ navigation }) => {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const [loading, setLoading] = useState<boolean>(false);
   const [showTips, setShowTips] = useState<boolean>(false);
   const [isDataValid, setIsDataValid] = useState<boolean>(false);
@@ -57,7 +58,7 @@ const FillUserDataScreen: React.FC<ScreenProps> = ({ navigation }) => {
   }
 
   return !!token && userData && !(userData.email && userData.first_name && userData.last_name) ? (
-    <ScreenHeaderProvider currentStack='AuthStack'>
+    <ScreenHeaderProvider>
       <View style={styles.Wrapper}>
         <ScrollView contentContainerStyle={{ flex: 1, margin: 24 }} keyboardShouldPersistTaps='always'>
           <View style={{ marginBottom: 12 }}>

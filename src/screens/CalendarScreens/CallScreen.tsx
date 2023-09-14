@@ -170,7 +170,6 @@ const CallScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
 
   return (
     <ScreenHeaderProvider
-      currentStack="CalendarStack"
       mainTitlePosition="flex-start"
       alterTitle={
         <View style={{ flexDirection: 'row' }}>

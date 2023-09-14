@@ -62,7 +62,7 @@ const NotificationScreen: React.FC<NotificationScreenProps> = ({ navigation }) =
   // console.log(switchState);
 
   return (
-    <ScreenHeaderProvider currentStack="ProfileStack">
+    <ScreenHeaderProvider>
       <View style={styles.Wrapper}>
         <ScrollView style={styles.Content}>
           <View

@@ -16,7 +16,6 @@ type MainScreenProps = CompositeScreenProps<
 const VacationScreen: React.FC<MainScreenProps> = ({ navigation }) => {
   return (
     <ScreenHeaderProvider
-      currentStack="CalendarStack"
       mainTitlePosition="flex-start"
     >
 

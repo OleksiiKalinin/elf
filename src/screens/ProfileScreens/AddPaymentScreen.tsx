@@ -30,7 +30,7 @@ const AddPaymentScreen: React.FC<AddPaymentScreen> = ({ navigation }) => {
   };
 
   return (
-    <ScreenHeaderProvider currentStack="ProfileStack">
+    <ScreenHeaderProvider>
       <View style={styles.Wrapper}>
         <ScrollView style={styles.Content}>
           <Typography

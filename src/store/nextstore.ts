@@ -1,7 +1,7 @@
 import { HYDRATE, createWrapper } from "next-redux-wrapper";
-import { rootReducer } from ".";
-import { applyMiddleware, createStore } from "redux";
-import thunk from "redux-thunk";
+import { rootReducer, rootState } from ".";
+import { AnyAction, applyMiddleware, createStore } from "redux";
+import thunk, { ThunkDispatch } from "redux-thunk";
 
 const nextReducer = (state: any, action: any) => {
     if (action.type === HYDRATE) {

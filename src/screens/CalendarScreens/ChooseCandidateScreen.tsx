@@ -15,6 +15,7 @@ import LoadingScreen from '../../components/atoms/LoadingScreen';
 import Typography from '../../components/atoms/Typography';
 import CandidateCard from '../../components/organismes/CandidateCard';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<CalendarStackParamList, 'ChooseCandidateScreen'>,
@@ -22,7 +23,7 @@ type MainScreenProps = CompositeScreenProps<
 >;
 
 const CandidatesScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const { candidates: candidatesWithRating, callback } = route.params;
   const { token } = useTypedSelector(s => s.general);
   const [loading, setLoading] = useState<boolean>(true);
@@ -65,7 +66,6 @@ const CandidatesScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
 
   return loading ? <LoadingScreen /> : (
     <ScreenHeaderProvider
-      currentStack="CalendarStack"
       mainTitlePosition="flex-start"
     >
       {CandidatesList}

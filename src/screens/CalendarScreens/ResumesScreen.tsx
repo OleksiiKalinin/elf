@@ -72,7 +72,7 @@ const ResumesScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   ];
 
   return (
-    <ScreenHeaderProvider currentStack="CalendarStack" mainTitlePosition="flex-start"
+    <ScreenHeaderProvider mainTitlePosition="flex-start"
       actions={[
         {
           icon: 'search',

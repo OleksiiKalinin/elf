@@ -35,7 +35,7 @@ const JobCategoryScreen: React.FC<MainScreenProps> = ({ navigation, route }) => 
   }, [positionId, industryId]);
 
   return (
-    <ScreenHeaderProvider currentStack="AdvertStack" mainTitlePosition="flex-start">
+    <ScreenHeaderProvider mainTitlePosition="flex-start">
       <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
         <View style={styles.Textfield}>
           <TextField

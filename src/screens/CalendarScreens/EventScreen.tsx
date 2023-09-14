@@ -22,6 +22,7 @@ import SvgIcon from '../../components/atoms/SvgIcon';
 import CandidateCard from '../../components/organismes/CandidateCard';
 import RadioGroup from '../../components/atoms/RadioGroup';
 import AdvertSmall from '../../components/organismes/AdvertSmall';
+import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 // import CandidateCard from '../../components/organisms/CandidateCard/CandidateCard';
 
 type MainScreenProps = CompositeScreenProps<
@@ -49,7 +50,7 @@ const normalizeTimeForPicker = (mode: 'start' | 'end'): Date => {
 }
 
 const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const [loading, setLoading] = useState<boolean>(false);
   const [eventType, setEventType] = useState<'meeting' | 'call'>('call');
   const [startDate, setStartDate] = useState<string>(new Date().toISOString().replace(/T.*$/, ''));
@@ -130,7 +131,7 @@ const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   }
 
   return (
-    <ScreenHeaderProvider currentStack="CalendarStack">
+    <ScreenHeaderProvider>
       <ScrollView style={styles.Wrapper}>
         <Typography weight="Bold" variant='h5' style={styles.Title}>
           Data i godzina*

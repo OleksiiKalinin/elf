@@ -15,6 +15,7 @@ import SvgIcon from '../../components/atoms/SvgIcon';
 import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Agenda from '../../components/organismes/Agenda';
+import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<CalendarStackParamList, 'MainScreen'>,
@@ -22,7 +23,7 @@ type MainScreenProps = CompositeScreenProps<
 >;
 
 const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const { token, userEvents, jobIndustries } = useTypedSelector(state => state.general);
   const [monthTitle, setMonthTitle] = useState<string>('');
   const {current: remindedEvents} = useRef<number[]>([]);
@@ -108,7 +109,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
   }, [userEvents]);
 
   return (
-    <ScreenHeaderProvider currentStack="CalendarStack" mode="mainTitle" title={monthTitle}>
+    <ScreenHeaderProvider mode="mainTitle" title={monthTitle}>
       <Agenda 
       // getCurrentDate={setMonthTitle} events={userEvents} 
       />

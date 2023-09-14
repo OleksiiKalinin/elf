@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import MainScreen from '../screens/AuthScreens/MainScreen';
-import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from '../screens/AuthScreens/LoginScreen';
 import RegistrationScreen from '../screens/AuthScreens/RegistrationScreen';
 import RememberPasswordScreen from '../screens/AuthScreens/RememberPasswordScreen';

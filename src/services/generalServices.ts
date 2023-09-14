@@ -1,10 +1,21 @@
 import axios, { errorHandler } from "./index";
 import { Dispatch } from "react";
 import AsyncStorage from "@react-native-community/async-storage";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
+// import { GoogleSignin } from "@react-native-google-signin/google-signin";
 // import { LoginManager } from "react-native-fbsdk-next";
 import generalActions from "../store/actionCreators/general/actions";
 import { convertToFrontEndAddress } from "../hooks/convertAddress";
+import { AppDispatch } from "../store";
+
+const test = () => async (dispatch: Dispatch<AppDispatch>) => {
+    try {
+        const {data} = await axios.get('https://jsonplaceholder.typicode.com/todos/1');
+        console.log(data);
+        
+    } catch (error) {
+        
+    }
+}
 
 const getAppData = (token: string | null) => async (dispatch: Dispatch<any>) => {
     let isOk = false;
@@ -37,7 +48,7 @@ const getAppData = (token: string | null) => async (dispatch: Dispatch<any>) => 
         // }
 
         if (!token) {
-            GoogleSignin.signOut();
+            // GoogleSignin.signOut();
             // LoginManager.logOut();
         }
 
@@ -81,4 +92,5 @@ const setUserData = (data: any, token: string | null, protocol: 'post' | 'put') 
 export default {
     getAppData,
     setUserData,
+    test
 }

@@ -50,7 +50,7 @@ const QuestionsScreen: React.FC<MainScreenProps> = ({ navigation }) => {
   // const [questionsState, setQuestionsState] = useState<any>(data.questions);
 
   return (
-    <ScreenHeaderProvider currentStack="MenuStack" mainTitlePosition="flex-start">
+    <ScreenHeaderProvider mainTitlePosition="flex-start">
       <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
         <View>
           <Typography weight="Bold" style={styles.Title}>

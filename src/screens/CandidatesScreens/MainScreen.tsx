@@ -26,6 +26,7 @@ import SvgIcon from '../../components/atoms/SvgIcon';
 import Typography from '../../components/atoms/Typography';
 import CandidateCard from '../../components/organismes/CandidateCard';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<CandidatesStackParamList, 'MainScreen'>,
@@ -35,7 +36,7 @@ type MainScreenProps = CompositeScreenProps<
 const MainScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   const SectionListRef = useRef(null);
   // useScrollToTop(SectionListRef);
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const { setSwipeablePanelProps } = useActions();
   const [loading, setLoading] = useState<boolean>(true);
   const { userAdverts, token, userCompany } = useTypedSelector(state => state.general);
@@ -92,7 +93,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   const getUserAdverts = async () => {
     if (token && userCompany?.id) {
       setLoading(true);
-      // await dispatch(advertsServices.getUserAdverts(token, userCompany?.id));
+      await dispatch(advertsServices.getUserAdverts(token, userCompany?.id));
     }
   }
 
@@ -102,8 +103,8 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
         setLoading(true);
         const candidatesId = Array.from(new Set(userAdverts.reduce<number[]>((prev, curr) => [...prev, ...curr.candidate_data.map(e => e.candidate_id)], [])));
         if (candidatesId.length) {
-          // const res = await dispatch(advertsServices.getAdvertCandidates(token, candidatesId));
-          // setCandidates(res as unknown as CandidateDataType[]);
+          const res = await dispatch(advertsServices.getAdvertCandidates(token, candidatesId));
+          setCandidates(res as unknown as CandidateDataType[]);
         }
       }
       setLoading(false)
@@ -396,7 +397,6 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
 
   return (
     <ScreenHeaderProvider
-      currentStack="CandidatesStack"
       mode="mainTitle"
       mainTitlePosition="flex-start"
       actions={!loading ? [{

@@ -85,7 +85,6 @@ const AdvertScreen: React.FC = (props) => {
 
   return (
     <ScreenHeaderProvider
-      currentStack="AdvertStack"
       mode='backAction'
       transparent
     // actions={[

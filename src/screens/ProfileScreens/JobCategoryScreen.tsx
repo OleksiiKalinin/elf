@@ -24,7 +24,7 @@ const JobCategoryScreen: React.FC<MainScreenProps> = ({ navigation, route }) => 
   const [search, setSearch] = useState<string>('');
 
   return (
-    <ScreenHeaderProvider currentStack="ProfileStack" mainTitlePosition="flex-start">
+    <ScreenHeaderProvider mainTitlePosition="flex-start">
       <ScrollView style={{ backgroundColor: Colors.Basic100, }}>
         <View style={styles.Textfield}>
           <TextField

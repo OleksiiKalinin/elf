@@ -21,7 +21,6 @@ const NewsDetailsScreen: React.FC<MainScreenProps> = ({ navigation, route }) => 
 
   return (
     <ScreenHeaderProvider
-      currentStack="CalendarStack"
       mainTitlePosition="flex-start"
       // title={title}
     >

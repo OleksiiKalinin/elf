@@ -45,7 +45,7 @@ type MainScreenProps = CompositeScreenProps<
 
 const PackagesScreen: FC<MainScreenProps> = () => {
     return (
-        <ScreenHeaderProvider currentStack='ProfileStack'>
+        <ScreenHeaderProvider>
             <ScrollView style={{ backgroundColor: Colors.White }}>
                 <ScrollView showsHorizontalScrollIndicator horizontal contentContainerStyle={{ paddingLeft: 20 }}>
                     {packageTypes.map((item) =>

@@ -33,7 +33,7 @@ const LanguageScreen: React.FC<LanguageScreenProps> = ({ navigation, route }) =>
   ]
 
   return (
-    <ScreenHeaderProvider currentStack="ProfileStack">
+    <ScreenHeaderProvider>
       <View style={styles.Wrapper}>
         <ScrollView style={styles.Content}>
           <View style={{ marginHorizontal: 19 }}>

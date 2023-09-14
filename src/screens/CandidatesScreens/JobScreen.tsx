@@ -28,7 +28,7 @@ const JobScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   const { index } = route.params;
 
   return (
-    <ScreenHeaderProvider currentStack="CandidatesStack" mainTitlePosition="flex-start">
+    <ScreenHeaderProvider mainTitlePosition="flex-start">
       <ScrollView
         style={{
           backgroundColor: Colors.Basic100,

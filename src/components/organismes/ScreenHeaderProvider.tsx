@@ -14,6 +14,7 @@ import Typography from '../atoms/Typography';
 import Button from '../molecules/Button';
 import Colors from '../../colors/Colors';
 import { useRouter } from 'solito/router';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
 
 type ScreensTitlesType = {
   MenuStack: { [k in keyof MenuStackParamList]: string };
@@ -126,7 +127,6 @@ export const screensTitles: ScreensTitlesType = {
 };
 
 type ScreenHeaderProviderProps = {
-  currentStack: keyof RootStackParamList;
   children: React.ReactNode;
   mode?: 'backAction' | 'mainTitle';
   mainTitlePosition?: 'flex-start' | 'center';
@@ -153,19 +153,12 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   transparent = false,
   staticContentHeight = false,
   alterTitle = null,
-  currentStack,
 }) => {
   const { back } = useRouter();
-  // const navigation = useNavigation();
-  // const history = navigation.getState().routes;
-  // const previousScreen: string | null =
-  //   history.length > 1
-  //     ? history[history.length - 2].name
-  //     : null;
-  // const previousTitle = previousScreen ? screensTitles[currentStack][previousScreen] : '';
-
+  const { currentScreen } = useTypedSelector(s => s.general);
+  const [stack, screen] = currentScreen.split('-');
   // @ts-ignore
-  const currentTitle: string = 'blabla'//screensTitles[currentStack][useRoute().name];
+  const currentTitle: string = screensTitles[stack][screen];
 
   return (
     <View style={[styles.Wrapper]}>
@@ -207,19 +200,20 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
         )}
         {actions && (
           <View style={styles.Actions}>
-            {actions.map(({ icon, onPress }) => <View style={{ marginLeft: 20 }}>{(typeof icon === 'object') ? (
-              <TouchableOpacity style={{ padding: 5 }} onPress={onPress}></TouchableOpacity>
-              // <TouchableOpacity style={{ padding: 5 }} onPress={onPress}>{icon}</TouchableOpacity>
-            ) : (
-              <Button
-                circular
-                icon={<SvgIcon icon={icon} />}
-                onPress={onPress}
-              // colorScheme={Colors.Basic100}
-              >{' '}</Button>
-            )
-            }</View>
-            )}
+            {actions.map(({ icon, onPress }, index) => (
+              <View style={{ marginLeft: 20 }} key={index}>
+                {(typeof icon === 'object') ? (
+                  <TouchableOpacity style={{ padding: 5 }} onPress={onPress}></TouchableOpacity>
+                  // <TouchableOpacity style={{ padding: 5 }} onPress={onPress}>{icon}</TouchableOpacity>
+                ) : (
+                  <Button
+                    circular
+                    icon={<SvgIcon icon={icon} />}
+                    onPress={onPress}
+                  // colorScheme={Colors.Basic100}
+                  >{' '}</Button>
+                )}
+              </View>))}
           </View>
         )}
         {/* {otherActions} */}

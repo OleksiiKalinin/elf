@@ -39,7 +39,7 @@ const OptionsDrawerScreen: React.FC<MainScreenProps> = ({ navigation, route }) =
   // console.log(isChecked)
 
   return (
-    <ScreenHeaderProvider currentStack="AdvertStack">
+    <ScreenHeaderProvider>
       <ScrollView style={{ backgroundColor: Colors.Basic100, flex: 1 }}>
         {/* {selectedOptions.map((item, index) => (<>
           <CheckBox

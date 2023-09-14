@@ -27,7 +27,7 @@ const FavouritesScreen: React.FC<MainScreenProps> = ({ navigation }) => {
   // const data = useTypedSelector(state => state.bookmark);
 
   return (
-    <ScreenHeaderProvider currentStack="CandidatesStack" mainTitlePosition="flex-start"
+    <ScreenHeaderProvider mainTitlePosition="flex-start"
       actions={[
         {
           icon: 'settings',

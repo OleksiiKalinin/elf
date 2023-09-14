@@ -87,7 +87,7 @@ const FilterScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   // });
 
   return (
-    <ScreenHeaderProvider currentStack="CandidatesStack">
+    <ScreenHeaderProvider>
       {/* <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
         <Typography variant="h4" weight="Bold" style={{ marginLeft: 19, marginBottom: 10, marginTop: 30 }}>
           Sortuj po

@@ -14,6 +14,7 @@ import LoadingScreen from '../../components/atoms/LoadingScreen';
 import Typography from '../../components/atoms/Typography';
 import CandidateCard from '../../components/organismes/CandidateCard';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<AdvertStackParamList, 'CandidatesScreen'>,
@@ -21,17 +22,17 @@ type MainScreenProps = CompositeScreenProps<
 >;
 
 const CandidatesScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const { candidates: candidatesWithRating } = route.params;
   const { token } = useTypedSelector(s => s.general);
   const [loading, setLoading] = useState<boolean>(true);
   const [candidates, setCandidates] = useState<CandidateDataType[]>([]);
-
+ 
   useEffect(() => {
     (async () => {
       if (candidatesWithRating.length) {
-        // const res = await dispatch(advertsServices.getAdvertCandidates(token, candidatesWithRating.map(e => e.candidate_id)));
-        // setCandidates(res as unknown as CandidateDataType[]);
+        const res = await dispatch(advertsServices.getAdvertCandidates(token, candidatesWithRating.map(e => e.candidate_id)));
+        setCandidates(res as unknown as CandidateDataType[]);
       }
       setLoading(false);
     })();
@@ -261,7 +262,6 @@ const CandidatesScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
 
   return loading ? <LoadingScreen /> : (
     <ScreenHeaderProvider
-      currentStack="AdvertStack"
       mainTitlePosition="flex-start"
     // actions={[
     //   {

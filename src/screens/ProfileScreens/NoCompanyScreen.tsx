@@ -45,7 +45,7 @@ const NoCompanyScreen: React.FC<NoCompanyScreenProps> = ({ navigation }) => {
     }, [showHelp]);
 
     return (
-        <ScreenHeaderProvider currentStack="ProfileStack">
+        <ScreenHeaderProvider>
             <ScrollView style={{ flex: 1, backgroundColor: Colors.Basic100 }} contentContainerStyle={{ paddingVertical: 30 }}>
                 {/* <View style={{ marginHorizontal: 19, backgroundColor: Colors.White, borderRadius: 4, padding: 16, marginBottom: 20, }}>
                     <View style={{alignItems: 'center', marginBottom: 12}}>

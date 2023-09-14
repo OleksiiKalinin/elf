@@ -12,6 +12,7 @@ import Typography from '../../components/atoms/Typography';
 import TextField from '../../components/molecules/TextField';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Button from '../../components/molecules/Button';
+import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
 type AuthLoginScreenProps = CompositeScreenProps<
   NativeStackScreenProps<AuthStackParamList, 'LoginScreen'>,
@@ -26,7 +27,7 @@ export type LoginDataType = {
 };
 
 const AuthLoginScreen: React.FC<AuthLoginScreenProps> = ({ navigation }) => {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const [formData, setFormData] = useState<LoginDataType>({ username: '', password: '' });
   const [loading, setLoading] = useState<boolean>(false);
   const [showTips, setShowTips] = useState<boolean>(false);
@@ -48,13 +49,13 @@ const AuthLoginScreen: React.FC<AuthLoginScreenProps> = ({ navigation }) => {
     if (isDataValid) {
       Keyboard.dismiss();
       setLoading(true);
-      // await dispatch(authServices.login(formData));
+      await dispatch(authServices.login(formData));
       setLoading(false);
     } else setShowTips(true);
   }
 
   return (
-    <ScreenHeaderProvider currentStack='AuthStack'>
+    <ScreenHeaderProvider>
       <ScrollView style={styles.Wrapper} keyboardShouldPersistTaps='always'>
         <View style={[styles.margin, { marginTop: 24 }]}>
           <Typography variant='h4' weight='SemiBold'>Witaj ponownie!</Typography>

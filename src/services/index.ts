@@ -1,14 +1,14 @@
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+// import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
 import generalActions from '../store/actionCreators/general/actions';
 import { Dispatch } from 'react';
 
-GoogleSignin.configure({
-    webClientId: '838297020284-dkuvtrugstqmuojajecj2t1mholdsjfr.apps.googleusercontent.com',
-    // iosClientId: '716572673445-3poodfeo7g3viri30h12vvlfgeqa80oc.apps.googleusercontent.com',
-    offlineAccess: true,
-});
+// GoogleSignin.configure({
+//     webClientId: '838297020284-dkuvtrugstqmuojajecj2t1mholdsjfr.apps.googleusercontent.com',
+//     // iosClientId: '716572673445-3poodfeo7g3viri30h12vvlfgeqa80oc.apps.googleusercontent.com',
+//     offlineAccess: true,
+// });
 
 export const pythonAdmin = {
     client_id: 'e6nB1kx-rcAEqvMiIsyazg',

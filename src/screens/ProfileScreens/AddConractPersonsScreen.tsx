@@ -56,7 +56,7 @@ const AddConractPersonsScreen: React.FC<AddConractPersonsScreenProps> = ({ route
     }
 
     return (
-        <ScreenHeaderProvider currentStack='ProfileStack'>
+        <ScreenHeaderProvider>
             <ScrollView style={{ backgroundColor: Colors.Basic100, flex: 1 }} contentContainerStyle={{ paddingTop: 15 }}>
                 {contactPersons.map(({ account_facebook, account_instagram, email, mobile_number, id }, index) => (<View style={{ paddingHorizontal: 19 }} key={id}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>

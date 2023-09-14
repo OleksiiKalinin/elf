@@ -44,6 +44,7 @@ import Typography from '../../components/atoms/Typography';
 import TextField from '../../components/molecules/TextField';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Button from '../../components/molecules/Button';
+import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -107,7 +108,7 @@ const socialLinksData: {
 type DisplayDataKeysType = keyof CompanyDataType | 'contact_persons' | 'social_media';
 
 const AddCompanyScreen: React.FC<AddCompanyScreenProps> = ({ navigation, route }) => {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const { editMode } = route.params;
   const [loading, setLoading] = useState<boolean>(false);
   const { jobIndustries, token, userCompany } = useTypedSelector(state => state.general);
@@ -416,7 +417,7 @@ const AddCompanyScreen: React.FC<AddCompanyScreenProps> = ({ navigation, route }
   }, []);
 
   return (
-    <ScreenHeaderProvider currentStack="ProfileStack" {...(editMode ? { title: 'Edytuj profil firmy' } : {})}>
+    <ScreenHeaderProvider {...(editMode ? { title: 'Edytuj profil firmy' } : {})}>
       <ScrollView style={styles.Content} contentContainerStyle={{ paddingVertical: 20 }}>
         {/* <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingLeft: 20 }}>
           {MainButtons.map(item => (

@@ -13,6 +13,7 @@ import Typography from '../../components/atoms/Typography';
 import TextField from '../../components/molecules/TextField';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Button from '../../components/molecules/Button';
+import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
 type AuthRegistrateScreenProps = CompositeScreenProps<
   NativeStackScreenProps<AuthStackParamList, 'RegistrationScreen'>,
@@ -30,7 +31,7 @@ export type RegistDataType = {
 }
 
 const AuthRegistrateScreen: React.FC<AuthRegistrateScreenProps> = ({ navigation }) => {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const [formData, setFormData] = useState<RegistDataType>({
     email: '',
     first_name: '',
@@ -70,7 +71,7 @@ const AuthRegistrateScreen: React.FC<AuthRegistrateScreenProps> = ({ navigation 
   }
 
   return (
-    <ScreenHeaderProvider currentStack='AuthStack'>
+    <ScreenHeaderProvider>
       <View style={styles.Wrapper}>
         <ScrollView style={styles.Content} keyboardShouldPersistTaps='always'>
           {/* <View style={[styles.margin, { marginTop: 24 }]}>

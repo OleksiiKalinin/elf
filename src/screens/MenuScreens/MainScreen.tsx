@@ -1,5 +1,5 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import {
   Dimensions,
   GestureResponderEvent,
@@ -24,6 +24,8 @@ import Button from '../../components/molecules/Button';
 import Typography from '../../components/atoms/Typography';
 import { ScrollView } from '../../components/molecules/ScrollView';
 import { useLink } from 'solito/link';
+import { useTypedDispatch } from '../../hooks/useTypedDispatch';
+import generalServices from '../../services/generalServices';
 // import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
 
 type MenuScreenProps = CompositeScreenProps<
@@ -34,10 +36,11 @@ type MenuScreenProps = CompositeScreenProps<
 
 // const MainScreen: React.FC<MenuScreenProps> = ({ navigation }) => {
 const MainScreen: React.FC = ({ }) => {
-  const ScrollViewRef = useRef(null);
+  const dispatch = useTypedDispatch();
+  // const ScrollViewRef = useRef(null);
   // useScrollToTop(ScrollViewRef);
   const { isMainMenuFlatList, userData, token, currentScreen } = useTypedSelector(state => state.general);
-  // const { setIsMainMenuFlatList, setSwipeablePanelProps } = useActions();
+  const { setIsMainMenuFlatList, setSwipeablePanelProps } = useActions();
 
   const sectionButtons: {
     sectionTitle: string,
@@ -57,9 +60,10 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Historia wydarzeń',
             backgroundColor: Colors.Sea300,
             icon: 'eventsHistory',
-            ...useLink({
-              href: '/home/EventsScreen',
-            }),
+            // ...useLink({
+            //   href: '/home/EventsScreen',
+            // }),
+            onPress: () => dispatch(generalServices.test()),
             missedEvents: 0,
             badge: '',
           },
@@ -220,7 +224,6 @@ const MainScreen: React.FC = ({ }) => {
   return (
     <View style={styles.Wrapper}>
       <ScreenHeaderProvider
-        currentStack="ProfileStack"
         mode="mainTitle"
         mainTitlePosition="flex-start"
         alterTitle={
@@ -284,24 +287,30 @@ const MainScreen: React.FC = ({ }) => {
       //   </TouchableOpacity>
       // </View>}
       >
-        <ScrollView ref={ScrollViewRef} contentContainerStyle={{ alignItems: 'center' }} style={{ backgroundColor: Colors.Basic100, flex: 1 }}>
+        <ScrollView
+          // ref={ScrollViewRef} 
+          contentContainerStyle={{ alignItems: 'center' }}
+          style={{ backgroundColor: Colors.Basic100, flex: 1 }}
+        >
           {sectionButtons.map(({ buttons, sectionTitle }, i) => (
             // <View style={[styles[isMainMenuFlatList ? 'FlatSectionWrapper' : 'GridSectionWrapper'], i !== 0 && { paddingTop: 15 }, i + 1 === sectionButtons.length && { paddingBottom: 25 }]}>
-            <View style={[styles[false ? 'FlatSectionWrapper' : 'GridSectionWrapper'], i !== 0 && { paddingTop: 15 }, i + 1 === sectionButtons.length && { paddingBottom: 25 }]}>
+            <View key={i} style={[styles[false ? 'FlatSectionWrapper' : 'GridSectionWrapper'], i !== 0 && { paddingTop: 15 }, i + 1 === sectionButtons.length && { paddingBottom: 25 }]}>
               {/* <Typography weight='Bold' size={20} style={{ width: '88%', marginLeft: isMainMenuFlatList ? 0 : 20, marginBottom: isMainMenuFlatList ? 5 : 0 }}> */}
               <Typography weight='Bold' size={20} style={{ width: '88%', marginLeft: false ? 0 : 20, marginBottom: false ? 5 : 0 }}>
                 {sectionTitle}
               </Typography>
               {/* {buttons.map(({ backgroundColor, badge, icon, missedEvents, onPress, title }) => isMainMenuFlatList ? */}
-              {buttons.map(({ backgroundColor, badge, icon, missedEvents, onPress, title }) => false ?
-                <TouchableOpacity activeOpacity={0.5} onPress={onPress} style={styles.FlatButton}>
-                  <View style={{ height: '100%', paddingVertical: 10, paddingRight: 15, paddingLeft: 5 }}>
-                    <View style={[styles.FlatIconBG, { backgroundColor }]}>
-                      <SvgIcon icon={icon} />
-                    </View>
-                  </View>
-                  <Typography variant="h5" weight='Bold'>{title}</Typography>
-                  {/* {!!badge &&
+              {buttons.map(({ backgroundColor, badge, icon, missedEvents, onPress, title }, index) => (
+                <Fragment key={index}>
+                  {isMainMenuFlatList ?
+                    <TouchableOpacity activeOpacity={0.5} onPress={onPress} style={styles.FlatButton}>
+                      <View style={{ height: '100%', paddingVertical: 10, paddingRight: 15, paddingLeft: 5 }}>
+                        <View style={[styles.FlatIconBG, { backgroundColor }]}>
+                          <SvgIcon icon={icon} />
+                        </View>
+                      </View>
+                      <Typography variant="h5" weight='Bold'>{title}</Typography>
+                      {/* {!!badge &&
                     <Badge position='absolute' top='4px' right='4px' bgColor={Colors.Yellow500} rounded="full">
                       <Typography color={Colors.Basic100} variant='small'>{badge}</Typography>
                     </Badge>
@@ -311,17 +320,17 @@ const MainScreen: React.FC = ({ }) => {
                       <Typography color={Colors.Basic100} variant='small'>{'  '}{missedEvents > 50 ? '50+' : missedEvents}{'  '}</Typography>
                     </Badge>
                   } */}
-                </TouchableOpacity>
-                :
-                <View style={styles.GridButtonWrapper}>
-                  <TouchableOpacity activeOpacity={0.5} onPress={onPress} style={[styles.GridButton]}>
-                    <View style={[styles.GridIconBG, { backgroundColor }]}>
-                      <SvgIcon icon={icon} />
-                    </View>
-                    <Typography variant="h5" weight='Bold' textAlign="center" style={{ marginHorizontal: 10, marginTop: 7 }}>
-                      {title}
-                    </Typography>
-                    {/* {!!badge &&
+                    </TouchableOpacity>
+                    :
+                    <View style={styles.GridButtonWrapper}>
+                      <TouchableOpacity activeOpacity={0.5} onPress={onPress} style={[styles.GridButton]}>
+                        <View style={[styles.GridIconBG, { backgroundColor }]}>
+                          <SvgIcon icon={icon} />
+                        </View>
+                        <Typography variant="h5" weight='Bold' textAlign="center" style={{ marginHorizontal: 10, marginTop: 7 }}>
+                          {title}
+                        </Typography>
+                        {/* {!!badge &&
                       <Badge position='absolute' top='4px' right='4px' bgColor={Colors.Yellow500} rounded="full">
                         <Typography color={Colors.Basic100} weight='Bold'>{badge}</Typography>
                       </Badge>
@@ -331,9 +340,10 @@ const MainScreen: React.FC = ({ }) => {
                         <Typography color={Colors.Basic100} weight='Bold'>{missedEvents > 50 ? '50+' : missedEvents}</Typography>
                       </Badge>
                     } */}
-                  </TouchableOpacity>
-                </View>
-              )}
+                      </TouchableOpacity>
+                    </View>
+                  }
+                </Fragment>))}
             </View>
           ))}
         </ScrollView>

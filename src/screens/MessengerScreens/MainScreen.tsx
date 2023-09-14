@@ -23,7 +23,7 @@ const MainScreen: React.FC = () => {
     // const MainScreen: React.FC<MainScreenProps> = () => {
     // const { token, refresh_token } = useTypedSelector(s => s.general);
     return (
-        <ScreenHeaderProvider currentStack='MessengerStack' mode='mainTitle'>
+        <ScreenHeaderProvider mode='mainTitle'>
             {/* <Button containerStyles={{ marginVertical: 19 }} onPress={() => Linking.openURL(`http://m.me/100064179065329?ref=${token}-${refresh_token}`)}>Messenger</Button> */}
             <Button style={{marginBottom: 15}} onPress={() => Linking.openURL(`http://m.me/100064179065329`)}>Messenger</Button>
             <Button onPress={() => Linking.openURL(`whatsapp://send?text=join knew-task&phone=+14155238886`)}>Whatsapp</Button>

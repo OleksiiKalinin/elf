@@ -25,7 +25,6 @@ const MethodsScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
 
   return (
     <ScreenHeaderProvider
-      currentStack="ProfileStack"
       mainTitlePosition="flex-start"
       actions={[]}
     >

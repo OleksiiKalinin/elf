@@ -22,7 +22,7 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({ navigation }) => {
   ];
 
   return (
-    <ScreenHeaderProvider currentStack="ProfileStack">
+    <ScreenHeaderProvider>
       <View style={styles.Wrapper}>
         <ScrollView style={styles.Content}>
           <Typography

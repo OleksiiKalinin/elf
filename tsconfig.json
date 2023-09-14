@@ -2,11 +2,9 @@
 {
   "extends": "@tsconfig/react-native/tsconfig.json", /* Recommended React Native TSConfig base */
   "compilerOptions": {
-    /* Visit https://aka.ms/tsconfig.json to read more about this file */
+    "target": "esnext",   
     "lib": [
-      "es5",
-      "es6",
-      "dom"
+      "es2017",
     ],
     /* Completeness */
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
@@ -19,6 +17,6 @@
     "**/*.tsx"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules", "babel.config.js", "metro.config.js", "jest.config.js"
   ]
 }

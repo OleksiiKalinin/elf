@@ -19,7 +19,7 @@ const RODO: React.FC<RODOProps> = ({ navigation }) => {
   const [switchState, setSwitchState] = useState(false);
 
   return (
-    <ScreenHeaderProvider currentStack="ProfileStack">
+    <ScreenHeaderProvider>
       <View style={styles.Wrapper}>
         <ScrollView style={styles.Content}>
 

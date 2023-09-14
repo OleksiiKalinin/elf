@@ -1,5 +1,3 @@
-import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { useRoute } from '@react-navigation/native';
 import React, { FC, useEffect, useState } from 'react';
 import { Keyboard, View, Dimensions } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -16,22 +14,7 @@ import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import Colors from '../../colors/Colors';
 import Button from '../molecules/Button';
-import Typography from '../atoms/Typography';
 import { useLink } from 'solito/link';
-// import Colors from '../../../colors/Colors';
-// import { useActions } from '../../../hooks/useActions';
-// import { useTypedSelector } from '../../../hooks/useTypedSelector';
-// import { AdvertStackParamList } from '../../../navigators/AdvertNavigator';
-// import { AuthStackParamList } from '../../../navigators/AuthNavigator';
-// import { CandidatesStackParamList } from '../../../navigators/CandidatesNavigator';
-// import { CalendarStackParamList } from '../../../navigators/CalendarNavigator';
-// import { MenuStackParamList } from '../../../navigators/MenuNavigator';
-// import { MessengerStackParamList } from '../../../navigators/MessengerNavigator';
-// import { ProfileStackParamList } from '../../../navigators/ProfileNavigator';
-// import { RootStackParamList } from '../../../navigators/RootNavigator';
-// import Typography from '../../atoms/Typography/Typography';
-// import ButtonRipple from '../../molecules/ButtonRipple/ButtonRipple';
-// import SvgIcon, { IconTypes } from '../../molecules/SvgIcon/SvgIcon';
 
 type BottomTabsProps = {
     profileFocused: boolean;
@@ -105,7 +88,7 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes, profileFocused, setProfileFoc
             {routes.map(route => {
                 const label = route as keyof RootStackParamList;
                 const href = ((navigationLinking.config?.screens[label] as any)?.path || '') as string;
-                const isFocused = currentScreen.split('-')[0] === route;
+                const isFocused = currentScreen.split('-')[0] === label;
                 if (label === 'ProfileStack') setProfileFocused(isFocused);
 
                 const excludedStacks: Array<keyof RootStackParamList> = ['AuthStack', 'ProfileStack'];
@@ -113,6 +96,7 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes, profileFocused, setProfileFoc
 
                 return (
                     <Button
+                        key={label}
                         variant='white'
                         accessibilityState={isFocused ? { selected: true } : {}}
                         style={{ height: '100%', flex: 1 }}

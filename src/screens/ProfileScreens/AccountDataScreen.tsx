@@ -15,6 +15,7 @@ import { useActions } from '../../hooks/useActions';
 import TextField from '../../components/molecules/TextField';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Button from '../../components/molecules/Button';
+import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
 type AccountDataScreenProps = CompositeScreenProps<
   NativeStackScreenProps<ProfileStackParamList, 'AccountDataScreen'>,
@@ -32,7 +33,7 @@ export type RegistDataType = {
 }
 
 const AccountDataScreen: React.FC<AccountDataScreenProps> = ({ navigation }) => {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const { userData, token } = useTypedSelector(state => state.general);
   const { setSwipeablePanelProps } = useActions();
   const [formData, setFormData] = useState<RegistDataType>({
@@ -97,7 +98,7 @@ const AccountDataScreen: React.FC<AccountDataScreenProps> = ({ navigation }) => 
   }
 
   return (
-    <ScreenHeaderProvider currentStack='ProfileStack' {...(!userData ? { title: 'Przykładowe dane' } : {})}>
+    <ScreenHeaderProvider {...(!userData ? { title: 'Przykładowe dane' } : {})}>
       <View style={styles.Wrapper}>
         <ScrollView style={styles.Content}>
           <View style={[styles.margin, { marginTop: 45 }]}>

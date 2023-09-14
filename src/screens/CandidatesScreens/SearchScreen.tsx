@@ -29,7 +29,7 @@ const SearchScreen: React.FC<MainScreenProps> = ({ navigation }) => {
   // );
 
   return (
-    <ScreenHeaderProvider currentStack="CandidatesStack" mainTitlePosition="flex-start">
+    <ScreenHeaderProvider mainTitlePosition="flex-start">
       <ScrollView
         style={{
           backgroundColor: Colors.Basic100,

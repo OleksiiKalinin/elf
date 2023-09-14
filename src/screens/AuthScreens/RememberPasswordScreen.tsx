@@ -13,6 +13,7 @@ import Typography from '../../components/atoms/Typography';
 import TextField from '../../components/molecules/TextField';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Button from '../../components/molecules/Button';
+import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
 type AuthLoginScreenProps = CompositeScreenProps<
   NativeStackScreenProps<AuthStackParamList, 'RememberPasswordScreen'>,
@@ -27,7 +28,7 @@ type formDataTypes = {
 };
 
 const RememberPasswordScreen: React.FC<AuthLoginScreenProps> = ({ navigation }) => {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const [loading, setLoading] = useState<boolean>(false);
   const [showTips, setShowTips] = useState<boolean>(false);
   const [isDataValid, setIsDataValid] = useState<boolean>(false);
@@ -55,7 +56,7 @@ const RememberPasswordScreen: React.FC<AuthLoginScreenProps> = ({ navigation }) 
   }
 
   return (
-    <ScreenHeaderProvider currentStack='AuthStack'>
+    <ScreenHeaderProvider>
       <View style={styles.Wrapper}>
         <View style={{ justifyContent: 'center', flex: 1, margin: 24 }}>
           <View style={{ marginVertical: 24 }}>

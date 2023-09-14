@@ -16,6 +16,7 @@ import Typography from '../../components/atoms/Typography';
 import TextField from '../../components/molecules/TextField';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Button from '../../components/molecules/Button';
+import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
 type PaymentTemporalScreenProps = CompositeScreenProps<
   NativeStackScreenProps<ProfileStackParamList, 'PaymentTemporalScreen'>,
@@ -27,7 +28,7 @@ const bankOwnerName = 'JobAssistant Sp. z o.o.';
 const bankOwnerAddress = 'ul. Ignacego Mościckiego 1, 24-100 Puławy';
 
 const PaymentTemporalScreen: React.FC<PaymentTemporalScreenProps> = ({ navigation }) => {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const { userCompany, userInvoices, token } = useTypedSelector(s => s.general);
   const [loading, setLoading] = useState<boolean>(true);
   const [email, setEmail] = useState<string>('');
@@ -72,7 +73,7 @@ const PaymentTemporalScreen: React.FC<PaymentTemporalScreenProps> = ({ navigatio
   }
 
   return (
-    <ScreenHeaderProvider currentStack="ProfileStack" actions={!loading ? [{
+    <ScreenHeaderProvider actions={!loading ? [{
       icon: 'refresh',
       onPress: () => getUserInvoices(true)
     }] : undefined}>

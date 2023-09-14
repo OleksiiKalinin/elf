@@ -228,7 +228,7 @@ const JobScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   const { userCompany } = useTypedSelector(s => s.general);
 
   return (
-    <ScreenHeaderProvider currentStack="AdvertStack" mainTitlePosition="flex-start">
+    <ScreenHeaderProvider mainTitlePosition="flex-start">
       <ScrollView style={{ backgroundColor: Colors.Basic100 }} contentContainerStyle={{ paddingHorizontal: 19, paddingTop: 19, }}>
         {/* <TouchableOpacity
           style={styles.Button}

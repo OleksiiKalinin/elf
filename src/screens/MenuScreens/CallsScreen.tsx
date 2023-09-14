@@ -34,7 +34,7 @@ const CallsScreen: React.FC<MenuScreenProps> = ({ navigation }) => {
 
   return (
     <View style={styles.Wrapper}>
-      <ScreenHeaderProvider currentStack="MenuStack">
+      <ScreenHeaderProvider>
         <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
           {userEvents.sort((a, b) => new Date(b.start_time).getTime() - new Date(a.start_time).getTime()).map((item) => (
             <View>

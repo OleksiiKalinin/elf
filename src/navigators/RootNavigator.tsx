@@ -245,10 +245,10 @@ const RootNavigator: React.FC = () => {
     >
       <RootStack.Navigator
         backBehavior='history' initialRouteName="MenuStack" screenOptions={{ headerShown: false }}
-        tabBar={({ state }) => <BottomTabs {...{ profileFocused, setProfileFocused, currentScreen, routes: state.routes.map(({ name }) => name) }} />}
+        tabBar={({ state }) => <BottomTabs {...{ profileFocused, setProfileFocused, routes: state.routes.map(({ name }) => name) }} />}
       >
         {screens.map(screen =>
-          <RootStack.Screen {...screen} listeners={({ route, navigation }) => ({ state: () => setCurrentScreenHandler(route), blur: () => navigation.setParams({ screen: undefined, params: undefined }) })} />
+          <RootStack.Screen key={screen.name} {...screen} listeners={({ route, navigation }) => ({ state: () => setCurrentScreenHandler(route), blur: () => navigation.setParams({ screen: undefined, params: undefined }) })} />
         )}
       </RootStack.Navigator>
     </NavigationContainer>

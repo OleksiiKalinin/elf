@@ -25,6 +25,7 @@ import SvgIcon from '../../components/atoms/SvgIcon';
 import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { TabbarRoute } from '../../components/organismes/TabbarMenu';
+import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<ProfileStackParamList, 'MainScreen'>,
@@ -40,7 +41,7 @@ const pointCards = [
 const screenWidth = Dimensions.get('window').width;
 
 const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const [tabbarIndex, setTabbarIndex] = React.useState<number>(0);
   const [routes] = React.useState<TabbarRoute[]>([
     { key: '0', title: 'Profil', icon: 'user' },
@@ -101,7 +102,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
   }, [showHelp]);
 
   return (
-    <ScreenHeaderProvider currentStack="ProfileStack"
+    <ScreenHeaderProvider
     // actions={[{
     //   icon: 'help',
     //   onPress: () => {

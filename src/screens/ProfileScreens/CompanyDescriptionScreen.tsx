@@ -26,7 +26,7 @@ const CompanyDescriptionScreen: React.FC<MainScreenProps> = ({ navigation, route
   const [value, setValue] = useState<string>(description || '');
 
   return (
-    <ScreenHeaderProvider currentStack="ProfileStack" title={title}>
+    <ScreenHeaderProvider title={title}>
       <View style={{ backgroundColor: Colors.Basic100, flex: 1, padding: 19 }}>
         <TextField
           placeholder="Opis firmy"

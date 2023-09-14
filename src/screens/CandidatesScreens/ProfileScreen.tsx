@@ -24,6 +24,7 @@ import candidatesServices from '../../services/candidatesServices';
 import { TabbarRoute } from '../../components/organismes/TabbarMenu';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { ScrollView } from '../../components/molecules/ScrollView';
+import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<CandidatesStackParamList, 'ProfileScreen'>,
@@ -50,7 +51,7 @@ const noteTitles: { title: string, field_type: NoteDataType['field_type'], color
 ];
 
 const ProfileScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const { token, candidateNotes: initNotes, candidateMarks: initMarks, marksData, notesData, userCompany } = useTypedSelector(s => s.general);
   const [tabbarIndex, setTabbarIndex] = React.useState<number>(0);
   const [routes] = React.useState<TabbarRoute[]>([
@@ -149,7 +150,7 @@ const ProfileScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
 
   return (
     <ScreenHeaderProvider
-      currentStack="CandidatesStack" transparent={false}
+      transparent={false}
   //     otherActions={<View style={{ flexDirection: 'row', height: '100%', alignItems: 'center' }}>
   //       <Menu>
   //         <MenuTrigger>

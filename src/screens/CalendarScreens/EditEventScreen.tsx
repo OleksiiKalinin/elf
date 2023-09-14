@@ -128,7 +128,7 @@ const EditEventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   ];
 
   return (
-    <ScreenHeaderProvider currentStack="CalendarStack" mainTitlePosition="flex-start"
+    <ScreenHeaderProvider mainTitlePosition="flex-start"
       alterTitle={
         <View style={{ flexDirection: 'row' }}>
           <SvgIcon icon="meeting" />

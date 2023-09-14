@@ -36,7 +36,7 @@ const AddPersonScreen: React.FC<MainScreenProps> = ({ navigation }) => {
   };
 
   return (
-    <ScreenHeaderProvider currentStack="CalendarStack" mainTitlePosition="flex-start">
+    <ScreenHeaderProvider mainTitlePosition="flex-start">
       <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
         <View>
           <Typography weight="Bold" style={styles.Title}>

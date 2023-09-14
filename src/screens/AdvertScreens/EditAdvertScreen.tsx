@@ -209,7 +209,7 @@ const EditAdvertScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   //   expireDate.getFullYear();
 
   return (
-    <ScreenHeaderProvider currentStack="AdvertStack" mainTitlePosition="flex-start">
+    <ScreenHeaderProvider mainTitlePosition="flex-start">
       {/* <ScrollView
         scrollEnabled={scrollEnabled}
         style={{

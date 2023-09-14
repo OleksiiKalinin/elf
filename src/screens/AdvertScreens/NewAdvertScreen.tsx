@@ -24,6 +24,7 @@ import Typography from '../../components/atoms/Typography';
 import SvgIcon from '../../components/atoms/SvgIcon';
 import Button from '../../components/molecules/Button';
 import TextField from '../../components/molecules/TextField';
+import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
 
 var width = Dimensions.get('window').width;
@@ -56,7 +57,7 @@ buttons={[
 // }
 
 const NewAdvertScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const { jobIndustries, userCompany, jobSalaryModes, jobSalaryTaxes, jobExperiences, token, userAdverts } = useTypedSelector(state => state.general);
   const currentPositions = jobIndustries.find(({ id }) => id === userCompany?.job_industry)?.job_positions || [];
   const [advertData, setAdvertData] = useState<UserAdvertType>({
@@ -109,7 +110,7 @@ const NewAdvertScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   }
 
   return (
-    <ScreenHeaderProvider currentStack="AdvertStack">
+    <ScreenHeaderProvider>
       <ScrollView style={{ backgroundColor: Colors.Basic100, flex: 1 }}>
         <View style={{ marginLeft: 16, marginTop: 32, marginBottom: 16 }}>
           <Typography weight="Bold" size={20}>Opis stanowiska</Typography>

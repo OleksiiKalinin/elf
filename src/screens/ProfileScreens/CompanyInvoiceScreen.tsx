@@ -29,7 +29,7 @@ const CompanyInvoiceScreen: React.FC<MainScreenProps> = ({ navigation, route }) 
   const [full_name, setFull_name] = useState<string>(initFull_name || '');
 
   return (
-    <ScreenHeaderProvider currentStack="ProfileStack" title={title}>
+    <ScreenHeaderProvider title={title}>
       <ScrollView style={{ backgroundColor: Colors.Basic100, flex: 1 }} contentContainerStyle={{paddingTop: 24}}>
         <View style={{marginBottom: 10, paddingHorizontal: 19}}>
           <TextField

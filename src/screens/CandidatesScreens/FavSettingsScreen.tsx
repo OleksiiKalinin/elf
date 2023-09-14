@@ -51,7 +51,7 @@ const FavSettingsScreen: React.FC<MainScreenProps> = ({ navigation }) => {
 
 
   return (
-    <ScreenHeaderProvider currentStack="CandidatesStack" mainTitlePosition="flex-start">
+    <ScreenHeaderProvider mainTitlePosition="flex-start">
       <ScrollView style={{ flex: 1, backgroundColor: Colors.Basic100 }}>
         <View style={{ marginTop: 25 }}></View>
         <View>

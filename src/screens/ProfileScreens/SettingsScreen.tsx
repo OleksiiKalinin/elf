@@ -11,6 +11,7 @@ import { RootStackParamList } from '../../navigators/RootNavigator';
 import authServices from '../../services/authServices';
 import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
 const settings: {
     title: string,
@@ -49,7 +50,7 @@ type MainScreenProps = CompositeScreenProps<
 >;
 
 const SettingsScreen: FC<MainScreenProps> = ({ navigation }) => {
-    const dispatch = useDispatch();
+    const dispatch = useTypedDispatch();
     const { setSwipeablePanelProps } = useActions();
     const { token } = useTypedSelector(state => state.general);
 
@@ -69,7 +70,7 @@ const SettingsScreen: FC<MainScreenProps> = ({ navigation }) => {
     }
 
     return (
-        <ScreenHeaderProvider currentStack='ProfileStack'>
+        <ScreenHeaderProvider>
             <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
                 <View style={{ marginVertical: 20 }}>
                     {/* {settings.map(({ route, title }, i) => (

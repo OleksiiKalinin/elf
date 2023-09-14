@@ -24,6 +24,7 @@ import AdvertSmall from '../../components/organismes/AdvertSmall';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import LoadingScreen from '../../components/atoms/LoadingScreen';
 import SvgIcon from '../../components/atoms/SvgIcon';
+import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
 type MainScreenProps = CompositeScreenProps<
   NativeStackScreenProps<AdvertStackParamList, 'MainScreen'>,
@@ -33,7 +34,7 @@ type MainScreenProps = CompositeScreenProps<
 const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
   const SectionListRef = useRef<SectionList>(null);
   // useScrollToTop(SectionListRef);
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const { token, userCompany, userAdverts } = useTypedSelector(state => state.general);
   const { setSwipeablePanelProps } = useActions();
   const [tabbarIndex, setTabbarIndex] = React.useState<number>(0);
@@ -50,7 +51,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
     if (token && userCompany?.id && (!advertsRequested.current || granted)) {
       advertsRequested.current = true;
       setLoading(true);
-      // await dispatch(advertsServices.getUserAdverts(token, userCompany.id));
+      await dispatch(advertsServices.getUserAdverts(token, userCompany.id));
     }
     setLoading(false);
   }
@@ -211,7 +212,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
   </View>), [userAdverts]);//!!!!!deps!!!!!
 
   return (
-    <ScreenHeaderProvider mode="mainTitle" currentStack="AdvertStack" actions={!loading ? [{
+    <ScreenHeaderProvider mode="mainTitle" actions={!loading ? [{
       icon: 'refresh',
       onPress: () => getUserAdverts(true)
     }] : undefined}>

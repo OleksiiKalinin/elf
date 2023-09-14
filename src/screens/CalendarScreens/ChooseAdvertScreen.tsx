@@ -19,7 +19,7 @@ const ChooseAdvertScreen: FC<MainScreenProps> = ({ route, navigation }) => {
     const { callback } = route.params;
 
     return (
-        <ScreenHeaderProvider currentStack='CalendarStack'>
+        <ScreenHeaderProvider>
             <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
                 {userAdverts.map(item => (
                     <View style={{ marginTop: 12 }}>

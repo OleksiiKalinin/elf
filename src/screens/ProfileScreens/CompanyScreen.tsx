@@ -20,6 +20,7 @@ import companyServices from '../../services/companyServices';
 import MainDataCard from './CompanyScreenRoutes/MainDataCard/MainDataCard';
 import SvgIcon from '../../components/atoms/SvgIcon';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
 const companyExample: CompanyDataType = {
   account_facebook: null,
@@ -83,7 +84,7 @@ const CompanyScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   //   { key: '0', title: 'O firmie' },
   //   { key: '1', title: 'Opinie' },
   // ]);
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const [tabbarIndex, setTabbarIndex] = useState(0);
   const { setSwipeablePanelProps, setUserCompany } = useActions();
   const { userCompany, token, jobIndustries } = useTypedSelector(state => state.general);
@@ -144,7 +145,7 @@ const CompanyScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   }, [userCompany]);
 
   return (
-    <ScreenHeaderProvider currentStack="ProfileStack" transparent
+    <ScreenHeaderProvider transparent
       actions={userCompany ? [{
         icon: 'moreVert',
         onPress: moreOptionsHandler,

@@ -28,7 +28,7 @@ const PointsScreen: React.FC<PointsScreenProps> = ({ navigation }) => {
   const [pointsCount, setPointsCount] = useState(129)
 
   return (
-    <ScreenHeaderProvider currentStack="ProfileStack">
+    <ScreenHeaderProvider>
       <View style={styles.Wrapper}>
         <ScrollView style={styles.Content}>
           <View>

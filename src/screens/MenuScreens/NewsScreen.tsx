@@ -54,7 +54,7 @@ const NewsScreen: React.FC<MenuScreenProps> = ({ navigation }) => {
 
   return (
     <View style={styles.Wrapper}>
-      <ScreenHeaderProvider currentStack="MenuStack">
+      <ScreenHeaderProvider>
         <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
           <View style={{ height: 20 }}></View>
 

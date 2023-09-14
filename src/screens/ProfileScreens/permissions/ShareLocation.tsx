@@ -20,7 +20,7 @@ const ShareLocation: React.FC<ShareLocationProps> = ({ navigation }) => {
 
 
   return (
-    <ScreenHeaderProvider currentStack="ProfileStack">
+    <ScreenHeaderProvider>
       <View style={styles.Wrapper}>
         <ScrollView style={styles.Content}>
 
