@@ -2,6 +2,8 @@ import { SwipeablePanelNoControlProps } from "../../components/organismes/Swipea
 
 export interface generalReducerState {
     isTabbarVisible: boolean,
+    // windowWidth: number,
+    // windowHeight: number,
     theme: string,
     currentScreen: string,
     token: string | null,

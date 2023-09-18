@@ -1,16 +1,17 @@
 import { useRouter } from 'next/router';
-import { ReactNode, FC, useEffect, useState } from 'react';
+import { ReactNode, FC, useEffect, useState, useMemo } from 'react';
 import { View } from 'react-native';
-import { useActions } from '../../hooks/useActions';
-import { useTypedSelector } from '../../hooks/useTypedSelector';
-import { navigationLinking } from '../../navigators/RootNavigator';
-import BottomTabs from './BottomTabs';
-import Colors from '../../colors/Colors';
+import { useActions } from '../hooks/useActions';
+import { useTypedSelector } from '../hooks/useTypedSelector';
+import { navigationLinking } from '../navigators/RootNavigator';
+import BottomTabs from '../components/organismes/BottomTabs';
+import Colors from '../colors/Colors';
+import SwipeablePanel from '../components/organismes/SwipeablePanel';
 
 export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
   const [profileFocused, setProfileFocused] = useState(false);
-  const {currentScreen, isTabbarVisible} = useTypedSelector(s => s.general);
-  const {setCurrentScreen} = useActions();
+  const { swipeablePanelProps, isTabbarVisible } = useTypedSelector(s => s.general);
+  const { setCurrentScreen, setSwipeablePanelProps } = useActions();
   const router = useRouter();
 
   useEffect(() => {
@@ -60,6 +61,9 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
       }}>
         <BottomTabs {...{ profileFocused, setProfileFocused, routes: Object.keys(navigationLinking.config?.screens || {}) }} />
       </View>
+      {useMemo(() => (
+        <SwipeablePanel closeButton isActive={!!swipeablePanelProps} onClose={() => setSwipeablePanelProps(null)} {...swipeablePanelProps} />
+      ), [swipeablePanelProps])}
     </View>
   );
 };

@@ -74,7 +74,6 @@ const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   // const [personRemove, personRemoveToggle] = useState(false);
   const { setSwipeablePanelProps } = useActions();
   const isFirstLoad = useRef(true);
-  // const isFocused = useIsFocused();
 
   useEffect(() => {
     isFirstLoad.current = false;

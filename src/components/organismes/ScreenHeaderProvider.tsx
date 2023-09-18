@@ -141,7 +141,7 @@ type ScreenHeaderProviderProps = {
   staticContentHeight?: boolean;
 };
 
-const HEIGHT = 50;
+export const SCREEN_HEADER_HEIGHT = 50;
 
 const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   children,
@@ -220,9 +220,9 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
       </View>
       {/* </LinearGradient> */}
       <View style={[{
-        height: staticContentHeight ? Dimensions.get('window').height - (transparent ? 0 : HEIGHT) : undefined,
+        height: staticContentHeight ? Dimensions.get('window').height - (transparent ? 0 : SCREEN_HEADER_HEIGHT) : undefined,
         flex: !staticContentHeight ? 1 : undefined,
-        paddingTop: transparent ? 0 : HEIGHT,
+        paddingTop: transparent ? 0 : SCREEN_HEADER_HEIGHT,
         backgroundColor: Colors.White
       }]}>
         {children}
@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
       web: 'fixed'
     }),
     top: 0,
-    height: HEIGHT,
+    height: SCREEN_HEADER_HEIGHT,
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',

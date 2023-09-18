@@ -16,6 +16,8 @@ import Colors from '../../colors/Colors';
 import Button from '../molecules/Button';
 import { useLink } from 'solito/link';
 
+export const BOTTOM_TABS_HEIGHT = 45;
+
 type BottomTabsProps = {
     profileFocused: boolean;
     setProfileFocused: (b: boolean) => void;
@@ -52,7 +54,7 @@ const hiddenTabbarScreens: {
 };
 
 const BottomTabs: FC<BottomTabsProps> = ({ routes, profileFocused, setProfileFocused }) => {
-    // const animation = useSharedValue({ height: 45 });
+    // const animation = useSharedValue({ height: BOTTOM_TABS_HEIGHT });
     const { isTabbarVisible, currentScreen } = useTypedSelector(state => state.general);
     const { setIsTabbarVisible } = useActions();
 
@@ -79,11 +81,11 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes, profileFocused, setProfileFoc
     }, [currentScreen]);
 
     // useEffect(() => {
-    //     animation.value = { height: isTabbarVisible ? 45 : 0 };
+    //     animation.value = { height: isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0 };
     // }, [isTabbarVisible]);
 
     return (
-        <Animated.View style={[{ flexDirection: 'row', backgroundColor: Colors.White, height: isTabbarVisible ? 45 : 0, visibility: isTabbarVisible ? 'visible' : 'hidden' }]}>
+        <Animated.View style={[{ flexDirection: 'row', backgroundColor: Colors.White, height: isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0, visibility: isTabbarVisible ? 'visible' : 'hidden' }]}>
             {/* <Animated.View style={[{ flexDirection: 'row', backgroundColor: Colors.White }, animationStyle]}> */}
             {routes.map(route => {
                 const label = route as keyof RootStackParamList;

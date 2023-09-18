@@ -26,6 +26,7 @@ import { ScrollView } from '../../components/molecules/ScrollView';
 import { useLink } from 'solito/link';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import generalServices from '../../services/generalServices';
+import CornerCircleButton from '../../components/molecules/cornerCircleButton';
 // import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
 
 type MenuScreenProps = CompositeScreenProps<
@@ -41,6 +42,24 @@ const MainScreen: React.FC = ({ }) => {
   // useScrollToTop(ScrollViewRef);
   const { isMainMenuFlatList, userData, token, currentScreen } = useTypedSelector(state => state.general);
   const { setIsMainMenuFlatList, setSwipeablePanelProps } = useActions();
+
+  const optionsHandler = () => {
+    setSwipeablePanelProps({
+      title: 'Co robimy tym razem?',
+      buttons: [
+        {
+          children: 'Stwórz nowe wydarzenie',
+          icon: <SvgIcon icon='calendar' />,
+          onPress: () => { }//navigation.navigate('CalendarStack', { screen: 'EventScreen', params: { isMainMenuSender: true } })
+        },
+        {
+          children: 'Stwórz nowe ogłoszenie',
+          icon: <SvgIcon icon='work' />,
+          onPress: () => { }//navigation.navigate('AdvertStack', { screen: 'NewAdvertScreen', params: { isMainMenuSender: true } })
+        },
+      ],
+    })
+  }
 
   const sectionButtons: {
     sectionTitle: string,
@@ -112,7 +131,7 @@ const MainScreen: React.FC = ({ }) => {
           //   title: 'Twoi ulubieni kandydaci',
           //   backgroundColor: Colors.Blue100,
           //   icon: 'cardOutlined',
-          //   onPress: () => {},//navigation.navigate('CandidatesStack', { screen: 'FavouritesScreen' }),
+          //   onPress: optionsHandler,
           //   missedEvents: 0,
           //   badge: ''
           // },
@@ -202,24 +221,6 @@ const MainScreen: React.FC = ({ }) => {
   //     })
   //   }
   // }, [userData]);
-
-  const optionsHandler = () => {
-    // setSwipeablePanelProps({
-    //   title: 'Co robimy tym razem?',
-    //   buttons: [
-    //     {
-    //       children: 'Stwórz nowe wydarzenie',
-    //       // icon: 'calendar',
-    //       onPress: () => {}//navigation.navigate('CalendarStack', { screen: 'EventScreen', params: { isMainMenuSender: true } })
-    //     },
-    //     {
-    //       children: 'Stwórz nowe ogłoszenie',
-    //       // icon: 'work',
-    //       onPress: () => {}//navigation.navigate('AdvertStack', { screen: 'NewAdvertScreen', params: { isMainMenuSender: true } })
-    //     },
-    //   ],
-    // })
-  }
 
   return (
     <View style={styles.Wrapper}>
@@ -347,12 +348,8 @@ const MainScreen: React.FC = ({ }) => {
             </View>
           ))}
         </ScrollView>
-        <View style={styles.createIcon}>
-          <TouchableOpacity onPress={optionsHandler}>
-            <SvgIcon icon='addBig' />
-          </TouchableOpacity>
-        </View>
       </ScreenHeaderProvider>
+      <CornerCircleButton onPress={optionsHandler} />
     </View>
   );
 };
@@ -423,17 +420,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     paddingRight: 20
-  },
-  createIcon: {
-    position: Platform.select({
-      native: 'absolute',
-      web: 'fixed'
-    }),
-    bottom: Platform.select({
-      native: 20,
-      web: 50 + 20, //tabbar height!!
-    }),
-    right: 20,
   },
 });
 
