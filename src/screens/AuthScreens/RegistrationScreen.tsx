@@ -15,11 +15,6 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import Button from '../../components/molecules/Button';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
-type AuthRegistrateScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<AuthStackParamList, 'RegistrationScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'AuthStack'>
->;
-
 export type RegistDataType = {
   email: string,
   first_name: string,
@@ -30,7 +25,7 @@ export type RegistDataType = {
   agree_rights: boolean,
 }
 
-const AuthRegistrateScreen: React.FC<AuthRegistrateScreenProps> = ({ navigation }) => {
+const AuthRegistrateScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const [formData, setFormData] = useState<RegistDataType>({
     email: '',
@@ -65,7 +60,7 @@ const AuthRegistrateScreen: React.FC<AuthRegistrateScreenProps> = ({ navigation 
   const registrateHandler = async () => {
     if (isDataValid) {
       setLoading(true);
-      // await dispatch(authServices.registrate({ ...formData, mobile_number: formData.mobile_number?.length === 12 ? formData.mobile_number : null }));
+      await dispatch(authServices.registrate({ ...formData, mobile_number: formData.mobile_number?.length === 12 ? formData.mobile_number : null }));
       setLoading(false);
     } else setShowTips(true);
   }

@@ -21,12 +21,7 @@ import { useActions } from '../../hooks/useActions';
 import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 
-type MenuScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<MenuStackParamList, 'NewsScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'MenuStack'>
->;
-
-const NewsScreen: React.FC<MenuScreenProps> = ({ navigation }) => {
+const NewsScreen: React.FC = () => {
   const articles = [
     {
       title: 'Urlop na żądanie',

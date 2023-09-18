@@ -44,11 +44,11 @@ const hiddenTabbarScreens: {
     ProfileStack: Array<keyof ProfileStackParamList>;
     AuthStack: Array<keyof AuthStackParamList>;
 } = {
-    AdvertStack: ['ProfileScreen', 'VideoScreen', 'AdvertScreen', 'EditAdvertScreen', 'JobScreen', 'NewAdvertScreen', 'CandidatesScreen', 'JobCategoryScreen', 'MapScreen', 'OptionsDrawerScreen'],
+    AdvertStack: ['AdvertScreen', 'JobScreen', 'NewAdvertScreen', 'CandidatesScreen', 'JobCategoryScreen', 'MapScreen'],
     AuthStack: ['MainScreen', 'LoginScreen', 'RegistrationScreen', 'RememberPasswordScreen', 'FillUserDataScreen'],
     CandidatesStack: ['ProfileScreen', 'VideoScreen', 'FavouritesScreen', 'FavSettingsScreen', 'FilterScreen', 'JobScreen', 'MapScreen', 'ProfileScreen', 'SearchScreen', 'VideoScreen'],
     CalendarStack: ['ProfileScreen', 'VideoScreen', 'CallScreen', 'EditEventScreen', 'EventScreen', 'MapScreen', 'AddPersonScreen', 'ChooseAdvertScreen', 'ChooseCandidateScreen'],
-    MenuStack: ['ProfileScreen', 'VideoScreen', 'CallsScreen', 'EventsScreen', 'NewsScreen', 'QuestionsScreen'],
+    MenuStack: ['CallsScreen', 'EventsScreen', 'NewsScreen', 'QuestionsScreen'],
     MessengerStack: [],
     ProfileStack: ['PaymentTemporalScreen', 'SettingsScreen', 'PackagesScreen', 'CompanyInvoiceScreen', 'CompanyDescriptionScreen', 'NoCompanyScreen', 'AddCompanyScreen', 'AddPaymentScreen', 'CompanyScreen', 'CookieScreen', 'EditPaymentScreen', 'HelpCenterScreen', 'JobCategoryScreen', 'JobScreen', 'LanguageScreen', 'MapScreen', 'MethodsScreen', 'NotificationScreen', 'PaymentScreen', 'PointsScreen', 'PrivacyScreen', 'AccountDataScreen', 'ToolsScreen', 'AddConractPersonsScreen'],
 };

@@ -251,10 +251,10 @@ const RootNavigator: React.FC = () => {
           <RootStack.Screen key={screen.name} {...screen} listeners={({ route, navigation }) => ({ state: () => setCurrentScreenHandler(route), blur: () => navigation.setParams({ screen: undefined, params: undefined }) })} />
         )}
       </RootStack.Navigator>
+      {useMemo(() => (
+        <SwipeablePanel closeButton isActive={!!swipeablePanelProps} onClose={() => setSwipeablePanelProps(null)} {...swipeablePanelProps} />
+      ), [swipeablePanelProps])}
     </NavigationContainer>
-    {useMemo(() => (
-      <SwipeablePanel closeButton isActive={!!swipeablePanelProps} onClose={() => setSwipeablePanelProps(null)} {...swipeablePanelProps} />
-    ), [swipeablePanelProps])}
   </>);
 };
 

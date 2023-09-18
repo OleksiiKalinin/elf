@@ -26,22 +26,29 @@ import { ScrollView } from '../../components/molecules/ScrollView';
 import { useLink } from 'solito/link';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import generalServices from '../../services/generalServices';
-import CornerCircleButton from '../../components/molecules/cornerCircleButton';
+import CornerCircleButton from '../../components/molecules/CornerCircleButton';
+import { createParam } from 'solito';
+import EventsScreen from './EventsScreen';
 // import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
 
-type MenuScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<MenuStackParamList, 'MainScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'MenuStack'>
->;
+const { useParams } = createParam();
 
-
-// const MainScreen: React.FC<MenuScreenProps> = ({ navigation }) => {
 const MainScreen: React.FC = ({ }) => {
   const dispatch = useTypedDispatch();
+  const { params } = useParams();
   // const ScrollViewRef = useRef(null);
   // useScrollToTop(ScrollViewRef);
   const { isMainMenuFlatList, userData, token, currentScreen } = useTypedSelector(state => state.general);
   const { setIsMainMenuFlatList, setSwipeablePanelProps } = useActions();
+
+  useEffect(() => {
+    console.log(params);
+    setSwipeablePanelProps(params?.EventsScreen === 'true' ? {
+      closeButton: false,
+      hideBar: true,
+      children: <EventsScreen />
+    } : null)
+  }, [params])
 
   const optionsHandler = () => {
     setSwipeablePanelProps({
@@ -79,10 +86,9 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Historia wydarzeń',
             backgroundColor: Colors.Sea300,
             icon: 'eventsHistory',
-            // ...useLink({
-            //   href: '/home/EventsScreen',
-            // }),
-            onPress: () => dispatch(generalServices.test()),
+            ...useLink({
+              href: '/home?EventsScreen=true'
+            }),
             missedEvents: 0,
             badge: '',
           },
@@ -238,9 +244,7 @@ const MainScreen: React.FC = ({ }) => {
                 br={4} h={30} px={8.5} w='auto'
                 contentWeight='Regular'
                 variant="secondary"
-                onPress={() => { }//navigation.navigate('AuthStack', { screen: 'MainScreen' })
-                }
-              // containerStyles={{ borderRadius: 4, overflow: 'hidden' }}
+                {...useLink({ href: '/auth' })}
               >
                 Zaloguj
               </Button>

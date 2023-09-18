@@ -29,12 +29,6 @@ import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
 var width = Dimensions.get('window').width;
 
-
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<AdvertStackParamList, 'NewAdvertScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'AdvertStack'>
->;
-
 /*
 title="Dostosuj listę kandydatów"
 subTitle="Pomóż ELF-owi znaleźć idealnych kandydatów - ustaw odpowiednie filtry 🤓"
@@ -56,7 +50,7 @@ buttons={[
 //   salary_time_type_id: number | null,
 // }
 
-const NewAdvertScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
+const NewAdvertScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const { jobIndustries, userCompany, jobSalaryModes, jobSalaryTaxes, jobExperiences, token, userAdverts } = useTypedSelector(state => state.general);
   const currentPositions = jobIndustries.find(({ id }) => id === userCompany?.job_industry)?.job_positions || [];
@@ -116,7 +110,7 @@ const NewAdvertScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           <Typography weight="Bold" size={20}>Opis stanowiska</Typography>
         </View>
         <TouchableOpacity
-          onPress={() => navigation.navigate('JobScreen', { callback: (id) => changeAdvertDataHandler('job_position_id', id), job_positions: currentPositions })}
+          // onPress={() => navigation.navigate('JobScreen', { callback: (id) => changeAdvertDataHandler('job_position_id', id), job_positions: currentPositions })}
           style={{
             flexDirection: 'row', padding: 19,
             ...(!!Number(advertData.job_position_id) ?

@@ -1,15 +1,7 @@
-import { View } from "react-native";
-import { useLink } from "solito/link";
-import Typography from "../../components/atoms/Typography";
-import Button from "../../components/molecules/Button";
+import Screen from "../../screens/AuthScreens/MainScreen";
 
-const AuthPage = () => (
-    <View>
-        <Typography>
-            AuthPage
-        </Typography>
-        <Button {...useLink({ href: '/home' })}>go home</Button>
-    </View>
+const index = () => (
+    <Screen />
 );
 
-export default AuthPage;
+export default index;

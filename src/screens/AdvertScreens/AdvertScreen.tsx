@@ -25,7 +25,7 @@ import { createParam } from 'solito';
 
 const { useParam } = createParam();
 
-const AdvertScreen: React.FC = (props) => {
+const AdvertScreen: React.FC = () => {
   const { userAdverts, userCompany } = useTypedSelector(state => state.general);
   const [tabbarIndex, setTabbarIndex] = React.useState(0);
   const [routes] = React.useState<TabbarRoute[]>([

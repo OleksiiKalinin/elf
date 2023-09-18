@@ -20,12 +20,7 @@ import Typography from '../../components/atoms/Typography';
 import Button from '../../components/molecules/Button';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
-type AuthScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<AuthStackParamList, 'MainScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'AuthStack'>
->;
-
-const AuthScreen: FC<AuthScreenProps> = ({ navigation }) => {
+const MainScreen: FC = () => {
   const dispatch = useTypedDispatch();
 
   // const additionalButtons: Array<{ icon: IconTypes; color: string; onPress: () => void; }> = [
@@ -53,14 +48,18 @@ const AuthScreen: FC<AuthScreenProps> = ({ navigation }) => {
           </Typography>
         </View>
         <View style={styles.Button}>
-          <Button style={styles.loginButton} onPress={() => navigation.navigate('LoginScreen')}>
+          <Button style={styles.loginButton} 
+          // onPress={() => navigation.navigate('LoginScreen')}
+          >
             <Typography color={Colors.Basic100} textAlign="center" variant="h5" weight="Bold">
               ZALOGUJ SIĘ
             </Typography>
           </Button>
         </View>
         <View>
-          <Button style={styles.loginButton} color={Colors.Basic500} onPress={() => navigation.navigate('RegistrationScreen')}>
+          <Button style={styles.loginButton} color={Colors.Basic500} 
+          // onPress={() => navigation.navigate('RegistrationScreen')}
+          >
             <Typography color={Colors.Basic900} textAlign="center" variant="h5" weight="Bold">
               ZAREJESTRUJ SIĘ
             </Typography>
@@ -83,7 +82,9 @@ const AuthScreen: FC<AuthScreenProps> = ({ navigation }) => {
         </View> */}
       </ScrollView>
       <View>
-        <Button variant="text" onPress={() => navigation.goBack()}>
+        <Button variant="text" 
+        // onPress={() => navigation.goBack()}
+        >
           <Typography color={Colors.Basic600} textAlign="center" variant="h5" weight="SemiBold">
             Anuluj
           </Typography>
@@ -131,4 +132,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AuthScreen;
+export default MainScreen;

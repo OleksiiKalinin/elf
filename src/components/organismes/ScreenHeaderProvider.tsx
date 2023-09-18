@@ -105,14 +105,10 @@ export const screensTitles: ScreensTitlesType = {
     MainScreen: 'Moje ogłoszenia',
     AdvertScreen: '',
     CandidatesScreen: 'Kandydaci',
-    EditAdvertScreen: 'Edytuj ogłoszenie',
     JobCategoryScreen: 'Stanowiska',
     JobScreen: 'Kategorie',
     NewAdvertScreen: 'Nowe ogłoszenie',
-    OptionsDrawerScreen: '',
     MapScreen: '',
-    ProfileScreen: '',
-    VideoScreen: '',
   },
   MenuStack: {
     MainScreen: 'Menu główne',
@@ -121,8 +117,6 @@ export const screensTitles: ScreensTitlesType = {
     NewsDetailsScreen: '',
     NewsScreen: 'Artykuły i nowości',
     QuestionsScreen: 'Lista pytań do kandydata',
-    ProfileScreen: '',
-    VideoScreen: '',
   },
 };
 

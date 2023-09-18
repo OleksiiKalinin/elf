@@ -14,11 +14,6 @@ import Typography from '../../components/atoms/Typography';
 import CheckBox from '../../components/atoms/CheckBox';
 import Button from '../../components/molecules/Button';
 
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<MenuStackParamList, 'QuestionsScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'MenuStack'>
->;
-
 const Questions = [
   'Jakie jest Pana/Pani ostatnie miejsce pracy?',
   'Czy pracował/a Pan/i na podobnym stanowisku?',
@@ -45,7 +40,7 @@ const Questions = [
   'W jak dużych zespołach Pan/i pracował/a?',
 ];
 
-const QuestionsScreen: React.FC<MainScreenProps> = ({ navigation }) => {
+const QuestionsScreen: React.FC = () => {
   // const data = useTypedSelector(state => state.calendar);
   // const [questionsState, setQuestionsState] = useState<any>(data.questions);
 
@@ -168,15 +163,16 @@ const QuestionsScreen: React.FC<MainScreenProps> = ({ navigation }) => {
       </ScrollView>
 
       <Button
-        onPress={() => (
-          // nativeStore.dispatch({
-          //   type: calendarActionTypes.SAVE_QUESTIONS,
-          //   payload: {
-          //     questionsState: questionsState,
-          //   },
-          // }),
-          navigation.navigate('MainScreen')
-        )}>
+        // onPress={() => (
+        //   nativeStore.dispatch({
+        //     type: calendarActionTypes.SAVE_QUESTIONS,
+        //     payload: {
+        //       questionsState: questionsState,
+        //     },
+        //   }),
+        //   navigation.navigate('MainScreen')
+        // )}
+        >
         Potwierdź wybory
       </Button>
     </ScreenHeaderProvider>

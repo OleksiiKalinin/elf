@@ -9,12 +9,7 @@ import { RootStackParamList } from '../../navigators/RootNavigator';
 import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<MenuStackParamList, 'NewsDetailsScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'MenuStack'>
->;
-
-const NewsDetailsScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
+const NewsDetailsScreen: React.FC = () => {
   // const { title, content } = route.params;
 
   // console.log(title, content);

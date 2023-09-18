@@ -7,6 +7,7 @@ import Typography from '../atoms/Typography';
 import { SwipeablePanel as Panel } from '../../../node_modules_modified/rn-swipeable-panel/src'//../../node_modules_modified/rn-swipeable-panel/dist';
 import { platform } from 'os';
 import { Sheet } from 'tamagui';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
 
 const BAR_HEIGHT = 20;
 
@@ -28,7 +29,7 @@ export type SwipeablePanelNoControlProps = Omit<SwipeablePanelProps, "isActive" 
 const SwipeablePanel: React.FC<SwipeablePanelProps> = (props) => {
     const { buttons, title, children, subTitle, hideBar = false, onClose, isActive } = props;
     const [height, setHeight] = useState<number>(0);
-    const contentExists = (!!buttons || !!title || !!children || !!subTitle);
+    const contentExists = (!!buttons?.length || !!title || !!children || !!subTitle);
 
     useEffect(() => {
         const handler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -59,25 +60,35 @@ const SwipeablePanel: React.FC<SwipeablePanelProps> = (props) => {
                     display: 'flex',
                     flexDirection: 'column',
                     top: -100000,
+                    left: -100000,
                     visibility: 'hidden',
                 }}>
                 <Content {...props} />
             </View>
-            <Sheet
-                modal
-                open={isActive && !!height}
-                onOpenChange={onClose}
-                snapPoints={[Math.min(height, 100)]}
-                dismissOnSnapToBottom
+            <View
+                style={{
+                    position: Platform.select({web: 'fixed', native: 'absolute'}),
+                    top: isActive && !!height ? 0 : '100%',
+                    width: '100%',
+                    height: '100%',
+                }}
             >
-                {!hideBar && <Sheet.Handle h={4} bg={Colors.White} opacity={1} mx='45%' my={8} />}
-                <Sheet.Overlay />
-                <Sheet.Frame br={0} userSelect='none'>
-                    <Sheet.ScrollView>
-                        <Content {...props} />
-                    </Sheet.ScrollView>
-                </Sheet.Frame>
-            </Sheet>
+                <Sheet
+                    // modal
+                    open={isActive && !!height}
+                    onOpenChange={onClose}
+                    snapPoints={[Math.min(height, 100)]}
+                    dismissOnSnapToBottom
+                >
+                    {!hideBar && <Sheet.Handle h={4} bg={Colors.White} opacity={1} mx='45%' my={8} />}
+                    <Sheet.Overlay />
+                    <Sheet.Frame br={0} userSelect='none'>
+                        <Sheet.ScrollView>
+                            <Content {...props} />
+                        </Sheet.ScrollView>
+                    </Sheet.Frame>
+                </Sheet>
+            </View>
         </>
     );
 };

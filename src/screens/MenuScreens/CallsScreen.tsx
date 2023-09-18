@@ -23,12 +23,7 @@ import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 // import { LocaleConfig as CalendarLocaleConfig } from '../../../node_modules_modified/react-native-calendars/src';
 
-type MenuScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<MenuStackParamList, 'CallsScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'MenuStack'>
->;
-
-const CallsScreen: React.FC<MenuScreenProps> = ({ navigation }) => {
+const CallsScreen: React.FC = () => {
   // const dataCalendar = useTypedSelector(state => state.calendar);
   const {userEvents} = useTypedSelector(state => state.general);
 

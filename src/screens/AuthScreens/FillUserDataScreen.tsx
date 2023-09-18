@@ -15,12 +15,8 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import Button from '../../components/molecules/Button';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
-type ScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<AuthStackParamList, 'FillUserDataScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'AuthStack'>
->;
 
-const FillUserDataScreen: React.FC<ScreenProps> = ({ navigation }) => {
+const FillUserDataScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const [loading, setLoading] = useState<boolean>(false);
   const [showTips, setShowTips] = useState<boolean>(false);
@@ -32,7 +28,7 @@ const FillUserDataScreen: React.FC<ScreenProps> = ({ navigation }) => {
 
   useEffect(() => {
     if (token && userData && userData.email && userData.first_name && userData.last_name) {
-      navigation.navigate('MenuStack', { screen: 'MainScreen' });
+      // navigation.navigate('MenuStack', { screen: 'MainScreen' });
     }
   }, [token, userData]);
 

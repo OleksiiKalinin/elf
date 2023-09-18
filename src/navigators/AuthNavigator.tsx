@@ -20,10 +20,10 @@ export type AuthStackParamList = {
 
 export const AuthStackLinking: PathConfigMap<AuthStackParamList> = {
     MainScreen: '',
-    FillUserDataScreen: 'FillUserDataScreen',
     LoginScreen: 'LoginScreen',
     RegistrationScreen: 'RegistrationScreen',
     RememberPasswordScreen: 'RememberPasswordScreen',
+    FillUserDataScreen: 'FillUserDataScreen',
 }
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 

@@ -28,12 +28,7 @@ import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
-type MenuScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<MenuStackParamList, 'EventsScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'MenuStack'>
->;
-
-const EventsScreen: React.FC<MenuScreenProps> = ({ navigation }) => {
+const EventsScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const { userEvents, jobIndustries, token } = useTypedSelector(state => state.general);
   const [jobPositions, setJobPositions] = useState<JobPositionType[]>([]);

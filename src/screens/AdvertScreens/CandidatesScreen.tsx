@@ -253,7 +253,9 @@ const CandidatesScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
         </View>
       )}
       renderItem={({ item }) => (
-        <TouchableOpacity style={{ marginBottom: 10 }} onPress={() => navigation.navigate('ProfileScreen', { candidateData: item })}>
+        <TouchableOpacity style={{ marginBottom: 10 }} 
+        // onPress={() => navigation.navigate('ProfileScreen', { candidateData: item })}
+        >
           <CandidateCard {...item} rating={candidatesWithRating.find(e => e.candidate_id === item.id)?.fit_rating} />
         </TouchableOpacity>
       )

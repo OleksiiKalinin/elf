@@ -15,11 +15,6 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import Button from '../../components/molecules/Button';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
-type AuthLoginScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<AuthStackParamList, 'RememberPasswordScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'AuthStack'>
->;
-
 type inputs = 'email' | 'password';
 
 type formDataTypes = {
@@ -27,7 +22,7 @@ type formDataTypes = {
   password: string,
 };
 
-const RememberPasswordScreen: React.FC<AuthLoginScreenProps> = ({ navigation }) => {
+const RememberPasswordScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const [loading, setLoading] = useState<boolean>(false);
   const [showTips, setShowTips] = useState<boolean>(false);
