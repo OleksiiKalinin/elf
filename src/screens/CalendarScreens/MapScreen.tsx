@@ -7,13 +7,8 @@ import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { AdvertStackParamList } from '../../navigators/AdvertNavigator';
 import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
 
-type MapScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<CalendarStackParamList, 'MapScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'CalendarStack'>
->;
-
-const MapScreen: React.FC<MapScreenProps> = ({ navigation, route }) => {
-  const { callback, initialAddress } = route.params;
+const MapScreen: React.FC<CalendarStackParamList['MapScreen']> = ({callback, initialAddress}) => {
+  // const { callback, initialAddress } = route.params;
 
   return <></>
   // return <GoogleMap {...{ callback, initialAddress }} />;

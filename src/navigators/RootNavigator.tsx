@@ -126,8 +126,6 @@ export const screens: React.ComponentProps<typeof RootStack.Screen>[] = [
   },
 ];
 
-const isDarkMode = false;
-
 const RootNavigator: React.FC = () => {
   const dispatch = useDispatch();
   const [profileFocused, setProfileFocused] = useState(false);
@@ -239,22 +237,14 @@ const RootNavigator: React.FC = () => {
     {/* {appLoading && <View style={styles.Loading}>
       <Spinner color={Colors.Basic900} size='lg' />
     </View>} */}
-    <NavigationContainer
-      theme={isDarkMode ? DarkTheme : DefaultTheme}
-      linking={navigationLinking}
+    <RootStack.Navigator
+      backBehavior='history' initialRouteName="MenuStack" screenOptions={{ headerShown: false }}
+      tabBar={({ state }) => <BottomTabs {...{ profileFocused, setProfileFocused, routes: state.routes.map(({ name }) => name) }} />}
     >
-      <RootStack.Navigator
-        backBehavior='history' initialRouteName="MenuStack" screenOptions={{ headerShown: false }}
-        tabBar={({ state }) => <BottomTabs {...{ profileFocused, setProfileFocused, routes: state.routes.map(({ name }) => name) }} />}
-      >
-        {screens.map(screen =>
-          <RootStack.Screen key={screen.name} {...screen} listeners={({ route, navigation }) => ({ state: () => setCurrentScreenHandler(route), blur: () => navigation.setParams({ screen: undefined, params: undefined }) })} />
-        )}
-      </RootStack.Navigator>
-      {useMemo(() => (
-        <SwipeablePanel closeButton isActive={!!swipeablePanelProps} onClose={() => setSwipeablePanelProps(null)} {...swipeablePanelProps} />
-      ), [swipeablePanelProps])}
-    </NavigationContainer>
+      {screens.map(screen =>
+        <RootStack.Screen key={screen.name} {...screen} listeners={({ route, navigation }) => ({ state: () => setCurrentScreenHandler(route), blur: () => navigation.setParams({ screen: undefined, params: undefined }) })} />
+      )}
+    </RootStack.Navigator>
   </>);
 };
 

@@ -25,16 +25,14 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import LoadingScreen from '../../components/atoms/LoadingScreen';
 import SvgIcon from '../../components/atoms/SvgIcon';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
+import { useRouter } from 'solito/router';
+import CornerCircleButton from '../../components/molecules/CornerCircleButton';
 
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<AdvertStackParamList, 'MainScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'AdvertStack'>
->;
-
-const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
+const MainScreen: React.FC = () => {
   const SectionListRef = useRef<SectionList>(null);
   // useScrollToTop(SectionListRef);
   const dispatch = useTypedDispatch();
+  const router = useRouter();
   const { token, userCompany, userAdverts } = useTypedSelector(state => state.general);
   const { setSwipeablePanelProps } = useActions();
   const [tabbarIndex, setTabbarIndex] = React.useState<number>(0);
@@ -57,7 +55,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
   }
 
   // console.log(Object.keys(userCompany));
-  
+
 
   useEffect(() => {
     getUserAdverts();
@@ -74,13 +72,13 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
       buttons: [
         {
           children: 'Edytuj',
-          onPress: () => navigation.navigate('EditAdvertScreen', { advertIndex: selectedAdvertIndex }),
+          onPress: () => router.push(`/adverts/AdvertEditorScreen?id=${selectedAdvertIndex}`)
         },
         {
           children: 'Usuń',
           contentColor: Colors.Danger,
           contentVariant: 'h5',
-          noCloseAction: true,
+          closeAction: 'none',
           onPress: () => setSwipeablePanelProps({
             title: 'Naprawdę chcesz usunąć?',
             buttons: [
@@ -144,7 +142,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
         {
           children: 'Zobacz pakiety',
           contentVariant: 'h5',
-          onPress: () => navigation.navigate("ProfileStack", { screen: "MainScreen" }),
+          onPress: () => { }//navigation.navigate("ProfileStack", { screen: "MainScreen" }),
         },
       ]
     })
@@ -189,10 +187,10 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
           <View style={{ marginBottom: 12 }}>
             <AdvertSmall
               {...item}
-              // options={() => (moreOptionsHandler(item), setSelectedAdvertIndex(item.id))}
-              onPressButton0={() => navigation.navigate('CandidatesScreen', { candidates: item.candidate_data })}
+              options={() => (moreOptionsHandler(item), setSelectedAdvertIndex(item.id))}
+              onPressButton0={() => router.push(`/adverts/CandidatesScreen?id=${item.id}`)}
               onPressButton1={() => extendAdvertHandler(item)}
-              onPressDetails={() => item.id && navigation.navigate('AdvertScreen', { id: item.id })}
+              onPressDetails={() => item.id && router.push(`/adverts/AdvertScreen?id=${item.id}`)}
             />
           </View>
         )
@@ -211,7 +209,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
     />
   </View>), [userAdverts]);//!!!!!deps!!!!!
 
-  return (
+  return (<>
     <ScreenHeaderProvider mode="mainTitle" actions={!loading ? [{
       icon: 'refresh',
       onPress: () => getUserAdverts(true)
@@ -229,14 +227,10 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
           CandidatesList :
           <Typography style={{ marginHorizontal: 19, marginVertical: 20 }}>Nie masz ofert</Typography>
         }
-        <View style={styles.createIcon}>
-          <TouchableOpacity activeOpacity={.7} onPress={() => navigation.navigate('NewAdvertScreen')}>
-            <SvgIcon icon='addBig' />
-          </TouchableOpacity>
-        </View>
       </>}
-    </ScreenHeaderProvider >
-  );
+    </ScreenHeaderProvider>
+    <CornerCircleButton onPress={() => router.push('/adverts/AdvertEditorScreen')} />
+  </>);
 };
 
 const styles = StyleSheet.create({

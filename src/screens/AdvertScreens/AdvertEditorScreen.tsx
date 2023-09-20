@@ -25,6 +25,7 @@ import SvgIcon from '../../components/atoms/SvgIcon';
 import Button from '../../components/molecules/Button';
 import TextField from '../../components/molecules/TextField';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
+import { createParam } from 'solito';
 
 
 var width = Dimensions.get('window').width;
@@ -50,7 +51,9 @@ buttons={[
 //   salary_time_type_id: number | null,
 // }
 
-const NewAdvertScreen: React.FC = () => {
+const { useParam } = createParam<AdvertStackParamList['AdvertEditorScreen']>();
+
+const AdvertEditorScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const { jobIndustries, userCompany, jobSalaryModes, jobSalaryTaxes, jobExperiences, token, userAdverts } = useTypedSelector(state => state.general);
   const currentPositions = jobIndustries.find(({ id }) => id === userCompany?.job_industry)?.job_positions || [];
@@ -79,6 +82,8 @@ const NewAdvertScreen: React.FC = () => {
     working_hour_up: null,
   });
   const [loading, setLoading] = useState<boolean>(false);
+  const [id] = useParam('id')
+  
 
   const changeAdvertDataHandler = (name: keyof UserAdvertType, value: string | number | AddressType | null, replaceSpaces: boolean = true) => {
     setAdvertData(prev => ({
@@ -563,4 +568,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default NewAdvertScreen;
+export default AdvertEditorScreen;

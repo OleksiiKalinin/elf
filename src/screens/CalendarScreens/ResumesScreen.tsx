@@ -12,12 +12,7 @@ import CandidateCard from '../../components/organismes/CandidateCard';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { SwipeablePanelProps } from '../../components/organismes/SwipeablePanel';
 
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<CalendarStackParamList, 'ResumesScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'CalendarStack'>
->;
-
-const ResumesScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
+const ResumesScreen: React.FC = () => {
   // const data = useTypedSelector(state => state.bookmark);
 
   const [isPanelActive, setIsPanelActive] = useState<boolean>(false);
@@ -34,53 +29,53 @@ const ResumesScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   // );
 
 
-  const swipePanels: SwipeablePanelProps[] = [
-    {
-      isActive: isPanelActive,
-      onClose: () => setIsPanelActive(false),
-      title: 'Skontaktuj się',
-      buttons: [
-        {
-          children: (
-            <View style={{ flexDirection: 'row' }}>
-              <SvgIcon icon="phoneCall1" />
-              <Typography> +48 662 047 277</Typography>
-            </View>
-          ),
-          onPress: () => console.log('Kalkulator'),
-        },
-        {
-          children: (
-            <View style={{ flexDirection: 'row' }}>
-              <SvgIcon icon="messenger" />
-              <Typography> Link do messengera</Typography>
-            </View>
-          ),
-          onPress: () => console.log('Kalkulator'),
-        },
-        {
-          children: (
-            <View style={{ flexDirection: 'row' }}>
-              <SvgIcon icon="email" />
-              <Typography> Adres e-mail</Typography>
-            </View>
-          ),
-          onPress: () => console.log('Kalkulator'),
-        },
-      ],
-    },
-  ];
+  // const swipePanels: SwipeablePanelProps[] = [
+  //   {
+  //     isActive: isPanelActive,
+  //     onClose: () => setIsPanelActive(false),
+  //     title: 'Skontaktuj się',
+  //     buttons: [
+  //       {
+  //         children: (
+  //           <View style={{ flexDirection: 'row' }}>
+  //             <SvgIcon icon="phoneCall1" />
+  //             <Typography> +48 662 047 277</Typography>
+  //           </View>
+  //         ),
+  //         onPress: () => console.log('Kalkulator'),
+  //       },
+  //       {
+  //         children: (
+  //           <View style={{ flexDirection: 'row' }}>
+  //             <SvgIcon icon="messenger" />
+  //             <Typography> Link do messengera</Typography>
+  //           </View>
+  //         ),
+  //         onPress: () => console.log('Kalkulator'),
+  //       },
+  //       {
+  //         children: (
+  //           <View style={{ flexDirection: 'row' }}>
+  //             <SvgIcon icon="email" />
+  //             <Typography> Adres e-mail</Typography>
+  //           </View>
+  //         ),
+  //         onPress: () => console.log('Kalkulator'),
+  //       },
+  //     ],
+  //   },
+  // ];
 
   return (
     <ScreenHeaderProvider mainTitlePosition="flex-start"
       actions={[
         {
           icon: 'search',
-          onPress: () => navigation.navigate('CandidatesStack', { screen: 'MainScreen' }),
+          onPress: () => {}//navigation.navigate('CandidatesStack', { screen: 'MainScreen' }),
         },
         {
           icon: 'cardOutlined',
-          onPress: () => navigation.navigate('CandidatesStack', { screen: 'FavouritesScreen' }),
+          onPress: () => {}//navigation.navigate('CandidatesStack', { screen: 'FavouritesScreen' }),
         },
       ]}
     >

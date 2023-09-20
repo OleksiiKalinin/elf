@@ -1,7 +1,7 @@
 import { CommonActions, CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useRef, useState } from 'react';
-import { Dimensions, Image, ScrollView, StyleSheet, View } from 'react-native';
+import { Dimensions, Image, StyleSheet, View } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import Colors from '../../colors/Colors';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
@@ -23,12 +23,13 @@ import CandidateCard from '../../components/organismes/CandidateCard';
 import RadioGroup from '../../components/atoms/RadioGroup';
 import AdvertSmall from '../../components/organismes/AdvertSmall';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
+import { useRouter } from 'solito/router';
+import { useSwipeablePanelParams } from '../../hooks/useSwipeablePanelParams';
+import MapScreen from './MapScreen';
+import ChooseAdvertScreen from './ChooseAdvertScreen';
+import ChooseCandidateScreen from './ChooseCandidateScreen';
+import { ScrollView } from '../../components/molecules/ScrollView';
 // import CandidateCard from '../../components/organisms/CandidateCard/CandidateCard';
-
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<CalendarStackParamList, 'EventScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'CalendarStack'>
->;
 
 const normalizeTimeForPicker = (mode: 'start' | 'end'): Date => {
   const now = Date.now()// - new Date().getTimezoneOffset()*60*1000;
@@ -49,8 +50,10 @@ const normalizeTimeForPicker = (mode: 'start' | 'end'): Date => {
   );
 }
 
-const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
+const EventScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
+  const router = useRouter();
+  const { subView, subViewMode } = useSwipeablePanelParams();
   const [loading, setLoading] = useState<boolean>(false);
   const [eventType, setEventType] = useState<'meeting' | 'call'>('call');
   const [startDate, setStartDate] = useState<string>(new Date().toISOString().replace(/T.*$/, ''));
@@ -78,6 +81,26 @@ const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   useEffect(() => {
     isFirstLoad.current = false;
   }, []);
+
+
+  useEffect(() => {
+    setSwipeablePanelProps((() => {
+      if (subView === 'MapScreen' && eventType === 'meeting') return {
+        mode: subViewMode,
+        children: <MapScreen callback={(address) => setLocation(address)} initialAddress={location} />
+      }
+      if (subView === 'ChooseAdvertScreen') return {
+        mode: subViewMode,
+        children: <ChooseAdvertScreen callback={setSelectedAdvert} />
+      }
+      if (subView === 'ChooseCandidateScreen' && selectedAdvert) return {
+        mode: subViewMode,
+        children: <ChooseCandidateScreen callback={setSelectedCandidate} candidates={selectedAdvert.candidate_data} />
+      }
+      return null;
+    })());
+  }, [subView, subViewMode]);
+
 
   // useEffect(() => {
   //   if (!isFocused && route.params?.isMainMenuSender) {
@@ -114,8 +137,9 @@ const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
       //   job_offer: selectedAdvert?.id as number,
       //   job_position: selectedAdvert?.job_position_id as number,
       // }, token, userEvents));
-      navigation.goBack();
+      // navigation.goBack();
     }
+    router.replace('/calendar')
 
     // setSwipeablePanelProps({
     //   title: 'Czy chcesz dodać to wydarzenie do Twojego kalendarza?',
@@ -148,7 +172,7 @@ const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
                   setShowTimepicker(false);
                 }}
                 borderRadius={4}
-                // containerStyles={{ borderRadius: 4, overflow: 'hidden', marginVertical: 5, }}
+              // containerStyles={{ borderRadius: 4, overflow: 'hidden', marginVertical: 5, }}
               >
                 {startDate}
               </Button>
@@ -162,7 +186,7 @@ const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
                   setShowCalendar(false);
                 }}
                 borderRadius={4}
-                // containerStyles={{ borderRadius: 4, overflow: 'hidden', marginVertical: 5, }}
+              // containerStyles={{ borderRadius: 4, overflow: 'hidden', marginVertical: 5, }}
               >
                 {(displayStartHours < 10 ? `0${displayStartHours}` : displayStartHours)}
                 {':'}
@@ -183,7 +207,7 @@ const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
                   setShowTimepicker(false);
                 }}
                 borderRadius={4}
-                // containerStyles={{ borderRadius: 4, overflow: 'hidden', marginVertical: 5, }}
+              // containerStyles={{ borderRadius: 4, overflow: 'hidden', marginVertical: 5, }}
               >
                 {endDate}
               </Button>
@@ -197,7 +221,7 @@ const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
                   setShowCalendar(false);
                 }}
                 borderRadius={4}
-                // containerStyles={{ borderRadius: 4, overflow: 'hidden', marginVertical: 5, }}
+              // containerStyles={{ borderRadius: 4, overflow: 'hidden', marginVertical: 5, }}
               >
                 {(displayEndHours < 10 ? `0${displayEndHours}` : displayEndHours)}
                 {':'}
@@ -243,7 +267,10 @@ const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
             <Typography weight="Bold" variant='h5' style={[styles.Title, { marginTop: 0 }]}>
               Ogłoszenie*
             </Typography>
-            {selectedAdvert && <TouchableOpacity style={{ marginRight: 18 }} onPress={() => navigation.navigate('ChooseAdvertScreen', { callback: setSelectedAdvert })}>
+            {selectedAdvert && <TouchableOpacity
+              style={{ marginRight: 18 }}
+              onPress={() => router.push('/calendar/EventScreen?subView=ChooseAdvertScreen&subViewMode=screen')}
+            >
               <Typography style={{ textDecorationLine: 'underline' }} color={Colors.Blue500}>
                 Zmień wybór
               </Typography>
@@ -252,7 +279,10 @@ const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           {selectedAdvert ?
             <AdvertSmall {...selectedAdvert} />
             :
-            <Button variant='secondary' onPress={() => navigation.navigate('ChooseAdvertScreen', { callback: setSelectedAdvert })}>
+            <Button
+              variant='secondary'
+              onPress={() => router.push('/calendar/EventScreen?subView=ChooseAdvertScreen&subViewMode=screen')}
+            >
               Wybierz Ogłoszenie
             </Button>
           }
@@ -262,18 +292,26 @@ const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
             <Typography weight="Bold" variant='h5' style={[styles.Title, { marginTop: 0 }]}>
               Kandydat*
             </Typography>
-            {selectedCandidate && <TouchableOpacity style={{ marginRight: 18 }} onPress={() => navigation.navigate('ChooseAdvertScreen', { callback: setSelectedAdvert })}>
+            {selectedCandidate && <TouchableOpacity
+              style={{ marginRight: 18 }}
+              onPress={() => router.push('/calendar/EventScreen?subView=ChooseAdvertScreen&subViewMode=screen')}
+            >
               <Typography style={{ textDecorationLine: 'underline' }} color={Colors.Blue500}>
                 Zmień wybór
               </Typography>
             </TouchableOpacity>}
           </View>
           {selectedCandidate ?
-            <TouchableOpacity style={{ marginBottom: 10 }} onPress={() => navigation.navigate('ProfileScreen', { candidateData: selectedCandidate })}>
+            <TouchableOpacity style={{ marginBottom: 10 }}
+            // onPress={() => navigation.navigate('ProfileScreen', { candidateData: selectedCandidate })}
+            >
               <CandidateCard {...selectedCandidate} />
             </TouchableOpacity>
             :
-            <Button variant='secondary' onPress={() => navigation.navigate('ChooseCandidateScreen', { callback: setSelectedCandidate, candidates: selectedAdvert.candidate_data })}>
+            <Button
+              variant='secondary'
+              onPress={() => router.push('/calendar/EventScreen?subView=ChooseCandidateScreen&subViewMode=screen')}
+            >
               Wybierz Kandydata
             </Button>
           }
@@ -284,7 +322,7 @@ const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
             Wybierz rodzaj wydarzenia
           </Typography>
           <RadioGroup
-            name='eventType' ml='18px' mt='10px' mb='15px'
+            name='eventType' ml={18} mt={10} mb={15}
             value={eventType} onValueChange={value => setEventType(value as 'meeting' | 'call')}
           >
             <RadioGroup.Item value="call" my={1}>Połaczenie telefoniczne</RadioGroup.Item>
@@ -301,23 +339,22 @@ const EventScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
               place={location?.formattedAddress}
               latitude={location?.position?.lat}
               longitude={location?.position?.lng}
-              onPress={() => navigation.navigate('MapScreen', {
-                callback: (address) => setLocation(address),
-                initialAddress: location
-              })}
+              onPress={() => router.push('/calendar/EventScreen?subView=MapScreen&subViewMode=screen')}
+              // onPress={() => navigation.navigate('MapScreen', {
+              //   callback: (address) => setLocation(address),
+              //   initialAddress: location
+              // })}
             /> */}
           </View>
         </>}
       </ScrollView>
-      <Button disabled={!token || loading} withLoading={!!token} variant="primary" onPress={addEventHandler}>Zaplanuj</Button>
-
-      {/* {splashscreen && (
-        <SplashScreen
-          infoText={'Zapisano wydarzenie!'}
-          buttonText={'Potwierdź'}
-          onPress={() => navigation.navigate('MainScreen')}
-        />
-      )} */}
+      <Button
+        // disabled={!token || loading} 
+        // withLoading={!!token} 
+        onPress={addEventHandler}
+      >
+        Zaplanuj
+      </Button>
     </ScreenHeaderProvider>
   );
 };

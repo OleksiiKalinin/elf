@@ -4,16 +4,19 @@ import { Agenda as Agnd } from '../../../node_modules_modified/react-native-cale
 import Colors from '../../colors/Colors';
 import { Separator, XStack, YStack } from 'tamagui';
 import SvgIcon from '../atoms/SvgIcon';
+import { SCREEN_HEADER_HEIGHT } from './ScreenHeaderProvider';
+import { BOTTOM_TABS_HEIGHT } from './BottomTabs';
 
 const Agenda = () => {
     const [items, setitems] = useState<any>({})
     const [isOpened, setIsOpened] = useState<boolean>(false);
     const [loaded, setloaded] = useState<boolean>(false);
-    const [height, setheight] = useState<number>(Dimensions.get('window').height);
+    const [height, setheight] = useState<number>(Dimensions.get('window').height - SCREEN_HEADER_HEIGHT - BOTTOM_TABS_HEIGHT);
+console.log(height);
 
     useEffect(() => {
         Dimensions.addEventListener('change',({window}) => {
-            setheight(window.height);
+            setheight(window.height - SCREEN_HEADER_HEIGHT - BOTTOM_TABS_HEIGHT);
         })
         setloaded(true);
     }, [])

@@ -7,16 +7,6 @@ import generalActions from "../store/actionCreators/general/actions";
 import { convertToFrontEndAddress } from "../hooks/convertAddress";
 import { AppDispatch } from "../store";
 
-const test = () => async (dispatch: Dispatch<AppDispatch>) => {
-    try {
-        const {data} = await axios.get('https://jsonplaceholder.typicode.com/todos/1');
-        console.log(data);
-        
-    } catch (error) {
-        
-    }
-}
-
 const getAppData = (token: string | null) => async (dispatch: Dispatch<any>) => {
     let isOk = false;
     dispatch(generalActions.setAppLoading(true));
@@ -92,5 +82,4 @@ const setUserData = (data: any, token: string | null, protocol: 'post' | 'put') 
 export default {
     getAppData,
     setUserData,
-    test
 }

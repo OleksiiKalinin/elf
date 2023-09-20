@@ -1,4 +1,4 @@
-import { SwipeablePanelNoControlProps } from "../../../components/organismes/SwipeablePanel";
+import { SwipeablePanelProps } from "../../../components/organismes/SwipeablePanel";
 import { generalActionTypes } from "../../actions";
 import { CandidateMarkType, CandidateNotesType, CompanyDataType, InvoiceType, JobIndustryType, UserAdvertType, UserDataType, UserEventType } from "../../reducers/types";
 import { AppDataType, generalReducerAction } from "./types";
@@ -53,7 +53,7 @@ const setJobIndustries = (payload: JobIndustryType[]): generalReducerAction => (
     payload
 })
 
-const setSwipeablePanelProps = (payload: SwipeablePanelNoControlProps | null): generalReducerAction => ({
+const setSwipeablePanelProps = (payload: SwipeablePanelProps | null): generalReducerAction => ({
     type: generalActionTypes.SET_SWIPEABLE_PANEL_PROPS,
     payload
 })

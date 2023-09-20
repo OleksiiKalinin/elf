@@ -11,7 +11,7 @@ import { PathConfigMap } from '@react-navigation/native';
 export type MenuStackParamList = {
   MainScreen: undefined;
   CallsScreen: undefined;
-  // EventsScreen: undefined;
+  EventsScreen: undefined;
   NewsScreen: undefined;
   NewsDetailsScreen: undefined;
   QuestionsScreen: undefined;
@@ -20,7 +20,7 @@ export type MenuStackParamList = {
 export const MenuStackLinking: PathConfigMap<MenuStackParamList> = {
   MainScreen: '',
   CallsScreen: 'CallsScreen',
-  // EventsScreen: 'EventsScreen',
+  EventsScreen: 'EventsScreen',
   NewsDetailsScreen: 'NewsDetailsScreen',
   NewsScreen: 'NewsScreen',
   QuestionsScreen: 'QuestionsScreen',
@@ -33,7 +33,7 @@ const MenuNavigator: React.FC = () => {
     <MenuStack.Navigator initialRouteName="MainScreen" screenOptions={{ headerShown: false }}>
       <MenuStack.Screen name="MainScreen" component={MainScreen} />
       <MenuStack.Screen name="CallsScreen" component={CallsScreen} />
-      {/* <MenuStack.Screen name="EventsScreen" component={EventsScreen} /> */}
+      <MenuStack.Screen name="EventsScreen" component={EventsScreen} />
       <MenuStack.Screen name="NewsScreen" component={NewsScreen} />
       <MenuStack.Screen name="NewsDetailsScreen" component={NewsDetailsScreen} />
       <MenuStack.Screen name="QuestionsScreen" component={QuestionsScreen} />

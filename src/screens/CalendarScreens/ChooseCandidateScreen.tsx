@@ -17,14 +17,9 @@ import CandidateCard from '../../components/organismes/CandidateCard';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<CalendarStackParamList, 'ChooseCandidateScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'CalendarStack'>
->;
-
-const CandidatesScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
+const CandidatesScreen: React.FC<CalendarStackParamList['ChooseCandidateScreen']> = ({callback, candidates: candidatesWithRating}) => {
   const dispatch = useTypedDispatch();
-  const { candidates: candidatesWithRating, callback } = route.params;
+  // const { candidates: candidatesWithRating, callback } = route.params;
   const { token } = useTypedSelector(s => s.general);
   const [loading, setLoading] = useState<boolean>(true);
   const [candidates, setCandidates] = useState<CandidateDataType[]>([]);
@@ -51,12 +46,14 @@ const CandidatesScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
         </View>
       )}
       renderItem={({ item }) => (
-        <TouchableOpacity style={{ marginBottom: 10 }} onPress={() => navigation.navigate('ProfileScreen', { candidateData: item })}>
+        <TouchableOpacity style={{ marginBottom: 10 }} 
+        // onPress={() => navigation.navigate('ProfileScreen', { candidateData: item })}
+        >
           <CandidateCard {...item}
             rating={candidatesWithRating.find(e => e.candidate_id === item.id)?.fit_rating}
             onChoose={() => {
               callback(item);
-              navigation.goBack();
+              // navigation.goBack();
             }}
           />
         </TouchableOpacity>
@@ -66,6 +63,7 @@ const CandidatesScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
 
   return loading ? <LoadingScreen /> : (
     <ScreenHeaderProvider
+      title='Wybierz kandydata'
       mainTitlePosition="flex-start"
     >
       {CandidatesList}

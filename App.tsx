@@ -1,4 +1,4 @@
-import { StyleSheet, StatusBar, useColorScheme } from 'react-native';
+import { StyleSheet, StatusBar, useColorScheme, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { TamaguiProvider, useTheme, Stack, H4 } from 'tamagui';
 import { SolitoImageProvider } from 'solito/image';
@@ -11,7 +11,9 @@ import config from './tamagui';
 import { Provider } from 'react-redux';
 import Colors from './src/colors/Colors';
 import { nativeStore } from './src/store';
-import RootNavigator from './src/navigators/RootNavigator';
+import RootNavigator, { navigationLinking } from './src/navigators/RootNavigator';
+import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
+import SwipeablePanel from './src/components/organismes/SwipeablePanel';
 
 const App = () => {
   // const colorScheme = useColorScheme() || 'light';
@@ -23,19 +25,25 @@ const App = () => {
     <SolitoImageProvider>
       <TamaguiProvider config={config} disableInjectCSS defaultTheme={colorScheme}>
         <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-          <GestureHandlerRootView style={styles.container}>
+          <GestureHandlerRootView style={styles.Flex1}>
             <Provider store={nativeStore}>
-              <StatusBar
-                animated
-                showHideTransition="slide"
-                backgroundColor={Colors.White}
-                barStyle='dark-content'
-              // backgroundColor={theme.borderColor?.val}
-              // barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-              />
-              <SafeAreaView style={styles.container}>
-                <RootNavigator />
-              </SafeAreaView>
+              <NavigationContainer
+                theme={isDarkMode ? DarkTheme : DefaultTheme}
+                linking={navigationLinking}
+              >
+                <StatusBar
+                  animated
+                  showHideTransition="slide"
+                  backgroundColor={Colors.White}
+                  barStyle='dark-content'
+                // backgroundColor={theme.borderColor?.val}
+                // barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+                />
+                <View style={styles.Flex1}>
+                  <RootNavigator />
+                  <SwipeablePanel />
+                </View>
+              </NavigationContainer>
             </Provider>
           </GestureHandlerRootView>
         </SafeAreaProvider>
@@ -45,25 +53,8 @@ const App = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  Flex1: {
     flex: 1,
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  logo: {
-    flex: 1,
-  },
-  logoContainer: {
-    flex: 1,
-    height: 50,
-    width: 50,
-  },
-  routeName: {
-    flex: 1,
-    textAlign: 'right',
-    marginRight: 15,
   },
 });
 

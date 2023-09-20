@@ -15,6 +15,9 @@ import Button from '../molecules/Button';
 import Colors from '../../colors/Colors';
 import { useRouter } from 'solito/router';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
+import { createParam } from 'solito';
+import { useActions } from '../../hooks/useActions';
+import getPathnameFromScreen from '../../hooks/getPathnameFromScreen';
 
 type ScreensTitlesType = {
   MenuStack: { [k in keyof MenuStackParamList]: string };
@@ -36,18 +39,10 @@ export const screensTitles: ScreensTitlesType = {
   },
   CalendarStack: {
     MainScreen: '',
-    QuestionsScreen: 'Pytania',
-    AddPersonScreen: 'Dodaj osobę do wydarzenia',
-    CallScreen: '',
-    EditEventScreen: '',
     EventScreen: 'Zaplanuj wydarzenie',
-    ResumesScreen: 'CV Kandydatów',
-    VacationScreen: 'Urlop',
     MapScreen: '',
     ChooseAdvertScreen: 'Wybierz ogłoszenie',
     ChooseCandidateScreen: 'Wybierz kandydata',
-    ProfileScreen: '',
-    VideoScreen: '',
   },
   CandidatesStack: {
     MainScreen: 'Kandydaci',
@@ -107,7 +102,7 @@ export const screensTitles: ScreensTitlesType = {
     CandidatesScreen: 'Kandydaci',
     JobCategoryScreen: 'Stanowiska',
     JobScreen: 'Kategorie',
-    NewAdvertScreen: 'Nowe ogłoszenie',
+    AdvertEditorScreen: 'Nowe ogłoszenie',
     MapScreen: '',
   },
   MenuStack: {
@@ -148,8 +143,9 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   staticContentHeight = false,
   alterTitle = null,
 }) => {
-  const { back } = useRouter();
-  const { currentScreen } = useTypedSelector(s => s.general);
+  const { back, replace } = useRouter();
+  const { currentScreen, swipeablePanelProps } = useTypedSelector(s => s.general);
+  const { setSwipeablePanelProps } = useActions();
   const [stack, screen] = currentScreen.split('-');
   // @ts-ignore
   const currentTitle: string = screensTitles[stack][screen];
@@ -162,15 +158,17 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
           <View style={{ flex: 1, height: '100%', alignItems: 'flex-start', flexDirection: 'row' }}>
             <Button
               bg='transparent'
-              // px={15}
-              // py={14.5}
               p={0}
               alignItems='center'
               width={50}
               height='100%'
               icon={<SvgIcon icon='arrowLeft' />}
-              onPress={back}
-            // colorScheme={Colors.Basic300}
+              onPress={() => {
+                if (!!swipeablePanelProps) {
+                  replace(getPathnameFromScreen(currentScreen))
+                  setSwipeablePanelProps(null);
+                } else back()
+              }}
             />
             <Typography variant="h4" weight="Bold" style={{ alignSelf: 'center' }}>
               {title || currentTitle}
@@ -228,7 +226,10 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
 const styles = StyleSheet.create({
   Wrapper: {
     flex: 1,
-    minHeight: Dimensions.get('window').height,
+    minHeight: Platform.select({
+      native: undefined,
+      web: Dimensions.get('window').height,
+    }),
     // ...Platform.select({
     //   ios: {
     //     paddingTop: 30,

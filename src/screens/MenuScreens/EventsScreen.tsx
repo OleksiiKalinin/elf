@@ -49,7 +49,7 @@ const EventsScreen: React.FC = () => {
     <View style={styles.Wrapper}>
       <ScreenHeaderProvider>
         {loading ? <LoadingScreen /> :
-          <ScrollView contentContainerStyle={{paddingBottom: 24}} style={{ backgroundColor: Colors.Basic100 }}>
+          <ScrollView contentContainerStyle={{ paddingBottom: 24 }} style={{ backgroundColor: Colors.Basic100 }}>
             {!!userEvents.length ? userEvents.sort((a, b) => new Date(b.start_time).getTime() - new Date(a.start_time).getTime()).map((event, index, array) => {
               const timeStart = new Date(event.start_time);
               if (timeStart.getTime() > Date.now()) return null;
@@ -61,8 +61,8 @@ const EventsScreen: React.FC = () => {
               const streetNumber = event.location?.streetNumber || '';
               const city = event.location?.subAdminArea || '';
               return (
-                <View style={{marginTop: 16}}>
-                  {timeStart.getDate() !== new Date(array[index-1]?.start_time).getDate() && <Typography
+                <View style={{ marginTop: 16 }}>
+                  {timeStart.getDate() !== new Date(array[index - 1]?.start_time).getDate() && <Typography
                     variant="h5"
                     weight="Bold"
                     color={Colors.Basic600}
@@ -102,9 +102,53 @@ const EventsScreen: React.FC = () => {
                   </TouchableOpacity>
                 </View>
               )
-            }) : (
-              <Typography style={{padding: 19}}>Nie masz wydarzeń!</Typography>
-            )}
+            }) : (<>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
+            </>)}
           </ScrollView>}
       </ScreenHeaderProvider>
     </View>

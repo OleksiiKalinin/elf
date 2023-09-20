@@ -29,44 +29,44 @@ import generalServices from '../../services/generalServices';
 import CornerCircleButton from '../../components/molecules/CornerCircleButton';
 import { createParam } from 'solito';
 import EventsScreen from './EventsScreen';
+import hasKey from '../../hooks/hasKey';
+import { useSwipeablePanelParams } from '../../hooks/useSwipeablePanelParams';
+import getPathnameFromScreen from '../../hooks/getPathnameFromScreen';
+import { useRouter } from 'solito/router';
 // import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
-
-const { useParams } = createParam();
 
 const MainScreen: React.FC = ({ }) => {
   const dispatch = useTypedDispatch();
-  const { params } = useParams();
+  const router = useRouter();
+  const { subView, subViewMode } = useSwipeablePanelParams();
   // const ScrollViewRef = useRef(null);
   // useScrollToTop(ScrollViewRef);
   const { isMainMenuFlatList, userData, token, currentScreen } = useTypedSelector(state => state.general);
   const { setIsMainMenuFlatList, setSwipeablePanelProps } = useActions();
 
   useEffect(() => {
-    console.log(params);
-    setSwipeablePanelProps(params?.EventsScreen === 'true' ? {
-      closeButton: false,
-      hideBar: true,
-      children: <EventsScreen />
-    } : null)
-  }, [params])
-
-  const optionsHandler = () => {
-    setSwipeablePanelProps({
-      title: 'Co robimy tym razem?',
-      buttons: [
-        {
-          children: 'Stwórz nowe wydarzenie',
-          icon: <SvgIcon icon='calendar' />,
-          onPress: () => { }//navigation.navigate('CalendarStack', { screen: 'EventScreen', params: { isMainMenuSender: true } })
-        },
-        {
-          children: 'Stwórz nowe ogłoszenie',
-          icon: <SvgIcon icon='work' />,
-          onPress: () => { }//navigation.navigate('AdvertStack', { screen: 'NewAdvertScreen', params: { isMainMenuSender: true } })
-        },
-      ],
-    })
-  }
+    setSwipeablePanelProps((() => {
+      if (subView === 'options') return {
+        title: 'Co robimy tym razem?',
+        closeButton: true,
+        mode: subViewMode,
+        buttons: [
+          {
+            children: 'Stwórz nowe wydarzenie',
+            icon: <SvgIcon icon='calendar' />,
+            closeAction: 'props-null',
+            onPress: () => router.replace('/calendar/EventScreen?isMainMenuSender=true')
+          },
+          {
+            children: 'Stwórz nowe ogłoszenie',
+            icon: <SvgIcon icon='work' />,
+            onPress: () => { }//navigation.navigate('AdvertStack', { screen: 'AdvertEditorScreen', params: { isMainMenuSender: true } })
+          },
+        ],
+      }
+      return null;
+    })());
+  }, [subView, subViewMode]);
 
   const sectionButtons: {
     sectionTitle: string,
@@ -87,7 +87,27 @@ const MainScreen: React.FC = ({ }) => {
             backgroundColor: Colors.Sea300,
             icon: 'eventsHistory',
             ...useLink({
-              href: '/home?EventsScreen=true'
+              href: '/home/EventsScreen'
+            }),
+            missedEvents: 0,
+            badge: '',
+          },
+          {
+            title: 'Historia wydarzeń',
+            backgroundColor: Colors.Sea300,
+            icon: 'eventsHistory',
+            ...useLink({
+              href: '/home/EventsScreen'
+            }),
+            missedEvents: 0,
+            badge: '',
+          },
+          {
+            title: 'Historia wydarzeń',
+            backgroundColor: Colors.Sea300,
+            icon: 'eventsHistory',
+            ...useLink({
+              href: '/home/EventsScreen'
             }),
             missedEvents: 0,
             badge: '',
@@ -353,7 +373,7 @@ const MainScreen: React.FC = ({ }) => {
           ))}
         </ScrollView>
       </ScreenHeaderProvider>
-      <CornerCircleButton onPress={optionsHandler} />
+      <CornerCircleButton {...useLink({ href: '/home?subView=options&subViewMode=options' })} />
     </View>
   );
 };

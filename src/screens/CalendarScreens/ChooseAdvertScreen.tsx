@@ -8,24 +8,23 @@ import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import AdvertSmall from '../../components/organismes/AdvertSmall';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { useRouter } from 'solito/router';
+import getPathnameFromScreen from '../../hooks/getPathnameFromScreen';
 
-type MainScreenProps = CompositeScreenProps<
-    NativeStackScreenProps<CalendarStackParamList, 'ChooseAdvertScreen'>,
-    NativeStackScreenProps<RootStackParamList, 'CalendarStack'>
->;
-
-const ChooseAdvertScreen: FC<MainScreenProps> = ({ route, navigation }) => {
-    const { userAdverts } = useTypedSelector(state => state.general);
-    const { callback } = route.params;
+const ChooseAdvertScreen: FC<CalendarStackParamList['ChooseAdvertScreen']> = ({callback}) => {
+    const { userAdverts, currentScreen } = useTypedSelector(state => state.general);
+    const {replace} = useRouter();
+    // const { callback } = route.params;
 
     return (
-        <ScreenHeaderProvider>
+        <ScreenHeaderProvider title='Wybierz ogłoszenie'>
             <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
                 {userAdverts.map(item => (
                     <View style={{ marginTop: 12 }}>
                         <AdvertSmall {...item} onChoose={() => {
                             callback(item);
-                            navigation.goBack();
+                            replace(getPathnameFromScreen(currentScreen));
+                            // navigation.goBack();
                         }} />
                     </View>
                 ))}

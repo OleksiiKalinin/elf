@@ -1,4 +1,4 @@
-import { SwipeablePanelNoControlProps } from "../../components/organismes/SwipeablePanel"
+import { SwipeablePanelProps } from "../../components/organismes/SwipeablePanel"
 
 export interface generalReducerState {
     isTabbarVisible: boolean,
@@ -11,7 +11,7 @@ export interface generalReducerState {
     profileHelpScreenDisplayed: boolean,
     isMainMenuFlatList: boolean,
     appLoading: boolean,
-    swipeablePanelProps: SwipeablePanelNoControlProps | null,
+    swipeablePanelProps: SwipeablePanelProps | null,
     userData: UserDataType | null,
     jobIndustries: JobIndustryType[],
     jobSalaryModes: JobSalaryModeType[],

@@ -1,4 +1,4 @@
-import { SwipeablePanelNoControlProps } from "../../../components/organismes/SwipeablePanel";
+import { SwipeablePanelProps } from "../../../components/organismes/SwipeablePanel";
 import { generalActionTypes } from "../../actions";
 import { CandidateMarkType, CandidateNotesType, CompanyDataType, InvoiceType, JobExperienceType, JobIndustryType, JobSalaryModeType, JobSalaryTaxType, MarkDataType, NoteDataType, UserAdvertType, UserDataType, UserEventType } from "../../reducers/types";
 
@@ -59,7 +59,7 @@ interface setAppLoading {
 
 interface setSwipeablePanelProps {
     type: generalActionTypes.SET_SWIPEABLE_PANEL_PROPS,
-    payload: SwipeablePanelNoControlProps | null,
+    payload: SwipeablePanelProps | null,
 }
 
 interface setIsMainMenuFlatList {

@@ -15,22 +15,21 @@ import Typography from '../../components/atoms/Typography';
 import CandidateCard from '../../components/organismes/CandidateCard';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
+import { createParam } from 'solito';
 
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<AdvertStackParamList, 'CandidatesScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'AdvertStack'>
->;
+const { useParam } = createParam<AdvertStackParamList['CandidatesScreen']>();
 
-const CandidatesScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
+const CandidatesScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
-  const { candidates: candidatesWithRating } = route.params;
-  const { token } = useTypedSelector(s => s.general);
+  const { token, userAdverts } = useTypedSelector(s => s.general);
   const [loading, setLoading] = useState<boolean>(true);
   const [candidates, setCandidates] = useState<CandidateDataType[]>([]);
- 
+  const [id] = useParam('id')
+  const candidatesWithRating = userAdverts.find(e => e.id === Number(id))?.candidate_data;
+
   useEffect(() => {
     (async () => {
-      if (candidatesWithRating.length) {
+      if (!!candidatesWithRating?.length) {
         const res = await dispatch(advertsServices.getAdvertCandidates(token, candidatesWithRating.map(e => e.candidate_id)));
         setCandidates(res as unknown as CandidateDataType[]);
       }
@@ -256,7 +255,7 @@ const CandidatesScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
         <TouchableOpacity style={{ marginBottom: 10 }} 
         // onPress={() => navigation.navigate('ProfileScreen', { candidateData: item })}
         >
-          <CandidateCard {...item} rating={candidatesWithRating.find(e => e.candidate_id === item.id)?.fit_rating} />
+          <CandidateCard {...item} rating={candidatesWithRating?.find(e => e.candidate_id === item.id)?.fit_rating} />
         </TouchableOpacity>
       )
       } />

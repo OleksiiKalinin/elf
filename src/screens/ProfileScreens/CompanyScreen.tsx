@@ -102,7 +102,7 @@ const CompanyScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           children: 'Usuń',
           contentVariant: 'h5',
           contentColor: Colors.Danger,
-          noCloseAction: true,
+          closeAction: 'none',
           onPress: () => setSwipeablePanelProps({
             title: 'Naprawdę chcesz usunąć?',
             buttons: [
@@ -110,7 +110,7 @@ const CompanyScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
                 children: 'TAK',
                 contentWeight: 'SemiBold',
                 contentColor: Colors.Danger,
-                noCloseAction: true,
+                closeAction: 'props-null',
                 onPress: () => {
                   // (async () => {
                   //   if (companyData?.id) {

@@ -13,12 +13,7 @@ import Typography from '../../components/atoms/Typography';
 import TextField from '../../components/molecules/TextField';
 import Button from '../../components/molecules/Button';
 
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<CalendarStackParamList, 'AddPersonScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'CalendarStack'>
->;
-
-const AddPersonScreen: React.FC<MainScreenProps> = ({ navigation }) => {
+const AddPersonScreen: React.FC = () => {
   type inputs = 'fullName' | 'phone';
 
   type formDataTypes = {

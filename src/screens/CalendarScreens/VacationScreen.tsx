@@ -8,12 +8,7 @@ import { RootStackParamList } from '../../navigators/RootNavigator';
 import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<RootStackParamList, 'CalendarStack'>,
-  NativeStackScreenProps<CalendarStackParamList, 'VacationScreen'>
->;
-
-const VacationScreen: React.FC<MainScreenProps> = ({ navigation }) => {
+const VacationScreen: React.FC = () => {
   return (
     <ScreenHeaderProvider
       mainTitlePosition="flex-start"

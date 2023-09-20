@@ -1,12 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { RootStackParamList } from '../../navigators/RootNavigator';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
-import { CompositeScreenProps } from '@react-navigation/native';
-import { TouchableOpacity } from 'react-native';
-import { useDispatch } from 'react-redux';
-import calendarServices from '../../services/calendarServices';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { JobPositionType, UserEventType } from '../../store/reducers/types';
 import { useActions } from '../../hooks/useActions';
@@ -16,17 +9,14 @@ import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Agenda from '../../components/organismes/Agenda';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
+import CornerCircleButton from '../../components/molecules/CornerCircleButton';
+import { useLink } from 'solito/link';
 
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<CalendarStackParamList, 'MainScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'CalendarStack'>
->;
-
-const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
+const MainScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const { token, userEvents, jobIndustries } = useTypedSelector(state => state.general);
   const [monthTitle, setMonthTitle] = useState<string>('');
-  const {current: remindedEvents} = useRef<number[]>([]);
+  const { current: remindedEvents } = useRef<number[]>([]);
   const { setSwipeablePanelProps } = useActions();
   const [jobPositions, setJobPositions] = useState<JobPositionType[]>([]);
 
@@ -108,26 +98,18 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
     return () => timers.forEach(timerId => clearTimeout(timerId));
   }, [userEvents]);
 
-  return (
+  return (<>
     <ScreenHeaderProvider mode="mainTitle" title={monthTitle}>
-      <Agenda 
+      <Agenda
       // getCurrentDate={setMonthTitle} events={userEvents} 
       />
-      <View style={styles.createIcon}>
-        <TouchableOpacity activeOpacity={.7} onPress={() => navigation.navigate('EventScreen')}>
-          <SvgIcon icon='addBig' />
-        </TouchableOpacity>
-      </View>
     </ScreenHeaderProvider>
-  );
+    <CornerCircleButton {...useLink({ href: '/calendar/EventScreen' })} />
+  </>);
 };
 
 const styles = StyleSheet.create({
-  createIcon: {
-    position: "absolute",
-    bottom: 20,
-    right: 20,
-  },
+  
 });
 
 /*

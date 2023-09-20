@@ -23,7 +23,7 @@ import TabbarMenu, { TabbarRoute } from '../../components/organismes/TabbarMenu'
 import { useLink } from 'solito/link';
 import { createParam } from 'solito';
 
-const { useParam } = createParam();
+const { useParam } = createParam<AdvertStackParamList['AdvertScreen']>();
 
 const AdvertScreen: React.FC = () => {
   const { userAdverts, userCompany } = useTypedSelector(state => state.general);
@@ -38,7 +38,9 @@ const AdvertScreen: React.FC = () => {
   const [isPanelActive2, setIsPanelActive2] = useState(false);
 
   const [id] = useParam('id')
-  const advert = userAdverts.find(curr => curr.id === id);
+  console.log(id);
+  
+  const advert = userAdverts.find(curr => curr.id === Number(id));
 
   // const data = useTypedSelector(state => state.adverts);
 
@@ -55,7 +57,7 @@ const AdvertScreen: React.FC = () => {
           contentColor: Colors.Danger,
           contentVariant: 'h5',
           onPress: deleteHandler,
-          noCloseAction: true
+          closeAction: 'none',
         },
       ]
     })
