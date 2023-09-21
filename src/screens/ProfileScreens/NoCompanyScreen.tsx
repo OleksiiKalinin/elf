@@ -1,5 +1,4 @@
 import { CompositeScreenProps, useIsFocused, useNavigation } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import {
     Dimensions,
@@ -20,11 +19,7 @@ import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Button from '../../components/molecules/Button';
 import SvgIcon from '../../components/atoms/SvgIcon';
-
-type NoCompanyScreenProps = CompositeScreenProps<
-    NativeStackScreenProps<ProfileStackParamList, 'NoCompanyScreen'>,
-    NativeStackScreenProps<RootStackParamList, 'ProfileStack'>
->;
+import { useRouter } from 'solito/router';
 
 const pointCards = [
     { points: 23, type: 'Pakiet Medium', time: 'na tydzień' },
@@ -34,11 +29,12 @@ const pointCards = [
 
 const screenWidth = Dimensions.get('window').width;
 
-const NoCompanyScreen: React.FC<NoCompanyScreenProps> = ({ navigation }) => {
+const NoCompanyScreen: React.FC = () => {
     const { profileHelpScreenDisplayed, token } = useTypedSelector(state => state.general);
     const [showHelp, setShowHelp] = useState<boolean>(!profileHelpScreenDisplayed);
     const helpDots = [0, 1, 2];
     const [helpItemNumber, setHelpItemNumber] = useState<number>(0);
+    const router = useRouter();
 
     useEffect(() => {
         if (showHelp && !profileHelpScreenDisplayed) AsyncStorage.setItem('profileHelpScreenDisplayed', 'true');
@@ -73,7 +69,7 @@ const NoCompanyScreen: React.FC<NoCompanyScreenProps> = ({ navigation }) => {
                         contentWeight='Medium'
                         contentVariant='h5'
                         style={{ paddingVertical: 5 }}
-                        onPress={() => navigation.navigate('AddCompanyScreen', { editMode: false })}
+                        onPress={() => router.push('/profile/AddCompanyScreen')}
                     >
                         Dodaj profil firmy
                     </Button>

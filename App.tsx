@@ -1,4 +1,4 @@
-import { StyleSheet, StatusBar, useColorScheme, View } from 'react-native';
+import { StyleSheet, StatusBar, LogBox, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { TamaguiProvider, useTheme, Stack, H4 } from 'tamagui';
 import { SolitoImageProvider } from 'solito/image';
@@ -14,6 +14,10 @@ import { nativeStore } from './src/store';
 import RootNavigator, { navigationLinking } from './src/navigators/RootNavigator';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import SwipeablePanel from './src/components/organismes/SwipeablePanel';
+import calendarLocaleConfig from './src/hooks/calendarLocaleConfig';
+
+LogBox.ignoreAllLogs();
+calendarLocaleConfig();
 
 const App = () => {
   // const colorScheme = useColorScheme() || 'light';

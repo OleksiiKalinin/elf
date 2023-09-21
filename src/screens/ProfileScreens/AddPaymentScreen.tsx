@@ -1,6 +1,5 @@
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CompositeScreenProps, useIsFocused, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
@@ -12,13 +11,9 @@ import TextField from '../../components/molecules/TextField';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import Button from '../../components/molecules/Button';
+import { useLink } from 'solito/link';
 
-type AddPaymentScreen = CompositeScreenProps<
-  NativeStackScreenProps<ProfileStackParamList, 'AddPaymentScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'ProfileStack'>
->;
-
-const AddPaymentScreen: React.FC<AddPaymentScreen> = ({ navigation }) => {
+const AddPaymentScreen: React.FC = () => {
   const [formData, setFormData] = useState({
     phone: '',
     date: '',
@@ -100,7 +95,7 @@ const AddPaymentScreen: React.FC<AddPaymentScreen> = ({ navigation }) => {
 
         </ScrollView>
         <View style={{ marginVertical: 24 }}>
-          <Button onPress={() => navigation.navigate("PaymentScreen")}>
+          <Button {...useLink({href: '/profile/PaymentScreen'})}>
             Zapisz
           </Button>
         </View>

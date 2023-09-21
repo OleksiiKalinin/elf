@@ -1,5 +1,4 @@
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
@@ -14,12 +13,7 @@ import SvgIcon from '../../components/atoms/SvgIcon';
 import { ScrollView } from '../../components/molecules/ScrollView';
 import CandidateCard from '../../components/organismes/CandidateCard';
 
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<CandidatesStackParamList, 'FavouritesScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'CandidatesStack'>
->;
-
-const FavouritesScreen: React.FC<MainScreenProps> = ({ navigation }) => {
+const FavouritesScreen: React.FC = () => {
   const [filter, setFilter] = useState<string>('super');
 
   const [isPanelActive, setIsPanelActive] = useState<boolean>(false);
@@ -31,7 +25,7 @@ const FavouritesScreen: React.FC<MainScreenProps> = ({ navigation }) => {
       actions={[
         {
           icon: 'settings',
-          onPress: () => navigation.navigate('FavSettingsScreen'),
+          onPress: () => {}//navigation.navigate('FavSettingsScreen'),
         },
       ]}>
       <ScrollView style={{ flex: 1, backgroundColor: Colors.Basic100 }}>

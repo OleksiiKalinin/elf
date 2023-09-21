@@ -7,7 +7,6 @@ import {
   View,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
@@ -17,12 +16,7 @@ import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 
-type EditPaymentScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<ProfileStackParamList, 'EditPaymentScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'ProfileStack'>
->;
-
-const EditPaymentScreen: React.FC<EditPaymentScreenProps> = ({ navigation }) => {
+const EditPaymentScreen: React.FC = () => {
   const { setSwipeablePanelProps } = useActions();
 
   const deleteHandler = () => {

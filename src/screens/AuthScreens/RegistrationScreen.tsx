@@ -1,6 +1,5 @@
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../navigators/AuthNavigator';
 import { CompositeScreenProps, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
@@ -134,13 +133,13 @@ const AuthRegistrateScreen: React.FC = () => {
             />
           </View>
           <View style={styles.margin}>
-            {/* <CheckBox
-              isChecked={formData.agree_rights}
-              onClick={() => changeFormDataHandler('agree_rights', !formData.agree_rights)}
+            <CheckBox
+              checked={formData.agree_rights}
+              onCheckedChange={(checked) => changeFormDataHandler('agree_rights', checked)}
               rightTextView={<View style={{ flex: 1 }}>
                 <Typography {...(showTips && !formData.agree_rights ? { color: Colors.Danger } : {})} style={{ marginLeft: 12 }} variant='small'>Akceptuję regulamin aplikacji Jobassistant oraz zapoznałem się z Polityką Prywatności*.</Typography>
               </View>}
-            /> */}
+            />
           </View>
           <View style={[styles.margin, { marginBottom: 24 }]}>
             <Typography color={Colors.Basic600} variant='small'>

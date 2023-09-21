@@ -2,7 +2,6 @@ import React, { Fragment, useState } from 'react';
 import { View, ScrollView, TouchableOpacity, Dimensions, Slider } from 'react-native';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { ContactPersonType } from '../../store/reducers/types';
 import minutesToHours from '../../hooks/minutesToHours';
@@ -15,13 +14,8 @@ import Colors from '../../colors/Colors';
 
 const windowWidth = Dimensions.get('window').width;
 
-type AddConractPersonsScreenProps = CompositeScreenProps<
-    NativeStackScreenProps<ProfileStackParamList, 'AddConractPersonsScreen'>,
-    NativeStackScreenProps<RootStackParamList, 'ProfileStack'>
->;
-
-const AddConractPersonsScreen: React.FC<AddConractPersonsScreenProps> = ({ route, navigation }) => {
-    const { companyData, changeCompanyDataHandler, contactPersons: initContactPersons, setContactPersons: changeContactPersonsHandler } = route.params;
+const AddConractPersonsScreen: React.FC<ProfileStackParamList['AddConractPersonsScreen']> = (props) => {
+    const { companyData, changeCompanyDataHandler, contactPersons: initContactPersons, setContactPersons: changeContactPersonsHandler } = props;
     const [contactHours, setContactHours] = useState<string>(companyData.contact_hours || '08:00-18:00');
     const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(initContactPersons);
     
@@ -134,7 +128,7 @@ const AddConractPersonsScreen: React.FC<AddConractPersonsScreenProps> = ({ route
                 <Button onPress={() => {
                     changeContactPersonsHandler(contactPersons);
                     changeCompanyDataHandler('contact_hours', contactHours);
-                    navigation.goBack();
+                    // navigation.goBack();
                 }}>
                     Potwierdź
                 </Button>

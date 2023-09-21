@@ -5,6 +5,7 @@ import { CompanyDataType } from '../../../../store/reducers/types';
 import SvgIcon, { IconTypes } from '../../../../components/atoms/SvgIcon';
 import Typography from '../../../../components/atoms/Typography';
 import Button from '../../../../components/molecules/Button';
+import { Separator } from 'tamagui';
 
 const ImagesCerts: any[] = [
   require('../../../../assets/images/certificate.png'),
@@ -79,7 +80,7 @@ const AboutCard: FC<CompanyDataType> = (props) => {
         }
       </View>
 
-      {/* <Divider /> */}
+      <Separator />
       <View style={{ paddingHorizontal: 19 }}>
         <Typography style={{ marginTop: 12, marginBottom: 10 }} variant='h5' weight='Bold'>Opis</Typography>
         <Typography style={{ marginBottom: 12 }} variant="h5" color={Colors.Basic600}>
@@ -87,7 +88,7 @@ const AboutCard: FC<CompanyDataType> = (props) => {
         </Typography>
       </View>
 
-      {/* <Divider /> */}
+      <Separator />
 
       {/* <Typography variant='h5' weight='Bold' style={{ marginVertical: 14, marginHorizontal: 19 }}>Certyfikaty</Typography>
       <Carousel

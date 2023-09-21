@@ -1,5 +1,4 @@
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
@@ -12,223 +11,17 @@ import { ScrollView } from '../../components/molecules/ScrollView';
 import TextField from '../../components/molecules/TextField';
 import SvgIcon from '../../components/atoms/SvgIcon';
 import Typography from '../../components/atoms/Typography';
+import getPathnameFromScreen from '../../hooks/getPathnameFromScreen';
+import { useRouter } from 'solito/router';
 
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<AdvertStackParamList, 'JobScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'AdvertStack'>
->;
-
-const Categories: Array<{
-  text: string;
-  list: Array<string>;
-}> = [
-    {
-      text: 'Biuro',
-      list: [
-        'Administrator',
-      ],
-    },
-    {
-      text: 'Bar/Klub',
-      list: ['Barista', "Barman", "Miksolog"],
-    },
-
-    {
-      text: 'Cukiernia',
-      list: [
-        'Cukiernik',
-        'Ciastkarz',
-        'Lodziarz',
-        'Dekorator',
-      ],
-    },
-
-    {
-      text: 'Kwiaciarnia',
-      list: ['Pracownik kwiaciarni', 'Kwiaciarz', "Florysta"],
-    },
-
-    {
-      text: 'Restauracja',
-      list: [
-        'Szef kuchni',
-        'Zastępca szefa kuchni',
-        'Kucharz zespołu',
-        'Kucharz',
-        'Młodszy kucharz',
-        'Pomoc kuchenna',
-      ],
-    },
-
-    {
-      text: 'Transport',
-      list: [
-        'Kierowca autobusu',
-        'Kierowca tramwaju',
-        'Kierowca busa',
-        'Kierowca ciężarówki',
-        'Kierowca TIR-a',
-        'Szofer',
-        'Taksówkarz',
-        'Kurier',
-        'Dostawca zakupów',
-        'Dostawca jedzenia',
-      ],
-    },
-
-    {
-      text: 'Lodziarnia',
-      list: [
-        'Lodziarz',
-        'Dekorator',
-      ],
-    },
-
-    {
-      text: 'Sprzedaż',
-      list: [
-        'Sprzedawca',
-        'Sprzedawca w sklepie',
-        'Sprzedawca w supermarkecie',
-        'Sprzedawca na wyspie',
-        'Telemarketer',
-      ],
-    },
-
-    {
-      text: 'Serwis sprzątający',
-      list: [
-        'Sprzątacz',
-        'Pracownik zmywaka',
-        "Zmywacz okien",
-      ],
-    },
-
-    {
-      text: 'Budownictwo',
-      list: [
-        'Pracownik budowy',
-        'Kierownik budowy',
-        'Murarz',
-        'Zbrojarz',
-        'Betoniarz',
-        'Monter instalacji elektrycznych',
-        'Monter instalacji hydraulicznych',
-        'Monter elewacji',
-        'Cieślarz szalunkowy',
-        'Monter frefabrykatów',
-        'Ślusarz',
-        'Spawacz',
-        'Dekarz',
-        'Monter rusztowań',
-        'Monter izolacji',
-      ],
-    },
-
-    {
-      text: 'Warsztat/serwis',
-      list: [
-        'Pracownik serwisu komputerowego',
-        'Pracownik serwisu rowerowego',
-        'Pracownik warsztatu samochodowego',
-        'Pracownik warsztatu stolarskiego',
-      ],
-    },
-
-    {
-      text: 'Salon fryzjerski',
-      list: [
-        'Fryzjer męski',
-        'Fryzjer damski',
-        'Groomer',
-        'Barber',
-      ],
-    },
-
-    {
-      text: 'Salon kosmetyczny',
-      list: [
-        'Kosmetyczka',
-        'Makijażysta',
-        'Stylista paznokci',
-        'Stylista brwi',
-        'Stylista rzęs',
-        'Stylista makijażu permamentnego',
-      ],
-    },
-
-    {
-      text: 'Siłownia',
-      list: [
-        'Pracownik siłowni',
-        'Instruktor',
-        "Recepcjonista"
-      ],
-    },
-
-    {
-      text: 'Praca ze zwierzętami',
-      list: [
-        'Fryzjer zwierzęcy',
-        'Opiekun zwierzęcy',
-        'Pracownik sklepu zoologicznego',
-        'Pracownik przychodni weterynaryjnej',
-      ],
-    },
-
-    {
-      text: 'SPA',
-      list: [
-        'Pracownik SPA',
-      ],
-    },
-
-    {
-      text: 'Salon tatuażu',
-      list: [
-        'Tatuażysta',
-      ],
-    },
-
-    {
-      text: 'Firma remontowa',
-      list: [
-        'Tynkarz',
-        'Malarz',
-        'Tapeciarz',
-        'Płytkarz',
-        'Glazurnik',
-        'Monter sufitów podwieszanych',
-      ],
-    },
-
-    {
-      text: 'Piekarnia',
-      list: ['Piekarz'],
-    },
-
-    {
-      text: 'Kawiarnia',
-      list: [
-        'Barista',
-        'Kelner',
-      ],
-    },
-    {
-      text: 'Foodtruck',
-      list: [
-        'Pracownik foodtrucka',
-      ],
-    },
-  ];
-
-const JobScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
+const JobScreen: React.FC<AdvertStackParamList['JobScreen']> = ({callback, job_positions}) => {
   const [search, setSearch] = useState<string>('');
-  const { callback, job_positions } = route.params;
-  const { userCompany } = useTypedSelector(s => s.general);
+  // const { callback, job_positions } = route.params;
+  const {replace} = useRouter();
+  const { userCompany, currentScreen } = useTypedSelector(s => s.general);
 
   return (
-    <ScreenHeaderProvider mainTitlePosition="flex-start">
+    <ScreenHeaderProvider mainTitlePosition="flex-start" title='Kategorie'>
       <ScrollView style={{ backgroundColor: Colors.Basic100 }} contentContainerStyle={{ paddingHorizontal: 19, paddingTop: 19, }}>
         {/* <TouchableOpacity
           style={styles.Button}
@@ -258,7 +51,8 @@ const JobScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
               <TouchableOpacity style={styles.Category}
                 onPress={() => {
                   callback(id);
-                  navigation.goBack();
+                  replace(getPathnameFromScreen(currentScreen));
+                  // navigation.goBack();
                 }}
               >
                 <Typography color={Colors.Basic900}>{name}</Typography>

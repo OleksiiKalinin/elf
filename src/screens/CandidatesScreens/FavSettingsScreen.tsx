@@ -1,5 +1,4 @@
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
@@ -15,12 +14,7 @@ import SvgIcon from '../../components/atoms/SvgIcon';
 import Typography from '../../components/atoms/Typography';
 import Button from '../../components/molecules/Button';
 
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<CandidatesStackParamList, 'FavSettingsScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'CandidatesStack'>
->;
-
-const FavSettingsScreen: React.FC<MainScreenProps> = ({ navigation }) => {
+const FavSettingsScreen: React.FC = () => {
   // const data = useTypedSelector(state => state.bookmark);
 
   const colors = [

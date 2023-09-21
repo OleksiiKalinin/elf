@@ -1,6 +1,5 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
 import React, { useState } from 'react';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CompositeScreenProps, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../../navigators/RootNavigator';
 import Colors from '../../../colors/Colors';
@@ -8,14 +7,7 @@ import Typography from '../../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../../components/organismes/ScreenHeaderProvider';
 import { ProfileStackParamList } from '../../../navigators/ProfileNavigator';
 
-type CreateCompanyProfileProps = CompositeScreenProps<
-  NativeStackScreenProps<ProfileStackParamList, 'CreateCompanyProfile'>,
-  NativeStackScreenProps<RootStackParamList, 'ProfileStack'>
->;
-
-const CreateCompanyProfile: React.FC<CreateCompanyProfileProps> = ({ navigation }) => {
-
-
+const CreateCompanyProfile: React.FC = () => {
   const steps = [
     <Typography weight="Regular">
       Kliknij na <Typography weight="Bold">„ludzika”</Typography> w prawym,

@@ -14,6 +14,7 @@ import config from '../../tamagui';
 import Script from 'next/script';
 import { nextStore } from '../store/nextstore';
 import { Layout } from './Layout';
+import calendarLocaleConfig from '../hooks/calendarLocaleConfig';
 
 const insets = {
   top: 0,
@@ -30,6 +31,8 @@ const frame = {
 };
 
 const initialMetrics = { insets, frame };
+
+calendarLocaleConfig();
 
 const Providers = ({ children }: { children: ReactNode }) => {
   const [theme, setTheme] = useRootTheme();

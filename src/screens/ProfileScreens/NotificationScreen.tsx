@@ -1,6 +1,5 @@
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CompositeScreenProps, useIsFocused, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
@@ -11,12 +10,7 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import Switch from '../../components/atoms/Switch';
 
-type NotificationScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<ProfileStackParamList, 'NotificationScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'ProfileStack'>
->;
-
-const NotificationScreen: React.FC<NotificationScreenProps> = ({ navigation }) => {
+const NotificationScreen: React.FC = () => {
   const notifications = [
     {
       name: 'Wiadomości',

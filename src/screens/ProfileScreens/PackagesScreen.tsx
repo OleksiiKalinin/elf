@@ -1,5 +1,4 @@
 import { CompositeScreenProps } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { FC } from 'react';
 import { Dimensions, ScrollView, View } from 'react-native';
 // import SelectDropdown from 'react-native-select-dropdown';
@@ -38,12 +37,7 @@ const packages = [
     },
 ];
 
-type MainScreenProps = CompositeScreenProps<
-    NativeStackScreenProps<ProfileStackParamList, 'PackagesScreen'>,
-    NativeStackScreenProps<RootStackParamList, 'ProfileStack'>
->;
-
-const PackagesScreen: FC<MainScreenProps> = () => {
+const PackagesScreen: FC = () => {
     return (
         <ScreenHeaderProvider>
             <ScrollView style={{ backgroundColor: Colors.White }}>

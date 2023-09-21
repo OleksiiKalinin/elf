@@ -23,8 +23,6 @@ import PaymentMethods from '../screens/ProfileScreens/helpcenter hints/PaymentMe
 import AddEvent from '../screens/ProfileScreens/helpcenter hints/AddEvent';
 import PointsScreen from '../screens/ProfileScreens/PointsScreen';
 import AddCompanyScreen from '../screens/ProfileScreens/AddCompanyScreen';
-import JobScreen from '../screens/ProfileScreens/JobScreen';
-import JobCategoryScreen from '../screens/ProfileScreens/JobCategoryScreen';
 import LanguageScreen from '../screens/ProfileScreens/LanguageScreen';
 import MapScreen from '../screens/ProfileScreens/MapScreen';
 import MethodsScreen from '../screens/ProfileScreens/MethodsScreen';
@@ -36,16 +34,16 @@ import CompanyDescriptionScreen from '../screens/ProfileScreens/CompanyDescripti
 import CompanyInvoiceScreen from '../screens/ProfileScreens/CompanyInvoiceScreen';
 import PackagesScreen from '../screens/ProfileScreens/PackagesScreen';
 import SettingsScreen from '../screens/ProfileScreens/SettingsScreen';
-import PaymentTemporalScreen from '../screens/ProfileScreens/PaymentTemporalScreen';
+// import PaymentTemporalScreen from '../screens/ProfileScreens/PaymentTemporalScreen';
 import { PathConfigMap } from '@react-navigation/native';
 
 export type ProfileStackParamList = {
   MainScreen: undefined,
-  PaymentTemporalScreen: undefined,
-  AddCompanyScreen: {editMode: boolean};
+  // PaymentTemporalScreen: undefined,
+  AddCompanyScreen: {editMode: string},
   NoCompanyScreen: undefined;
-  CompanyScreen: undefined | { index: number };
-  PackagesScreen: undefined;
+  CompanyScreen: undefined,
+  PackagesScreen: undefined,
   SettingsScreen: undefined,
   AccountDataScreen: undefined,
   PaymentScreen: undefined,
@@ -54,12 +52,10 @@ export type ProfileStackParamList = {
   NotificationScreen: undefined,
   PrivacyScreen: undefined,
   PointsScreen: undefined,
-  JobScreen: { index: any, languages: any, category: any, subcategories: any, methods: any, tools: any };
-  JobCategoryScreen: { callback: (id: number) => void };
-  LanguageScreen: undefined | { languages: any, category: any, subcategories: any, methods: any, tools: any };
-  MethodsScreen: undefined | { category: any, subcategories: any, languages: any, methods: any, tools: any };
-  ToolsScreen: undefined | { category: any, subcategories: any, languages: any, methods: any, tools: any };
-  MapScreen: { callback: (address: AddressType) => void, initialAddress: AddressType | null },
+  LanguageScreen: undefined,
+  MethodsScreen: undefined,
+  ToolsScreen: undefined,
+  // ?????
   SendingOffers: undefined,
   RODO: undefined,
   ShareCamera: undefined,
@@ -73,6 +69,8 @@ export type ProfileStackParamList = {
   AddEvent: undefined,
   PaymentMethods: undefined,
   Register: undefined,
+  //??????
+  MapScreen: { callback: (address: AddressType) => void, initialAddress: AddressType | null },
   AddConractPersonsScreen: {
     contactPersons: ContactPersonType[], 
     setContactPersons: React.Dispatch<React.SetStateAction<ContactPersonType[]>>, 
@@ -92,40 +90,43 @@ export type ProfileStackParamList = {
 export const ProfileStackLinking: PathConfigMap<ProfileStackParamList> = {
   MainScreen: '',
   AccountDataScreen: 'AccountDataScreen',
-  AddAdvert: 'AddAdvert',
-  AddCall: 'AddCall',
   AddCompanyScreen: 'AddCompanyScreen',
-  AddConractPersonsScreen: 'AddConractPersonsScreen',
-  AddEvent: 'AddEvent',
   AddPaymentScreen: 'AddPaymentScreen',
-  CompanyDescriptionScreen: 'CompanyDescriptionScreen',
-  CompanyInvoiceScreen: 'CompanyInvoiceScreen',
+  
+  // MapScreen: 'MapScreen',
+  // AddConractPersonsScreen: 'AddConractPersonsScreen',
+  // CompanyDescriptionScreen: 'CompanyDescriptionScreen',
+  // CompanyInvoiceScreen: 'CompanyInvoiceScreen',
+
   CompanyScreen: 'CompanyScreen',
-  CookieScreen: 'CookieScreen',
-  CreateCompanyProfile: 'CreateCompanyProfile',
   EditPaymentScreen: 'EditPaymentScreen',
-  HelpCenterScreen: 'HelpCenterScreen',
-  JobCategoryScreen: 'JobCategoryScreen',
-  JobScreen: 'JobScreen',
   LanguageScreen: 'LanguageScreen',
-  MapScreen: 'MapScreen',
   MethodsScreen: 'MethodsScreen',
   NoCompanyScreen: 'NoCompanyScreen',
   NotificationScreen: 'NotificationScreen',
   PackagesScreen: 'PackagesScreen',
-  PaymentMethods: 'PaymentMethods',
   PaymentScreen: 'PaymentScreen',
-  PaymentTemporalScreen: 'PaymentTemporalScreen',
   PointsScreen: 'PointsScreen',
   PrivacyScreen: 'PrivacyScreen',
-  Register: 'Register',
-  RODO: 'RODO',
-  SendingOffers: 'SendingOffers',
   SettingsScreen: 'SettingsScreen',
-  ShareCamera: 'ShareCamera',
-  ShareContacts: 'ShareContacts',
-  ShareLocation: 'ShareLocation',
   ToolsScreen: 'ToolsScreen',
+  //?????
+  // PaymentMethods: 'PaymentMethods',
+  // PaymentTemporalScreen: 'PaymentTemporalScreen',
+  
+  //?????
+  // AddAdvert: 'AddAdvert',
+  // AddCall: 'AddCall',
+  // AddEvent: 'AddEvent',
+  // CookieScreen: 'CookieScreen',
+  // CreateCompanyProfile: 'CreateCompanyProfile',
+  // HelpCenterScreen: 'HelpCenterScreen',
+  // Register: 'Register',
+  // RODO: 'RODO',
+  // SendingOffers: 'SendingOffers',
+  // ShareCamera: 'ShareCamera',
+  // ShareContacts: 'ShareContacts',
+  // ShareLocation: 'ShareLocation',
 }
 
 const ProfileStack = createNativeStackNavigator<ProfileStackParamList>();
@@ -134,41 +135,41 @@ const ProfileNavigator: React.FC = () => {
   return (
     <ProfileStack.Navigator initialRouteName="MainScreen" screenOptions={{ headerShown: false }}>
       <ProfileStack.Screen name="MainScreen" component={MainScreen} />
-      <ProfileStack.Screen name="CompanyScreen" component={CompanyScreen} />
-      <ProfileStack.Screen name="AccountDataScreen" component={AccountDataScreen} />
-      <ProfileStack.Screen name="AddConractPersonsScreen" component={AddConractPersonsScreen} />
+      {/* <ProfileStack.Screen name="PaymentTemporalScreen" component={PaymentTemporalScreen} /> */}
+      <ProfileStack.Screen name="AddCompanyScreen" component={AddCompanyScreen} />
       <ProfileStack.Screen name="NoCompanyScreen" component={NoCompanyScreen} />
-      <ProfileStack.Screen name="CompanyDescriptionScreen" component={CompanyDescriptionScreen} />
-      <ProfileStack.Screen name="CompanyInvoiceScreen" component={CompanyInvoiceScreen} />
+      <ProfileStack.Screen name="CompanyScreen" component={CompanyScreen} />
       <ProfileStack.Screen name="PackagesScreen" component={PackagesScreen} />
       <ProfileStack.Screen name="SettingsScreen" component={SettingsScreen} />
+      <ProfileStack.Screen name="AccountDataScreen" component={AccountDataScreen} />
       <ProfileStack.Screen name="PaymentScreen" component={PaymentScreen} />
       <ProfileStack.Screen name="EditPaymentScreen" component={EditPaymentScreen} />
       <ProfileStack.Screen name="AddPaymentScreen" component={AddPaymentScreen} />
       <ProfileStack.Screen name="NotificationScreen" component={NotificationScreen} />
       <ProfileStack.Screen name="PrivacyScreen" component={PrivacyScreen} />
       <ProfileStack.Screen name="PointsScreen" component={PointsScreen} />
-      <ProfileStack.Screen name="AddCompanyScreen" component={AddCompanyScreen} />
-      <ProfileStack.Screen name="SendingOffers" component={SendingOffers} />
+      <ProfileStack.Screen name="LanguageScreen" component={LanguageScreen} />
+      <ProfileStack.Screen name="MethodsScreen" component={MethodsScreen} />
+      <ProfileStack.Screen name="ToolsScreen" component={ToolsScreen} />
+      {/* <ProfileStack.Screen name="SendingOffers" component={SendingOffers} />
       <ProfileStack.Screen name="RODO" component={RODO} />
       <ProfileStack.Screen name="ShareCamera" component={ShareCamera} />
       <ProfileStack.Screen name="ShareContacts" component={ShareContacts} />
       <ProfileStack.Screen name="ShareLocation" component={ShareLocation} />
       <ProfileStack.Screen name="CookieScreen" component={CookieScreen} />
       <ProfileStack.Screen name="HelpCenterScreen" component={HelpCenterScreen} />
-      <ProfileStack.Screen name="LanguageScreen" component={LanguageScreen} />
-      <ProfileStack.Screen name="MapScreen" component={MapScreen} />
       <ProfileStack.Screen name="CreateCompanyProfile" component={CreateCompanyProfile} />
       <ProfileStack.Screen name="AddAdvert" component={AddAdvert} />
       <ProfileStack.Screen name="AddCall" component={AddCall} />
       <ProfileStack.Screen name="AddEvent" component={AddEvent} />
       <ProfileStack.Screen name="PaymentMethods" component={PaymentMethods} />
-      <ProfileStack.Screen name="Register" component={Register} />
-      <ProfileStack.Screen name="JobScreen" component={JobScreen}/>
-      <ProfileStack.Screen name="JobCategoryScreen" component={JobCategoryScreen}/>
-      <ProfileStack.Screen name="MethodsScreen" component={MethodsScreen} />
-      <ProfileStack.Screen name="ToolsScreen" component={ToolsScreen} />
-      <ProfileStack.Screen name="PaymentTemporalScreen" component={PaymentTemporalScreen} />
+      <ProfileStack.Screen name="Register" component={Register} /> */}
+
+      {/* <ProfileStack.Screen name="MapScreen" component={MapScreen} /> */}
+      {/* <ProfileStack.Screen name="AddConractPersonsScreen" component={AddConractPersonsScreen} />
+      <ProfileStack.Screen name="CompanyDescriptionScreen" component={CompanyDescriptionScreen} />
+      <ProfileStack.Screen name="CompanyInvoiceScreen" component={CompanyInvoiceScreen} /> */}
+      
     </ProfileStack.Navigator>
   );
 };

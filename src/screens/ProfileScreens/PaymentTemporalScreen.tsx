@@ -1,6 +1,5 @@
 import { Alert, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CompositeScreenProps, useIsFocused, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
@@ -18,16 +17,11 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import Button from '../../components/molecules/Button';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
-type PaymentTemporalScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<ProfileStackParamList, 'PaymentTemporalScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'ProfileStack'>
->;
-
 const bankNumber = '72 1140 2004 0000 3402 7920 9976';
 const bankOwnerName = 'JobAssistant Sp. z o.o.';
 const bankOwnerAddress = 'ul. Ignacego Mościckiego 1, 24-100 Puławy';
 
-const PaymentTemporalScreen: React.FC<PaymentTemporalScreenProps> = ({ navigation }) => {
+const PaymentTemporalScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const { userCompany, userInvoices, token } = useTypedSelector(s => s.general);
   const [loading, setLoading] = useState<boolean>(true);

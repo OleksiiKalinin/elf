@@ -1,5 +1,4 @@
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Dimensions,
@@ -16,7 +15,6 @@ import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import { useScrollToTop } from '@react-navigation/native';
 import { useActions } from '../../hooks/useActions';
 import { CandidateDataType } from '../../store/reducers/types';
 import advertsServices from '../../services/advertsServices';
@@ -27,20 +25,15 @@ import Typography from '../../components/atoms/Typography';
 import CandidateCard from '../../components/organismes/CandidateCard';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
+import { useRouter } from 'solito/router';
 
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<CandidatesStackParamList, 'MainScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'CandidatesStack'>
->;
-
-const MainScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
-  const SectionListRef = useRef(null);
-  // useScrollToTop(SectionListRef);
+const MainScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const { setSwipeablePanelProps } = useActions();
   const [loading, setLoading] = useState<boolean>(true);
   const { userAdverts, token, userCompany } = useTypedSelector(state => state.general);
   const [candidates, setCandidates] = useState<CandidateDataType[]>([]);
+  const router = useRouter();
 
   // const [switchToggle, setSwitchToggle] = useState<boolean>(false);
   // const [selectedJobCategory, setSelectedJobCategory] = useState<any>(null);
@@ -153,7 +146,6 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
 
   const CandidatesList = useMemo(() => (<View style={{ flex: 1, backgroundColor: Colors.Basic100 }}>
     <SectionList
-      ref={SectionListRef}
       initialNumToRender={5}
       sections={[{ title: '', data: candidates }]}
       renderSectionHeader={() => (
@@ -367,7 +359,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
         </View>
       )}
       renderItem={({ item }) => (
-        <TouchableOpacity style={{ marginBottom: 10 }} onPress={() => navigation.navigate('ProfileScreen', { candidateData: item })}>
+        <TouchableOpacity style={{ marginBottom: 10 }} onPress={() => router.push(`/candidates/ProfileScreen?id=${item.id}`)}>
           <CandidateCard {...item} />
         </TouchableOpacity>
       )

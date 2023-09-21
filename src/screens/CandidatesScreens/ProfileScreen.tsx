@@ -1,5 +1,4 @@
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
@@ -25,12 +24,8 @@ import { TabbarRoute } from '../../components/organismes/TabbarMenu';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { ScrollView } from '../../components/molecules/ScrollView';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
-
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<CandidatesStackParamList, 'ProfileScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'CandidatesStack'>
->;
-
+import { createParam } from 'solito';
+import { useRouter } from 'solito/router';
 
 const noteTitles: { title: string, field_type: NoteDataType['field_type'], color: string }[] = [
   {
@@ -50,7 +45,9 @@ const noteTitles: { title: string, field_type: NoteDataType['field_type'], color
   },
 ];
 
-const ProfileScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
+const { useParam } = createParam<CandidatesStackParamList['ProfileScreen']>();
+
+const ProfileScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const { token, candidateNotes: initNotes, candidateMarks: initMarks, marksData, notesData, userCompany } = useTypedSelector(s => s.general);
   const [tabbarIndex, setTabbarIndex] = React.useState<number>(0);
@@ -58,12 +55,14 @@ const ProfileScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
     { key: '0', title: 'CV' },
     { key: '1', title: 'Opinia' },
   ]);
-  const { candidateData } = route.params;
+  // const { candidateData } = route.params;
+  const router = useRouter();
+  const [id] = useParam('id')
   const [loading, setLoading] = useState<boolean>(true);
   const { setSwipeablePanelProps } = useActions();
   const [openNotes, setOpenNotes] = useState<boolean>(false);
-  const existedNotes = initNotes.find(e => e.candidate_id === candidateData.id);
-  const existedMark = initMarks.find(e => e.candidate_id === candidateData.id);
+  const existedNotes = initNotes.find(e => e.candidate_id === Number(id));
+  const existedMark = initMarks.find(e => e.candidate_id === Number(id));
   const [candidateNotes, setCandidateNotes] = useState<number[]>(existedNotes?.note_ids || []);
   const [candidateMark, setCandidateMark] = useState<number | null>(existedMark?.score_id || null);
   const firstLoad = useRef(true);
@@ -198,7 +197,10 @@ const ProfileScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           renderScene={SceneMap({ 0: () => null, 1: () => null })}
         /> */}
         <View style={{ paddingBottom: 15, paddingTop: 5 }}>{{
-          0: <ResumeCard {...candidateData} />,
+          // provide candidateData
+          // 0: <ResumeCard {...candidateData} />,
+
+
           // 1: <OpinionCard onPress={() => sendClaimHandler()} />
         }[tabbarIndex]}</View>
       </ScrollView>

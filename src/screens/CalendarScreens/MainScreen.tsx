@@ -101,7 +101,8 @@ const MainScreen: React.FC = () => {
   return (<>
     <ScreenHeaderProvider mode="mainTitle" title={monthTitle}>
       <Agenda
-      // getCurrentDate={setMonthTitle} events={userEvents} 
+      getCurrentDate={setMonthTitle}
+      //  events={userEvents} 
       />
     </ScreenHeaderProvider>
     <CornerCircleButton {...useLink({ href: '/calendar/EventScreen' })} />

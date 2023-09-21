@@ -20,9 +20,9 @@ export type AdvertStackParamList = {
   AdvertScreen: { id: string };
   AdvertEditorScreen: { id: string };
   CandidatesScreen: { id: string };
-  // JobScreen: { callback: (id: number) => void, job_positions: JobPositionType[] };
-  // JobCategoryScreen: { callback: (props: JobCategoryScreenCallbackProps) => void };
-  // MapScreen: { callback: (address: AddressType) => void, initialAddress: AddressType | null, hideControls?: boolean },
+  JobScreen: { callback: (id: number) => void, job_positions: JobPositionType[] };
+  JobCategoryScreen: { callback: (props: JobCategoryScreenCallbackProps) => void };
+  MapScreen: { callback: (address: AddressType) => void, initialAddress: AddressType | null, hideControls?: boolean },
 };
 
 export const AdvertStackLinking: PathConfigMap<AdvertStackParamList> = {

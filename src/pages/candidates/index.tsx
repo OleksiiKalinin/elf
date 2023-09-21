@@ -1,15 +1,7 @@
-import { View } from "react-native";
-import { useLink } from "solito/link";
-import Typography from "../../components/atoms/Typography";
-import Button from "../../components/molecules/Button";
+import MainScreen from "../../screens/CandidatesScreens/MainScreen";
 
 const CandidatesPage = () => (
-    <View>
-        <Typography>
-            CandidatesPage
-        </Typography>
-        <Button {...useLink({ href: '/home' })}>go home</Button>
-    </View>
+    <MainScreen />
 );
 
 export default CandidatesPage;

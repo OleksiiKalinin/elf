@@ -1,6 +1,5 @@
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CompositeScreenProps, useIsFocused, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
@@ -13,12 +12,7 @@ import TabbarMenu, { TabbarRoute } from '../../components/organismes/TabbarMenu'
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import Button from '../../components/molecules/Button';
 
-type PointsScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<ProfileStackParamList, 'PointsScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'ProfileStack'>
->;
-
-const PointsScreen: React.FC<PointsScreenProps> = ({ navigation }) => {
+const PointsScreen: React.FC = () => {
   const [tabbarIndex, setTabbarIndex] = React.useState(0);
   const [routes] = React.useState<TabbarRoute[]>([
     { key: '0', title: 'Zdobądź' },

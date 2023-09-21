@@ -1,4 +1,3 @@
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { AdvertStackParamList } from '../../navigators/AdvertNavigator';
@@ -22,6 +21,7 @@ import AdvertLarge from '../../components/organismes/AdvertLarge';
 import TabbarMenu, { TabbarRoute } from '../../components/organismes/TabbarMenu';
 import { useLink } from 'solito/link';
 import { createParam } from 'solito';
+import { useRouter } from 'solito/router';
 
 const { useParam } = createParam<AdvertStackParamList['AdvertScreen']>();
 
@@ -36,7 +36,7 @@ const AdvertScreen: React.FC = () => {
   const { setSwipeablePanelProps } = useActions();
   const [isPanelActive, setIsPanelActive] = useState(false);
   const [isPanelActive2, setIsPanelActive2] = useState(false);
-
+  const router = useRouter();
   const [id] = useParam('id')
   console.log(id);
   
@@ -50,7 +50,7 @@ const AdvertScreen: React.FC = () => {
       buttons: [
         {
           children: 'Edytuj',
-          // onPress: () => navigation.navigate('EditAdvertScreen', { advertIndex: advertIndex }),
+          onPress: () => router.push(`/adverts/EditAdvertScreen?id=${id}`),
         },
         {
           children: 'Usuń',

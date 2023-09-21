@@ -1,6 +1,5 @@
 import { Linking, ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import React, { Children, useEffect, useState } from 'react'
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../navigators/AuthNavigator';
 import { CompositeScreenProps, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
@@ -17,11 +16,6 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import Button from '../../components/molecules/Button';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
-type AccountDataScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<ProfileStackParamList, 'AccountDataScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'AuthStack'>
->;
-
 export type RegistDataType = {
   email: string,
   first_name: string,
@@ -32,7 +26,7 @@ export type RegistDataType = {
   confirmNewPassword: string,
 }
 
-const AccountDataScreen: React.FC<AccountDataScreenProps> = ({ navigation }) => {
+const AccountDataScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const { userData, token } = useTypedSelector(state => state.general);
   const { setSwipeablePanelProps } = useActions();

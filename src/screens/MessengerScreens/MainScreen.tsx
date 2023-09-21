@@ -1,5 +1,4 @@
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect } from 'react';
 import { Linking, View } from 'react-native';
 // import Typography from '../../components/atoms/Typography/Typography';
@@ -13,11 +12,6 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import Button from '../../components/molecules/Button';
 import Typography from '../../components/atoms/Typography';
 import { useLink } from 'solito/link';
-
-type MainScreenProps = CompositeScreenProps<
-    NativeStackScreenProps<MessengerStackParamList, 'MainScreen'>,
-    NativeStackScreenProps<RootStackParamList, 'MessengerStack'>
->;
 
 const MainScreen: React.FC = () => {
     // const MainScreen: React.FC<MainScreenProps> = () => {

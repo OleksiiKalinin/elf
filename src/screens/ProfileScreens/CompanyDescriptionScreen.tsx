@@ -1,5 +1,4 @@
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Image, Dimensions } from 'react-native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
@@ -16,13 +15,8 @@ import TextField from '../../components/molecules/TextField';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Button from '../../components/molecules/Button';
 
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<ProfileStackParamList, 'CompanyDescriptionScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'ProfileStack'>
->;
-
-const CompanyDescriptionScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
-  const {callback, description, title} = route.params;
+const CompanyDescriptionScreen: React.FC<ProfileStackParamList['CompanyDescriptionScreen']> = (props) => {
+  const {callback, description, title} = props;
   const [value, setValue] = useState<string>(description || '');
 
   return (
@@ -42,7 +36,7 @@ const CompanyDescriptionScreen: React.FC<MainScreenProps> = ({ navigation, route
       <Button
         onPress={() => {
           callback(value);
-          navigation.goBack();
+          // navigation.goBack();
         }}
       >
         Zapisz

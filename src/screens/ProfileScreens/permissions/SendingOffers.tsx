@@ -1,6 +1,5 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
 import React, { useState } from 'react';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CompositeScreenProps, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../../navigators/RootNavigator';
 import Colors from '../../../colors/Colors';
@@ -9,16 +8,8 @@ import ScreenHeaderProvider from '../../../components/organismes/ScreenHeaderPro
 import Switch from '../../../components/atoms/Switch';
 import { ProfileStackParamList } from '../../../navigators/ProfileNavigator';
 
-type SendingOffersProps = CompositeScreenProps<
-  NativeStackScreenProps<ProfileStackParamList, 'SendingOffers'>,
-  NativeStackScreenProps<RootStackParamList, 'ProfileStack'>
->;
-
-const SendingOffers: React.FC<SendingOffersProps> = ({ navigation }) => {
-
-
+const SendingOffers: React.FC = () => {
   const [switchState, setSwitchState] = useState(false);
-
 
   return (
     <ScreenHeaderProvider>

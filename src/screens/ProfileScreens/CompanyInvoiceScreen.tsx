@@ -1,5 +1,4 @@
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Image, Dimensions, ScrollView } from 'react-native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
@@ -17,13 +16,8 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import { AddressType } from '../../store/reducers/types';
 import Button from '../../components/molecules/Button';
 
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<ProfileStackParamList, 'CompanyInvoiceScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'ProfileStack'>
->;
-
-const CompanyInvoiceScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
-  const { callback, address: initAddress, NIP: initNIP, full_name: initFull_name, title } = route.params;
+const CompanyInvoiceScreen: React.FC<ProfileStackParamList['CompanyInvoiceScreen']> = (props) => {
+  const { callback, address: initAddress, NIP: initNIP, full_name: initFull_name, title } = props;
   const [address, setAddress] = useState<AddressType | null>(initAddress);
   const [NIP, setNIP] = useState<string>(initNIP || '');
   const [full_name, setFull_name] = useState<string>(initFull_name || '');
@@ -73,7 +67,7 @@ const CompanyInvoiceScreen: React.FC<MainScreenProps> = ({ navigation, route }) 
       <Button
         onPress={() => {
           callback(address, NIP, full_name);
-          navigation.goBack();
+          // navigation.goBack();
         }}
       >
         Zapisz

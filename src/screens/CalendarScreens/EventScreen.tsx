@@ -1,5 +1,4 @@
 import { CommonActions, CompositeScreenProps, useIsFocused } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useRef, useState } from 'react';
 import { Dimensions, Image, StyleSheet, View } from 'react-native';
 import { TouchableOpacity } from 'react-native';
@@ -29,6 +28,7 @@ import MapScreen from './MapScreen';
 import ChooseAdvertScreen from './ChooseAdvertScreen';
 import ChooseCandidateScreen from './ChooseCandidateScreen';
 import { ScrollView } from '../../components/molecules/ScrollView';
+import { Separator } from 'tamagui';
 // import CandidateCard from '../../components/organisms/CandidateCard/CandidateCard';
 
 const normalizeTimeForPicker = (mode: 'start' | 'end'): Date => {
@@ -261,7 +261,7 @@ const EventScreen: React.FC = () => {
             /> */}
           </View>}
         </View>
-        {/* <Divider /> */}
+        <Separator />
         <View style={{ marginVertical: 24 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}>
             <Typography weight="Bold" variant='h5' style={[styles.Title, { marginTop: 0 }]}>
@@ -316,7 +316,7 @@ const EventScreen: React.FC = () => {
             </Button>
           }
         </View>}
-        {/* <Divider /> */}
+        <Separator />
         <View>
           <Typography weight="Bold" variant='h5' style={[styles.Title, { marginTop: 24 }]}>
             Wybierz rodzaj wydarzenia
@@ -330,7 +330,7 @@ const EventScreen: React.FC = () => {
           </RadioGroup>
         </View>
         {eventType === 'meeting' && <>
-          {/* <Divider /> */}
+          <Separator />
           <Typography weight="Bold" style={{ marginBottom: 8, marginLeft: 18, marginTop: 25 }} variant="h4">
             Lokalizacja*
           </Typography>

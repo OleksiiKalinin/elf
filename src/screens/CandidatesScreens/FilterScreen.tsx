@@ -1,5 +1,4 @@
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Touchable, View, Text } from 'react-native';
 import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
@@ -13,11 +12,7 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import { ScrollView } from '../../components/molecules/ScrollView';
 import Typography from '../../components/atoms/Typography';
 import Button from '../../components/molecules/Button';
-
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<CandidatesStackParamList, 'FilterScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'CandidatesStack'>
->;
+import { Separator } from 'tamagui';
 
 const Distance: Array<string> = [
   '+1 km',
@@ -56,7 +51,7 @@ const contractType: Array<string> = [
 
 const sortingTypes: Array<string> = ['Najnowsi', 'Najbliżsi', 'Najdroższe'];
 
-const FilterScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
+const FilterScreen: React.FC = () => {
   // const dataCompanies = useTypedSelector(state => state.company);
   // const dataBookmarks = useTypedSelector(state => state.bookmark);
   // const [checkbox0, setCheckbox0] = useState(false);
@@ -157,7 +152,7 @@ const FilterScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
             onClick={() => setCheckbox0(prev => !prev)}
             style={{ padding: 16 }}
           />
-          <Divider />
+          <Separator />
         </View>
 
         <HorizontalSelector
@@ -259,7 +254,7 @@ const FilterScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           onClick={() => setCheckbox1(prev => !prev)}
           style={{ padding: 16 }}
         />
-        <Divider />
+        <Separator />
         <CheckBox
           leftTextView={
             <View style={{ flexDirection: 'row' }}>
@@ -273,7 +268,7 @@ const FilterScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           onClick={() => setCheckbox2(prev => !prev)}
           style={{ padding: 16 }}
         />
-        <Divider />
+        <Separator />
         <CheckBox
           leftTextView={
             <View style={{ flexDirection: 'row' }}>
@@ -287,7 +282,7 @@ const FilterScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
           onClick={() => setCheckbox3(prev => !prev)}
           style={{ padding: 16 }}
         />
-        <Divider />
+        <Separator />
       </ScrollView> */}
       {/* <View >
         <Button

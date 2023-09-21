@@ -1,4 +1,3 @@
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
 import {
   Dimensions,
@@ -10,12 +9,6 @@ import {
   Platform
 } from 'react-native';
 import Colors from '../../colors/Colors';
-// import Typography from '../../components/atoms/Typography/Typography';
-import { RootStackParamList } from '../../navigators/RootNavigator';
-import { CompositeScreenProps, useIsFocused, useScrollToTop } from '@react-navigation/native';
-import { MenuStackParamList } from '../../navigators/MenuNavigator';
-// import ScreenHeaderProvider from '../../components/organisms/ScreenHeaderProvider/ScreenHeaderProvider';
-// import SvgIcon, { IconTypes } from '../../components/molecules/SvgIcon/SvgIcon';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import SvgIcon, { IconTypes } from '../../components/atoms/SvgIcon';
@@ -33,14 +26,12 @@ import hasKey from '../../hooks/hasKey';
 import { useSwipeablePanelParams } from '../../hooks/useSwipeablePanelParams';
 import getPathnameFromScreen from '../../hooks/getPathnameFromScreen';
 import { useRouter } from 'solito/router';
-// import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
+import { Separator } from 'tamagui';
 
 const MainScreen: React.FC = ({ }) => {
   const dispatch = useTypedDispatch();
   const router = useRouter();
   const { subView, subViewMode } = useSwipeablePanelParams();
-  // const ScrollViewRef = useRef(null);
-  // useScrollToTop(ScrollViewRef);
   const { isMainMenuFlatList, userData, token, currentScreen } = useTypedSelector(state => state.general);
   const { setIsMainMenuFlatList, setSwipeablePanelProps } = useActions();
 
@@ -313,7 +304,6 @@ const MainScreen: React.FC = ({ }) => {
       // </View>}
       >
         <ScrollView
-          // ref={ScrollViewRef} 
           contentContainerStyle={{ alignItems: 'center' }}
           style={{ backgroundColor: Colors.Basic100, flex: 1 }}
         >

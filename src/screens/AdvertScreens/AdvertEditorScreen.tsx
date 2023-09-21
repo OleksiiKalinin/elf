@@ -1,5 +1,4 @@
 import { CommonActions, CompositeScreenProps, useIsFocused } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import {
   Alert,
@@ -26,7 +25,9 @@ import Button from '../../components/molecules/Button';
 import TextField from '../../components/molecules/TextField';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { createParam } from 'solito';
-
+import { useActions } from '../../hooks/useActions';
+import { useSwipeablePanelParams } from '../../hooks/useSwipeablePanelParams';
+import { Separator } from 'tamagui';
 
 var width = Dimensions.get('window').width;
 
@@ -83,7 +84,19 @@ const AdvertEditorScreen: React.FC = () => {
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [id] = useParam('id')
+  const { subView, subViewMode } = useSwipeablePanelParams();
+  const {setSwipeablePanelProps} = useActions();
   
+  
+  // useEffect(() => {
+  //   setSwipeablePanelProps((() => {
+  //     if (subView === 'options') return {
+    // JobCategoryScreen
+    // MapScreen
+  //     }
+  //     return null;
+  //   })());
+  // }, [subView, subViewMode]);
 
   const changeAdvertDataHandler = (name: keyof UserAdvertType, value: string | number | AddressType | null, replaceSpaces: boolean = true) => {
     setAdvertData(prev => ({
@@ -171,28 +184,28 @@ const AdvertEditorScreen: React.FC = () => {
           onClick={() => setShiftJob(prev => !prev)}
           style={{ padding: 16 }}
         />
-        <Divider />
+        <Separator />
         <CheckBox
           leftText='Praca w weekendy'
           isChecked={weekendJob}
           onClick={() => setWeekendJob(prev => !prev)}
           style={{ padding: 16 }}
         />
-        <Divider />
+        <Separator />
         <CheckBox
           leftText='Elastyczny czas pracy'
           isChecked={flexibleTime}
           onClick={() => setFlexibleTime(prev => !prev)}
           style={{ padding: 16 }}
         />
-        <Divider />
+        <Separator />
         <CheckBox
           leftText='Możliwość pracy zdalnej'
           isChecked={withoutResume}
           onClick={() => setWithoutResume(prev => !prev)}
           style={{ padding: 16 }}
         />
-        <Divider />
+        <Separator />
         <View>
           <View style={{ margin: 16 }}>
             <Typography weight="Bold" size={20}>Godziny pracy</Typography>
@@ -223,7 +236,7 @@ const AdvertEditorScreen: React.FC = () => {
             />
           ))}
         />
-        <Divider /> */}
+        <Separator /> */}
         <Typography variant='h5' weight='SemiBold' style={{ paddingHorizontal: 16, marginVertical: 16 }}>Stawka</Typography>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingLeft: 16 }}>
           {jobSalaryModes.map(({ id, name }) => (
@@ -342,7 +355,7 @@ const AdvertEditorScreen: React.FC = () => {
             ))
           }
         />
-        <Divider />
+        <Separator />
 
         <View style={{ marginLeft: 16, marginTop: 4, marginBottom: 16 }}>
           <Typography weight="Bold" size={20}>Dodatkowo</Typography>
@@ -458,28 +471,28 @@ const AdvertEditorScreen: React.FC = () => {
           onClick={() => setForUkraine(prev => !prev)}
           style={{ padding: 16 }}
         />
-        <Divider />
+        <Separator />
         <CheckBox
           leftText='Без знання польської мови 🇺🇦'
           isChecked={noPolish}
           onClick={() => setNoPolish(prev => !prev)}
           style={{ padding: 16 }}
         />
-        <Divider />
+        <Separator />
         <CheckBox
           leftText='Bez CV'
           isChecked={withoutResume}
           onClick={() => setWithoutResume(prev => !prev)}
           style={{ padding: 16 }}
         />
-        <Divider />
+        <Separator />
         <CheckBox
           leftText='Prawo jazdy'
           isChecked={drivingLicense}
           onClick={() => setDrivingLicense(prev => !prev)}
           style={{ padding: 16 }}
         />
-        <Divider />
+        <Separator />
         <CheckBox
           leftText='Rekrutacja online'
           isChecked={onlineRecruitment}

@@ -1,6 +1,5 @@
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CompositeScreenProps, useIsFocused, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
@@ -11,12 +10,7 @@ import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 
-type CookieScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<ProfileStackParamList, 'CookieScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'ProfileStack'>
->;
-
-const CookieScreen: React.FC<CookieScreenProps> = ({ navigation }) => {
+const CookieScreen: React.FC = () => {
   const notifications = [
     {
       name: 'Funkcjonalne pliki cookie',

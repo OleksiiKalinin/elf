@@ -1,5 +1,4 @@
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { Fragment, useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
@@ -13,29 +12,24 @@ import { ScrollView } from '../../components/molecules/ScrollView';
 import TextField from '../../components/molecules/TextField';
 import SvgIcon from '../../components/atoms/SvgIcon';
 import Typography from '../../components/atoms/Typography';
+import { Separator } from 'tamagui';
 // import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<AdvertStackParamList, 'JobCategoryScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'AdvertStack'>
->;
-
-const JobCategoryScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
-  const { callback } = route.params;
+const JobCategoryScreen: React.FC<AdvertStackParamList['JobCategoryScreen']> = ({callback}) => {
+  // const { callback } = route.params;
   const [search, setSearch] = useState<string>('');
   const [industryId, setIndustryId] = useState<number | null>(null);
   const [positionId, setPositionId] = useState<number | null>(null);
   const { jobIndustries } = useTypedSelector(state => state.general);
 
-  useEffect(() => {
-    if (positionId && industryId) {
-      callback({ industryId, positionId });
-      navigation.goBack();
-    }
-  }, [positionId, industryId]);
+  // useEffect(() => {
+  //   if (positionId && industryId) {
+  //     callback({ industryId, positionId });
+  //     navigation.goBack();
+  //   }
+  // }, [positionId, industryId]);
 
   return (
-    <ScreenHeaderProvider mainTitlePosition="flex-start">
+    <ScreenHeaderProvider mainTitlePosition="flex-start" title='Stanowiska'>
       <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
         <View style={styles.Textfield}>
           <TextField
@@ -59,7 +53,7 @@ const JobCategoryScreen: React.FC<MainScreenProps> = ({ navigation, route }) => 
           {jobIndustries.filter(({ name }) => name.toLowerCase().includes(search.toLowerCase())).map(({ icon, id, name, job_positions }) => (<Fragment key={id}>
             <TouchableOpacity style={styles.Button} onPress={() => {
               setIndustryId(id);
-              navigation.navigate('JobScreen', { callback: setPositionId, job_positions });
+              // navigation.navigate('JobScreen', { callback: setPositionId, job_positions });
             }}>
               <View style={{ width: 34, height: 34, position: 'relative' }}>
                 <View style={{ position: 'absolute' }}>
@@ -76,7 +70,7 @@ const JobCategoryScreen: React.FC<MainScreenProps> = ({ navigation, route }) => 
                 <SvgIcon icon="arrowRightSmall" style={{ alignSelf: 'center' }} />
               </View>
             </TouchableOpacity>
-            {/* <Divider /> */}
+            <Separator />
           </Fragment>))}
         </View>
       </ScrollView>

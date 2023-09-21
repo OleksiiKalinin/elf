@@ -1,5 +1,4 @@
 import { CompositeScreenProps } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import Colors from '../../colors/Colors';
@@ -13,6 +12,7 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import Typography from '../../components/atoms/Typography';
 import CheckBox from '../../components/atoms/CheckBox';
 import Button from '../../components/molecules/Button';
+import { Separator } from 'tamagui';
 
 const Questions = [
   'Jakie jest Pana/Pani ostatnie miejsce pracy?',
@@ -65,7 +65,7 @@ const QuestionsScreen: React.FC = () => {
                 }
                 style={{ padding: 16 }}
               />
-              <Divider />
+              <Separator />
             </>))} */}
         </View>
 
@@ -87,7 +87,7 @@ const QuestionsScreen: React.FC = () => {
                 }
                 style={{ padding: 16 }}
               />
-              <Divider />
+              <Separator />
             </>))} */}
         </View>
 
@@ -109,7 +109,7 @@ const QuestionsScreen: React.FC = () => {
                 }
                 style={{ padding: 16 }}
               />
-              <Divider />
+              <Separator />
             </>))} */}
         </View>
 
@@ -131,7 +131,7 @@ const QuestionsScreen: React.FC = () => {
                 }
                 style={{ padding: 16 }}
               />
-              <Divider />
+              <Separator />
             </>))} */}
         </View>
 
@@ -153,7 +153,7 @@ const QuestionsScreen: React.FC = () => {
                 }
                 style={{ padding: 16 }}
               />
-              <Divider />
+              <Separator />
             </>))} */}
         </View>
 

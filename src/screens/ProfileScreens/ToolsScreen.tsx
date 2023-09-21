@@ -1,5 +1,4 @@
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
@@ -10,13 +9,9 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import Button from '../../components/molecules/Button';
+import { Separator } from 'tamagui';
 
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<ProfileStackParamList, 'ToolsScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'ProfileStack'>
->;
-
-const ToolsScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
+const ToolsScreen: React.FC = () => {
   // const { languages, category, subcategories, methods, tools } = route.params;
 
   const [search, setSearch] = useState<string>('');
@@ -46,7 +41,7 @@ const ToolsScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
 
         {/* {data.tools[0].beauty.map((item, index) => (
           <View>
-            <Divider />
+            <Separator />
             <CheckBox
               leftText={item}
               isChecked={selectedItems.includes(index)}

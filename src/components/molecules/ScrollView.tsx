@@ -4,7 +4,7 @@ import { LegacyRef, cloneElement } from 'react';
 type Props = React.ComponentProps<typeof ScrollViewNative> & {
     /** disableWindowScroll will accept parent height as wrapper instead of window/document object */
     disableWindowScroll?: boolean,
-    ref?: LegacyRef<ScrollViewNative>
+    // ref?: LegacyRef<ScrollViewNative>
 }
 
 export function ScrollView({ disableWindowScroll = false, ...props }: Props) {

@@ -1,21 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert, Platform, Dimensions } from "react-native";
-import { Agenda as Agnd } from '../../../node_modules_modified/react-native-calendars/src';
+import { Agenda as Agnd, LocaleConfig } from '../../../node_modules_modified/react-native-calendars/src';
 import Colors from '../../colors/Colors';
 import { Separator, XStack, YStack } from 'tamagui';
 import SvgIcon from '../atoms/SvgIcon';
 import { SCREEN_HEADER_HEIGHT } from './ScreenHeaderProvider';
 import { BOTTOM_TABS_HEIGHT } from './BottomTabs';
 
-const Agenda = () => {
+const Agenda: React.FC<{ getCurrentDate: (s: string) => void }> = ({ getCurrentDate }) => {
+    const [date] = useState<string>(new Date().toISOString().replace(/T.*$/, ''));
     const [items, setitems] = useState<any>({})
     const [isOpened, setIsOpened] = useState<boolean>(false);
     const [loaded, setloaded] = useState<boolean>(false);
     const [height, setheight] = useState<number>(Dimensions.get('window').height - SCREEN_HEADER_HEIGHT - BOTTOM_TABS_HEIGHT);
-console.log(height);
+    // console.log(height);
 
     useEffect(() => {
-        Dimensions.addEventListener('change',({window}) => {
+        const [year, month] = date.split('-');
+        getCurrentDate && getCurrentDate(`${LocaleConfig.locales['pl'].monthNames?.[Number(month) - 1]} ${Number(year)}`);
+    }, []);
+
+    useEffect(() => {
+        Dimensions.addEventListener('change', ({ window }) => {
             setheight(window.height - SCREEN_HEADER_HEIGHT - BOTTOM_TABS_HEIGHT);
         })
         setloaded(true);
@@ -70,7 +76,7 @@ console.log(height);
                     [date]: { dots: new Array(Math.min(items[date].length, 3)).fill(0).map(() => ({ color: Colors.Basic600 })) }
                 }), {})}
                 onCalendarToggled={setIsOpened}
-                selected={'2023-08-03'}
+                selected={date}
                 pastScrollRange={6}
                 futureScrollRange={12}
                 rowHasChanged={rowHasChanged}
@@ -113,7 +119,7 @@ console.log(height);
                 }}
                 calendarInitialOffset={130}
                 renderEmptyDate={() => <View style={{ paddingTop: 45, paddingRight: 14 }}>
-                    <View style={{height: 2, backgroundColor: Colors.Basic400}} />
+                    <View style={{ height: 2, backgroundColor: Colors.Basic400 }} />
                 </View>}
                 renderKnob={() => <SvgIcon fill={Colors.Basic500} icon={isOpened ? 'arrowTop' : 'arrowBottom'} />}
                 showClosingKnob

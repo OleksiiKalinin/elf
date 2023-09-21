@@ -1,5 +1,4 @@
 import { CompositeScreenProps } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { FC } from 'react';
 import { ScrollView, View } from 'react-native';
 import Colors from '../../colors/Colors';

@@ -1,5 +1,4 @@
 import { CompositeScreenProps, useIsFocused, useNavigation } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import {
   Dimensions,
@@ -26,11 +25,7 @@ import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { TabbarRoute } from '../../components/organismes/TabbarMenu';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
-
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<ProfileStackParamList, 'MainScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'ProfileStack'>
->;
+import { useRouter } from 'solito/router';
 
 const pointCards = [
   { points: 23, type: 'Pakiet Medium', time: 'na tydzień' },
@@ -40,7 +35,7 @@ const pointCards = [
 
 const screenWidth = Dimensions.get('window').width;
 
-const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
+const MainScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const [tabbarIndex, setTabbarIndex] = React.useState<number>(0);
   const [routes] = React.useState<TabbarRoute[]>([
@@ -55,6 +50,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
   const helpDots = [0, 1, 2];
   const [helpItemNumber, setHelpItemNumber] = useState<number>(0);
   const { setSwipeablePanelProps } = useActions();
+  const router = useRouter();
 
   const logoutHandler = async () => {
     // await dispatch(authServices.logout(token));
@@ -65,7 +61,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
         {
           children: 'OK',
           contentColor: Colors.Basic600,
-          onPress: () => navigation.navigate('MenuStack', { screen: 'MainScreen' })
+          onPress: () => router.push('/home')
         }
       ]
     })
@@ -87,7 +83,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
                 {
                   children: 'OK',
                   contentColor: Colors.Basic600,
-                  onPress: () => navigation.navigate('MenuStack', { screen: 'MainScreen' })
+                  onPress: () => router.push('/home')
                 }
               ]
             })

@@ -1,5 +1,3 @@
-import { CompositeScreenProps, useIsFocused, useScrollToTop } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   SectionList,
@@ -27,10 +25,10 @@ import SvgIcon from '../../components/atoms/SvgIcon';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { useRouter } from 'solito/router';
 import CornerCircleButton from '../../components/molecules/CornerCircleButton';
+import { Separator } from 'tamagui';
 
 const MainScreen: React.FC = () => {
   const SectionListRef = useRef<SectionList>(null);
-  // useScrollToTop(SectionListRef);
   const dispatch = useTypedDispatch();
   const router = useRouter();
   const { token, userCompany, userAdverts } = useTypedSelector(state => state.general);
@@ -199,11 +197,11 @@ const MainScreen: React.FC = () => {
       renderSectionFooter={({ section: { index, data } }) => {
         const titles = ['Brak ofert aktywnych', 'Brak ofert w edycji', 'Brak ofert wygasłych'];
         return !data.length ? (<>
-          {/* <Divider /> */}
+          {/* <Separator /> */}
           <View style={{ paddingVertical: 5, marginHorizontal: 16 }}>
             <Typography variant='h5' weight='SemiBold' color={Colors.Basic600} textAlign='center'>{titles[index]}</Typography>
           </View>
-          {/* <Divider /> */}
+          {/* <Separator /> */}
         </>) : null
       }}
     />

@@ -1,6 +1,5 @@
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CompositeScreenProps, useIsFocused, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
@@ -11,13 +10,9 @@ import TextField from '../../components/molecules/TextField';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import Button from '../../components/molecules/Button';
+import { Separator } from 'tamagui';
 
-type LanguageScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<ProfileStackParamList, 'LanguageScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'ProfileStack'>
->;
-
-const LanguageScreen: React.FC<LanguageScreenProps> = ({ navigation, route }) => {
+const LanguageScreen: React.FC = () => {
   const [index, setIndex] = useState(0);
 
   // const { languages, category, subcategories, methods, tools } = route.params;
@@ -51,7 +46,7 @@ const LanguageScreen: React.FC<LanguageScreenProps> = ({ navigation, route }) =>
           </Typography>
 
           {languagesList.map((item, index) => (<>
-            {/* <Divider /> */}
+            <Separator />
             {/* <CheckBox
               leftTextView={
                 <View style={{ flexDirection: "row", alignItems: "center" }}>

@@ -10,7 +10,6 @@ import {
   Alert
 } from 'react-native';
 import React, { Fragment, useCallback, useEffect, useState, useRef } from 'react';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   CompositeScreenProps,
 } from '@react-navigation/native';
@@ -45,13 +44,9 @@ import TextField from '../../components/molecules/TextField';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Button from '../../components/molecules/Button';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
+import { createParam } from 'solito';
 
 const windowWidth = Dimensions.get('window').width;
-
-type AddCompanyScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<ProfileStackParamList, 'AddCompanyScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'ProfileStack'>
->;
 
 /*
 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingLeft: 20 }}>
@@ -107,9 +102,12 @@ const socialLinksData: {
 
 type DisplayDataKeysType = keyof CompanyDataType | 'contact_persons' | 'social_media';
 
-const AddCompanyScreen: React.FC<AddCompanyScreenProps> = ({ navigation, route }) => {
+const { useParam } = createParam<ProfileStackParamList['AddCompanyScreen']>();
+
+const AddCompanyScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
-  const { editMode } = route.params;
+  // const { editMode } = route.params;
+  const [editMode] = useParam('editMode');
   const [loading, setLoading] = useState<boolean>(false);
   const { jobIndustries, token, userCompany } = useTypedSelector(state => state.general);
   const { setSwipeablePanelProps } = useActions();
@@ -665,7 +663,7 @@ const AddCompanyScreen: React.FC<AddCompanyScreenProps> = ({ navigation, route }
           </Typography>
         </View>
         <TouchableOpacity
-          onPress={() => navigation.navigate('JobCategoryScreen', { callback: (id) => changeCompanyDataHandler('job_industry', id) })}
+          // onPress={() => navigation.navigate('JobCategoryScreen', { callback: (id) => changeCompanyDataHandler('job_industry', id) })}
           style={{
             flexDirection: 'row', padding: 19,
             ...(!!Number(companyData.job_industry) ?

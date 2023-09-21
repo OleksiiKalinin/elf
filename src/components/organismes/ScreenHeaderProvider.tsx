@@ -49,9 +49,7 @@ export const screensTitles: ScreensTitlesType = {
     FavouritesScreen: 'Wyróżnione',
     FavSettingsScreen: 'Ustawienia',
     FilterScreen: 'Filtry',
-    JobScreen: 'Kategorie',
     ProfileScreen: 'Profil kandydata',
-    SearchScreen: 'Stanowiska',
     MapScreen: '',
     VideoScreen: '',
   },
@@ -67,8 +65,6 @@ export const screensTitles: ScreensTitlesType = {
     CookieScreen: 'Pliki Cookies',
     EditPaymentScreen: 'Płatności',
     HelpCenterScreen: 'Centrum pomocy',
-    JobCategoryScreen: 'Wybierz branzę',
-    JobScreen: 'Stanowiska',
     LanguageScreen: 'Preferowane języki',
     MethodsScreen: 'Wykorzystywane metody',
     NotificationScreen: 'Powiadomienia',
@@ -94,15 +90,14 @@ export const screensTitles: ScreensTitlesType = {
     CompanyInvoiceScreen: 'Dane do faktury',
     PackagesScreen: 'Pakiety',
     SettingsScreen: 'Ustawienia',
-    PaymentTemporalScreen: 'Twój pakiet'
   },
   AdvertStack: {
     MainScreen: 'Moje ogłoszenia',
     AdvertScreen: '',
-    CandidatesScreen: 'Kandydaci',
-    JobCategoryScreen: 'Stanowiska',
-    JobScreen: 'Kategorie',
     AdvertEditorScreen: 'Nowe ogłoszenie',
+    CandidatesScreen: '',
+    JobCategoryScreen: '',
+    JobScreen: '',
     MapScreen: '',
   },
   MenuStack: {
@@ -200,6 +195,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
                 ) : (
                   <Button
                     circular
+                    backgroundColor='transparent'
                     icon={<SvgIcon icon={icon} />}
                     onPress={onPress}
                   // colorScheme={Colors.Basic100}

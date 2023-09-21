@@ -1,5 +1,4 @@
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useRef, useState } from 'react';
 import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
 import { RootStackParamList } from '../../navigators/RootNavigator';
@@ -23,11 +22,8 @@ import SvgIcon from '../../components/atoms/SvgIcon';
 import Typography from '../../components/atoms/Typography';
 
 import VideoPlayer from '../../components/organismes/VideoPlayer';
-
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<CandidatesStackParamList, 'VideoScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'CandidatesStack'>
->;
+import { createParam } from 'solito';
+import { useRouter } from 'solito/router';
 
 type NotesType = 'negative' | 'positive' | 'neutral';
 
@@ -146,7 +142,8 @@ const noteTitles: { title: string, type: NotesType, color: string }[] = [
   },
 ];
 
-// const VideoScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
+const { useParam } = createParam<CandidatesStackParamList['VideoScreen']>();
+
 const VideoScreen: React.FC = () => {
   // const { candidateData } = route.params;
   // const { jobIndustries, jobExperiences, jobSalaryTaxes, swipeablePanelProps } = useTypedSelector(s => s.general);
@@ -165,6 +162,9 @@ const VideoScreen: React.FC = () => {
   const [openNotes, setOpenNotes] = useState<boolean>(false);
   const [candidateNotes, setCandidateNotes] = useState<number[]>([]);
   const [open, setOpen] = useState<boolean>(false);
+  
+  const router = useRouter();
+  const [id] = useParam('id')
 
   useEffect(() => {
     //@ts-ignore

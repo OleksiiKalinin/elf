@@ -1,5 +1,4 @@
 import { CompositeScreenProps } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { FC } from 'react';
 import { Dimensions, ScrollView, TouchableOpacity, View } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -12,6 +11,7 @@ import authServices from '../../services/authServices';
 import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
+import { useRouter } from 'solito/router';
 
 const settings: {
     title: string,
@@ -44,18 +44,14 @@ const settings: {
         },
     ];
 
-type MainScreenProps = CompositeScreenProps<
-    NativeStackScreenProps<ProfileStackParamList, 'SettingsScreen'>,
-    NativeStackScreenProps<RootStackParamList, 'ProfileStack'>
->;
-
-const SettingsScreen: FC<MainScreenProps> = ({ navigation }) => {
+const SettingsScreen: FC = () => {
     const dispatch = useTypedDispatch();
     const { setSwipeablePanelProps } = useActions();
     const { token } = useTypedSelector(state => state.general);
+    const router = useRouter();
 
     const logoutHandler = async () => {
-        // await dispatch(authServices.logout(token));
+        await dispatch(authServices.logout(token));
         setSwipeablePanelProps({
             title: 'Pomyślnie się wylogowałeś',
             closeButton: false,
@@ -63,7 +59,7 @@ const SettingsScreen: FC<MainScreenProps> = ({ navigation }) => {
                 {
                     children: 'OK',
                     contentColor: Colors.Basic600,
-                    onPress: () => navigation.navigate('MenuStack', {screen: 'MainScreen'})
+                    onPress: () => router.push('/home')
                 }
             ]
         })

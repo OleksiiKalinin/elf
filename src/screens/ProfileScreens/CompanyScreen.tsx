@@ -1,5 +1,4 @@
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Image, Dimensions, ScrollView } from 'react-native';
 import { RootStackParamList } from '../../navigators/RootNavigator';
@@ -21,6 +20,7 @@ import MainDataCard from './CompanyScreenRoutes/MainDataCard/MainDataCard';
 import SvgIcon from '../../components/atoms/SvgIcon';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
+import { useRouter } from 'solito/router';
 
 const companyExample: CompanyDataType = {
   account_facebook: null,
@@ -74,12 +74,7 @@ const companyExample: CompanyDataType = {
   website: null
 };
 
-type MainScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<ProfileStackParamList, 'CompanyScreen'>,
-  NativeStackScreenProps<RootStackParamList, 'ProfileStack'>
->;
-
-const CompanyScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
+const CompanyScreen: React.FC = () => {
   // const [routes] = useState<TabbarRoute[]>([
   //   { key: '0', title: 'O firmie' },
   //   { key: '1', title: 'Opinie' },
@@ -89,6 +84,7 @@ const CompanyScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
   const { setSwipeablePanelProps, setUserCompany } = useActions();
   const { userCompany, token, jobIndustries } = useTypedSelector(state => state.general);
   const [companyData, setCompanyData] = useState<CompanyDataType | null>(userCompany || companyExample);
+  const router = useRouter();
 
   const moreOptionsHandler = () => {
     setSwipeablePanelProps({
@@ -96,7 +92,7 @@ const CompanyScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
       buttons: [
         {
           children: 'Edytuj',
-          onPress: () => navigation.navigate("AddCompanyScreen", { editMode: true }),
+          onPress: () => router.push('/profile/AddCompanyScreen?editMode=true'),
         },
         {
           children: 'Usuń',

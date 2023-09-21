@@ -1,6 +1,5 @@
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useState } from 'react';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CompositeScreenProps, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../../navigators/RootNavigator';
 import Colors from '../../../colors/Colors';
@@ -9,13 +8,7 @@ import ScreenHeaderProvider from '../../../components/organismes/ScreenHeaderPro
 import { ProfileStackParamList } from '../../../navigators/ProfileNavigator';
 import Switch from '../../../components/atoms/Switch';
 
-type ShareCameraProps = CompositeScreenProps<
-  NativeStackScreenProps<ProfileStackParamList, 'ShareCamera'>,
-  NativeStackScreenProps<RootStackParamList, 'ProfileStack'>
->;
-
-const ShareCamera: React.FC<ShareCameraProps> = ({ navigation }) => {
-
+const ShareCamera: React.FC = () => {
   const [switchState, setSwitchState] = useState(false);
 
 

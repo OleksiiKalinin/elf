@@ -46,11 +46,11 @@ const hiddenTabbarScreens: {
 } = {
     AdvertStack: ['AdvertScreen', 'JobScreen', 'AdvertEditorScreen', 'CandidatesScreen', 'JobCategoryScreen', 'MapScreen'],
     AuthStack: ['MainScreen', 'LoginScreen', 'RegistrationScreen', 'RememberPasswordScreen', 'FillUserDataScreen'],
-    CandidatesStack: ['ProfileScreen', 'VideoScreen', 'FavouritesScreen', 'FavSettingsScreen', 'FilterScreen', 'JobScreen', 'MapScreen', 'ProfileScreen', 'SearchScreen', 'VideoScreen'],
+    CandidatesStack: ['ProfileScreen', 'VideoScreen', 'FavouritesScreen', 'FavSettingsScreen', 'FilterScreen', 'MapScreen', 'ProfileScreen', 'VideoScreen'],
     CalendarStack: ['EventScreen', 'MapScreen', 'ChooseAdvertScreen', 'ChooseCandidateScreen'],
     MenuStack: ['CallsScreen', 'EventsScreen', 'NewsScreen', 'QuestionsScreen'],
     MessengerStack: [],
-    ProfileStack: ['PaymentTemporalScreen', 'SettingsScreen', 'PackagesScreen', 'CompanyInvoiceScreen', 'CompanyDescriptionScreen', 'NoCompanyScreen', 'AddCompanyScreen', 'AddPaymentScreen', 'CompanyScreen', 'CookieScreen', 'EditPaymentScreen', 'HelpCenterScreen', 'JobCategoryScreen', 'JobScreen', 'LanguageScreen', 'MapScreen', 'MethodsScreen', 'NotificationScreen', 'PaymentScreen', 'PointsScreen', 'PrivacyScreen', 'AccountDataScreen', 'ToolsScreen', 'AddConractPersonsScreen'],
+    ProfileStack: ['SettingsScreen', 'PackagesScreen', 'CompanyInvoiceScreen', 'CompanyDescriptionScreen', 'NoCompanyScreen', 'AddCompanyScreen', 'AddPaymentScreen', 'CompanyScreen', 'EditPaymentScreen', 'LanguageScreen', 'MapScreen', 'MethodsScreen', 'NotificationScreen', 'PaymentScreen', 'PointsScreen', 'PrivacyScreen', 'AccountDataScreen', 'ToolsScreen', 'AddConractPersonsScreen'],
 };
 
 const BottomTabs: FC<BottomTabsProps> = ({ routes, profileFocused, setProfileFocused }) => {
