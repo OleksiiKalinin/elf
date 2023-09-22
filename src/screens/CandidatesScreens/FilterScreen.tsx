@@ -148,8 +148,8 @@ const FilterScreen: React.FC = () => {
         <View style={{ marginBottom: 36 }}>
           <CheckBox
             leftText='Cała Polska'
-            isChecked={checkbox0}
-            onClick={() => setCheckbox0(prev => !prev)}
+          checked={checkbox0}
+          onCheckedChange={(checked) => setCheckbox0(checked)}
             style={{ padding: 16 }}
           />
           <Separator />
@@ -250,8 +250,8 @@ const FilterScreen: React.FC = () => {
               </Typography>
             </View>
           }
-          isChecked={checkbox1}
-          onClick={() => setCheckbox1(prev => !prev)}
+          checked={checkbox1}
+          onCheckedChange={(checked) => setCheckbox1(checked)}
           style={{ padding: 16 }}
         />
         <Separator />
@@ -264,8 +264,8 @@ const FilterScreen: React.FC = () => {
               </Typography>
             </View>
           }
-          isChecked={checkbox2}
-          onClick={() => setCheckbox2(prev => !prev)}
+          checked={checkbox2}
+          onCheckedChange={(checked) => setCheckbox2(checked)}
           style={{ padding: 16 }}
         />
         <Separator />
@@ -278,8 +278,8 @@ const FilterScreen: React.FC = () => {
               </Typography>
             </View>
           }
-          isChecked={checkbox3}
-          onClick={() => setCheckbox3(prev => !prev)}
+          checked={checkbox3}
+          onCheckedChange={(checked) => setCheckbox3(checked)}
           style={{ padding: 16 }}
         />
         <Separator />

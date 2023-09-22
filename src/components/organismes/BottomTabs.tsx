@@ -15,6 +15,7 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import Colors from '../../colors/Colors';
 import Button from '../molecules/Button';
 import { useLink } from 'solito/link';
+import Typography from '../atoms/Typography';
 
 export const BOTTOM_TABS_HEIGHT = 45;
 
@@ -63,11 +64,11 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes, profileFocused, setProfileFoc
     // }), []);
 
     const badgeNumbers: { [k in keyof RootStackParamList]: number } = {
-        MenuStack: 0,
-        CandidatesStack: 0,
-        CalendarStack: 0,
-        AdvertStack: 0,
-        MessengerStack: 0,
+        MenuStack: 90,
+        CandidatesStack: 1,
+        CalendarStack: 5,
+        AdvertStack: 80,
+        MessengerStack: 11,
         ProfileStack: 0,
         AuthStack: 0,
     }
@@ -105,9 +106,9 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes, profileFocused, setProfileFoc
                         {...(!!href ? useLink({ href: '/' + href }) : {})}
                     >
                         <View style={{ position: 'relative', width: '100%', height: '100%' }}>
-                            {/* {!!badgeNumbers[label] && <Badge px='1.5' py='0' zIndex={1} position='absolute' left={2} top={-9} bgColor={Colors.Basic900} rounded="full">
+                            {!!badgeNumbers[label] && <View style={{ position: 'absolute', borderRadius: 8, paddingLeft: 5, paddingRight: 5, backgroundColor: Colors.Basic900, zIndex: 1,  left: 16, top: -8 }}>
                                 <Typography color={Colors.Basic100} variant='small'>{badgeNumbers[label] > 50 ? '50+' : badgeNumbers[label]}</Typography>
-                            </Badge>} */}
+                            </View>}
                             <SvgIcon icon={icons[label]} fill={Colors[isFocused || (label === 'MenuStack' && profileFocused) ? 'Basic900' : 'Basic600']} />
                         </View>
                     </Button>

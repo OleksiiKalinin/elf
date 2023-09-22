@@ -80,37 +80,17 @@ const MainScreen: React.FC = ({ }) => {
             ...useLink({
               href: '/home/EventsScreen'
             }),
-            missedEvents: 0,
-            badge: '',
+            missedEvents: 10,
+            badge: 'Nowe',
           },
           {
-            title: 'Historia wydarzeń',
+            title: 'Zaplanowane spotkania',
             backgroundColor: Colors.Sea300,
-            icon: 'eventsHistory',
-            ...useLink({
-              href: '/home/EventsScreen'
-            }),
+            icon: 'meeting',
+            onPress: () => {},//navigation.navigate('EventsScreen'),
             missedEvents: 0,
-            badge: '',
+            badge: ''
           },
-          {
-            title: 'Historia wydarzeń',
-            backgroundColor: Colors.Sea300,
-            icon: 'eventsHistory',
-            ...useLink({
-              href: '/home/EventsScreen'
-            }),
-            missedEvents: 0,
-            badge: '',
-          },
-          // {
-          //   title: 'Zaplanowane spotkania',
-          //   backgroundColor: Colors.Sea300,
-          //   icon: 'meeting',
-          //   onPress: () => {},//navigation.navigate('EventsScreen'),
-          //   missedEvents: 0,
-          //   badge: ''
-          // },
           {
             title: 'Kalendarz',
             backgroundColor: Colors.Sea300,
@@ -121,14 +101,14 @@ const MainScreen: React.FC = ({ }) => {
             missedEvents: 0,
             badge: ''
           },
-          // {
-          //   title: 'Powiadomienia',
-          //   backgroundColor: Colors.Sea300,
-          //   icon: 'notification',
-          //   onPress: () => {},//navigation.navigate('CalendarStack', { screen: 'MainScreen' }),
-          //   missedEvents: 0,
-          //   badge: ''
-          // },
+          {
+            title: 'Powiadomienia',
+            backgroundColor: Colors.Sea300,
+            icon: 'notification',
+            onPress: () => {},//navigation.navigate('CalendarStack', { screen: 'MainScreen' }),
+            missedEvents: 0,
+            badge: ''
+          },
         ]
       },
       {
@@ -144,14 +124,14 @@ const MainScreen: React.FC = ({ }) => {
             }),
             badge: ''
           },
-          // {
-          //   title: 'Twoi ulubieni kandydaci',
-          //   backgroundColor: Colors.Blue100,
-          //   icon: 'cardOutlined',
-          //   onPress: optionsHandler,
-          //   missedEvents: 0,
-          //   badge: ''
-          // },
+          {
+            title: 'Twoi ulubieni kandydaci',
+            backgroundColor: Colors.Blue100,
+            icon: 'cardOutlined',
+            onPress: () => {},
+            missedEvents: 0,
+            badge: ''
+          },
           {
             title: 'Ogłoszenia',
             backgroundColor: Colors.Blue100,
@@ -184,43 +164,43 @@ const MainScreen: React.FC = ({ }) => {
           },
         ]
       },
-      // {
-      //   sectionTitle: 'Baza wiedzy',
-      //   buttons: [
-      //     {
-      //       title: 'Kalkulator wynagrodzeń',
-      //       backgroundColor: Colors.Basic200,
-      //       icon: 'calculator',
-      //       onPress: () => console.log('abc'),
-      //       missedEvents: 0,
-      //       badge: ''
-      //     },
-      //     {
-      //       title: 'Lista pytań',
-      //       backgroundColor: Colors.Basic200,
-      //       icon: 'list',
-      //       onPress: () => navigation.navigate('QuestionsScreen'),
-      //       missedEvents: 0,
-      //       badge: ''
-      //     },
-      //     {
-      //       title: 'Artykuły i nowości',
-      //       backgroundColor: Colors.Basic200,
-      //       icon: 'fileDocument',
-      //       onPress: () => navigation.navigate('NewsScreen'),
-      //       missedEvents: 0,
-      //       badge: 'Nowe',
-      //     },
-      //     {
-      //       title: 'Wszystkie instrukcje',
-      //       backgroundColor: Colors.Basic200,
-      //       icon: 'fileDocument',
-      //       onPress: () => navigation.navigate('ProfileStack', { screen: 'HelpCenterScreen' }),
-      //       missedEvents: 0,
-      //       badge: ''
-      //     },
-      //   ]
-      // },
+      {
+        sectionTitle: 'Baza wiedzy',
+        buttons: [
+          {
+            title: 'Kalkulator wynagrodzeń',
+            backgroundColor: Colors.Basic200,
+            icon: 'calculator',
+            onPress: () => console.log('abc'),
+            missedEvents: 0,
+            badge: ''
+          },
+          {
+            title: 'Lista pytań',
+            backgroundColor: Colors.Basic200,
+            icon: 'list',
+            onPress: () => {},//navigation.navigate('QuestionsScreen'),
+            missedEvents: 0,
+            badge: ''
+          },
+          {
+            title: 'Artykuły i nowości',
+            backgroundColor: Colors.Basic200,
+            icon: 'fileDocument',
+            onPress: () => {},//navigation.navigate('NewsScreen'),
+            missedEvents: 0,
+            badge: 'Nowe',
+          },
+          {
+            title: 'Wszystkie instrukcje',
+            backgroundColor: Colors.Basic200,
+            icon: 'fileDocument',
+            onPress: () => {},//navigation.navigate('ProfileStack', { screen: 'HelpCenterScreen' }),
+            missedEvents: 0,
+            badge: ''
+          },
+        ]
+      },
     ];
 
   // useEffect(() => {
@@ -308,13 +288,10 @@ const MainScreen: React.FC = ({ }) => {
           style={{ backgroundColor: Colors.Basic100, flex: 1 }}
         >
           {sectionButtons.map(({ buttons, sectionTitle }, i) => (
-            // <View style={[styles[isMainMenuFlatList ? 'FlatSectionWrapper' : 'GridSectionWrapper'], i !== 0 && { paddingTop: 15 }, i + 1 === sectionButtons.length && { paddingBottom: 25 }]}>
-            <View key={i} style={[styles[false ? 'FlatSectionWrapper' : 'GridSectionWrapper'], i !== 0 && { paddingTop: 15 }, i + 1 === sectionButtons.length && { paddingBottom: 25 }]}>
-              {/* <Typography weight='Bold' size={20} style={{ width: '88%', marginLeft: isMainMenuFlatList ? 0 : 20, marginBottom: isMainMenuFlatList ? 5 : 0 }}> */}
-              <Typography weight='Bold' size={20} style={{ width: '88%', marginLeft: false ? 0 : 20, marginBottom: false ? 5 : 0 }}>
+            <View style={[styles[isMainMenuFlatList ? 'FlatSectionWrapper' : 'GridSectionWrapper'], i !== 0 && { paddingTop: 15 }, i + 1 === sectionButtons.length && { paddingBottom: 25 }]}>
+              <Typography weight='Bold' size={20} style={{ width: '88%', marginLeft: isMainMenuFlatList ? 0 : 20, marginBottom: isMainMenuFlatList ? 5 : 0 }}>
                 {sectionTitle}
               </Typography>
-              {/* {buttons.map(({ backgroundColor, badge, icon, missedEvents, onPress, title }) => isMainMenuFlatList ? */}
               {buttons.map(({ backgroundColor, badge, icon, missedEvents, onPress, title }, index) => (
                 <Fragment key={index}>
                   {isMainMenuFlatList ?
@@ -325,16 +302,20 @@ const MainScreen: React.FC = ({ }) => {
                         </View>
                       </View>
                       <Typography variant="h5" weight='Bold'>{title}</Typography>
-                      {/* {!!badge &&
-                    <Badge position='absolute' top='4px' right='4px' bgColor={Colors.Yellow500} rounded="full">
-                      <Typography color={Colors.Basic100} variant='small'>{badge}</Typography>
-                    </Badge>
-                  }
-                  {!!missedEvents &&
-                    <Badge padding='0px' position='absolute' top='2px' left='20px' bgColor={Colors.Basic900} rounded="full">
-                      <Typography color={Colors.Basic100} variant='small'>{'  '}{missedEvents > 50 ? '50+' : missedEvents}{'  '}</Typography>
-                    </Badge>
-                  } */}
+                      {!!badge &&
+                        <View style={{ position: 'absolute', borderRadius: 8, paddingLeft: 5, paddingRight: 5, backgroundColor: Colors.Yellow500, zIndex: 1, right: 4, top: 4 }}>
+                          {/* <Badge position='absolute' top='4px' right='4px' bgColor={Colors.Yellow500} rounded="full"> */}
+                          <Typography color={Colors.Basic100} variant='small'>{badge}</Typography>
+                          {/* </Badge> */}
+                        </View>
+                      }
+                      {!!missedEvents &&
+                        <View style={{ position: 'absolute', borderRadius: 8, paddingLeft: 5, paddingRight: 5, backgroundColor: Colors.Basic900, zIndex: 1, left: 20, top: 4 }}>
+                          {/* <Badge padding='0px' position='absolute' top='2px' left='20px' bgColor={Colors.Basic900} rounded="full"> */}
+                          <Typography color={Colors.Basic100} variant='small'>{'  '}{missedEvents > 50 ? '50+' : missedEvents}{'  '}</Typography>
+                          {/* </Badge> */}
+                        </View>
+                      }
                     </TouchableOpacity>
                     :
                     <View style={styles.GridButtonWrapper}>
@@ -345,16 +326,20 @@ const MainScreen: React.FC = ({ }) => {
                         <Typography variant="h5" weight='Bold' textAlign="center" style={{ marginHorizontal: 10, marginTop: 7 }}>
                           {title}
                         </Typography>
-                        {/* {!!badge &&
-                      <Badge position='absolute' top='4px' right='4px' bgColor={Colors.Yellow500} rounded="full">
-                        <Typography color={Colors.Basic100} weight='Bold'>{badge}</Typography>
-                      </Badge>
-                    }
-                    {!!missedEvents &&
-                      <Badge position='absolute' top='4px' left='4px' bgColor={Colors.Basic900} rounded="full">
-                        <Typography color={Colors.Basic100} weight='Bold'>{missedEvents > 50 ? '50+' : missedEvents}</Typography>
-                      </Badge>
-                    } */}
+                        {!!badge &&
+                          <View style={{ position: 'absolute', borderRadius: 8, paddingLeft: 5, paddingRight: 5, backgroundColor: Colors.Yellow500, zIndex: 1, right: 4, top: 4 }}>
+                            {/* <Badge position='absolute' top='4px' right='4px' bgColor={Colors.Yellow500} rounded="full"> */}
+                            <Typography color={Colors.Basic100} weight='Bold'>{badge}</Typography>
+                            {/* </Badge> */}
+                          </View>
+                        }
+                        {!!missedEvents &&
+                          <View style={{ position: 'absolute', borderRadius: 8, paddingLeft: 5, paddingRight: 5, backgroundColor: Colors.Basic900, zIndex: 1, left: 4, top: 4 }}>
+                            {/* <Badge position='absolute' top='4px' left='4px' bgColor={Colors.Basic900} rounded="full"> */}
+                            <Typography color={Colors.Basic100} weight='Bold'>{missedEvents > 50 ? '50+' : missedEvents}</Typography>
+                            {/* </Badge> */}
+                          </View>
+                        }
                       </TouchableOpacity>
                     </View>
                   }

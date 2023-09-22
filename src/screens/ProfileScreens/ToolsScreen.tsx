@@ -44,8 +44,8 @@ const ToolsScreen: React.FC = () => {
             <Separator />
             <CheckBox
               leftText={item}
-              isChecked={selectedItems.includes(index)}
-              onClick={() =>
+              checked={selectedItems.includes(index)}
+              onCheckedChange={(checked) =>
                 !selectedItems.includes(index)
                   ? setSelectedItems((state: any) => [...state, index])
                   : setSelectedItems((state: any[]) =>

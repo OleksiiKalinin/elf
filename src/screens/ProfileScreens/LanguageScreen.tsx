@@ -54,8 +54,8 @@ const LanguageScreen: React.FC = () => {
                   <Typography style={{ marginLeft: 7 }}>{item.language}</Typography>
                 </View>
               }
-              isChecked={languageState.includes(index)}
-              onClick={() =>
+              checked={languageState.includes(index)}
+              onCheckedChange={(checked) =>
                 !languageState.includes(index)
                   ? setLanguageState((state: any) => [...state, index])
                   : setLanguageState((state: any[]) =>

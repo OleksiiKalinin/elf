@@ -180,29 +180,29 @@ const AdvertEditorScreen: React.FC = () => {
         />
         <CheckBox
           leftText='Praca zmianowa'
-          isChecked={shiftJob}
-          onClick={() => setShiftJob(prev => !prev)}
+          checked={shiftJob}
+          onCheckedChange={(checked) => setShiftJob(checked)}
           style={{ padding: 16 }}
         />
         <Separator />
         <CheckBox
           leftText='Praca w weekendy'
-          isChecked={weekendJob}
-          onClick={() => setWeekendJob(prev => !prev)}
+          checked={weekendJob}
+          onCheckedChange={(checked) => setWeekendJob(checked)}
           style={{ padding: 16 }}
         />
         <Separator />
         <CheckBox
           leftText='Elastyczny czas pracy'
-          isChecked={flexibleTime}
-          onClick={() => setFlexibleTime(prev => !prev)}
+          checked={flexibleTime}
+          onCheckedChange={(checked) => setFlexibleTime(checked)}
           style={{ padding: 16 }}
         />
         <Separator />
         <CheckBox
           leftText='Możliwość pracy zdalnej'
-          isChecked={withoutResume}
-          onClick={() => setWithoutResume(prev => !prev)}
+          checked={withoutResume}
+          onCheckedChange={(checked) => setWithoutResume(checked)}
           style={{ padding: 16 }}
         />
         <Separator />
@@ -467,36 +467,36 @@ const AdvertEditorScreen: React.FC = () => {
         />
         <CheckBox
           leftText='Osoby z Ukrainy 🇺🇦'
-          isChecked={forUkraine}
-          onClick={() => setForUkraine(prev => !prev)}
+          checked={forUkraine}
+          onCheckedChange={(checked) => setForUkraine(checked)}
           style={{ padding: 16 }}
         />
         <Separator />
         <CheckBox
           leftText='Без знання польської мови 🇺🇦'
-          isChecked={noPolish}
-          onClick={() => setNoPolish(prev => !prev)}
+          checked={noPolish}
+          onCheckedChange={(checked) => setNoPolish(checked)}
           style={{ padding: 16 }}
         />
         <Separator />
         <CheckBox
           leftText='Bez CV'
-          isChecked={withoutResume}
-          onClick={() => setWithoutResume(prev => !prev)}
+          checked={withoutResume}
+          onCheckedChange={(checked) => setWithoutResume(checked)}
           style={{ padding: 16 }}
         />
         <Separator />
         <CheckBox
           leftText='Prawo jazdy'
-          isChecked={drivingLicense}
-          onClick={() => setDrivingLicense(prev => !prev)}
+          checked={drivingLicense}
+          onCheckedChange={(checked) => setDrivingLicense(checked)}
           style={{ padding: 16 }}
         />
         <Separator />
         <CheckBox
           leftText='Rekrutacja online'
-          isChecked={onlineRecruitment}
-          onClick={() => setOnlineRecruitment(prev => !prev)}
+          checked={onlineRecruitment}
+          onCheckedChange={(checked) => setOnlineRecruitment(checked)}
           style={{ padding: 16 }}
         /> */}
 

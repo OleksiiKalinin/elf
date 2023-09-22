@@ -55,8 +55,8 @@ const QuestionsScreen: React.FC = () => {
             (item, index) => index < 5 && (<>
               <CheckBox
                 leftText={item}
-                isChecked={questionsState.includes(index)}
-                onClick={() =>
+                checked={questionsState.includes(index)}
+                onCheckedChange={(checked) =>
                   !questionsState.includes(index)
                     ? setQuestionsState((state: any) => [...state, index])
                     : setQuestionsState((state: any[]) =>
@@ -77,8 +77,8 @@ const QuestionsScreen: React.FC = () => {
             (item, index) => index > 4 && index < 9 && (<>
               <CheckBox
                 leftText={item}
-                isChecked={questionsState.includes(index)}
-                onClick={() =>
+                checked={questionsState.includes(index)}
+                onCheckedChange={(checked) =>
                   !questionsState.includes(index)
                     ? setQuestionsState((state: any) => [...state, index])
                     : setQuestionsState((state: any[]) =>
@@ -99,8 +99,8 @@ const QuestionsScreen: React.FC = () => {
             (item, index) => index > 8 && index < 14 && (<>
               <CheckBox
                 leftText={item}
-                isChecked={questionsState.includes(index)}
-                onClick={() =>
+                checked={questionsState.includes(index)}
+                onCheckedChange={(checked) =>
                   !questionsState.includes(index)
                     ? setQuestionsState((state: any) => [...state, index])
                     : setQuestionsState((state: any[]) =>
@@ -121,8 +121,8 @@ const QuestionsScreen: React.FC = () => {
             (item, index) => index > 13 && index < 18 && (<>
               <CheckBox
                 leftText={item}
-                isChecked={questionsState.includes(index)}
-                onClick={() =>
+                checked={questionsState.includes(index)}
+                onCheckedChange={(checked) =>
                   !questionsState.includes(index)
                     ? setQuestionsState((state: any) => [...state, index])
                     : setQuestionsState((state: any[]) =>
@@ -143,8 +143,8 @@ const QuestionsScreen: React.FC = () => {
             (item, index) => index > 17 && (<>
               <CheckBox
                 leftText={item}
-                isChecked={questionsState.includes(index)}
-                onClick={() =>
+                checked={questionsState.includes(index)}
+                onCheckedChange={(checked) =>
                   !questionsState.includes(index)
                     ? setQuestionsState((state: any) => [...state, index])
                     : setQuestionsState((state: any[]) =>

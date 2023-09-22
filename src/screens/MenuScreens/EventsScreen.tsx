@@ -103,50 +103,6 @@ const EventsScreen: React.FC = () => {
               )
             }) : (<>
               <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
-              <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
             </>)}
           </ScrollView>}
       </ScreenHeaderProvider>

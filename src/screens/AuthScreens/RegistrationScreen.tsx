@@ -136,9 +136,9 @@ const AuthRegistrateScreen: React.FC = () => {
             <CheckBox
               checked={formData.agree_rights}
               onCheckedChange={(checked) => changeFormDataHandler('agree_rights', checked)}
-              rightTextView={<View style={{ flex: 1 }}>
-                <Typography {...(showTips && !formData.agree_rights ? { color: Colors.Danger } : {})} style={{ marginLeft: 12 }} variant='small'>Akceptuję regulamin aplikacji Jobassistant oraz zapoznałem się z Polityką Prywatności*.</Typography>
-              </View>}
+              rightTextView={<Typography {...(showTips && !formData.agree_rights ? { color: Colors.Danger } : {})} variant='small'>
+                Akceptuję regulamin aplikacji Jobassistant oraz zapoznałem się z Polityką Prywatności*.
+              </Typography>}
             />
           </View>
           <View style={[styles.margin, { marginBottom: 24 }]}>
