@@ -14,6 +14,8 @@ const transpilePackages = [
   'recyclerlistview',
   'moment',
   'react-native-mask-input',
+  'react-native-dropdown-picker',
+  'react-native-skeleton-component',
 ];
 
 const plugins = [
@@ -40,6 +42,7 @@ module.exports = function () {
   /** @type {import('next').NextConfig} */
   let config = {
     transpilePackages,
+    pageExtensions: ['jsx', 'js', 'tsx', 'ts'],
     // output: 'standalone',
     // distDir: 'build-web',
     typescript: {

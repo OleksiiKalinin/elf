@@ -15,7 +15,7 @@ html {
 }
 
 body {
-    width: 100vw;
+    width: 100%;
     min-height: 100vh;
     overflow-y: auto;
     overflow-x: hidden;
@@ -45,15 +45,15 @@ input[type=number] {
 }
 
 ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 10px;
+    height: 10px;
     background: linear-gradient(360deg, #00001F 0%, #3E116B 109.57%);
 }
 
-html>*::-webkit-scrollbar {
+/* html>*::-webkit-scrollbar {
     width: 10px;
     height: 10px;
-}
+} */
 
 ::-webkit-scrollbar-thumb {
     background: #1C7296;
