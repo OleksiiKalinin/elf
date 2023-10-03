@@ -10,7 +10,6 @@ import SwipeablePanel from '../components/organismes/SwipeablePanel';
 import getScreenFromPathname from '../hooks/getScreenFromPathname';
 
 export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
-  const [profileFocused, setProfileFocused] = useState(false);
   const { swipeablePanelProps, isTabbarVisible, currentScreen } = useTypedSelector(s => s.general);
   const { setCurrentScreen, setSwipeablePanelProps } = useActions();
   const router = useRouter();
@@ -32,7 +31,7 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
         width: '100%',
         backgroundColor: Colors.White
       }}>
-        <BottomTabs {...{ profileFocused, setProfileFocused, routes: Object.keys(navigationLinking.config?.screens || {}) }} />
+        <BottomTabs routes={Object.keys(navigationLinking.config?.screens || {})} />
       </View>
       <SwipeablePanel />
     </View>

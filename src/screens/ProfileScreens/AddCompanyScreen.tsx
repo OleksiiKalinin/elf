@@ -27,7 +27,6 @@ import tip4 from '../../assets/images/tip4.png';
 import tip5 from '../../assets/images/tip5.png';
 import tip6 from '../../assets/images/tip6.png';
 import { useActions } from '../../hooks/useActions';
-// import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { SvgUri } from 'react-native-svg';
 import minutesToHours from '../../hooks/minutesToHours';
 import { AddressType, CompanyDataType, MediaType, ContactPersonType } from '../../store/reducers/types';
@@ -45,8 +44,7 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import Button from '../../components/molecules/Button';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { createParam } from 'solito';
-
-const windowWidth = Dimensions.get('window').width;
+import { Skeleton, SkeletonContainer } from 'react-native-skeleton-component';
 
 /*
 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingLeft: 20 }}>
@@ -109,7 +107,7 @@ const AddCompanyScreen: React.FC = () => {
   // const { editMode } = route.params;
   const [editMode] = useParam('editMode');
   const [loading, setLoading] = useState<boolean>(false);
-  const { jobIndustries, token, userCompany } = useTypedSelector(state => state.general);
+  const { jobIndustries, token, userCompany, windowSizes } = useTypedSelector(state => state.general);
   const { setSwipeablePanelProps } = useActions();
   const [companyData, setCompanyData] = useState<CompanyDataType>(userCompany || {
     short_name: null,
@@ -231,8 +229,8 @@ const AddCompanyScreen: React.FC = () => {
   const attachMediaHandler = (mode: 'logo' | 'photos' | 'certificates' | 'video') => {
     // if (mode) {
     //   const initOptions: OptionsType = {
-    //     width: windowWidth,
-    //     height: windowWidth / 1.5,
+    //     width: windowSizes.width,
+    //     height: windowSizes.width / 1.5,
     //     cropperStatusBarColor: 'black',
     //     cropperToolbarTitle: 'Wytnij fragment',
     //     mediaType: 'photo',
@@ -490,7 +488,7 @@ const AddCompanyScreen: React.FC = () => {
                 </TouchableOpacity>
               </View>
               <Image
-                style={{ width: windowWidth, height: windowWidth / 1.5 }}
+                style={{ width: windowSizes.width, height: windowSizes.width / 1.5 }}
                 source={{ uri: companyLogo.path }}
               />
             </>
@@ -673,9 +671,9 @@ const AddCompanyScreen: React.FC = () => {
         >
           {isNumber(companyData.job_industry) && <View style={{ width: 34, height: 34, position: 'relative', marginRight: 19 }}>
             <View style={{ position: 'absolute' }}>
-              {/* <SkeletonPlaceholder borderRadius={17}>
-                <View style={{ width: 34, height: 34 }} />
-              </SkeletonPlaceholder> */}
+              <SkeletonContainer animation='wave' speed={600}>
+                <Skeleton style={{ width: 34, height: 34, borderRadius: 17 }} />
+              </SkeletonContainer>
             </View>
             <SvgUri width={34} height={34} uri={jobIndustries.find(curr => curr.id === companyData.job_industry)?.icon || null} />
           </View>}

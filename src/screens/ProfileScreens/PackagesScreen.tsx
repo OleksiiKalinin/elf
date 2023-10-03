@@ -9,8 +9,7 @@ import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Button from '../../components/molecules/Button';
 import Colors from '../../colors/Colors';
-
-const screenWidth = Dimensions.get('window').width;
+import { useTypedSelector } from '../../hooks/useTypedSelector';
 
 const packageTypes = [
     { price: 50, type: 'Standard' },
@@ -38,12 +37,14 @@ const packages = [
 ];
 
 const PackagesScreen: FC = () => {
+    const { windowSizes } = useTypedSelector(s => s.general);
+
     return (
         <ScreenHeaderProvider>
             <ScrollView style={{ backgroundColor: Colors.White }}>
                 <ScrollView showsHorizontalScrollIndicator horizontal contentContainerStyle={{ paddingLeft: 20 }}>
                     {packageTypes.map((item) =>
-                        <View style={{ maxWidth: 320, width: screenWidth - 100, marginVertical: 20, marginRight: 20, backgroundColor: Colors.Basic100 }}>
+                        <View style={{ maxWidth: 320, width: windowSizes.width - 100, marginVertical: 20, marginRight: 20, backgroundColor: Colors.Basic100 }}>
                             <Typography variant="h2" weight="Bold" style={{ marginLeft: 19 }}>
                                 {item.price}zł <Typography variant="main"> tydzień</Typography>
                             </Typography>

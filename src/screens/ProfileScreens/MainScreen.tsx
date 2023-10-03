@@ -33,8 +33,6 @@ const pointCards = [
   { points: 500, type: 'Pakiet Pro', time: '100%' },
 ];
 
-const screenWidth = Dimensions.get('window').width;
-
 const MainScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const [tabbarIndex, setTabbarIndex] = React.useState<number>(0);
@@ -44,7 +42,7 @@ const MainScreen: React.FC = () => {
     { key: '2', title: 'Ustawienia', icon: 'settings' },
     { key: '3', title: 'Punkty', icon: 'coins' },
   ]);
-  const { profileHelpScreenDisplayed, userCompany, token } = useTypedSelector(state => state.general);
+  const { profileHelpScreenDisplayed, userCompany, token, windowSizes } = useTypedSelector(state => state.general);
   const [showHelp, setShowHelp] = useState<boolean>(false);
   // const [showHelp, setShowHelp] = useState<boolean>(!profileHelpScreenDisplayed);
   const helpDots = [0, 1, 2];
@@ -235,8 +233,8 @@ const MainScreen: React.FC = () => {
                   : require('../../assets/images/tipsPoints3.png')
             }
             style={{
-              width: screenWidth * 0.65,
-              height: screenWidth * 0.65,
+              width: windowSizes.width * 0.65,
+              height: windowSizes.width * 0.65,
               resizeMode: 'contain',
               alignSelf: 'center',
               borderRadius: 400,

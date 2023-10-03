@@ -11,14 +11,14 @@ import TextField from '../../components/molecules/TextField';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Button from '../../components/molecules/Button';
 import Colors from '../../colors/Colors';
-
-const windowWidth = Dimensions.get('window').width;
+import { useTypedSelector } from '../../hooks/useTypedSelector';
 
 const AddConractPersonsScreen: React.FC<ProfileStackParamList['AddConractPersonsScreen']> = (props) => {
     const { companyData, changeCompanyDataHandler, contactPersons: initContactPersons, setContactPersons: changeContactPersonsHandler } = props;
     const [contactHours, setContactHours] = useState<string>(companyData.contact_hours || '08:00-18:00');
     const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(initContactPersons);
-    
+    const { windowSizes } = useTypedSelector(s => s.general);
+
     // console.log(initContactPersons);
 
     const editContactPersons = (key: keyof ContactPersonType, value: string | null, index: number) => {
@@ -119,7 +119,7 @@ const AddConractPersonsScreen: React.FC<ProfileStackParamList['AddConractPersons
                         enableLabel
                         time
                         step={5}
-                        sliderLength={windowWidth - 19 * 2}
+                        sliderLength={windowSizes.width - 19 * 2}
                         onValuesChangeFinish={([start, end]) => setContactHours(`${minutesToHours(start)}-${minutesToHours(end)}`)}
                     /> */}
                 </View>

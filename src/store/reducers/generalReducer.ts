@@ -1,6 +1,7 @@
 // import AsyncStorage from "@react-native-community/async-storage";
 // import { GoogleSignin } from "@react-native-google-signin/google-signin";
 // import { LoginManager } from "react-native-fbsdk-next";
+import { Dimensions } from "react-native";
 import { generalReducerAction } from "../actionCreators/general/types";
 import { generalActionTypes } from "../actions";
 import { generalReducerState } from "./types";
@@ -28,6 +29,7 @@ const initialState: generalReducerState = {
     marksData: [],
     notesData: [],
     userInvoices: [],
+    windowSizes: Dimensions.get('window'),
 }
 
 export const generalReducer = (state = initialState, action: generalReducerAction): generalReducerState => {
@@ -40,6 +42,8 @@ export const generalReducer = (state = initialState, action: generalReducerActio
             return { ...state, token, refresh_token };
         case generalActionTypes.SET_APP_DATA:
             return { ...state, ...action.payload, appLoading: false };
+        case generalActionTypes.SET_WINDOW_SIZES:
+            return { ...state, windowSizes: action.payload };
         case generalActionTypes.SET_CANDIDATE_MARKS:
             return { ...state, candidateMarks: action.payload };
         case generalActionTypes.SET_CANDIDATE_NOTES:

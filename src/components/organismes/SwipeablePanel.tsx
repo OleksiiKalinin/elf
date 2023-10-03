@@ -36,7 +36,7 @@ export type SwipeablePanelProps = {
 
 const SwipeablePanel: React.FC = () => {
     const { replace } = useRouter();
-    const { swipeablePanelProps, currentScreen } = useTypedSelector(s => s.general);
+    const { swipeablePanelProps, currentScreen, windowSizes } = useTypedSelector(s => s.general);
     const { setSwipeablePanelProps } = useActions();
     const { buttons, title, children, subTitle, hideBar = false, mode = 'options' } = swipeablePanelProps || {};
     const [height, setHeight] = useState<number>(0);
@@ -80,7 +80,7 @@ const SwipeablePanel: React.FC = () => {
                 //to count inner height first
                 onLayout={e => {
                     if (!!buttons?.length || !!title || !!children || !!subTitle) {
-                        const windowHeight = Dimensions.get('window').height;
+                        const windowHeight = windowSizes.height;
                         setHeight((e.nativeEvent.layout.height / (windowHeight - (StatusBar.currentHeight || 0)) + (hideBar ? 0 : BAR_HEIGHT / windowHeight)) * 100);
                     } else {
                         setHeight(0);

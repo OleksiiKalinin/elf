@@ -29,8 +29,6 @@ import { useActions } from '../../hooks/useActions';
 import { useSwipeablePanelParams } from '../../hooks/useSwipeablePanelParams';
 import { Separator } from 'tamagui';
 
-var width = Dimensions.get('window').width;
-
 /*
 title="Dostosuj listę kandydatów"
 subTitle="Pomóż ELF-owi znaleźć idealnych kandydatów - ustaw odpowiednie filtry 🤓"
@@ -56,7 +54,7 @@ const { useParam } = createParam<AdvertStackParamList['AdvertEditorScreen']>();
 
 const AdvertEditorScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
-  const { jobIndustries, userCompany, jobSalaryModes, jobSalaryTaxes, jobExperiences, token, userAdverts } = useTypedSelector(state => state.general);
+  const { jobIndustries, userCompany, jobSalaryModes, jobSalaryTaxes, jobExperiences, token, userAdverts, windowSizes } = useTypedSelector(state => state.general);
   const currentPositions = jobIndustries.find(({ id }) => id === userCompany?.job_industry)?.job_positions || [];
   const [advertData, setAdvertData] = useState<UserAdvertType>({
     job_experience_id: 2,
@@ -330,7 +328,7 @@ const AdvertEditorScreen: React.FC = () => {
               <HorizontalMenuButton
                 selected={selectedProbationType === index ? true : false}
                 name={item}
-                style={{ width: width / 3 }}
+                style={{ width: windowSizes.width / 3 }}
                 variant={'underline'}
                 onPress={() =>
                   selectedProbationType !== index

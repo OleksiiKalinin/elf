@@ -14,10 +14,9 @@ import { nativeStore } from './src/store';
 import RootNavigator, { navigationLinking } from './src/navigators/RootNavigator';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import SwipeablePanel from './src/components/organismes/SwipeablePanel';
-import calendarLocaleConfig from './src/hooks/calendarLocaleConfig';
+import AppUnifiedProvider from './src/components/organismes/AppUnifiedProvider';
 
 LogBox.ignoreAllLogs();
-calendarLocaleConfig();
 
 const App = () => {
   // const colorScheme = useColorScheme() || 'light';
@@ -40,13 +39,14 @@ const App = () => {
                   showHideTransition="slide"
                   backgroundColor={Colors.White}
                   barStyle='dark-content'
-                // backgroundColor={theme.borderColor?.val}
                 // barStyle={isDarkMode ? 'light-content' : 'dark-content'}
                 />
-                <View style={styles.Flex1}>
-                  <RootNavigator />
-                  <SwipeablePanel />
-                </View>
+                <AppUnifiedProvider>
+                  <View style={styles.Flex1}>
+                    <RootNavigator />
+                    <SwipeablePanel />
+                  </View>
+                </AppUnifiedProvider>
               </NavigationContainer>
             </Provider>
           </GestureHandlerRootView>

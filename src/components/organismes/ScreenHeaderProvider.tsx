@@ -139,14 +139,20 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   alterTitle = null,
 }) => {
   const { back, replace } = useRouter();
-  const { currentScreen, swipeablePanelProps } = useTypedSelector(s => s.general);
+  const { currentScreen, swipeablePanelProps, windowSizes } = useTypedSelector(s => s.general);
   const { setSwipeablePanelProps } = useActions();
   const [stack, screen] = currentScreen.split('-');
   // @ts-ignore
   const currentTitle: string = screensTitles[stack][screen];
 
   return (
-    <View style={[styles.Wrapper]}>
+    <View style={{
+      flex: 1,
+      minHeight: Platform.select({
+        native: undefined,
+        web: windowSizes.height,
+      }),
+    }}>
       {/* <LinearGradient style={[styles.Header]} {...(transparent ? { locations: [0.1, 0.4, 0.5, 0.65, 0.8, 0.9, 1] } : {})} colors={['rgba(255, 255, 255, 1)', ...(transparent ? ['rgba(255, 255, 255, 0.85)', 'rgba(255, 255, 255, 0.75)', 'rgba(255, 255, 255, 0.6)', 'rgba(255, 255, 255, 0.35)', 'rgba(255, 255, 255, 0.2)', 'rgba(255, 255, 255, 0)'] : ['rgba(255, 255, 255, 1)'])]}> */}
       <View style={[styles.Header]}>
         {mode === 'backAction' && (
@@ -208,7 +214,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
       </View>
       {/* </LinearGradient> */}
       <View style={[{
-        height: staticContentHeight ? Dimensions.get('window').height - (transparent ? 0 : SCREEN_HEADER_HEIGHT) : undefined,
+        height: staticContentHeight ? windowSizes.height - (transparent ? 0 : SCREEN_HEADER_HEIGHT) : undefined,
         flex: !staticContentHeight ? 1 : undefined,
         paddingTop: transparent ? 0 : SCREEN_HEADER_HEIGHT,
         backgroundColor: Colors.White
@@ -220,21 +226,6 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
 };
 
 const styles = StyleSheet.create({
-  Wrapper: {
-    flex: 1,
-    minHeight: Platform.select({
-      native: undefined,
-      web: Dimensions.get('window').height,
-    }),
-    // ...Platform.select({
-    //   ios: {
-    //     paddingTop: 30,
-    //   },
-    //   android: {
-    //     paddingTop: 0,
-    //   },
-    // }),
-  },
   Header: {
     position: Platform.select({
       native: 'absolute',

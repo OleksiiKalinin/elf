@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { Keyboard, View, Dimensions } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { RootStackParamList, navigationLinking } from '../../navigators/RootNavigator';
@@ -20,11 +20,8 @@ import Typography from '../atoms/Typography';
 export const BOTTOM_TABS_HEIGHT = 45;
 
 type BottomTabsProps = {
-    profileFocused: boolean;
-    setProfileFocused: (b: boolean) => void;
     routes: string[];
 };
-// } & BottomTabBarProps;
 
 const icons: { [k in keyof RootStackParamList]: IconTypes } = {
     AdvertStack: 'work',
@@ -54,7 +51,7 @@ const hiddenTabbarScreens: {
     ProfileStack: ['SettingsScreen', 'PackagesScreen', 'CompanyInvoiceScreen', 'CompanyDescriptionScreen', 'NoCompanyScreen', 'AddCompanyScreen', 'AddPaymentScreen', 'CompanyScreen', 'EditPaymentScreen', 'LanguageScreen', 'MapScreen', 'MethodsScreen', 'NotificationScreen', 'PaymentScreen', 'PointsScreen', 'PrivacyScreen', 'AccountDataScreen', 'ToolsScreen', 'AddConractPersonsScreen'],
 };
 
-const BottomTabs: FC<BottomTabsProps> = ({ routes, profileFocused, setProfileFocused }) => {
+const BottomTabs: FC<BottomTabsProps> = ({ routes }) => {
     // const animation = useSharedValue({ height: BOTTOM_TABS_HEIGHT });
     const { isTabbarVisible, currentScreen } = useTypedSelector(state => state.general);
     const { setIsTabbarVisible } = useActions();
@@ -91,8 +88,7 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes, profileFocused, setProfileFoc
             {routes.map(route => {
                 const label = route as keyof RootStackParamList;
                 const href = ((navigationLinking.config?.screens[label] as any)?.path || '') as string;
-                const isFocused = currentScreen.split('-')[0] === label;
-                if (label === 'ProfileStack') setProfileFocused(isFocused);
+                const isFocused = (currentScreen.split('-')[0] === label) || (label === 'MenuStack' && currentScreen.split('-')[0] === 'ProfileStack');
 
                 const excludedStacks: Array<keyof RootStackParamList> = ['AuthStack', 'ProfileStack'];
                 if (excludedStacks.includes(label)) return null;
@@ -109,7 +105,7 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes, profileFocused, setProfileFoc
                             {!!badgeNumbers[label] && <View style={{ position: 'absolute', borderRadius: 8, paddingLeft: 5, paddingRight: 5, backgroundColor: Colors.Basic900, zIndex: 1,  left: 16, top: -8 }}>
                                 <Typography color={Colors.Basic100} variant='small'>{badgeNumbers[label] > 50 ? '50+' : badgeNumbers[label]}</Typography>
                             </View>}
-                            <SvgIcon icon={icons[label]} fill={Colors[isFocused || (label === 'MenuStack' && profileFocused) ? 'Basic900' : 'Basic600']} />
+                            <SvgIcon icon={icons[label]} fill={Colors[isFocused ? 'Basic900' : 'Basic600']} />
                         </View>
                     </Button>
                 )

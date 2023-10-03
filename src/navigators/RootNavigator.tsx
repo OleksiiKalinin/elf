@@ -128,7 +128,6 @@ export const screens: React.ComponentProps<typeof RootStack.Screen>[] = [
 
 const RootNavigator: React.FC = () => {
   const dispatch = useDispatch();
-  const [profileFocused, setProfileFocused] = useState(false);
   const { appLoading, isTabbarVisible, token, swipeablePanelProps, userCompany, candidateNotes, currentScreen } = useTypedSelector(state => state.general);
   const { setCurrentScreen, setIsTabbarVisible, setToken, setSwipeablePanelProps, setUserCompany } = useActions();
   const tempKeyboardAccess = useRef<boolean>(false);
@@ -239,7 +238,7 @@ const RootNavigator: React.FC = () => {
     </View>} */}
     <RootStack.Navigator
       backBehavior='history' initialRouteName="MenuStack" screenOptions={{ headerShown: false }}
-      tabBar={({ state }) => <BottomTabs {...{ profileFocused, setProfileFocused, routes: state.routes.map(({ name }) => name) }} />}
+      tabBar={({ state }) => <BottomTabs routes={state.routes.map(({ name }) => name)} />}
     >
       {screens.map(screen =>
         <RootStack.Screen key={screen.name} {...screen} listeners={({ route, navigation }) => ({ state: () => setCurrentScreenHandler(route), blur: () => navigation.setParams({ screen: undefined, params: undefined }) })} />

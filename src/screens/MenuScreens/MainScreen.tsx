@@ -27,10 +27,8 @@ import { useSwipeablePanelParams } from '../../hooks/useSwipeablePanelParams';
 import getPathnameFromScreen from '../../hooks/getPathnameFromScreen';
 import { useRouter } from 'solito/router';
 import { Separator } from 'tamagui';
-import { DialogDemo } from './demo';
 
 import DropDownPicker from 'react-native-dropdown-picker';
-import { SkeletonContainer, Skeleton } from 'react-native-skeleton-component';
 
 
 const MainScreen: React.FC = ({ }) => {
@@ -295,7 +293,6 @@ const MainScreen: React.FC = ({ }) => {
       //   </TouchableOpacity>
       // </View>}
       >
-        <DialogDemo />
         <DropDownPicker
           open={open}
           value={value}
@@ -306,16 +303,6 @@ const MainScreen: React.FC = ({ }) => {
           ArrowDownIconComponent={() => <SvgIcon icon='arrowBottom' />}
           ArrowUpIconComponent={() => <SvgIcon icon='arrowTop' />}
         />
-        <SkeletonContainer animation='wave' speed={600}>
-          <View style={styles2.container}>
-            <Skeleton style={styles2.avatar} />
-            <View style={styles2.textContainer}>
-              <Skeleton style={styles2.title} />
-              <Skeleton style={styles2.subtitle} />
-            </View>
-            <Skeleton style={styles2.icon} />
-          </View>
-        </SkeletonContainer>
         <ScrollView
           contentContainerStyle={{ alignItems: 'center' }}
           style={{ backgroundColor: Colors.Basic100, flex: 1 }}
@@ -453,15 +440,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingRight: 20
   },
-});
-
-const styles2 = StyleSheet.create({
-  container: { flexDirection: 'row', alignItems: 'center', marginVertical: 16 },
-  avatar: { height: 40, width: 40, borderRadius: 20 },
-  textContainer: { flex: 1, marginLeft: 16 },
-  title: { width: '90%', height: 14, borderRadius: 7, marginBottom: 5 },
-  subtitle: { width: '70%', height: 14, borderRadius: 7 },
-  icon: { height: 16, width: 16, borderRadius: 4 },
 });
 
 export default MainScreen;

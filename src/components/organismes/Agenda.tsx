@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Alert, Platform, Dimensions } from "react-native";
+import { View, Text, TouchableOpacity, Platform } from "react-native";
 import { Agenda as Agnd, LocaleConfig } from '../../../node_modules_modified/react-native-calendars/src';
 import Colors from '../../colors/Colors';
 import { Separator, XStack, YStack } from 'tamagui';
 import SvgIcon from '../atoms/SvgIcon';
 import { SCREEN_HEADER_HEIGHT } from './ScreenHeaderProvider';
 import { BOTTOM_TABS_HEIGHT } from './BottomTabs';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
 
 const Agenda: React.FC<{ getCurrentDate: (s: string) => void }> = ({ getCurrentDate }) => {
+    const { windowSizes } = useTypedSelector(s => s.general);
     const [date] = useState<string>(new Date().toISOString().replace(/T.*$/, ''));
     const [items, setitems] = useState<any>({})
     const [isOpened, setIsOpened] = useState<boolean>(false);
     const [loaded, setloaded] = useState<boolean>(false);
-    const [height, setheight] = useState<number>(Dimensions.get('window').height - SCREEN_HEADER_HEIGHT - BOTTOM_TABS_HEIGHT);
+    const [height, setheight] = useState<number>(windowSizes.height - SCREEN_HEADER_HEIGHT - BOTTOM_TABS_HEIGHT);
     // console.log(height);
 
     useEffect(() => {
@@ -21,12 +23,12 @@ const Agenda: React.FC<{ getCurrentDate: (s: string) => void }> = ({ getCurrentD
     }, []);
 
     useEffect(() => {
-        Dimensions.addEventListener('change', ({ window }) => {
-            setheight(window.height - SCREEN_HEADER_HEIGHT - BOTTOM_TABS_HEIGHT);
-        })
         setloaded(true);
     }, [])
 
+    useEffect(() => {
+        setheight(windowSizes.height - SCREEN_HEADER_HEIGHT - BOTTOM_TABS_HEIGHT);
+    }, [windowSizes])
 
     const loadItems = (day: any) => {
         setTimeout(() => {

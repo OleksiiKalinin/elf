@@ -13,8 +13,10 @@ import TextField from '../../components/molecules/TextField';
 import SvgIcon from '../../components/atoms/SvgIcon';
 import Typography from '../../components/atoms/Typography';
 import { Separator } from 'tamagui';
-// import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-const JobCategoryScreen: React.FC<AdvertStackParamList['JobCategoryScreen']> = ({callback}) => {
+import { SkeletonContainer, Skeleton } from 'react-native-skeleton-component';
+
+
+const JobCategoryScreen: React.FC<AdvertStackParamList['JobCategoryScreen']> = ({ callback }) => {
   // const { callback } = route.params;
   const [search, setSearch] = useState<string>('');
   const [industryId, setIndustryId] = useState<number | null>(null);
@@ -39,11 +41,11 @@ const JobCategoryScreen: React.FC<AdvertStackParamList['JobCategoryScreen']> = (
             value={search}
             onChangeText={setSearch}
             left={<SvgIcon icon='search' />}
-            // right={<IconButton
-            //   p='7px' mr='-7px' borderRadius={0}
-            //   icon={<SvgIcon icon='crossBig' />}
-            //   onPress={() => setSearch('')}
-            // />}
+          // right={<IconButton
+          //   p='7px' mr='-7px' borderRadius={0}
+          //   icon={<SvgIcon icon='crossBig' />}
+          //   onPress={() => setSearch('')}
+          // />}
           />
         </View>
         <Typography color={Colors.Basic600} style={{ marginTop: 16, marginBottom: 10, marginLeft: 19 }}>
@@ -57,9 +59,9 @@ const JobCategoryScreen: React.FC<AdvertStackParamList['JobCategoryScreen']> = (
             }}>
               <View style={{ width: 34, height: 34, position: 'relative' }}>
                 <View style={{ position: 'absolute' }}>
-                  {/* <SkeletonPlaceholder borderRadius={17}>
-                    <View style={{ width: 34, height: 34 }} />
-                  </SkeletonPlaceholder> */}
+                  <SkeletonContainer animation='wave' speed={600}>
+                    <Skeleton style={{ width: 34, height: 34, borderRadius: 17 }} />
+                  </SkeletonContainer>
                 </View>
                 <SvgUri width={34} height={34} uri={icon} />
               </View>

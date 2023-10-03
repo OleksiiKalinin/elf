@@ -5,8 +5,7 @@ import Colors from '../../../../colors/Colors';
 import { useTypedSelector } from '../../../../hooks/useTypedSelector';
 import { CompanyDataType } from '../../../../store/reducers/types';
 import Typography from '../../../../components/atoms/Typography';
-
-const screenWidth = Dimensions.get('window').width;
+import { Skeleton, SkeletonContainer } from 'react-native-skeleton-component';
 
 const ImagesPortfolio: any[] = [
     require('../../../../assets/images/company.png'),
@@ -15,7 +14,7 @@ const ImagesPortfolio: any[] = [
 ];
 
 const MainDataCard: FC<CompanyDataType> = (companyData) => {
-    const { jobIndustries } = useTypedSelector(state => state.general);
+    const { jobIndustries, windowSizes } = useTypedSelector(state => state.general);
     const currentIndustry = jobIndustries.find(curr => curr.id === companyData?.job_industry) || null;
 
     return (
@@ -28,7 +27,7 @@ const MainDataCard: FC<CompanyDataType> = (companyData) => {
                 inactiveSlideScale={1}
                 renderItem={({ item }) => (
                     <View style={{ backgroundColor: Colors.Basic300, alignItems: 'center' }}>
-                        <Image source={companyData?.id ? { uri: item } : item} style={{ height: screenWidth / 1.5, width: screenWidth }} />
+                        <Image source={companyData?.id ? { uri: item } : item} style={{ height: windowSizes.width / 1.5, width: windowSizes.width }} />
                     </View>
                 )}
             /> */}
@@ -36,9 +35,9 @@ const MainDataCard: FC<CompanyDataType> = (companyData) => {
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 14 }}>
                     <View style={{ width: 34, height: 34, position: 'relative' }}>
                         <View style={{ position: 'absolute' }}>
-                            {/* <SkeletonPlaceholder borderRadius={17}>
-                                <View style={{ width: 34, height: 34 }} />
-                            </SkeletonPlaceholder> */}
+                            <SkeletonContainer animation='wave' speed={600}>
+                                <Skeleton style={{ width: 34, height: 34, borderRadius: 17 }} />
+                            </SkeletonContainer>
                         </View>
                         {currentIndustry?.icon && <SvgUri width={34} height={34} uri={currentIndustry?.icon} />}
                     </View>

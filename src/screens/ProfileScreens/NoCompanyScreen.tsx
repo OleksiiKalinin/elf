@@ -27,8 +27,6 @@ const pointCards = [
     { points: 500, type: 'Pakiet Pro', time: '100%' },
 ];
 
-const screenWidth = Dimensions.get('window').width;
-
 const NoCompanyScreen: React.FC = () => {
     const { profileHelpScreenDisplayed, token } = useTypedSelector(state => state.general);
     const [showHelp, setShowHelp] = useState<boolean>(!profileHelpScreenDisplayed);

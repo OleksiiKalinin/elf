@@ -14,7 +14,7 @@ import config from '../../tamagui';
 import Script from 'next/script';
 import { nextStore } from '../store/nextstore';
 import { Layout } from './Layout';
-import calendarLocaleConfig from '../hooks/calendarLocaleConfig';
+import AppUnifiedProvider from '../components/organismes/AppUnifiedProvider';
 
 const insets = {
   top: 0,
@@ -32,8 +32,6 @@ const frame = {
 
 const initialMetrics = { insets, frame };
 
-calendarLocaleConfig();
-
 const Providers = ({ children }: { children: ReactNode }) => {
   const [theme, setTheme] = useRootTheme();
 
@@ -49,9 +47,11 @@ const Providers = ({ children }: { children: ReactNode }) => {
           initialMetrics={initialMetrics} //https://github.com/th3rdwave/react-native-safe-area-context#web-ssr
         >
           <GestureHandlerRootView style={styles.container}>
-            <Layout>
-              {children}
-            </Layout>
+            <AppUnifiedProvider>
+              <Layout>
+                {children}
+              </Layout>
+            </AppUnifiedProvider>
           </GestureHandlerRootView>
         </SafeAreaProvider>
       </TamaguiProvider>

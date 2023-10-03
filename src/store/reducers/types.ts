@@ -1,9 +1,9 @@
-import { SwipeablePanelProps } from "../../components/organismes/SwipeablePanel"
+import { SwipeablePanelProps } from "../../components/organismes/SwipeablePanel";
+import { ScaledSize } from 'react-native';
 
 export interface generalReducerState {
     isTabbarVisible: boolean,
-    // windowWidth: number,
-    // windowHeight: number,
+    windowSizes: WindowSizesType,
     theme: string,
     currentScreen: string,
     token: string | null,
@@ -26,6 +26,8 @@ export interface generalReducerState {
     notesData: NoteDataType[],
     userInvoices: InvoiceType[]
 }
+
+export type WindowSizesType = ScaledSize;
 
 export interface InvoiceType {
     id: number,

@@ -7,12 +7,10 @@ import { IconTypes } from '../../../../components/atoms/SvgIcon';
 import Typography from '../../../../components/atoms/Typography';
 // import Carousel from '../../../../components/organisms/Carousel/Carousel';
 
-const screenWidth = Dimensions.get('window').width;
-
 const ResumeCard: FC<CandidateDataType> = (props) => {
   const { account_facebook, account_instagram, account_twitter, account_youtube, job_experience_id, job_industry, job_position_id, location, salary_amount_low, salary_amount_up, salary_tax_type_id, salary_time_type_id, certificates, id, logo, photos, video } = props;
   const [duration, setDuration] = useState<number | null>(null);
-  const { userData, jobIndustries, jobExperiences, jobSalaryModes, jobSalaryTaxes } = useTypedSelector(s => s.general);
+  const { userData, jobIndustries, jobExperiences, jobSalaryModes, jobSalaryTaxes, windowSizes } = useTypedSelector(s => s.general);
   const [jobPositions, setJobPositions] = useState<JobPositionType[]>([]);
   const socialMediaLinks = [account_facebook, account_instagram, account_youtube];
   const socialMediaIcons: IconTypes[] = ['facebook', 'instagram', 'telegram'];
@@ -36,7 +34,7 @@ const ResumeCard: FC<CandidateDataType> = (props) => {
           inactiveSlideScale={1}
           renderItem={({ item }) => (
             <View style={{ backgroundColor: Colors.Basic300, alignItems: 'center' }}>
-              <Image source={{ uri: item.path }} style={{ height: screenWidth / 1.5, width: screenWidth }} />
+              <Image source={{ uri: item.path }} style={{ height: windowSizes.width / 1.5, width: windowSizes.width }} />
             </View>
           )}
         /> */}

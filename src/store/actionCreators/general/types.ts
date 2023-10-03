@@ -1,10 +1,15 @@
 import { SwipeablePanelProps } from "../../../components/organismes/SwipeablePanel";
 import { generalActionTypes } from "../../actions";
-import { CandidateMarkType, CandidateNotesType, CompanyDataType, InvoiceType, JobExperienceType, JobIndustryType, JobSalaryModeType, JobSalaryTaxType, MarkDataType, NoteDataType, UserAdvertType, UserDataType, UserEventType } from "../../reducers/types";
+import { CandidateMarkType, CandidateNotesType, CompanyDataType, InvoiceType, JobExperienceType, JobIndustryType, JobSalaryModeType, JobSalaryTaxType, MarkDataType, NoteDataType, UserAdvertType, UserDataType, UserEventType, WindowSizesType } from "../../reducers/types";
 
 interface setToken {
     type: generalActionTypes.SET_TOKEN,
     payload: {token: string | null, refresh_token: string | null},
+}
+
+interface setWindowSizes {
+    type: generalActionTypes.SET_WINDOW_SIZES,
+    payload: WindowSizesType
 }
 
 interface setUserData {
@@ -115,4 +120,5 @@ export type generalReducerAction =
     setUserEvents |
     setCandidateMarks |
     setCandidateNotes |
-    setUserInvoices
+    setUserInvoices |
+    setWindowSizes
