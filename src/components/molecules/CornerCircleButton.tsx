@@ -10,7 +10,7 @@ const CornerCircleButton: React.FC<{ onPress: (event: GestureResponderEvent) => 
         <View style={{
             position: Platform.select({
                 native: 'absolute',
-                web: 'fixed'
+                web: 'fixed',
             }),
             bottom: Platform.select({
                 native: 20,

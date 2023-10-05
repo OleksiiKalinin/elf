@@ -8,6 +8,7 @@ import BottomTabs, { BOTTOM_TABS_HEIGHT } from '../components/organismes/BottomT
 import Colors from '../colors/Colors';
 import SwipeablePanel from '../components/organismes/SwipeablePanel';
 import getScreenFromPathname from '../hooks/getScreenFromPathname';
+import { ScrollView } from '../components/molecules/ScrollView';
 
 export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
   const { swipeablePanelProps, isTabbarVisible, currentScreen } = useTypedSelector(s => s.general);

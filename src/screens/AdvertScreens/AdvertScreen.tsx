@@ -50,7 +50,7 @@ const AdvertScreen: React.FC = () => {
       buttons: [
         {
           children: 'Edytuj',
-          onPress: () => router.push(`/adverts/EditAdvertScreen?id=${id}`),
+          onPress: () => router.push(`/adverts/AdvertEditorScreen?id=${id}`),
         },
         {
           children: 'Usuń',
