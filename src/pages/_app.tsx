@@ -85,7 +85,6 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   );
 }
 
-// export default MyApp; 
 export default nextStore.withRedux(MyApp);
 
 const styles = StyleSheet.create({
