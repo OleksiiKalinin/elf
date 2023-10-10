@@ -16,6 +16,10 @@ const transpilePackages = [
   'react-native-mask-input',
   'react-native-dropdown-picker',
   'react-native-skeleton-component',
+  'react-native-geocoder-reborn',
+  'react-native-google-places-autocomplete',
+  'react-native-maps',
+  'react-native-vector-icons',
 ];
 
 const plugins = [
@@ -55,6 +59,14 @@ module.exports = function () {
     experimental: {
       forceSwcTransforms: true,
       //   swcPlugins: [['react-native-reanimated-swc-plugin']],
+    },
+    webpack: (config, options) => {
+      config.resolve.alias = {
+        ...(config.resolve.alias || {}),
+        'react-native-maps': 'react-native-web-maps',
+      }
+
+      return config;
     },
   };
 

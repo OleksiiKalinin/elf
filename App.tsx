@@ -1,7 +1,6 @@
 import { StyleSheet, StatusBar, LogBox, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { TamaguiProvider, useTheme, Stack, H4 } from 'tamagui';
-import { SolitoImageProvider } from 'solito/image';
 import {
   initialWindowMetrics,
   SafeAreaProvider,
@@ -25,34 +24,32 @@ const App = () => {
   const isDarkMode = false;
 
   return (
-    <SolitoImageProvider>
-      <TamaguiProvider config={config} disableInjectCSS defaultTheme={colorScheme}>
-        <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-          <GestureHandlerRootView style={styles.Flex1}>
-            <Provider store={nativeStore}>
-              <NavigationContainer
-                theme={isDarkMode ? DarkTheme : DefaultTheme}
-                linking={navigationLinking}
-              >
-                <StatusBar
-                  animated
-                  showHideTransition="slide"
-                  backgroundColor={Colors.White}
-                  barStyle='dark-content'
-                // barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-                />
-                <AppUnifiedProvider>
-                  <View style={styles.Flex1}>
-                    <RootNavigator />
-                    <SwipeablePanel />
-                  </View>
-                </AppUnifiedProvider>
-              </NavigationContainer>
-            </Provider>
-          </GestureHandlerRootView>
-        </SafeAreaProvider>
-      </TamaguiProvider>
-    </SolitoImageProvider>
+    <TamaguiProvider config={config} disableInjectCSS defaultTheme={colorScheme}>
+      <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+        <GestureHandlerRootView style={styles.Flex1}>
+          <Provider store={nativeStore}>
+            <NavigationContainer
+              theme={isDarkMode ? DarkTheme : DefaultTheme}
+              linking={navigationLinking}
+            >
+              <StatusBar
+                animated
+                showHideTransition="slide"
+                backgroundColor={Colors.White}
+                barStyle='dark-content'
+              // barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+              />
+              <AppUnifiedProvider>
+                <View style={styles.Flex1}>
+                  <RootNavigator />
+                  <SwipeablePanel />
+                </View>
+              </AppUnifiedProvider>
+            </NavigationContainer>
+          </Provider>
+        </GestureHandlerRootView>
+      </SafeAreaProvider>
+    </TamaguiProvider>
   );
 };
 

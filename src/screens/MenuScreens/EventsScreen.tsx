@@ -26,10 +26,11 @@ import SvgIcon from '../../components/atoms/SvgIcon';
 import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
+import GoogleMap from '../../components/organismes/GoogleMap';
 
 const EventsScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
-  const { userEvents, jobIndustries, token } = useTypedSelector(state => state.general);
+  const { userEvents, jobIndustries, token, windowSizes } = useTypedSelector(state => state.general);
   const [jobPositions, setJobPositions] = useState<JobPositionType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -46,7 +47,8 @@ const EventsScreen: React.FC = () => {
 
   return (
     <View style={styles.Wrapper}>
-      <ScreenHeaderProvider>
+      <GoogleMap initialAddress={null} callback={(a) => console.log(a)} />
+      {/* <ScreenHeaderProvider>
         {loading ? <LoadingScreen /> :
           <ScrollView contentContainerStyle={{ paddingBottom: 24 }} style={{ backgroundColor: Colors.Basic100 }}>
             {!!userEvents.length ? userEvents.sort((a, b) => new Date(b.start_time).getTime() - new Date(a.start_time).getTime()).map((event, index, array) => {
@@ -67,9 +69,9 @@ const EventsScreen: React.FC = () => {
                     color={Colors.Basic600}
                     style={{ marginVertical: 8, paddingHorizontal: 19 }}
                   >
-                    {/* {CalendarLocaleConfig.locales['pl'].dayNames[new Date(event.start_time).getDay()]}
+                    {CalendarLocaleConfig.locales['pl'].dayNames[new Date(event.start_time).getDay()]}
                     {', '}
-                    {new Date(event.start_time).getDate()} {CalendarLocaleConfig.locales['pl'].monthNamesShort[new Date(event.start_time).getMonth()].toLowerCase()} */}
+                    {new Date(event.start_time).getDate()} {CalendarLocaleConfig.locales['pl'].monthNamesShort[new Date(event.start_time).getMonth()].toLowerCase()}
                   </Typography>}
                   <TouchableOpacity onPress={() => openProfile(event.attendees[0].candidate.candidate_id)} style={{
                     flex: 1,
@@ -105,7 +107,7 @@ const EventsScreen: React.FC = () => {
               <Typography style={{ padding: 19 }}>Nie masz wydarzeń!</Typography>
             </>)}
           </ScrollView>}
-      </ScreenHeaderProvider>
+      </ScreenHeaderProvider> */}
     </View>
   );
 };

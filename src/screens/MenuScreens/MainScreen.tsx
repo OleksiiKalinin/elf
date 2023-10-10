@@ -27,8 +27,9 @@ import { useSwipeablePanelParams } from '../../hooks/useSwipeablePanelParams';
 import getPathnameFromScreen from '../../hooks/getPathnameFromScreen';
 import { useRouter } from 'solito/router';
 import { Separator } from 'tamagui';
-
-import DropDownPicker from 'react-native-dropdown-picker';
+import { MenuDemo } from './demo2';
+import { DateTimePickerDemo } from './demo3';
+import CarouselDemo from './demo4';
 
 
 const MainScreen: React.FC = ({ }) => {
@@ -37,13 +38,6 @@ const MainScreen: React.FC = ({ }) => {
   const { subView, subViewMode } = useSwipeablePanelParams();
   const { isMainMenuFlatList, userData, token, currentScreen } = useTypedSelector(state => state.general);
   const { setIsMainMenuFlatList, setSwipeablePanelProps } = useActions();
-
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(null);
-  const [items, setItems] = useState([
-    {label: 'Apple', value: 'apple'},
-    {label: 'Banana', value: 'banana'}
-  ]);
 
   useEffect(() => {
     setSwipeablePanelProps((() => {
@@ -293,16 +287,7 @@ const MainScreen: React.FC = ({ }) => {
       //   </TouchableOpacity>
       // </View>}
       >
-        <DropDownPicker
-          open={open}
-          value={value}
-          items={items}
-          setOpen={setOpen}
-          setValue={setValue}
-          setItems={setItems}
-          ArrowDownIconComponent={() => <SvgIcon icon='arrowBottom' />}
-          ArrowUpIconComponent={() => <SvgIcon icon='arrowTop' />}
-        />
+        <CarouselDemo />
         <ScrollView
           contentContainerStyle={{ alignItems: 'center' }}
           style={{ backgroundColor: Colors.Basic100, flex: 1 }}
@@ -324,16 +309,12 @@ const MainScreen: React.FC = ({ }) => {
                       <Typography variant="h5" weight='Bold'>{title}</Typography>
                       {!!badge &&
                         <View style={{ position: 'absolute', borderRadius: 8, paddingLeft: 5, paddingRight: 5, backgroundColor: Colors.Yellow500, zIndex: 1, right: 4, top: 4 }}>
-                          {/* <Badge position='absolute' top='4px' right='4px' bgColor={Colors.Yellow500} rounded="full"> */}
                           <Typography color={Colors.Basic100} variant='small'>{badge}</Typography>
-                          {/* </Badge> */}
                         </View>
                       }
                       {!!missedEvents &&
                         <View style={{ position: 'absolute', borderRadius: 8, paddingLeft: 5, paddingRight: 5, backgroundColor: Colors.Basic900, zIndex: 1, left: 20, top: 4 }}>
-                          {/* <Badge padding='0px' position='absolute' top='2px' left='20px' bgColor={Colors.Basic900} rounded="full"> */}
                           <Typography color={Colors.Basic100} variant='small'>{'  '}{missedEvents > 50 ? '50+' : missedEvents}{'  '}</Typography>
-                          {/* </Badge> */}
                         </View>
                       }
                     </TouchableOpacity>
@@ -348,16 +329,12 @@ const MainScreen: React.FC = ({ }) => {
                         </Typography>
                         {!!badge &&
                           <View style={{ position: 'absolute', borderRadius: 8, paddingLeft: 5, paddingRight: 5, backgroundColor: Colors.Yellow500, zIndex: 1, right: 4, top: 4 }}>
-                            {/* <Badge position='absolute' top='4px' right='4px' bgColor={Colors.Yellow500} rounded="full"> */}
                             <Typography color={Colors.Basic100} weight='Bold'>{badge}</Typography>
-                            {/* </Badge> */}
                           </View>
                         }
                         {!!missedEvents &&
                           <View style={{ position: 'absolute', borderRadius: 8, paddingLeft: 5, paddingRight: 5, backgroundColor: Colors.Basic900, zIndex: 1, left: 4, top: 4 }}>
-                            {/* <Badge position='absolute' top='4px' left='4px' bgColor={Colors.Basic900} rounded="full"> */}
                             <Typography color={Colors.Basic100} weight='Bold'>{missedEvents > 50 ? '50+' : missedEvents}</Typography>
-                            {/* </Badge> */}
                           </View>
                         }
                       </TouchableOpacity>

@@ -1,4 +1,4 @@
-import {Children} from 'react';
+import { Children } from 'react';
 import {
   Html,
   Head,
@@ -7,9 +7,11 @@ import {
   DocumentContext,
   DocumentInitialProps,
 } from 'next/document';
-import {AppRegistry} from 'react-native';
+import { AppRegistry } from 'react-native';
 import config from '../../app.json';
 import Tamagui from '../../tamagui';
+//@ts-ignore
+import iconFont from 'react-native-vector-icons/Fonts/FontAwesome.ttf';
 
 function MyDocument() {
   return (
@@ -27,7 +29,7 @@ MyDocument.getInitialProps = async ({
   renderPage,
 }: DocumentContext): Promise<DocumentInitialProps> => {
   AppRegistry.registerComponent(config.name, () => Main);
-  const {getStyleElement} = AppRegistry.getApplication(config.name);
+  const { getStyleElement } = AppRegistry.getApplication(config.name);
   const page = await renderPage();
   const styles = [
     getStyleElement(),
@@ -37,8 +39,13 @@ MyDocument.getInitialProps = async ({
         __html: Tamagui.getCSS(),
       }}
     />,
+    <style dangerouslySetInnerHTML={{
+      __html: `@font-face {
+      src: url(${iconFont});
+      font-family: FontAwesome;
+    }`}} />
   ];
-  return {...page, styles: Children.toArray(styles)};
+  return { ...page, styles: Children.toArray(styles) };
 };
 
 export default MyDocument;

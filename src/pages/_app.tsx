@@ -80,12 +80,12 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
           __html: "document.documentElement.classList.add('t_unmounted')",
         }}
       />
+      <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBLA1spwwoOjY2rOvMliOBc2C87k6ZOJ_s"></script>
       <Providers>{contents}</Providers>
     </>
   );
 }
 
-// export default MyApp; 
 export default nextStore.withRedux(MyApp);
 
 const styles = StyleSheet.create({
