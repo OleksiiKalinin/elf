@@ -167,7 +167,6 @@ const VideoScreen: React.FC = () => {
   const [id] = useParam('id')
 
   useEffect(() => {
-    //@ts-ignore
     if (typeof window !== "undefined") setOpen(true);
   }, []);
 

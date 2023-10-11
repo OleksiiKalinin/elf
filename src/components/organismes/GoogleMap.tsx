@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { FC, HTMLFactory, useEffect, useRef, useState } from 'react';
+import React, { ComponentProps, FC, HTMLFactory, useEffect, useRef, useState } from 'react';
 import { Dimensions, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import geocoder from 'react-native-geocoder-reborn';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
@@ -11,7 +11,7 @@ import Button from '../molecules/Button';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import Autocomplete from "react-google-autocomplete";
 
-const Map = MapView as (typeof MapView & {Marker: typeof MapMarker})
+const Map = MapView as unknown as FC<ComponentProps<typeof MapView> & { options: any }> & { Marker: typeof MapMarker };
 if (Platform.OS === 'android' || Platform.OS === 'ios') {
     Map.Marker = Marker;
 }
@@ -23,30 +23,27 @@ const GoogleMap: FC<{ callback: (address: AddressType) => void, initialAddress: 
     const [webInputValue, setWebInputValue] = useState<string>(location?.formattedAddress || '');
     const NativeInputRef = useRef<any>(null);
     const WebInputRef = useRef<HTMLInputElement | null>(null);
-    const { windowSizes } = useTypedSelector(s => s.general);
     // const navigation = useNavigation();
 
     useEffect(() => {
-        if (location) NativeInputRef.current?.setAddressText(location.formattedAddress);
+        if (window.document?.body) window.document.body.style.overflowY = 'hidden';
     }, []);
 
     useEffect(() => {
-        console.log(location);
+        if (location) {
+            NativeInputRef.current?.setAddressText(location.formattedAddress);
+            setWebInputValue(location.formattedAddress || '');
+            if (WebInputRef.current) WebInputRef.current.value = location.formattedAddress || '';
+        }
     }, [location]);
 
-    // useEffect(() => {
-    //     console.log(windowSizes);
-    // }, [windowSizes]);
-
     return (
-        <View style={{ backgroundColor: Colors.Basic100, flex: 1, height: 700 }}>
-            <View style={styles.Wrapper}>
+        <View style={{ backgroundColor: Colors.Basic100, flex: 1, position: 'relative' }}>
+            <View style={styles.InputWrapper}>
                 {(Platform.OS === 'ios' || Platform.OS === 'android') && <GooglePlacesAutocomplete
                     ref={NativeInputRef}
                     placeholder="Wpisz lokalizację"
                     onPress={(data) => {
-                        console.log(data);
-
                         geocoder.geocodeAddress(data.description)
                             .then(res => setLocation(res[0] as unknown as AddressType))
                             .catch(err => console.log(err));
@@ -54,13 +51,7 @@ const GoogleMap: FC<{ callback: (address: AddressType) => void, initialAddress: 
                     onFail={(e) => console.log(e)}
                     renderLeftButton={() => (
                         <TouchableOpacity
-                            style={{
-                                height: 42,
-                                width: 35,
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                alignSelf: 'flex-start',
-                            }}
+                            style={styles.BackButton}
                         // onPress={() => navigation.goBack()}
                         >
                             <SvgIcon icon="arrowLeft" />
@@ -68,14 +59,7 @@ const GoogleMap: FC<{ callback: (address: AddressType) => void, initialAddress: 
                     )}
                     renderRightButton={() => hideControls ? <></> : (
                         <TouchableOpacity
-                            style={{
-                                height: 42,
-                                width: 35,
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                alignSelf: 'flex-start',
-                                paddingRight: 10
-                            }}
+                            style={styles.ClearButton}
                             onPress={!!NativeInputRef.current?.getAddressText() ? () => {
                                 NativeInputRef.current?.setAddressText('');
                                 setLocation(null);
@@ -98,38 +82,20 @@ const GoogleMap: FC<{ callback: (address: AddressType) => void, initialAddress: 
                         editable: !hideControls
                     }}
                     styles={{
-                        textInput: {
-                            color: Colors.Basic900,
-                            fontSize: 16,
-                            fontWeight: '400',
-                            height: '100%',
-                            marginBottom: 0,
-                            paddingVertical: 7
-                        },
-                        description: {
-                            color: Colors.Basic900,
-                            fontSize: 16,
-                            fontWeight: '600',
-                            textAlignVertical: 'center',
-                        },
+                        textInput: styles.InputNative,
+                        description: styles.InputNativeDesc,
                     }}
                 />}
                 {Platform.OS === 'web' && <View style={{ flexDirection: 'row', width: '100%', height: 42 }}>
                     <TouchableOpacity
-                        style={{
-                            height: 42,
-                            width: 35,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            alignSelf: 'flex-start',
-                        }}
+                        style={styles.BackButton}
                     // onPress={() => navigation.goBack()}
                     >
                         <SvgIcon icon="arrowLeft" />
                     </TouchableOpacity>
                     <Autocomplete
                         ref={WebInputRef}
-                        style={{ flex: 1, height: '100%', border: 0, fontSize: 16, fontWeight: '600', paddingLeft: 15 }}
+                        style={styles.InputWeb}
                         onPlaceSelected={(place) => {
                             geocoder.geocodeAddress(place.formatted_address)
                                 .then(res => setLocation(res[0] as unknown as AddressType))
@@ -140,21 +106,12 @@ const GoogleMap: FC<{ callback: (address: AddressType) => void, initialAddress: 
                             types: ['address'],
                             componentRestrictions: { country: 'pl' }
                         }}
-                        //@ts-ignore
-                        onChange={(e) => setWebInputValue(e.target.value || '')}
+                        onChange={(e) => setWebInputValue((e.target as any).value || '')}
                     />
                     <TouchableOpacity
-                        style={{
-                            height: 42,
-                            width: 35,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            alignSelf: 'flex-start',
-                            paddingRight: 10
-                        }}
+                        style={styles.ClearButton}
                         onPress={!!webInputValue ? () => {
-                            //@ts-ignore
-                            if(WebInputRef.current) WebInputRef.current.value = '';
+                            if (WebInputRef.current) WebInputRef.current.value = '';
                             setWebInputValue('');
                             setLocation(null);
                         } : undefined}
@@ -164,59 +121,43 @@ const GoogleMap: FC<{ callback: (address: AddressType) => void, initialAddress: 
                 </View>}
             </View>
             <Map
-                customMapStyle={[
-                    {
-                        featureType: 'poi',
-                        stylers: [{ visibility: 'on' }],
-                    },
-                    {
-                        featureType: 'transit',
-                        stylers: [{ visibility: 'on' }],
-                    },
-                ]}
-                style={[styles.Map, { height: 700 }]}
-                // style={[styles.Map, { height: windowSizes.height }]}
-                provider={PROVIDER_GOOGLE} // remove if not using Google Maps
+                style={[styles.Map]}
+                provider={PROVIDER_GOOGLE}
                 region={{
                     latitude: location?.position?.lat || 52.087696,
                     longitude: location?.position?.lng || 19.708369,
                     latitudeDelta: location?.position ? 0.02 : 2.2,
                     longitudeDelta: location?.position ? 0.02 : 2.2,
-                }}>
-                {!!location?.position?.lat && !!location?.position?.lng && <Map.Marker
-                    image={markerIcon}
-                    icon={markerIcon}
-                    draggable={!hideControls}
-                    coordinate={{
-                        latitude: location?.position.lat,
-                        longitude: location?.position.lng
-                    }}
-                    onDragEnd={(e: any) => {
-                        let [lat, lng]: (number | null)[] = [null, null];
-                        if (Platform.OS === 'android' || Platform.OS === 'ios') {
-                            const { nativeEvent: { coordinate: { latitude, longitude } } } = e;
-                            [lat, lng] = [latitude, longitude];
-                        } else if (Platform.OS === 'web' && e.latLng) {
-                            [lat, lng] = [e.latLng?.lat() || null, e.latLng?.lng() || null];
-                        }
-                        console.log([lat, lng]);
-                        if (lat && lng) {
-                            geocoder.geocodePosition({lat, lng})
-                            .then(res => console.log(res[0]))
-                            // .then(res => setLocation(res[0] as unknown as AddressType))
-                            // .catch(err => console.log(err));
-                        }
-                        // if (location) {
-                        //     setLocation({
-                        //         ...location,
-                        //         position: { lat: latitude, lng: longitude }
-                        //     });
-                        // }
-                    }}
-                    // onDragEnd={(e) => console.log(e.latLng?.lng())}
-                />}
+                }}
+                options={{ gestureHandling: "greedy" }}
+            >
+                {!!location?.position?.lat && !!location?.position?.lng &&
+                    <Map.Marker
+                        image={markerIcon}
+                        icon={markerIcon}
+                        draggable={!hideControls}
+                        coordinate={{
+                            latitude: location?.position.lat,
+                            longitude: location?.position.lng
+                        }}
+                        onDragEnd={(e: any) => {
+                            let [lat, lng]: (number | null)[] = [null, null];
+                            if (Platform.OS === 'android' || Platform.OS === 'ios') {
+                                const { nativeEvent: { coordinate: { latitude, longitude } } } = e;
+                                [lat, lng] = [latitude, longitude];
+                            } else if (Platform.OS === 'web' && e.latLng) {
+                                [lat, lng] = [e.latLng.lat?.() || null, e.latLng.lng?.() || null];
+                            }
+                            if (lat && lng) {
+                                geocoder.geocodePosition({ lat, lng })
+                                    .then(res => setLocation({ ...(res[0] as unknown as AddressType), position: lat && lng ? { lat, lng } : res[0].position }))
+                                    .catch(err => console.log(err));
+                            }
+                        }}
+                    />
+                }
             </Map>
-            {!hideControls && <View style={{ position: 'absolute', bottom: 0, left: 0, zIndex: 100, width: '100%' }}>
+            {!hideControls && <View style={styles.Button}>
                 <Button
                     variant="primary"
                     disabled={!location}
@@ -235,23 +176,70 @@ const GoogleMap: FC<{ callback: (address: AddressType) => void, initialAddress: 
 };
 
 const styles = StyleSheet.create({
-    Wrapper: {
+    BackButton: {
+        height: 42,
+        width: 35,
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'flex-start',
+    },
+    InputWrapper: {
         backgroundColor: Colors.White,
         width: '100%',
-        position: 'absolute',
+        position: Platform.select({ web: 'fixed', native: 'absolute' }),
         top: 0,
         left: 0,
-        zIndex: 1,
+        zIndex: 2,
         flexDirection: 'row',
         alignItems: 'flex-start',
     },
+    ClearButton: {
+        height: 42,
+        width: 35,
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'flex-start',
+        paddingRight: 10
+    },
+    InputNative: {
+        color: Colors.Basic900,
+        fontSize: 16,
+        fontWeight: '400',
+        height: '100%',
+        marginBottom: 0,
+        paddingVertical: 7
+    },
+    InputNativeDesc: {
+        color: Colors.Basic900,
+        fontSize: 16,
+        fontWeight: '600',
+        textAlignVertical: 'center',
+    },
+    InputWeb: {
+        flex: 1,
+        height: '100%',
+        border: 0,
+        fontSize: 16,
+        fontWeight: '600',
+        paddingLeft: 15
+    },
     Map: {
-        width: '100%',
         paddingTop: 42,
         paddingBottom: 50,
-        // justifyContent: 'flex-end',
-        // alignItems: 'center',
+        position: Platform.select({ web: 'fixed', native: 'absolute' }),
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 1,
     },
+    Button: {
+        position: Platform.select({ web: 'fixed', native: 'absolute' }),
+        bottom: 0,
+        left: 0,
+        width: '100%',
+        zIndex: 2,
+    }
 });
 
 export default GoogleMap;

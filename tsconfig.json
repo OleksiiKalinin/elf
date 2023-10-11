@@ -3,8 +3,10 @@
   "extends": "@tsconfig/react-native/tsconfig.json", /* Recommended React Native TSConfig base */
   "compilerOptions": {
     "target": "esnext",   
+    "module": "commonjs",
     "lib": [
-      "es2017",
+      "esnext",
+      "dom"
     ],
     /* Completeness */
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,

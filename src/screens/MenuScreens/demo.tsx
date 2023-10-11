@@ -12,11 +12,8 @@ function DialogInstance() {
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
-    //@ts-ignore
     if (window !== undefined) {
-      //@ts-ignore
-      const styles = window?.document?.body?.style || {};
-      //@ts-ignore
+      const styles = window.document?.body?.style || {};
       // const overflow = window?.getComputedStyle(window?.document?.body)?.overflowY;
       styles.overflowY = modalVisible ? 'hidden' : 'auto';
     }

@@ -26,10 +26,12 @@ import hasKey from '../../hooks/hasKey';
 import { useSwipeablePanelParams } from '../../hooks/useSwipeablePanelParams';
 import getPathnameFromScreen from '../../hooks/getPathnameFromScreen';
 import { useRouter } from 'solito/router';
-import { Separator } from 'tamagui';
+import { Image, Separator } from 'tamagui';
 import { MenuDemo } from './demo2';
 import { DateTimePickerDemo } from './demo3';
-import CarouselDemo from './demo4';
+import Carousel from '../../components/organismes/Carousel';
+import demo4 from './demo4';
+import Demo4 from './demo4';
 
 
 const MainScreen: React.FC = ({ }) => {
@@ -287,7 +289,7 @@ const MainScreen: React.FC = ({ }) => {
       //   </TouchableOpacity>
       // </View>}
       >
-        <CarouselDemo />
+        <DateTimePickerDemo />
         <ScrollView
           contentContainerStyle={{ alignItems: 'center' }}
           style={{ backgroundColor: Colors.Basic100, flex: 1 }}

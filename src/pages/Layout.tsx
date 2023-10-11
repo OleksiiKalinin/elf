@@ -20,8 +20,8 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
   }, [router]);
 
   return (
-    <View>
-      <View style={{ paddingBottom: isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0 }}>
+    <>
+      <View style={{ paddingBottom: isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0, minHeight: '100vh', }}>
         {children}
       </View>
       <View style={{
@@ -35,6 +35,6 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
         <BottomTabs routes={Object.keys(navigationLinking.config?.screens || {})} />
       </View>
       <SwipeablePanel />
-    </View>
+    </>
   );
 };

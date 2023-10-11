@@ -57,8 +57,7 @@ const SwipeablePanel: React.FC = () => {
     }
 
     useEffect(() => {
-        //@ts-ignore
-        const style = window?.document?.body?.style;
+        const style = window.document?.body?.style;
         if (!!swipeablePanelProps) {
             if (style) style.overflowY = 'hidden';
             const handler = BackHandler.addEventListener('hardwareBackPress', () => {
