@@ -50,7 +50,7 @@ buttons={[
 //   salary_time_type_id: number | null,
 // }
 
-const { useParam } = createParam<AdvertStackParamList['AdvertEditorScreen']>();
+const { useParam } = createParam<NonNullable<AdvertStackParamList['AdvertEditorScreen']>>();
 
 const AdvertEditorScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
@@ -82,6 +82,7 @@ const AdvertEditorScreen: React.FC = () => {
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [id] = useParam('id')
+  const [isMainMenuSender] = useParam('isMainMenuSender')
   const { subView, subViewMode } = useSwipeablePanelParams();
   const {setSwipeablePanelProps} = useActions();
   
