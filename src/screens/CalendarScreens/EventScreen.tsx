@@ -29,6 +29,7 @@ import ChooseAdvertScreen from './ChooseAdvertScreen';
 import ChooseCandidateScreen from './ChooseCandidateScreen';
 import { ScrollView } from '../../components/molecules/ScrollView';
 import { Separator } from 'tamagui';
+import { createParam } from 'solito';
 // import CandidateCard from '../../components/organisms/CandidateCard/CandidateCard';
 
 const normalizeTimeForPicker = (mode: 'start' | 'end'): Date => {
@@ -50,9 +51,12 @@ const normalizeTimeForPicker = (mode: 'start' | 'end'): Date => {
   );
 }
 
+const { useParam } = createParam<NonNullable<CalendarStackParamList['EventScreen']>>();
+
 const EventScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const router = useRouter();
+  const [isMainMenuSender] = useParam('isMainMenuSender');
   const { subView, subViewMode } = useSwipeablePanelParams();
   const [loading, setLoading] = useState<boolean>(false);
   const [eventType, setEventType] = useState<'meeting' | 'call'>('call');
@@ -77,7 +81,7 @@ const EventScreen: React.FC = () => {
   // const [personRemove, personRemoveToggle] = useState(false);
   const { setSwipeablePanelProps } = useActions();
   const isFirstLoad = useRef(true);
-
+  
   useEffect(() => {
     isFirstLoad.current = false;
   }, []);

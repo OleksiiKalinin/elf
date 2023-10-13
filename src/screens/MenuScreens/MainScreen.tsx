@@ -32,12 +32,17 @@ import { DateTimePickerDemo } from './demo3';
 import Carousel from '../../components/organismes/Carousel';
 import demo4 from './demo4';
 import Demo4 from './demo4';
+import { useNavigation } from '@react-navigation/native';
+import withUrl from '../../hooks/withUrl';
+import { MenuStackParamList } from '../../navigators/MenuNavigator';
 
+const { useParam } = createParam<MenuStackParamList['MainScreen']>();
 
 const MainScreen: React.FC = ({ }) => {
   const dispatch = useTypedDispatch();
   const router = useRouter();
-  const { subView, subViewMode } = useSwipeablePanelParams();
+  const [subView] = useParam('subView');
+  // const { subView, subViewMode } = useSwipeablePanelParams();
   const { isMainMenuFlatList, userData, token, currentScreen } = useTypedSelector(state => state.general);
   const { setIsMainMenuFlatList, setSwipeablePanelProps } = useActions();
 
@@ -46,24 +51,25 @@ const MainScreen: React.FC = ({ }) => {
       if (subView === 'options') return {
         title: 'Co robimy tym razem?',
         closeButton: true,
-        mode: subViewMode,
+        // mode: subViewMode,
         buttons: [
           {
             children: 'Stwórz nowe wydarzenie',
             icon: <SvgIcon icon='calendar' />,
             closeAction: 'props-null',
-            onPress: () => router.replace('/calendar/EventScreen?isMainMenuSender=true')
+            onPress: () => router.replace(withUrl({stack: 'CalendarStack', screen: 'EventScreen', params: {isMainMenuSender: 'true'}}))
           },
           {
             children: 'Stwórz nowe ogłoszenie',
             icon: <SvgIcon icon='work' />,
-            onPress: () => { }//navigation.navigate('AdvertStack', { screen: 'AdvertEditorScreen', params: { isMainMenuSender: true } })
+            onPress: () => router.replace(withUrl({stack: 'AdvertStack', screen: 'AdvertEditorScreen', params: {isMainMenuSender: 'true'}}))
           },
         ],
       }
       return null;
     })());
-  }, [subView, subViewMode]);
+  }, [subView]);
+  // }, [subView, subViewMode]);
 
   const sectionButtons: {
     sectionTitle: string,
@@ -347,7 +353,7 @@ const MainScreen: React.FC = ({ }) => {
           ))}
         </ScrollView>
       </ScreenHeaderProvider>
-      <CornerCircleButton {...useLink({ href: '/home?subView=options&subViewMode=options' })} />
+      <CornerCircleButton {...useLink({ href: withUrl({ stack: 'MenuStack', screen: 'MainScreen', params: { subView: 'options' } }) })} />
     </View>
   );
 };

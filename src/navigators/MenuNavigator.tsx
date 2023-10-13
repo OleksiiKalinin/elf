@@ -9,7 +9,7 @@ import QuestionsScreen from '../screens/MenuScreens/QuestionsScreen';
 import { PathConfigMap } from '@react-navigation/native';
 
 export type MenuStackParamList = {
-  MainScreen: undefined;
+  MainScreen: {subView: 'options' | 'blabla'};
   CallsScreen: undefined;
   EventsScreen: undefined;
   NewsScreen: undefined;

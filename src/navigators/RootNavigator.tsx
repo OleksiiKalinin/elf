@@ -28,6 +28,16 @@ import BottomTabs from '../components/organismes/BottomTabs';
 import SwipeablePanel from '../components/organismes/SwipeablePanel';
 import AsyncStorage from '@react-native-community/async-storage';
 
+export type AllNestedParamList = {
+  MenuStack: MenuStackParamList;
+  CandidatesStack: CandidatesStackParamList;
+  CalendarStack: CalendarStackParamList;
+  AdvertStack: AdvertStackParamList;
+  MessengerStack: MessengerStackParamList;
+  ProfileStack: ProfileStackParamList;
+  AuthStack: AuthStackParamList;
+};
+
 export type RootStackParamList = {
   MenuStack: NavigatorScreenParams<MenuStackParamList>;
   CandidatesStack: NavigatorScreenParams<CandidatesStackParamList>;

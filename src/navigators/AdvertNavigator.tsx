@@ -18,7 +18,7 @@ type JobCategoryScreenCallbackProps = {
 export type AdvertStackParamList = {
   MainScreen: undefined;
   AdvertScreen: { id: string };
-  AdvertEditorScreen: { id: string };
+  AdvertEditorScreen: { id?: string, isMainMenuSender?: 'true' | 'false' } | undefined;
   CandidatesScreen: { id: string };
   JobScreen: { callback: (id: number) => void, job_positions: JobPositionType[] };
   JobCategoryScreen: { callback: (props: JobCategoryScreenCallbackProps) => void };

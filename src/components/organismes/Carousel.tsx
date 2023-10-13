@@ -3,8 +3,7 @@ import RNCarousel, { ICarouselInstance, TCarouselProps } from 'react-native-rean
 import { FC, useRef, useState } from 'react';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import Colors from '../../colors/Colors';
-
-type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
+import { PartialBy } from '../../hooks/types';
 
 const Carousel: FC<
     {

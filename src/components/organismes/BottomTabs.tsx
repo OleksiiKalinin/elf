@@ -16,6 +16,7 @@ import Colors from '../../colors/Colors';
 import Button from '../molecules/Button';
 import { useLink } from 'solito/link';
 import Typography from '../atoms/Typography';
+import withUrl from '../../hooks/withUrl';
 
 export const BOTTOM_TABS_HEIGHT = 45;
 
@@ -85,27 +86,26 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes }) => {
     return (
         <Animated.View style={[{ flexDirection: 'row', backgroundColor: Colors.White, height: isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0, visibility: isTabbarVisible ? 'visible' : 'hidden' }]}>
             {/* <Animated.View style={[{ flexDirection: 'row', backgroundColor: Colors.White }, animationStyle]}> */}
-            {routes.map(route => {
-                const label = route as keyof RootStackParamList;
-                const href = ((navigationLinking.config?.screens[label] as any)?.path || '') as string;
-                const isFocused = (currentScreen.split('-')[0] === label) || (label === 'MenuStack' && currentScreen.split('-')[0] === 'ProfileStack');
+            {routes.map((route) => {
+                const stack = route as keyof RootStackParamList;
+                const isFocused = (currentScreen.split('-')[0] === stack) || (stack === 'MenuStack' && currentScreen.split('-')[0] === 'ProfileStack');
 
                 const excludedStacks: Array<keyof RootStackParamList> = ['AuthStack', 'ProfileStack'];
-                if (excludedStacks.includes(label)) return null;
+                if (excludedStacks.includes(stack)) return null;
 
                 return (
                     <Button
-                        key={label}
+                        key={stack}
                         variant='white'
                         accessibilityState={isFocused ? { selected: true } : {}}
                         style={{ height: '100%', flex: 1 }}
-                        {...(!!href ? useLink({ href: '/' + href }) : {})}
+                        {...useLink({ href: withUrl({stack: stack as any}) })}
                     >
                         <View style={{ position: 'relative', width: '100%', height: '100%' }}>
-                            {!!badgeNumbers[label] && <View style={{ position: 'absolute', borderRadius: 8, paddingLeft: 5, paddingRight: 5, backgroundColor: Colors.Basic900, zIndex: 1,  left: 16, top: -8 }}>
-                                <Typography color={Colors.Basic100} variant='small'>{badgeNumbers[label] > 50 ? '50+' : badgeNumbers[label]}</Typography>
+                            {!!badgeNumbers[stack] && <View style={{ position: 'absolute', borderRadius: 8, paddingLeft: 5, paddingRight: 5, backgroundColor: Colors.Basic900, zIndex: 1,  left: 16, top: -8 }}>
+                                <Typography color={Colors.Basic100} variant='small'>{badgeNumbers[stack] > 50 ? '50+' : badgeNumbers[stack]}</Typography>
                             </View>}
-                            <SvgIcon icon={icons[label]} fill={Colors[isFocused ? 'Basic900' : 'Basic600']} />
+                            <SvgIcon icon={icons[stack]} fill={Colors[isFocused ? 'Basic900' : 'Basic600']} />
                         </View>
                     </Button>
                 )

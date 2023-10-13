@@ -7,7 +7,7 @@ import { PathConfigMap } from '@react-navigation/native';
 
 export type CalendarStackParamList = {
   MainScreen: undefined;
-  EventScreen: { isMainMenuSender?: boolean } | undefined;
+  EventScreen: { isMainMenuSender?: 'true' | 'false' } | undefined;
   MapScreen: { callback: (address: AddressType) => void, initialAddress: AddressType | null },
   ChooseAdvertScreen: { callback: (advert: UserAdvertType) => void };
   ChooseCandidateScreen: {candidates: UserAdvertType['candidate_data'], callback: (candidate: CandidateDataType) => void};
