@@ -2,7 +2,6 @@ import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Touchable, View, Text } from 'react-native';
 import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
 // import HorizontalMenuButton from '../../components/atoms/HorizontalMenuButton/HorizontalMenuButton';
 // import ButtonArrowSelector from '../../components/atoms/ButtonArrowSelector/ButtonArrowSelector';

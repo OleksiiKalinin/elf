@@ -6,7 +6,6 @@ import Colors from '../../colors/Colors';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { AdvertStackParamList } from '../../navigators/AdvertNavigator';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 import advertsServices from '../../services/advertsServices';
 import { CandidateDataType } from '../../store/reducers/types';
 import LoadingScreen from '../../components/atoms/LoadingScreen';

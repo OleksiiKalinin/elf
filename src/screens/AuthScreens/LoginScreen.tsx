@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 
 import { AuthStackParamList } from '../../navigators/AuthNavigator';
 import { CompositeScreenProps } from '@react-navigation/native';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
 import { useDispatch } from 'react-redux';
 import validateMail from '../../hooks/validateMail';

@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { CompositeScreenProps } from '@react-navigation/native';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
 import { useActions } from '../../hooks/useActions';
 import SvgIcon from '../../components/atoms/SvgIcon';

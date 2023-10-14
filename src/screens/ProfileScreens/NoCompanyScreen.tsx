@@ -11,7 +11,6 @@ import {
 import { SceneMap } from 'react-native-tab-view';
 import Colors from '../../colors/Colors';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import AsyncStorage from '@react-native-community/async-storage';
 import { useDispatch } from 'react-redux';

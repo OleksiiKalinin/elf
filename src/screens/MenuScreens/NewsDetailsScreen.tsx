@@ -4,7 +4,6 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import Colors from '../../colors/Colors';
 import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
 import { MenuStackParamList } from '../../navigators/MenuNavigator';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 

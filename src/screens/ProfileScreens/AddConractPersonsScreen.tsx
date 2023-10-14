@@ -1,7 +1,6 @@
 import React, { Fragment, useState } from 'react';
 import { View, ScrollView, TouchableOpacity, Dimensions, Slider } from 'react-native';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { ContactPersonType } from '../../store/reducers/types';
 import minutesToHours from '../../hooks/minutesToHours';

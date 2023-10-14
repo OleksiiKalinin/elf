@@ -5,7 +5,6 @@ import { TouchableOpacity } from 'react-native';
 import Colors from '../../colors/Colors';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 // import DatePicker from 'react-native-date-picker';
 // import SmallMap from '../../components/organisms/SmallMap/SmallMap';
 import { useActions } from '../../hooks/useActions';

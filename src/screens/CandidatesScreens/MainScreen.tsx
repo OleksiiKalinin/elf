@@ -12,7 +12,6 @@ import {
   View,
 } from 'react-native';
 import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useActions } from '../../hooks/useActions';

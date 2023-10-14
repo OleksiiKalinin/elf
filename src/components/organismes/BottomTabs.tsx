@@ -1,7 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { Keyboard, View, Dimensions } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { RootStackParamList, navigationLinking } from '../../navigators/RootNavigator';
 import SvgIcon, { IconTypes } from '../atoms/SvgIcon';
 import { MenuStackParamList } from '../../navigators/MenuNavigator';
 import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
@@ -17,6 +16,7 @@ import Button from '../molecules/Button';
 import { useLink } from 'solito/link';
 import Typography from '../atoms/Typography';
 import withUrl from '../../hooks/withUrl';
+import { RootStackParamList } from '../../navigators/RootNavigator';
 
 export const BOTTOM_TABS_HEIGHT = 45;
 
@@ -34,15 +34,9 @@ const icons: { [k in keyof RootStackParamList]: IconTypes } = {
     ProfileStack: 'pencil',
 }
 
-const hiddenTabbarScreens: {
-    MenuStack: Array<keyof MenuStackParamList>;
-    CandidatesStack: Array<keyof CandidatesStackParamList>;
-    CalendarStack: Array<keyof CalendarStackParamList>;
-    AdvertStack: Array<keyof AdvertStackParamList>;
-    MessengerStack: Array<keyof MessengerStackParamList>;
-    ProfileStack: Array<keyof ProfileStackParamList>;
-    AuthStack: Array<keyof AuthStackParamList>;
-} = {
+type ScreensType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: Array<keyof RootStackParamList[T]> } : never;
+
+const hiddenTabbarScreens: ScreensType = {
     AdvertStack: ['AdvertScreen', 'JobScreen', 'AdvertEditorScreen', 'CandidatesScreen', 'JobCategoryScreen', 'MapScreen'],
     AuthStack: ['MainScreen', 'LoginScreen', 'RegistrationScreen', 'RememberPasswordScreen', 'FillUserDataScreen'],
     CandidatesStack: ['ProfileScreen', 'VideoScreen', 'FavouritesScreen', 'FavSettingsScreen', 'FilterScreen', 'MapScreen', 'ProfileScreen', 'VideoScreen'],
@@ -99,10 +93,10 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes }) => {
                         variant='white'
                         accessibilityState={isFocused ? { selected: true } : {}}
                         style={{ height: '100%', flex: 1 }}
-                        {...useLink({ href: withUrl({stack: stack as any}) })}
+                        {...useLink({ href: withUrl({ stack: stack as any }) })}
                     >
                         <View style={{ position: 'relative', width: '100%', height: '100%' }}>
-                            {!!badgeNumbers[stack] && <View style={{ position: 'absolute', borderRadius: 8, paddingLeft: 5, paddingRight: 5, backgroundColor: Colors.Basic900, zIndex: 1,  left: 16, top: -8 }}>
+                            {!!badgeNumbers[stack] && <View style={{ position: 'absolute', borderRadius: 8, paddingLeft: 5, paddingRight: 5, backgroundColor: Colors.Basic900, zIndex: 1, left: 16, top: -8 }}>
                                 <Typography color={Colors.Basic100} variant='small'>{badgeNumbers[stack] > 50 ? '50+' : badgeNumbers[stack]}</Typography>
                             </View>}
                             <SvgIcon icon={icons[stack]} fill={Colors[isFocused ? 'Basic900' : 'Basic600']} />

@@ -1,7 +1,6 @@
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
 import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 import Video from 'react-native-video';
 import Colors from '../../colors/Colors';
 // import { useTypedSelector } from '../../hooks/useTypedSelector';

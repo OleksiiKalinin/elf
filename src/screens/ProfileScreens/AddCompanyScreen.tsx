@@ -13,7 +13,6 @@ import React, { Fragment, useCallback, useEffect, useState, useRef } from 'react
 import {
   CompositeScreenProps,
 } from '@react-navigation/native';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { nativeStore } from '../../store';

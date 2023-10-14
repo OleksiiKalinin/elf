@@ -6,7 +6,6 @@ import Colors from '../../colors/Colors';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 import authServices from '../../services/authServices';
 import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';

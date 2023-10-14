@@ -28,7 +28,7 @@ import BottomTabs from '../components/organismes/BottomTabs';
 import SwipeablePanel from '../components/organismes/SwipeablePanel';
 import AsyncStorage from '@react-native-community/async-storage';
 
-export type AllNestedParamList = {
+export type RootStackParamList = {
   MenuStack: MenuStackParamList;
   CandidatesStack: CandidatesStackParamList;
   CalendarStack: CalendarStackParamList;
@@ -38,19 +38,11 @@ export type AllNestedParamList = {
   AuthStack: AuthStackParamList;
 };
 
-export type RootStackParamList = {
-  MenuStack: NavigatorScreenParams<MenuStackParamList>;
-  CandidatesStack: NavigatorScreenParams<CandidatesStackParamList>;
-  CalendarStack: NavigatorScreenParams<CalendarStackParamList>;
-  AdvertStack: NavigatorScreenParams<AdvertStackParamList>;
-  MessengerStack: NavigatorScreenParams<MessengerStackParamList>;
-  ProfileStack: NavigatorScreenParams<ProfileStackParamList>;
-  AuthStack: NavigatorScreenParams<AuthStackParamList>;
-};
+type RootStackNavigatorType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? {[T in keyof RootStackParamList]: NavigatorScreenParams<RootStackParamList[T]>} : never;
 
-const RootStack = createBottomTabNavigator<RootStackParamList>();
+const RootStack = createBottomTabNavigator<RootStackNavigatorType>();
 
-export const navigationLinking: LinkingOptions<RootStackParamList> = {
+export const navigationLinking: LinkingOptions<RootStackNavigatorType> = {
   prefixes: ['localhost'],
   config: {
     screens: {

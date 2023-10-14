@@ -4,7 +4,6 @@ import Colors from '../../colors/Colors';
 // import Typography from '../../components/atoms/Typography/Typography';
 // import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
 import { AuthStackParamList } from '../../navigators/AuthNavigator';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 import {
   CompositeScreenProps, useIsFocused
 } from '@react-navigation/native';

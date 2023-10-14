@@ -1,18 +1,18 @@
 import { forIn, isPlainObject } from "lodash";
-import { AllNestedParamList } from "../navigators/RootNavigator";
+import { RootStackParamList } from "../navigators/RootNavigator";
 import getPathnameFromScreen from "./getPathnameFromScreen";
 
-type Props<T extends keyof AllNestedParamList = keyof AllNestedParamList> = T extends T ? Stack<T> : never;
+type Props<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? Stack<T> : never;
 
-type Stack<T extends keyof AllNestedParamList> = {
+type Stack<T extends keyof RootStackParamList> = {
     stack: T,
-} & (Screens<T, keyof AllNestedParamList[T]> | {screen?: undefined, params?: any});
+} & (Screens<T, keyof RootStackParamList[T]> | {screen?: undefined, params?: any});
 
-type Screens<T extends keyof AllNestedParamList, K extends keyof AllNestedParamList[T] = keyof AllNestedParamList[T]> = K extends K ? Screen<T, K> : never;
+type Screens<T extends keyof RootStackParamList, K extends keyof RootStackParamList[T] = keyof RootStackParamList[T]> = K extends K ? Screen<T, K> : never;
 
-type Screen<T extends keyof AllNestedParamList, K extends keyof AllNestedParamList[T]> = {
+type Screen<T extends keyof RootStackParamList, K extends keyof RootStackParamList[T]> = {
     screen: K,
-} & OptionalParams<AllNestedParamList[T][K]>;
+} & OptionalParams<RootStackParamList[T][K]>;
 
 type OptionalParams<T> = [T] extends [undefined] ? { params?: any } : T extends undefined ? { params?: any } : { params: T };
 

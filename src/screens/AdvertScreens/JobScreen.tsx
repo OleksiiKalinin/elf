@@ -1,7 +1,6 @@
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
 import { AdvertStackParamList } from '../../navigators/AdvertNavigator';
 import { useActions } from '../../hooks/useActions';

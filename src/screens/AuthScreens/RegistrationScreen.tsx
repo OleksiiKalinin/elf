@@ -2,7 +2,6 @@ import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { AuthStackParamList } from '../../navigators/AuthNavigator';
 import { CompositeScreenProps, useRoute } from '@react-navigation/native';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
 import authServices from '../../services/authServices';
 import { useDispatch } from 'react-redux';

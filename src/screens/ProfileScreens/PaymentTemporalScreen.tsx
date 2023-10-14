@@ -1,7 +1,6 @@
 import { Alert, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { CompositeScreenProps, useIsFocused, useRoute } from '@react-navigation/native';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { useActions } from '../../hooks/useActions';

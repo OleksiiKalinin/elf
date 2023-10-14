@@ -8,7 +8,6 @@ import { AdvertStackParamList } from '../../navigators/AdvertNavigator';
 import { MessengerStackParamList } from '../../navigators/MessengerNavigator';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { AuthStackParamList } from '../../navigators/AuthNavigator';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 import SvgIcon, { IconTypes } from '../atoms/SvgIcon';
 import Typography from '../atoms/Typography';
 import Button from '../molecules/Button';
@@ -18,16 +17,9 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { createParam } from 'solito';
 import { useActions } from '../../hooks/useActions';
 import getPathnameFromScreen from '../../hooks/getPathnameFromScreen';
+import { RootStackParamList } from '../../navigators/RootNavigator';
 
-type ScreensTitlesType = {
-  MenuStack: { [k in keyof MenuStackParamList]: string };
-  CandidatesStack: { [k in keyof CandidatesStackParamList]: string };
-  CalendarStack: { [k in keyof CalendarStackParamList]: string };
-  AdvertStack: { [k in keyof AdvertStackParamList]: string };
-  MessengerStack: { [k in keyof MessengerStackParamList]: string };
-  ProfileStack: { [k in keyof ProfileStackParamList]: string };
-  AuthStack: { [k in keyof AuthStackParamList]: string };
-};
+type ScreensTitlesType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: {[K in keyof RootStackParamList[T]]: string} } : never;
 
 export const screensTitles: ScreensTitlesType = {
   AuthStack: {

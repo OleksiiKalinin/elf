@@ -7,7 +7,6 @@ import {
   View,
 } from 'react-native';
 import Colors from '../../colors/Colors';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 import {
   CompositeScreenProps,
   useIsFocused,

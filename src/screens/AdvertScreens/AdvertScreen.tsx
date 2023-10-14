@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { AdvertStackParamList } from '../../navigators/AdvertNavigator';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
 // import TabbarMenu, { TabbarRoute, } from '../../components/organisms/TabbarMenu/TabbarMenu';
 import { SceneMap } from 'react-native-tab-view';

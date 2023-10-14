@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
 // import SmallMap from '../../components/organisms/SmallMap/SmallMap';
 import { nativeStore } from '../../store';

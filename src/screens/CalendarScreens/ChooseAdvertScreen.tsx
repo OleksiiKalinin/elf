@@ -4,7 +4,6 @@ import { ScrollView, View } from 'react-native';
 import Colors from '../../colors/Colors';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 import AdvertSmall from '../../components/organismes/AdvertSmall';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { useRouter } from 'solito/router';

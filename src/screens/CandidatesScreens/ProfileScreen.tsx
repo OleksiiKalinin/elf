@@ -2,7 +2,6 @@ import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
 import { SceneMap } from 'react-native-tab-view';
 import { useTypedSelector } from '../../hooks/useTypedSelector';

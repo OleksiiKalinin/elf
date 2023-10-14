@@ -3,7 +3,6 @@ import React, { FC } from 'react';
 import { Dimensions, ScrollView, View } from 'react-native';
 // import SelectDropdown from 'react-native-select-dropdown';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 import SvgIcon from '../../components/atoms/SvgIcon';
 import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';

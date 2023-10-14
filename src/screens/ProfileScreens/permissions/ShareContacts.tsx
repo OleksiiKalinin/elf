@@ -1,7 +1,6 @@
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useState } from 'react';
 import { CompositeScreenProps, useRoute } from '@react-navigation/native';
-import { RootStackParamList } from '../../../navigators/RootNavigator';
 import Colors from '../../../colors/Colors';
 import Switch from '../../../components/atoms/Switch';
 import Typography from '../../../components/atoms/Typography';

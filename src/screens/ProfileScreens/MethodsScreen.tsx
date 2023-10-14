@@ -1,7 +1,6 @@
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 import Colors from '../../colors/Colors';
 import CheckBox from '../../components/atoms/CheckBox';
 import TextField from '../../components/molecules/TextField';

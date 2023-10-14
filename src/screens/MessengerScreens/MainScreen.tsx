@@ -7,7 +7,6 @@ import { Linking, View } from 'react-native';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { MessengerStackParamList } from '../../navigators/MessengerNavigator';
-import { RootStackParamList } from '../../navigators/RootNavigator';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Button from '../../components/molecules/Button';
 import Typography from '../../components/atoms/Typography';
