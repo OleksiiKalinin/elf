@@ -35,12 +35,14 @@ import Demo4 from './demo4';
 import { useNavigation } from '@react-navigation/native';
 import withUrl from '../../hooks/withUrl';
 import { MenuStackParamList } from '../../navigators/MenuNavigator';
+import useRouter2 from '../../hooks/router'
 
 const { useParam } = createParam<MenuStackParamList['default']['MainScreen']>();
 
 const MainScreen: React.FC = ({ }) => {
   const dispatch = useTypedDispatch();
   const router = useRouter();
+  const router2 = useRouter2();
   const [subView] = useParam('subView');
   // const { subView, subViewMode } = useSwipeablePanelParams();
   const { isMainMenuFlatList, userData, token, currentScreen } = useTypedSelector(state => state.general);
@@ -73,14 +75,13 @@ const MainScreen: React.FC = ({ }) => {
 
   const sectionButtons: {
     sectionTitle: string,
-    buttons: {
+    buttons: ({
       title: string,
       backgroundColor: string,
       icon: IconTypes,
-      onPress: (event: GestureResponderEvent) => void,
       missedEvents: number,
-      badge: string
-    }[]
+      badge: string,
+    } & ReturnType<typeof useLink>)[]
   }[] = [
       {
         sectionTitle: 'Aktualności',
@@ -99,7 +100,9 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Zaplanowane spotkania',
             backgroundColor: Colors.Sea300,
             icon: 'meeting',
-            onPress: () => { },//navigation.navigate('EventsScreen'),
+            ...useLink({
+              href: '/home/EventsScreen'
+            }),
             missedEvents: 0,
             badge: ''
           },
@@ -117,7 +120,9 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Powiadomienia',
             backgroundColor: Colors.Sea300,
             icon: 'notification',
-            onPress: () => { },//navigation.navigate('CalendarStack', { screen: 'MainScreen' }),
+            ...useLink({
+              href: '/home/EventsScreen'
+            }),
             missedEvents: 0,
             badge: ''
           },
@@ -140,7 +145,9 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Twoi ulubieni kandydaci',
             backgroundColor: Colors.Blue100,
             icon: 'cardOutlined',
-            onPress: () => { },
+            ...useLink({
+              href: '/home/EventsScreen'
+            }),
             missedEvents: 0,
             badge: ''
           },
@@ -183,7 +190,9 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Kalkulator wynagrodzeń',
             backgroundColor: Colors.Basic200,
             icon: 'calculator',
-            onPress: () => console.log('abc'),
+            ...useLink({
+              href: '/home/EventsScreen'
+            }),
             missedEvents: 0,
             badge: ''
           },
@@ -191,7 +200,9 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Lista pytań',
             backgroundColor: Colors.Basic200,
             icon: 'list',
-            onPress: () => { },//navigation.navigate('QuestionsScreen'),
+            ...useLink({
+              href: '/home/EventsScreen'
+            }),
             missedEvents: 0,
             badge: ''
           },
@@ -199,7 +210,9 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Artykuły i nowości',
             backgroundColor: Colors.Basic200,
             icon: 'fileDocument',
-            onPress: () => { },//navigation.navigate('NewsScreen'),
+            ...useLink({
+              href: '/home/EventsScreen'
+            }),
             missedEvents: 0,
             badge: 'Nowe',
           },
@@ -207,7 +220,9 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Wszystkie instrukcje',
             backgroundColor: Colors.Basic200,
             icon: 'fileDocument',
-            onPress: () => { },//navigation.navigate('ProfileStack', { screen: 'HelpCenterScreen' }),
+            ...useLink({
+              href: '/home/EventsScreen'
+            }),
             missedEvents: 0,
             badge: ''
           },
@@ -295,7 +310,6 @@ const MainScreen: React.FC = ({ }) => {
       //   </TouchableOpacity>
       // </View>}
       >
-        <DateTimePickerDemo />
         <ScrollView
           contentContainerStyle={{ alignItems: 'center' }}
           style={{ backgroundColor: Colors.Basic100, flex: 1 }}
@@ -305,10 +319,10 @@ const MainScreen: React.FC = ({ }) => {
               <Typography weight='Bold' size={20} style={{ width: '88%', marginLeft: isMainMenuFlatList ? 0 : 20, marginBottom: isMainMenuFlatList ? 5 : 0 }}>
                 {sectionTitle}
               </Typography>
-              {buttons.map(({ backgroundColor, badge, icon, missedEvents, onPress, title }, index) => (
+              {buttons.map(({ backgroundColor, badge, icon, missedEvents, title, ...props }, index) => (
                 <Fragment key={index}>
                   {isMainMenuFlatList ?
-                    <TouchableOpacity activeOpacity={0.5} onPress={onPress} style={styles.FlatButton}>
+                    <TouchableOpacity activeOpacity={0.5} style={styles.FlatButton} {...props}>
                       <View style={{ height: '100%', paddingVertical: 10, paddingRight: 15, paddingLeft: 5 }}>
                         <View style={[styles.FlatIconBG, { backgroundColor }]}>
                           <SvgIcon icon={icon} />
@@ -328,7 +342,7 @@ const MainScreen: React.FC = ({ }) => {
                     </TouchableOpacity>
                     :
                     <View style={styles.GridButtonWrapper}>
-                      <TouchableOpacity activeOpacity={0.5} onPress={onPress} style={[styles.GridButton]}>
+                      <TouchableOpacity activeOpacity={0.5} style={[styles.GridButton]} {...props}>
                         <View style={[styles.GridIconBG, { backgroundColor }]}>
                           <SvgIcon icon={icon} />
                         </View>
@@ -353,7 +367,8 @@ const MainScreen: React.FC = ({ }) => {
           ))}
         </ScrollView>
       </ScreenHeaderProvider>
-      <CornerCircleButton {...useLink({ href: withUrl({ stack: 'MenuStack', screen: 'MainScreen', params: { subView: 'options' } }) })} />
+      <CornerCircleButton {...router2.useLink({href: {stack: 'CalendarStack'}})} />
+      {/* <CornerCircleButton {...useLink({ href: withUrl({ stack: 'MenuStack', screen: 'MainScreen', params: { subView: 'options' } }) })} /> */}
     </View>
   );
 };

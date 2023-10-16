@@ -2,7 +2,7 @@ import { forIn, isPlainObject } from "lodash";
 import { RootStackParamList } from "../navigators/RootNavigator";
 import getPathnameFromScreen from "./getPathnameFromScreen";
 
-type Props<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? Stack<T> : never;
+export type WithUrlProps<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? Stack<T> : never;
 
 type Stack<T extends keyof RootStackParamList> = {
     stack: T,
@@ -16,7 +16,7 @@ type Screen<T extends keyof RootStackParamList, K extends keyof RootStackParamLi
 
 type OptionalParams<T> = [T] extends [undefined] ? { params?: any } : T extends undefined ? { params?: any } : { params: T };
 
-export default function withUrl({ stack, screen = 'MainScreen', params = undefined }: Props): string {
+export default function withUrl({ stack, screen = 'MainScreen', params = undefined }: WithUrlProps): string {
     let url = getPathnameFromScreen(stack + '-' + screen);
     if (isPlainObject(params)) {
         const query: string[] = [];
