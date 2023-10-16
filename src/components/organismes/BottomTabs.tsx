@@ -2,13 +2,6 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 import { Keyboard, View, Dimensions } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import SvgIcon, { IconTypes } from '../atoms/SvgIcon';
-import { MenuStackParamList } from '../../navigators/MenuNavigator';
-import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
-import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
-import { AdvertStackParamList } from '../../navigators/AdvertNavigator';
-import { MessengerStackParamList } from '../../navigators/MessengerNavigator';
-import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
-import { AuthStackParamList } from '../../navigators/AuthNavigator';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import Colors from '../../colors/Colors';
@@ -34,16 +27,16 @@ const icons: { [k in keyof RootStackParamList]: IconTypes } = {
     ProfileStack: 'pencil',
 }
 
-type ScreensType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: Array<keyof RootStackParamList[T]> } : never;
+type ScreensType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: Array<keyof RootStackParamList[T]['default']> } : never;
 
 const hiddenTabbarScreens: ScreensType = {
-    AdvertStack: ['AdvertScreen', 'JobScreen', 'AdvertEditorScreen', 'CandidatesScreen', 'JobCategoryScreen', 'MapScreen'],
+    AdvertStack: ['AdvertScreen', 'AdvertEditorScreen', 'CandidatesScreen'],
     AuthStack: ['MainScreen', 'LoginScreen', 'RegistrationScreen', 'RememberPasswordScreen', 'FillUserDataScreen'],
-    CandidatesStack: ['ProfileScreen', 'VideoScreen', 'FavouritesScreen', 'FavSettingsScreen', 'FilterScreen', 'MapScreen', 'ProfileScreen', 'VideoScreen'],
-    CalendarStack: ['EventScreen', 'MapScreen', 'ChooseAdvertScreen', 'ChooseCandidateScreen'],
+    CandidatesStack: ['ProfileScreen', 'VideoScreen', 'FavouritesScreen', 'FavSettingsScreen', 'FilterScreen', 'ProfileScreen', 'VideoScreen'],
+    CalendarStack: ['EventScreen'],
     MenuStack: ['CallsScreen', 'EventsScreen', 'NewsScreen', 'QuestionsScreen'],
     MessengerStack: [],
-    ProfileStack: ['SettingsScreen', 'PackagesScreen', 'CompanyInvoiceScreen', 'CompanyDescriptionScreen', 'NoCompanyScreen', 'AddCompanyScreen', 'AddPaymentScreen', 'CompanyScreen', 'EditPaymentScreen', 'LanguageScreen', 'MapScreen', 'MethodsScreen', 'NotificationScreen', 'PaymentScreen', 'PointsScreen', 'PrivacyScreen', 'AccountDataScreen', 'ToolsScreen', 'AddConractPersonsScreen'],
+    ProfileStack: ['SettingsScreen', 'PackagesScreen', 'NoCompanyScreen', 'AddCompanyScreen', 'AddPaymentScreen', 'CompanyScreen', 'EditPaymentScreen', 'LanguageScreen', 'MethodsScreen', 'NotificationScreen', 'PaymentScreen', 'PointsScreen', 'PrivacyScreen', 'AccountDataScreen', 'ToolsScreen'],
 };
 
 const BottomTabs: FC<BottomTabsProps> = ({ routes }) => {

@@ -141,7 +141,7 @@ const noteTitles: { title: string, type: NotesType, color: string }[] = [
   },
 ];
 
-const { useParam } = createParam<CandidatesStackParamList['VideoScreen']>();
+const { useParam } = createParam<CandidatesStackParamList['default']['VideoScreen']>();
 
 const VideoScreen: React.FC = () => {
   // const { candidateData } = route.params;

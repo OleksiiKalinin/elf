@@ -9,15 +9,18 @@ import QuestionsScreen from '../screens/MenuScreens/QuestionsScreen';
 import { PathConfigMap } from '@react-navigation/native';
 
 export type MenuStackParamList = {
-  MainScreen: {subView: 'options' | 'blabla'};
-  CallsScreen: undefined;
-  EventsScreen: undefined;
-  NewsScreen: undefined;
-  NewsDetailsScreen: undefined;
-  QuestionsScreen: undefined;
+  default: {
+    MainScreen: { subView: 'options' },
+    CallsScreen: undefined,
+    EventsScreen: undefined,
+    NewsScreen: undefined,
+    NewsDetailsScreen: undefined,
+    QuestionsScreen: undefined,
+  },
+  extended: {}
 };
 
-export const MenuStackLinking: PathConfigMap<MenuStackParamList> = {
+export const MenuStackLinking: PathConfigMap<MenuStackParamList['default']> = {
   MainScreen: '',
   CallsScreen: 'CallsScreen',
   EventsScreen: 'EventsScreen',
@@ -26,7 +29,7 @@ export const MenuStackLinking: PathConfigMap<MenuStackParamList> = {
   QuestionsScreen: 'QuestionsScreen',
 }
 
-const MenuStack = createNativeStackNavigator<MenuStackParamList>();
+const MenuStack = createNativeStackNavigator<MenuStackParamList['default']>();
 
 const MenuNavigator: React.FC = () => {
   return (

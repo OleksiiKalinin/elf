@@ -99,7 +99,7 @@ const socialLinksData: {
 
 type DisplayDataKeysType = keyof CompanyDataType | 'contact_persons' | 'social_media';
 
-const { useParam } = createParam<ProfileStackParamList['AddCompanyScreen']>();
+const { useParam } = createParam<ProfileStackParamList['default']['AddCompanyScreen']>();
 
 const AddCompanyScreen: React.FC = () => {
   const dispatch = useTypedDispatch();

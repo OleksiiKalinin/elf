@@ -6,31 +6,31 @@ import FavouritesScreen from '../screens/CandidatesScreens/FavouritesScreen';
 import ProfileScreen from '../screens/CandidatesScreens/ProfileScreen';
 import FavSettingsScreen from '../screens/CandidatesScreens/FavSettingsScreen';
 import VideoScreen from '../screens/CandidatesScreens/VideoScreen';
-// import MapScreen from '../screens/CandidatesScreens/MapScreen';
 import { AddressType, CandidateDataType } from '../store/reducers/types';
 import { PathConfigMap } from '@react-navigation/native';
 
 export type CandidatesStackParamList = {
-  MainScreen: undefined;
-  FavouritesScreen: undefined;
-  FavSettingsScreen: undefined;
-  ProfileScreen: { id: string };
-  VideoScreen: { id: string };
-  FilterScreen: undefined;
-  MapScreen: { callback: (address: AddressType) => void, initialAddress: AddressType | null, hideControls?: boolean },
+  default: {
+    MainScreen: undefined,
+    FavouritesScreen: undefined,
+    FavSettingsScreen: undefined,
+    ProfileScreen: { id: string },
+    VideoScreen: { id: string },
+    FilterScreen: undefined,
+  },
+  extended: {}
 };
 
-export const CandidatesStackLinking: PathConfigMap<CandidatesStackParamList> = {
+export const CandidatesStackLinking: PathConfigMap<CandidatesStackParamList['default']> = {
   MainScreen: '',
   FavouritesScreen: 'FavouritesScreen',
   FavSettingsScreen: 'FavSettingsScreen',
   ProfileScreen: 'ProfileScreen',
   VideoScreen: 'VideoScreen',
   FilterScreen: 'FilterScreen',
-  // MapScreen: 'MapScreen',
 }
 
-const CandidatesStack = createNativeStackNavigator<CandidatesStackParamList>();
+const CandidatesStack = createNativeStackNavigator<CandidatesStackParamList['default']>();
 
 const CandidatesNavigator: React.FC = () => {
   return (
@@ -41,7 +41,6 @@ const CandidatesNavigator: React.FC = () => {
       <CandidatesStack.Screen name="FavSettingsScreen" component={FavSettingsScreen} />
       <CandidatesStack.Screen name="ProfileScreen" component={ProfileScreen} />
       <CandidatesStack.Screen name="FilterScreen" component={FilterScreen} />
-      {/* <CandidatesStack.Screen name="MapScreen" component={MapScreen} /> */}
     </CandidatesStack.Navigator>
   );
 };

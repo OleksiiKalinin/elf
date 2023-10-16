@@ -1,25 +1,16 @@
 import { StyleSheet, View, Platform, TouchableOpacity, Dimensions } from 'react-native';
 import React, { useEffect, useRef } from 'react';
-import { CommonActions, useNavigation, useRoute } from '@react-navigation/native';
-import { MenuStackParamList } from '../../navigators/MenuNavigator';
-import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
-import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
-import { AdvertStackParamList } from '../../navigators/AdvertNavigator';
-import { MessengerStackParamList } from '../../navigators/MessengerNavigator';
-import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
-import { AuthStackParamList } from '../../navigators/AuthNavigator';
 import SvgIcon, { IconTypes } from '../atoms/SvgIcon';
 import Typography from '../atoms/Typography';
 import Button from '../molecules/Button';
 import Colors from '../../colors/Colors';
 import { useRouter } from 'solito/router';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import { createParam } from 'solito';
 import { useActions } from '../../hooks/useActions';
 import getPathnameFromScreen from '../../hooks/getPathnameFromScreen';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 
-type ScreensTitlesType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: {[K in keyof RootStackParamList[T]]: string} } : never;
+type ScreensTitlesType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: {[K in keyof RootStackParamList[T]['default'] | keyof RootStackParamList[T]['extended']]: string} } : never;
 
 export const screensTitles: ScreensTitlesType = {
   AuthStack: {
@@ -27,12 +18,11 @@ export const screensTitles: ScreensTitlesType = {
     LoginScreen: 'Zaloguj się',
     RegistrationScreen: 'Zarejestruj się',
     RememberPasswordScreen: 'Resetowanie hasła',
-    FillUserDataScreen: 'Dane konta'
+    FillUserDataScreen: 'Dane konta',
   },
   CalendarStack: {
     MainScreen: '',
     EventScreen: 'Zaplanuj wydarzenie',
-    MapScreen: '',
     ChooseAdvertScreen: 'Wybierz ogłoszenie',
     ChooseCandidateScreen: 'Wybierz kandydata',
   },
@@ -42,7 +32,6 @@ export const screensTitles: ScreensTitlesType = {
     FavSettingsScreen: 'Ustawienia',
     FilterScreen: 'Filtry',
     ProfileScreen: 'Profil kandydata',
-    MapScreen: '',
     VideoScreen: '',
   },
   MessengerStack: {
@@ -76,7 +65,6 @@ export const screensTitles: ScreensTitlesType = {
     ShareCamera: 'Polityka prywatności',
     ShareContacts: 'Polityka prywatności',
     ShareLocation: 'Polityka prywatności',
-    MapScreen: '',
     AddConractPersonsScreen: 'Dane do kontaktu',
     CompanyDescriptionScreen: 'Opis firmy',
     CompanyInvoiceScreen: 'Dane do faktury',
@@ -90,7 +78,6 @@ export const screensTitles: ScreensTitlesType = {
     CandidatesScreen: '',
     JobCategoryScreen: '',
     JobScreen: '',
-    MapScreen: '',
   },
   MenuStack: {
     MainScreen: 'Menu główne',

@@ -8,95 +8,78 @@ import EditPaymentScreen from '../screens/ProfileScreens/EditPaymentScreen';
 import AddPaymentScreen from '../screens/ProfileScreens/AddPaymentScreen';
 import NotificationScreen from '../screens/ProfileScreens/NotificationScreen';
 import PrivacyScreen from '../screens/ProfileScreens/PrivacyScreen';
-import SendingOffers from '../screens/ProfileScreens/permissions/SendingOffers';
-import ShareLocation from '../screens/ProfileScreens/permissions/ShareLocation';
-import ShareContacts from '../screens/ProfileScreens/permissions/ShareContacts';
-import ShareCamera from '../screens/ProfileScreens/permissions/ShareCamera';
-import RODO from '../screens/ProfileScreens/permissions/RODO';
-import CookieScreen from '../screens/ProfileScreens/CookieScreen';
-import HelpCenterScreen from '../screens/ProfileScreens/HelpCenterScreen';
-import CreateCompanyProfile from '../screens/ProfileScreens/helpcenter hints/CreateCompanyProfile';
-import AddAdvert from '../screens/ProfileScreens/helpcenter hints/AddAdvert';
-import AddCall from '../screens/ProfileScreens/helpcenter hints/AddCall';
-import Register from '../screens/ProfileScreens/helpcenter hints/Register';
-import PaymentMethods from '../screens/ProfileScreens/helpcenter hints/PaymentMethods';
-import AddEvent from '../screens/ProfileScreens/helpcenter hints/AddEvent';
 import PointsScreen from '../screens/ProfileScreens/PointsScreen';
 import AddCompanyScreen from '../screens/ProfileScreens/AddCompanyScreen';
 import LanguageScreen from '../screens/ProfileScreens/LanguageScreen';
-import MapScreen from '../screens/ProfileScreens/MapScreen';
 import MethodsScreen from '../screens/ProfileScreens/MethodsScreen';
 import ToolsScreen from '../screens/ProfileScreens/ToolsScreen';
 import { AddressType, CompanyDataType, ContactPersonType } from '../store/reducers/types';
-import AddConractPersonsScreen from '../screens/ProfileScreens/AddConractPersonsScreen';
 import NoCompanyScreen from '../screens/ProfileScreens/NoCompanyScreen';
-import CompanyDescriptionScreen from '../screens/ProfileScreens/CompanyDescriptionScreen';
-import CompanyInvoiceScreen from '../screens/ProfileScreens/CompanyInvoiceScreen';
 import PackagesScreen from '../screens/ProfileScreens/PackagesScreen';
 import SettingsScreen from '../screens/ProfileScreens/SettingsScreen';
-// import PaymentTemporalScreen from '../screens/ProfileScreens/PaymentTemporalScreen';
 import { PathConfigMap } from '@react-navigation/native';
 
 export type ProfileStackParamList = {
-  MainScreen: undefined,
-  // PaymentTemporalScreen: undefined,
-  AddCompanyScreen: {editMode: string},
-  NoCompanyScreen: undefined;
-  CompanyScreen: undefined,
-  PackagesScreen: undefined,
-  SettingsScreen: undefined,
-  AccountDataScreen: undefined,
-  PaymentScreen: undefined,
-  EditPaymentScreen: undefined,
-  AddPaymentScreen: undefined,
-  NotificationScreen: undefined,
-  PrivacyScreen: undefined,
-  PointsScreen: undefined,
-  LanguageScreen: undefined,
-  MethodsScreen: undefined,
-  ToolsScreen: undefined,
-  // ?????
-  SendingOffers: undefined,
-  RODO: undefined,
-  ShareCamera: undefined,
-  ShareContacts: undefined,
-  ShareLocation: undefined,
-  CookieScreen: undefined,
-  HelpCenterScreen: undefined,
-  CreateCompanyProfile: undefined,
-  AddAdvert: undefined,
-  AddCall: undefined,
-  AddEvent: undefined,
-  PaymentMethods: undefined,
-  Register: undefined,
-  //??????
-  MapScreen: { callback: (address: AddressType) => void, initialAddress: AddressType | null },
-  AddConractPersonsScreen: {
-    contactPersons: ContactPersonType[], 
-    setContactPersons: React.Dispatch<React.SetStateAction<ContactPersonType[]>>, 
-    companyData: CompanyDataType,
-    changeCompanyDataHandler: (name: keyof CompanyDataType, value: string | number | AddressType, replaceSpaces?: boolean) => void
+  default: {
+    MainScreen: undefined,
+    // PaymentTemporalScreen: undefined,
+    AddCompanyScreen: { 
+      editMode: string,
+      subView?: 'map',
+    },
+    NoCompanyScreen: undefined;
+    CompanyScreen: undefined,
+    PackagesScreen: undefined,
+    SettingsScreen: undefined,
+    AccountDataScreen: undefined,
+    PaymentScreen: undefined,
+    EditPaymentScreen: undefined,
+    AddPaymentScreen: undefined,
+    NotificationScreen: undefined,
+    PrivacyScreen: undefined,
+    PointsScreen: undefined,
+    LanguageScreen: undefined,
+    MethodsScreen: undefined,
+    ToolsScreen: undefined,
+    // ?????
+    SendingOffers: undefined,
+    RODO: undefined,
+    ShareCamera: undefined,
+    ShareContacts: undefined,
+    ShareLocation: undefined,
+    CookieScreen: undefined,
+    HelpCenterScreen: undefined,
+    CreateCompanyProfile: undefined,
+    AddAdvert: undefined,
+    AddCall: undefined,
+    AddEvent: undefined,
+    PaymentMethods: undefined,
+    Register: undefined,
+    //??????
   },
-  CompanyDescriptionScreen: {description: string | null, callback: (p: string) => void, title?: string},
-  CompanyInvoiceScreen: {
-    address: AddressType | null, 
-    NIP: string | null, 
-    full_name: string | null,
-    title?: string,
-    callback: (address: AddressType | null, NIP: string, full_name: string ) => void, 
+  extended: {
+    AddConractPersonsScreen: {
+      contactPersons: ContactPersonType[],
+      setContactPersons: React.Dispatch<React.SetStateAction<ContactPersonType[]>>,
+      companyData: CompanyDataType,
+      changeCompanyDataHandler: (name: keyof CompanyDataType, value: string | number | AddressType, replaceSpaces?: boolean) => void
+    },
+    CompanyDescriptionScreen: { description: string | null, callback: (p: string) => void, title?: string },
+    CompanyInvoiceScreen: {
+      address: AddressType | null,
+      NIP: string | null,
+      full_name: string | null,
+      title?: string,
+      callback: (address: AddressType | null, NIP: string, full_name: string) => void,
+    }
   }
 }
 
-export const ProfileStackLinking: PathConfigMap<ProfileStackParamList> = {
+export const ProfileStackLinking: PathConfigMap<ProfileStackParamList['default']> = {
   MainScreen: '',
   AccountDataScreen: 'AccountDataScreen',
   AddCompanyScreen: 'AddCompanyScreen',
   AddPaymentScreen: 'AddPaymentScreen',
-  
-  // MapScreen: 'MapScreen',
-  // AddConractPersonsScreen: 'AddConractPersonsScreen',
-  // CompanyDescriptionScreen: 'CompanyDescriptionScreen',
-  // CompanyInvoiceScreen: 'CompanyInvoiceScreen',
 
   CompanyScreen: 'CompanyScreen',
   EditPaymentScreen: 'EditPaymentScreen',
@@ -113,7 +96,7 @@ export const ProfileStackLinking: PathConfigMap<ProfileStackParamList> = {
   //?????
   // PaymentMethods: 'PaymentMethods',
   // PaymentTemporalScreen: 'PaymentTemporalScreen',
-  
+
   //?????
   // AddAdvert: 'AddAdvert',
   // AddCall: 'AddCall',
@@ -129,7 +112,7 @@ export const ProfileStackLinking: PathConfigMap<ProfileStackParamList> = {
   // ShareLocation: 'ShareLocation',
 }
 
-const ProfileStack = createNativeStackNavigator<ProfileStackParamList>();
+const ProfileStack = createNativeStackNavigator<ProfileStackParamList['default']>();
 
 const ProfileNavigator: React.FC = () => {
   return (
@@ -164,12 +147,6 @@ const ProfileNavigator: React.FC = () => {
       <ProfileStack.Screen name="AddEvent" component={AddEvent} />
       <ProfileStack.Screen name="PaymentMethods" component={PaymentMethods} />
       <ProfileStack.Screen name="Register" component={Register} /> */}
-
-      {/* <ProfileStack.Screen name="MapScreen" component={MapScreen} /> */}
-      {/* <ProfileStack.Screen name="AddConractPersonsScreen" component={AddConractPersonsScreen} />
-      <ProfileStack.Screen name="CompanyDescriptionScreen" component={CompanyDescriptionScreen} />
-      <ProfileStack.Screen name="CompanyInvoiceScreen" component={CompanyInvoiceScreen} /> */}
-      
     </ProfileStack.Navigator>
   );
 };

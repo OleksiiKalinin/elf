@@ -2,9 +2,6 @@ import { CompositeScreenProps } from '@react-navigation/native';
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import Colors from '../../colors/Colors';
-import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
-import { MenuStackParamList } from '../../navigators/MenuNavigator';
-import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 
 const NewsDetailsScreen: React.FC = () => {

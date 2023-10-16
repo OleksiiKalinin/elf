@@ -9,7 +9,7 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import { useRouter } from 'solito/router';
 import getPathnameFromScreen from '../../hooks/getPathnameFromScreen';
 
-const ChooseAdvertScreen: FC<CalendarStackParamList['ChooseAdvertScreen']> = ({callback}) => {
+const ChooseAdvertScreen: FC<CalendarStackParamList['extended']['ChooseAdvertScreen']> = ({callback}) => {
     const { userAdverts, currentScreen } = useTypedSelector(state => state.general);
     const {replace} = useRouter();
     // const { callback } = route.params;

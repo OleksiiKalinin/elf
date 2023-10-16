@@ -15,7 +15,7 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { createParam } from 'solito';
 
-const { useParam } = createParam<AdvertStackParamList['CandidatesScreen']>();
+const { useParam } = createParam<AdvertStackParamList['default']['CandidatesScreen']>();
 
 const CandidatesScreen: React.FC = () => {
   const dispatch = useTypedDispatch();

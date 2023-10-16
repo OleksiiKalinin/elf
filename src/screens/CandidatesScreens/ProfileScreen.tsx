@@ -44,7 +44,7 @@ const noteTitles: { title: string, field_type: NoteDataType['field_type'], color
   },
 ];
 
-const { useParam } = createParam<CandidatesStackParamList['ProfileScreen']>();
+const { useParam } = createParam<CandidatesStackParamList['default']['ProfileScreen']>();
 
 const ProfileScreen: React.FC = () => {
   const dispatch = useTypedDispatch();

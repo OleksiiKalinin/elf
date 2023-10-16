@@ -18,7 +18,13 @@ if (Platform.OS === 'android' || Platform.OS === 'ios') {
 
 const markerIcon: any = 'https://drive.google.com/uc?id=18XoaiN-bJE9zslCbZNk6xpRCVLdikwGr&export=download';
 
-const GoogleMap: FC<{ callback: (address: AddressType) => void, initialAddress: AddressType | null, hideControls?: boolean }> = ({ callback, initialAddress, hideControls = false }) => {
+export type GoogleMapProps = {
+    callback: (address: AddressType) => void,
+    initialAddress: AddressType | null,
+    hideControls?: boolean
+}
+
+const GoogleMap: FC<GoogleMapProps> = ({ callback, initialAddress, hideControls = false }) => {
     const [location, setLocation] = useState(initialAddress);
     const [webInputValue, setWebInputValue] = useState<string>(location?.formattedAddress || '');
     const NativeInputRef = useRef<any>(null);
@@ -26,7 +32,12 @@ const GoogleMap: FC<{ callback: (address: AddressType) => void, initialAddress: 
     // const navigation = useNavigation();
 
     useEffect(() => {
-        if (window.document?.body) window.document.body.style.overflowY = 'hidden';
+        const style = window?.document?.body?.style;
+        if (style) style.overflowY = 'hidden';
+
+        return () => {
+            if (style) style.overflowY = 'auto';
+        }
     }, []);
 
     useEffect(() => {

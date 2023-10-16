@@ -4,19 +4,22 @@ import MainScreen from '../screens/MessengerScreens/MainScreen';
 import { PathConfigMap } from '@react-navigation/native';
 
 export type MessengerStackParamList = {
-    MainScreen: undefined,
+    default: {
+        MainScreen: undefined,
+    },
+    extended: {}
 }
 
-export const MessengerStackLinking: PathConfigMap<MessengerStackParamList> = {
+export const MessengerStackLinking: PathConfigMap<MessengerStackParamList['default']> = {
     MainScreen: '',
 }
 
-const MessengerStack = createNativeStackNavigator<MessengerStackParamList>();
+const MessengerStack = createNativeStackNavigator<MessengerStackParamList['default']>();
 
 const MessengerNavigator: React.FC = () => {
     return (
         <MessengerStack.Navigator initialRouteName="MainScreen" screenOptions={{ headerShown: false }}>
-            <MessengerStack.Screen name="MainScreen" component={MainScreen}/>
+            <MessengerStack.Screen name="MainScreen" component={MainScreen} />
         </MessengerStack.Navigator>
     );
 };

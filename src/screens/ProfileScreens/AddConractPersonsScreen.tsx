@@ -12,7 +12,7 @@ import Button from '../../components/molecules/Button';
 import Colors from '../../colors/Colors';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 
-const AddConractPersonsScreen: React.FC<ProfileStackParamList['AddConractPersonsScreen']> = (props) => {
+const AddConractPersonsScreen: React.FC<ProfileStackParamList['extended']['AddConractPersonsScreen']> = (props) => {
     const { companyData, changeCompanyDataHandler, contactPersons: initContactPersons, setContactPersons: changeContactPersonsHandler } = props;
     const [contactHours, setContactHours] = useState<string>(companyData.contact_hours || '08:00-18:00');
     const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(initContactPersons);

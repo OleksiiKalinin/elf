@@ -1,12 +1,6 @@
 import { CompositeScreenProps } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import Colors from '../../colors/Colors';
-import { useTypedSelector } from '../../hooks/useTypedSelector';
-import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
-import SvgIcon from '../../components/atoms/SvgIcon';
-import Typography from '../../components/atoms/Typography';
-import CandidateCard from '../../components/organismes/CandidateCard';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { SwipeablePanelProps } from '../../components/organismes/SwipeablePanel';
 

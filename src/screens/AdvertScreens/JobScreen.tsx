@@ -13,7 +13,7 @@ import Typography from '../../components/atoms/Typography';
 import getPathnameFromScreen from '../../hooks/getPathnameFromScreen';
 import { useRouter } from 'solito/router';
 
-const JobScreen: React.FC<AdvertStackParamList['JobScreen']> = ({callback, job_positions}) => {
+const JobScreen: React.FC<AdvertStackParamList['extended']['JobScreen']> = ({callback, job_positions}) => {
   const [search, setSearch] = useState<string>('');
   // const { callback, job_positions } = route.params;
   const {replace} = useRouter();

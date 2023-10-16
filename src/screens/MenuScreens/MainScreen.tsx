@@ -36,7 +36,7 @@ import { useNavigation } from '@react-navigation/native';
 import withUrl from '../../hooks/withUrl';
 import { MenuStackParamList } from '../../navigators/MenuNavigator';
 
-const { useParam } = createParam<MenuStackParamList['MainScreen']>();
+const { useParam } = createParam<MenuStackParamList['default']['MainScreen']>();
 
 const MainScreen: React.FC = ({ }) => {
   const dispatch = useTypedDispatch();

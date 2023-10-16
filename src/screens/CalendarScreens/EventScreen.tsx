@@ -23,12 +23,12 @@ import AdvertSmall from '../../components/organismes/AdvertSmall';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { useRouter } from 'solito/router';
 import { useSwipeablePanelParams } from '../../hooks/useSwipeablePanelParams';
-import MapScreen from './MapScreen';
 import ChooseAdvertScreen from './ChooseAdvertScreen';
 import ChooseCandidateScreen from './ChooseCandidateScreen';
 import { ScrollView } from '../../components/molecules/ScrollView';
 import { Separator } from 'tamagui';
 import { createParam } from 'solito';
+import GoogleMap from '../../components/organismes/GoogleMap';
 // import CandidateCard from '../../components/organisms/CandidateCard/CandidateCard';
 
 const normalizeTimeForPicker = (mode: 'start' | 'end'): Date => {
@@ -50,7 +50,7 @@ const normalizeTimeForPicker = (mode: 'start' | 'end'): Date => {
   );
 }
 
-const { useParam } = createParam<NonNullable<CalendarStackParamList['EventScreen']>>();
+const { useParam } = createParam<NonNullable<CalendarStackParamList['default']['EventScreen']>>();
 
 const EventScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
@@ -90,7 +90,7 @@ const EventScreen: React.FC = () => {
     setSwipeablePanelProps((() => {
       if (subView === 'MapScreen' && eventType === 'meeting') return {
         mode: subViewMode,
-        children: <MapScreen callback={(address) => setLocation(address)} initialAddress={location} />
+        children: <GoogleMap callback={(address) => setLocation(address)} initialAddress={location} />
       }
       if (subView === 'ChooseAdvertScreen') return {
         mode: subViewMode,

@@ -6,13 +6,13 @@ type Props<T extends keyof RootStackParamList = keyof RootStackParamList> = T ex
 
 type Stack<T extends keyof RootStackParamList> = {
     stack: T,
-} & (Screens<T, keyof RootStackParamList[T]> | {screen?: undefined, params?: any});
+} & (Screens<T, keyof RootStackParamList[T]['default']> | {screen?: undefined, params?: any});
 
-type Screens<T extends keyof RootStackParamList, K extends keyof RootStackParamList[T] = keyof RootStackParamList[T]> = K extends K ? Screen<T, K> : never;
+type Screens<T extends keyof RootStackParamList, K extends keyof RootStackParamList[T]['default'] = keyof RootStackParamList[T]['default']> = K extends K ? Screen<T, K> : never;
 
-type Screen<T extends keyof RootStackParamList, K extends keyof RootStackParamList[T]> = {
+type Screen<T extends keyof RootStackParamList, K extends keyof RootStackParamList[T]['default']> = {
     screen: K,
-} & OptionalParams<RootStackParamList[T][K]>;
+} & OptionalParams<RootStackParamList[T]['default'][K]>;
 
 type OptionalParams<T> = [T] extends [undefined] ? { params?: any } : T extends undefined ? { params?: any } : { params: T };
 

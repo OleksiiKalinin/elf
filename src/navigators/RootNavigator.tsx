@@ -38,7 +38,7 @@ export type RootStackParamList = {
   AuthStack: AuthStackParamList;
 };
 
-type RootStackNavigatorType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? {[T in keyof RootStackParamList]: NavigatorScreenParams<RootStackParamList[T]>} : never;
+type RootStackNavigatorType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? {[T in keyof RootStackParamList]: NavigatorScreenParams<RootStackParamList[T]['default']>} : never;
 
 const RootStack = createBottomTabNavigator<RootStackNavigatorType>();
 

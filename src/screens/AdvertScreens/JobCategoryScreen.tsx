@@ -15,7 +15,7 @@ import { Separator } from 'tamagui';
 import { SkeletonContainer, Skeleton } from 'react-native-skeleton-component';
 
 
-const JobCategoryScreen: React.FC<AdvertStackParamList['JobCategoryScreen']> = ({ callback }) => {
+const JobCategoryScreen: React.FC<AdvertStackParamList['extended']['JobCategoryScreen']> = ({ callback }) => {
   // const { callback } = route.params;
   const [search, setSearch] = useState<string>('');
   const [industryId, setIndustryId] = useState<number | null>(null);

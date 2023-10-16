@@ -11,21 +11,24 @@ import Colors from '../colors/Colors';
 import { PathConfigMap } from '@react-navigation/native';
 
 export type AuthStackParamList = {
-    MainScreen: undefined,
-    LoginScreen: undefined,
-    RegistrationScreen: undefined,
-    RememberPasswordScreen: undefined,
-    FillUserDataScreen: undefined,
+    default: {
+        MainScreen: undefined,
+        LoginScreen: undefined,
+        RegistrationScreen: undefined,
+        RememberPasswordScreen: undefined,
+        FillUserDataScreen: undefined,
+    },
+    extended: {}
 }
 
-export const AuthStackLinking: PathConfigMap<AuthStackParamList> = {
+export const AuthStackLinking: PathConfigMap<AuthStackParamList['default']> = {
     MainScreen: '',
     LoginScreen: 'LoginScreen',
     RegistrationScreen: 'RegistrationScreen',
     RememberPasswordScreen: 'RememberPasswordScreen',
     FillUserDataScreen: 'FillUserDataScreen',
 }
-const AuthStack = createNativeStackNavigator<AuthStackParamList>();
+const AuthStack = createNativeStackNavigator<AuthStackParamList['default']>();
 
 const AuthNavigator: React.FC = () => {
     const { token } = useTypedSelector(state => state.general);

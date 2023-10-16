@@ -14,7 +14,7 @@ import TextField from '../../components/molecules/TextField';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Button from '../../components/molecules/Button';
 
-const CompanyDescriptionScreen: React.FC<ProfileStackParamList['CompanyDescriptionScreen']> = (props) => {
+const CompanyDescriptionScreen: React.FC<ProfileStackParamList['extended']['CompanyDescriptionScreen']> = (props) => {
   const {callback, description, title} = props;
   const [value, setValue] = useState<string>(description || '');
 

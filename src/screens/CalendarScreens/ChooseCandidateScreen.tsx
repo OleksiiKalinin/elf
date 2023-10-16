@@ -15,7 +15,7 @@ import CandidateCard from '../../components/organismes/CandidateCard';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 
-const CandidatesScreen: React.FC<CalendarStackParamList['ChooseCandidateScreen']> = ({callback, candidates: candidatesWithRating}) => {
+const CandidatesScreen: React.FC<CalendarStackParamList['extended']['ChooseCandidateScreen']> = ({callback, candidates: candidatesWithRating}) => {
   const dispatch = useTypedDispatch();
   // const { candidates: candidatesWithRating, callback } = route.params;
   const { token } = useTypedSelector(s => s.general);

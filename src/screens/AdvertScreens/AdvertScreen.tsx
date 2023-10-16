@@ -22,7 +22,7 @@ import { useLink } from 'solito/link';
 import { createParam } from 'solito';
 import { useRouter } from 'solito/router';
 
-const { useParam } = createParam<AdvertStackParamList['AdvertScreen']>();
+const { useParam } = createParam<AdvertStackParamList['default']['AdvertScreen']>();
 
 const AdvertScreen: React.FC = () => {
   const { userAdverts, userCompany } = useTypedSelector(state => state.general);

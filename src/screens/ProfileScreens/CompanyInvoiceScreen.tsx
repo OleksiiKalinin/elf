@@ -15,7 +15,7 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import { AddressType } from '../../store/reducers/types';
 import Button from '../../components/molecules/Button';
 
-const CompanyInvoiceScreen: React.FC<ProfileStackParamList['CompanyInvoiceScreen']> = (props) => {
+const CompanyInvoiceScreen: React.FC<ProfileStackParamList['extended']['CompanyInvoiceScreen']> = (props) => {
   const { callback, address: initAddress, NIP: initNIP, full_name: initFull_name, title } = props;
   const [address, setAddress] = useState<AddressType | null>(initAddress);
   const [NIP, setNIP] = useState<string>(initNIP || '');

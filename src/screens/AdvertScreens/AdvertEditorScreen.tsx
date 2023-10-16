@@ -49,7 +49,7 @@ buttons={[
 //   salary_time_type_id: number | null,
 // }
 
-const { useParam } = createParam<NonNullable<AdvertStackParamList['AdvertEditorScreen']>>();
+const { useParam } = createParam<NonNullable<AdvertStackParamList['default']['AdvertEditorScreen']>>();
 
 const AdvertEditorScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
