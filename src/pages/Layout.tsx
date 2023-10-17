@@ -8,8 +8,6 @@ import BottomTabs, { BOTTOM_TABS_HEIGHT } from '../components/organismes/BottomT
 import Colors from '../colors/Colors';
 import SwipeablePanel from '../components/organismes/SwipeablePanel';
 import getScreenFromPathname from '../hooks/getScreenFromPathname';
-import { ScrollView } from '../components/molecules/ScrollView';
-import windowExists from '../hooks/windowExists';
 
 export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
   const { swipeablePanelProps, isTabbarVisible, currentScreen } = useTypedSelector(s => s.general);
@@ -17,12 +15,6 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (windowExists()) {
-      const win: any = window;
-      win.prevPage = win.currPage;
-      win.currPage = router.asPath;
-    }
-
     setCurrentScreen(getScreenFromPathname(router.pathname));
   }, [router]);
 

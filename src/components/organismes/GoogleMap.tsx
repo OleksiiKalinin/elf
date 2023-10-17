@@ -29,18 +29,23 @@ const GoogleMap: FC<GoogleMapProps> = ({ callback, initialAddress, hideControls 
     const [webInputValue, setWebInputValue] = useState<string>(location?.formattedAddress || '');
     const NativeInputRef = useRef<any>(null);
     const WebInputRef = useRef<HTMLInputElement | null>(null);
+    const {currentScreen} = useTypedSelector(s => s.general)
+console.log(currentScreen);
+
     // const navigation = useNavigation();
 
-    useEffect(() => {
-        const style = window?.document?.body?.style;
-        if (style) style.overflowY = 'hidden';
+    // useEffect(() => {
+    //     const style = window?.document?.body?.style;
+    //     if (style) style.overflowY = 'hidden';
 
-        return () => {
-            if (style) style.overflowY = 'auto';
-        }
-    }, []);
+    //     return () => {
+    //         if (style) style.overflowY = 'auto';
+    //     }
+    // }, []);
 
     useEffect(() => {
+        console.log(location);
+        
         if (location) {
             NativeInputRef.current?.setAddressText(location.formattedAddress);
             setWebInputValue(location.formattedAddress || '');

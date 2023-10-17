@@ -25,7 +25,7 @@ import EventsScreen from './EventsScreen';
 import hasKey from '../../hooks/hasKey';
 import { useSwipeablePanelParams } from '../../hooks/useSwipeablePanelParams';
 import getPathnameFromScreen from '../../hooks/getPathnameFromScreen';
-import { useRouter } from 'solito/router';
+// import { useRouter } from 'solito/router';
 import { Image, Separator } from 'tamagui';
 import { MenuDemo } from './demo2';
 import { DateTimePickerDemo } from './demo3';
@@ -35,20 +35,24 @@ import Demo4 from './demo4';
 import { useNavigation } from '@react-navigation/native';
 import withUrl from '../../hooks/withUrl';
 import { MenuStackParamList } from '../../navigators/MenuNavigator';
-import useRouter2 from '../../hooks/router'
+import useRouter from '../../hooks/useRouter'
+import TextField from '../../components/molecules/TextField';
+import BottomSheet from '@gorhom/bottom-sheet';
 
-const { useParam } = createParam<MenuStackParamList['default']['MainScreen']>();
+const { useParam } = createParam<NonNullable<MenuStackParamList['default']['MainScreen']>>();
 
 const MainScreen: React.FC = ({ }) => {
   const dispatch = useTypedDispatch();
-  const router = useRouter();
-  const router2 = useRouter2();
+  const { replace, push, useLink } = useRouter();
+  // const router2 = useRouter2();
   const [subView] = useParam('subView');
   // const { subView, subViewMode } = useSwipeablePanelParams();
   const { isMainMenuFlatList, userData, token, currentScreen } = useTypedSelector(state => state.general);
   const { setIsMainMenuFlatList, setSwipeablePanelProps } = useActions();
 
   useEffect(() => {
+    console.log(subView);
+
     setSwipeablePanelProps((() => {
       if (subView === 'options') return {
         title: 'Co robimy tym razem?',
@@ -59,12 +63,12 @@ const MainScreen: React.FC = ({ }) => {
             children: 'Stwórz nowe wydarzenie',
             icon: <SvgIcon icon='calendar' />,
             closeAction: 'props-null',
-            onPress: () => router.replace(withUrl({stack: 'CalendarStack', screen: 'EventScreen', params: {isMainMenuSender: 'true'}}))
+            onPress: () => replace({ stack: 'CalendarStack', screen: 'EventScreen', params: { isMainMenuSender: 'true' } })
           },
           {
             children: 'Stwórz nowe ogłoszenie',
             icon: <SvgIcon icon='work' />,
-            onPress: () => router.replace(withUrl({stack: 'AdvertStack', screen: 'AdvertEditorScreen', params: {isMainMenuSender: 'true'}}))
+            onPress: () => replace({ stack: 'AdvertStack', screen: 'AdvertEditorScreen', params: { isMainMenuSender: 'true' } })
           },
         ],
       }
@@ -91,143 +95,143 @@ const MainScreen: React.FC = ({ }) => {
             backgroundColor: Colors.Sea300,
             icon: 'eventsHistory',
             ...useLink({
-              href: '/home/EventsScreen'
+              href: { stack: 'MenuStack', screen: 'EventsScreen' }
             }),
             missedEvents: 10,
             badge: 'Nowe',
           },
-          {
-            title: 'Zaplanowane spotkania',
-            backgroundColor: Colors.Sea300,
-            icon: 'meeting',
-            ...useLink({
-              href: '/home/EventsScreen'
-            }),
-            missedEvents: 0,
-            badge: ''
-          },
-          {
-            title: 'Kalendarz',
-            backgroundColor: Colors.Sea300,
-            icon: 'calendar',
-            ...useLink({
-              href: '/calendar',
-            }),
-            missedEvents: 0,
-            badge: ''
-          },
-          {
-            title: 'Powiadomienia',
-            backgroundColor: Colors.Sea300,
-            icon: 'notification',
-            ...useLink({
-              href: '/home/EventsScreen'
-            }),
-            missedEvents: 0,
-            badge: ''
-          },
+          // {
+          //   title: 'Zaplanowane spotkania',
+          //   backgroundColor: Colors.Sea300,
+          //   icon: 'meeting',
+          //   ...useLink({
+          //     href: '/home/EventsScreen'
+          //   }),
+          //   missedEvents: 0,
+          //   badge: ''
+          // },
+          // {
+          //   title: 'Kalendarz',
+          //   backgroundColor: Colors.Sea300,
+          //   icon: 'calendar',
+          //   ...useLink({
+          //     href: '/calendar',
+          //   }),
+          //   missedEvents: 0,
+          //   badge: ''
+          // },
+          // {
+          //   title: 'Powiadomienia',
+          //   backgroundColor: Colors.Sea300,
+          //   icon: 'notification',
+          //   ...useLink({
+          //     href: '/home/EventsScreen'
+          //   }),
+          //   missedEvents: 0,
+          //   badge: ''
+          // },
         ]
       },
-      {
-        sectionTitle: 'Organizacja',
-        buttons: [
-          {
-            title: 'Kandydaci',
-            backgroundColor: Colors.Blue100,
-            icon: 'candidates',
-            missedEvents: 0,
-            ...useLink({
-              href: '/candidates',
-            }),
-            badge: ''
-          },
-          {
-            title: 'Twoi ulubieni kandydaci',
-            backgroundColor: Colors.Blue100,
-            icon: 'cardOutlined',
-            ...useLink({
-              href: '/home/EventsScreen'
-            }),
-            missedEvents: 0,
-            badge: ''
-          },
-          {
-            title: 'Ogłoszenia',
-            backgroundColor: Colors.Blue100,
-            icon: 'work',
-            ...useLink({
-              href: '/adverts',
-            }),
-            missedEvents: 0,
-            badge: '',
-          },
-          {
-            title: 'Profil',
-            backgroundColor: Colors.Blue100,
-            icon: 'user',
-            ...useLink({
-              href: '/profile',
-            }),
-            missedEvents: 0,
-            badge: ''
-          },
-          {
-            title: 'Pakiety',
-            backgroundColor: Colors.Blue100,
-            icon: 'bag',
-            ...useLink({
-              href: '/profile/PaymentTemporalScreen',
-            }),
-            missedEvents: 0,
-            badge: ''
-          },
-        ]
-      },
-      {
-        sectionTitle: 'Baza wiedzy',
-        buttons: [
-          {
-            title: 'Kalkulator wynagrodzeń',
-            backgroundColor: Colors.Basic200,
-            icon: 'calculator',
-            ...useLink({
-              href: '/home/EventsScreen'
-            }),
-            missedEvents: 0,
-            badge: ''
-          },
-          {
-            title: 'Lista pytań',
-            backgroundColor: Colors.Basic200,
-            icon: 'list',
-            ...useLink({
-              href: '/home/EventsScreen'
-            }),
-            missedEvents: 0,
-            badge: ''
-          },
-          {
-            title: 'Artykuły i nowości',
-            backgroundColor: Colors.Basic200,
-            icon: 'fileDocument',
-            ...useLink({
-              href: '/home/EventsScreen'
-            }),
-            missedEvents: 0,
-            badge: 'Nowe',
-          },
-          {
-            title: 'Wszystkie instrukcje',
-            backgroundColor: Colors.Basic200,
-            icon: 'fileDocument',
-            ...useLink({
-              href: '/home/EventsScreen'
-            }),
-            missedEvents: 0,
-            badge: ''
-          },
-        ]
-      },
+      // {
+      //   sectionTitle: 'Organizacja',
+      //   buttons: [
+      //     {
+      //       title: 'Kandydaci',
+      //       backgroundColor: Colors.Blue100,
+      //       icon: 'candidates',
+      //       missedEvents: 0,
+      //       ...useLink({
+      //         href: '/candidates',
+      //       }),
+      //       badge: ''
+      //     },
+      //     {
+      //       title: 'Twoi ulubieni kandydaci',
+      //       backgroundColor: Colors.Blue100,
+      //       icon: 'cardOutlined',
+      //       ...useLink({
+      //         href: '/home/EventsScreen'
+      //       }),
+      //       missedEvents: 0,
+      //       badge: ''
+      //     },
+      //     {
+      //       title: 'Ogłoszenia',
+      //       backgroundColor: Colors.Blue100,
+      //       icon: 'work',
+      //       ...useLink({
+      //         href: '/adverts',
+      //       }),
+      //       missedEvents: 0,
+      //       badge: '',
+      //     },
+      //     {
+      //       title: 'Profil',
+      //       backgroundColor: Colors.Blue100,
+      //       icon: 'user',
+      //       ...useLink({
+      //         href: '/profile',
+      //       }),
+      //       missedEvents: 0,
+      //       badge: ''
+      //     },
+      //     {
+      //       title: 'Pakiety',
+      //       backgroundColor: Colors.Blue100,
+      //       icon: 'bag',
+      //       ...useLink({
+      //         href: '/profile/PaymentTemporalScreen',
+      //       }),
+      //       missedEvents: 0,
+      //       badge: ''
+      //     },
+      //   ]
+      // },
+      // {
+      //   sectionTitle: 'Baza wiedzy',
+      //   buttons: [
+      //     {
+      //       title: 'Kalkulator wynagrodzeń',
+      //       backgroundColor: Colors.Basic200,
+      //       icon: 'calculator',
+      //       ...useLink({
+      //         href: '/home/EventsScreen'
+      //       }),
+      //       missedEvents: 0,
+      //       badge: ''
+      //     },
+      //     {
+      //       title: 'Lista pytań',
+      //       backgroundColor: Colors.Basic200,
+      //       icon: 'list',
+      //       ...useLink({
+      //         href: '/home/EventsScreen'
+      //       }),
+      //       missedEvents: 0,
+      //       badge: ''
+      //     },
+      //     {
+      //       title: 'Artykuły i nowości',
+      //       backgroundColor: Colors.Basic200,
+      //       icon: 'fileDocument',
+      //       ...useLink({
+      //         href: '/home/EventsScreen'
+      //       }),
+      //       missedEvents: 0,
+      //       badge: 'Nowe',
+      //     },
+      //     {
+      //       title: 'Wszystkie instrukcje',
+      //       backgroundColor: Colors.Basic200,
+      //       icon: 'fileDocument',
+      //       ...useLink({
+      //         href: '/home/EventsScreen'
+      //       }),
+      //       missedEvents: 0,
+      //       badge: ''
+      //     },
+      //   ]
+      // },
     ];
 
   // useEffect(() => {
@@ -262,7 +266,7 @@ const MainScreen: React.FC = ({ }) => {
                 br={4} h={30} px={8.5} w='auto'
                 contentWeight='Regular'
                 variant="secondary"
-                {...useLink({ href: '/auth' })}
+                {...useLink({ href: { stack: 'AuthStack' } })}
               >
                 Zaloguj
               </Button>
@@ -367,8 +371,8 @@ const MainScreen: React.FC = ({ }) => {
           ))}
         </ScrollView>
       </ScreenHeaderProvider>
-      <CornerCircleButton {...router2.useLink({href: {stack: 'CalendarStack'}})} />
-      {/* <CornerCircleButton {...useLink({ href: withUrl({ stack: 'MenuStack', screen: 'MainScreen', params: { subView: 'options' } }) })} /> */}
+      <CornerCircleButton {...useLink({ href: { stack: 'MenuStack', screen: 'GoogleMap', params: { initialAddress: null, callback: (a) => console.log(a) } } })} />
+      {/* <CornerCircleButton {...useLink({ href: { stack: 'MenuStack', screen: 'MainScreen', params: { subView: 'options' } } })} /> */}
     </View>
   );
 };

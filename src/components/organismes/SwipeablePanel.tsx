@@ -12,6 +12,8 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import getPathnameFromScreen from '../../hooks/getPathnameFromScreen';
 import { useActions } from '../../hooks/useActions';
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import TextField from '../molecules/TextField';
+import BottomSheet from '@gorhom/bottom-sheet';
 
 
 
@@ -42,6 +44,8 @@ const SwipeablePanel: React.FC = () => {
     const [height, setHeight] = useState<number>(0);
 
     const close = (closeAction: CloseActionType | undefined = 'history-replace&props-null') => {
+        console.log('cloes');
+
         if (closeAction === 'history-replace&props-null') {
             replace(getPathnameFromScreen(currentScreen));
             setSwipeablePanelProps(null);
@@ -96,13 +100,14 @@ const SwipeablePanel: React.FC = () => {
                 }}>
                 <Content {...swipeablePanelProps} close={close} />
             </View>
-            <View
+            {Platform.OS === 'web' && <View
                 //workaround - wrapper to provide context like redux
                 style={{
                     position: Platform.select({ web: 'fixed', native: 'absolute' }),
                     top: mode === 'screen' && !!swipeablePanelProps ? 0 : '100%',
                     width: '100%',
                     height: '100%',
+                    backgroundColor: 'rgba(255,255,255,.5)'
                 }}
             >
                 <Sheet
@@ -118,7 +123,17 @@ const SwipeablePanel: React.FC = () => {
                         </Sheet.ScrollView>
                     </Sheet.Frame>
                 </Sheet>
-            </View>
+            </View>}
+            {(Platform.OS === 'android' || Platform.OS === 'ios') && mode === 'screen' && !!swipeablePanelProps &&
+                <BottomSheet
+                    // index={mode === 'screen' && !!swipeablePanelProps ? 0 : -1}
+                    snapPoints={['100%']}
+                    handleComponent={null}
+                    enableContentPanningGesture={false}
+                >
+                    <Content {...swipeablePanelProps} close={close} />
+                </BottomSheet>
+            }
             <Sheet
                 modal //can NOT provide context like redux 
                 open={mode === 'options' && !!swipeablePanelProps && !!height}
@@ -139,7 +154,7 @@ const SwipeablePanel: React.FC = () => {
 };
 
 const Content = (props: SwipeablePanelProps & { close: (closeAction?: CloseActionType) => void }) => {
-    const { buttons, title, children, subTitle, closeButton = false, close } = props;
+    const { buttons, title, children, subTitle, closeButton = false, close, mode } = props;
 
     return (<>
         {title && (
@@ -148,7 +163,7 @@ const Content = (props: SwipeablePanelProps & { close: (closeAction?: CloseActio
                 {subTitle && <Typography style={{ marginTop: 12 }}>{subTitle}</Typography>}
             </View>
         )}
-        <View>
+        <View style={mode === 'screen' ? { flex: 1 } : {}}>
             {children}
             {buttons?.map(
                 ({
