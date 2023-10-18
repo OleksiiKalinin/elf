@@ -51,23 +51,21 @@ const MainScreen: React.FC = ({ }) => {
   const { setIsMainMenuFlatList, setSwipeablePanelProps } = useActions();
 
   useEffect(() => {
-    console.log(subView);
-
     setSwipeablePanelProps((() => {
       if (subView === 'options') return {
         title: 'Co robimy tym razem?',
         closeButton: true,
-        // mode: subViewMode,
         buttons: [
           {
             children: 'Stwórz nowe wydarzenie',
             icon: <SvgIcon icon='calendar' />,
             closeAction: 'props-null',
-            onPress: () => replace({ stack: 'CalendarStack', screen: 'EventScreen', params: { isMainMenuSender: 'true' } })
+            onPress: () => replace({ stack: 'CalendarStack', screen: 'EventScreen', params: undefined })
           },
           {
             children: 'Stwórz nowe ogłoszenie',
             icon: <SvgIcon icon='work' />,
+            closeAction: 'props-null',
             onPress: () => replace({ stack: 'AdvertStack', screen: 'AdvertEditorScreen', params: { isMainMenuSender: 'true' } })
           },
         ],
@@ -75,7 +73,6 @@ const MainScreen: React.FC = ({ }) => {
       return null;
     })());
   }, [subView]);
-  // }, [subView, subViewMode]);
 
   const sectionButtons: {
     sectionTitle: string,
@@ -371,8 +368,7 @@ const MainScreen: React.FC = ({ }) => {
           ))}
         </ScrollView>
       </ScreenHeaderProvider>
-      <CornerCircleButton {...useLink({ href: { stack: 'MenuStack', screen: 'GoogleMap', params: { initialAddress: null, callback: (a) => console.log(a) } } })} />
-      {/* <CornerCircleButton {...useLink({ href: { stack: 'MenuStack', screen: 'MainScreen', params: { subView: 'options' } } })} /> */}
+      <CornerCircleButton {...useLink({ href: { stack: 'MenuStack', screen: 'MainScreen', params: { subView: 'options' } } })} />
     </View>
   );
 };

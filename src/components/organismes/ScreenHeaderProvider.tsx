@@ -4,11 +4,11 @@ import SvgIcon, { IconTypes } from '../atoms/SvgIcon';
 import Typography from '../atoms/Typography';
 import Button from '../molecules/Button';
 import Colors from '../../colors/Colors';
-import { useRouter } from 'solito/router';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useActions } from '../../hooks/useActions';
 import getPathnameFromScreen from '../../hooks/getPathnameFromScreen';
 import { RootStackParamList } from '../../navigators/RootNavigator';
+import useRouter from '../../hooks/useRouter';
 
 type ScreensTitlesType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: {[K in keyof RootStackParamList[T]['default'] | keyof RootStackParamList[T]['extended']]: string} } : never;
 
@@ -25,6 +25,7 @@ export const screensTitles: ScreensTitlesType = {
     EventScreen: 'Zaplanuj wydarzenie',
     ChooseAdvertScreen: 'Wybierz ogłoszenie',
     ChooseCandidateScreen: 'Wybierz kandydata',
+    GoogleMap: '',
   },
   CandidatesStack: {
     MainScreen: 'Kandydaci',
@@ -117,9 +118,8 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   staticContentHeight = false,
   alterTitle = null,
 }) => {
-  const { back, replace } = useRouter();
-  const { currentScreen, swipeablePanelProps, windowSizes } = useTypedSelector(s => s.general);
-  const { setSwipeablePanelProps } = useActions();
+  const { backToRemoveParams } = useRouter();
+  const { currentScreen, windowSizes } = useTypedSelector(s => s.general);
   const [stack, screen] = currentScreen.split('-');
   // @ts-ignore
   const currentTitle: string = screensTitles[stack][screen];
@@ -143,12 +143,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
               width={50}
               height='100%'
               icon={<SvgIcon icon='arrowLeft' />}
-              onPress={() => {
-                if (!!swipeablePanelProps) {
-                  replace(getPathnameFromScreen(currentScreen))
-                  setSwipeablePanelProps(null);
-                } else back()
-              }}
+              onPress={backToRemoveParams}
             />
             <Typography variant="h4" weight="Bold" style={{ alignSelf: 'center' }}>
               {title || currentTitle}

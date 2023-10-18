@@ -14,7 +14,8 @@ type Screen<T extends keyof RootStackParamList, K extends keyof RootStackParamLi
     screen: K,
 } & OptionalParams<RootStackParamList[T]['default'][K]>;
 
-type OptionalParams<T> = [T] extends [undefined] ? { params?: any } : T extends undefined ? { params?: any } : { params: T };
+type OptionalParams<T> = [T] extends [undefined] ? { params?: any } : { params: T };
+// type OptionalParams<T> = [T] extends [undefined] ? {params?: undefined} : T extends undefined ? { params?: any } : { params: T };
 
 export default function withUrl({ stack, screen = 'MainScreen', params = undefined }: WithUrlProps): string {
     let url = getPathnameFromScreen(stack + '-' + screen);

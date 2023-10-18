@@ -7,17 +7,18 @@ import NewsScreen from '../screens/MenuScreens/NewsScreen';
 import NewsDetailsScreen from '../screens/MenuScreens/NewsDetailsScreen';
 import QuestionsScreen from '../screens/MenuScreens/QuestionsScreen';
 import { PathConfigMap } from '@react-navigation/native';
-import { GoogleMapProps } from '../components/organismes/GoogleMap';
 
 export type MenuStackParamList = {
   default: {
-    MainScreen: { subView?: 'options' | 'GoogleMap' } | undefined,
+    MainScreen:
+    | undefined
+    | { subView: 'options' }
+    ,
     CallsScreen: undefined,
     EventsScreen: undefined,
     NewsScreen: undefined,
     NewsDetailsScreen: undefined,
     QuestionsScreen: undefined,
-    GoogleMap: GoogleMapProps
   },
   extended: {
   }

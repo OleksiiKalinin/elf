@@ -4,16 +4,21 @@ import MainScreen from '../screens/CalendarScreens/MainScreen';
 import EventScreen from '../screens/CalendarScreens/EventScreen';
 import { AddressType, CandidateDataType, UserAdvertType } from '../store/reducers/types';
 import { PathConfigMap } from '@react-navigation/native';
+import { GoogleMapProps } from '../components/organismes/GoogleMap';
+
+type SubView<T extends keyof CalendarStackParamList['extended']> = { subView: T } & CalendarStackParamList['extended'][T]
 
 export type CalendarStackParamList = {
   default: {
     MainScreen: undefined,
-    EventScreen: {
-      isMainMenuSender?: 'true' | 'false',
-      subView?: keyof CalendarStackParamList['extended'] | 'map'
-    } | undefined,
+    EventScreen:
+    | undefined
+    | SubView<'GoogleMap'>
+    | SubView<'ChooseAdvertScreen'>
+    | SubView<'ChooseCandidateScreen'>
   },
   extended: {
+    GoogleMap: GoogleMapProps,
     ChooseAdvertScreen: { callback: (advert: UserAdvertType) => void },
     ChooseCandidateScreen: { candidates: UserAdvertType['candidate_data'], callback: (candidate: CandidateDataType) => void },
   }

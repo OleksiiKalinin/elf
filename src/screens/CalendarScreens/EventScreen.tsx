@@ -21,14 +21,10 @@ import CandidateCard from '../../components/organismes/CandidateCard';
 import RadioGroup from '../../components/atoms/RadioGroup';
 import AdvertSmall from '../../components/organismes/AdvertSmall';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
-import { useRouter } from 'solito/router';
-import { useSwipeablePanelParams } from '../../hooks/useSwipeablePanelParams';
-import ChooseAdvertScreen from './ChooseAdvertScreen';
-import ChooseCandidateScreen from './ChooseCandidateScreen';
 import { ScrollView } from '../../components/molecules/ScrollView';
 import { Separator } from 'tamagui';
 import { createParam } from 'solito';
-import GoogleMap from '../../components/organismes/GoogleMap';
+import useRouter from '../../hooks/useRouter';
 // import CandidateCard from '../../components/organisms/CandidateCard/CandidateCard';
 
 const normalizeTimeForPicker = (mode: 'start' | 'end'): Date => {
@@ -55,8 +51,6 @@ const { useParam } = createParam<NonNullable<CalendarStackParamList['default']['
 const EventScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const router = useRouter();
-  const [isMainMenuSender] = useParam('isMainMenuSender');
-  const { subView, subViewMode } = useSwipeablePanelParams();
   const [loading, setLoading] = useState<boolean>(false);
   const [eventType, setEventType] = useState<'meeting' | 'call'>('call');
   const [startDate, setStartDate] = useState<string>(new Date().toISOString().replace(/T.*$/, ''));
@@ -80,30 +74,10 @@ const EventScreen: React.FC = () => {
   // const [personRemove, personRemoveToggle] = useState(false);
   const { setSwipeablePanelProps } = useActions();
   const isFirstLoad = useRef(true);
-  
+
   useEffect(() => {
     isFirstLoad.current = false;
   }, []);
-
-
-  useEffect(() => {
-    setSwipeablePanelProps((() => {
-      if (subView === 'MapScreen' && eventType === 'meeting') return {
-        mode: subViewMode,
-        children: <GoogleMap callback={(address) => setLocation(address)} initialAddress={location} />
-      }
-      if (subView === 'ChooseAdvertScreen') return {
-        mode: subViewMode,
-        children: <ChooseAdvertScreen callback={setSelectedAdvert} />
-      }
-      if (subView === 'ChooseCandidateScreen' && selectedAdvert) return {
-        mode: subViewMode,
-        children: <ChooseCandidateScreen callback={setSelectedCandidate} candidates={selectedAdvert.candidate_data} />
-      }
-      return null;
-    })());
-  }, [subView, subViewMode]);
-
 
   // useEffect(() => {
   //   if (!isFocused && route.params?.isMainMenuSender) {
@@ -142,7 +116,11 @@ const EventScreen: React.FC = () => {
       // }, token, userEvents));
       // navigation.goBack();
     }
-    router.replace('/calendar')
+
+    // router.replace({stack: 'CalendarStack'})
+    // or
+    // router.back()
+
 
     // setSwipeablePanelProps({
     //   title: 'Czy chcesz dodać to wydarzenie do Twojego kalendarza?',
@@ -154,6 +132,14 @@ const EventScreen: React.FC = () => {
     //     },
     //   ],
     // })
+  }
+
+  const goToChooseAdvertScreen = () => {
+    router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'ChooseAdvertScreen', callback: setSelectedAdvert } });
+  }
+
+  const goToChooseCandidateScreen = () => {
+    router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'ChooseCandidateScreen', callback: setSelectedCandidate, candidates: selectedAdvert?.candidate_data || [] } });
   }
 
   return (
@@ -272,7 +258,7 @@ const EventScreen: React.FC = () => {
             </Typography>
             {selectedAdvert && <TouchableOpacity
               style={{ marginRight: 18 }}
-              onPress={() => router.push('/calendar/EventScreen?subView=ChooseAdvertScreen&subViewMode=screen')}
+              onPress={goToChooseAdvertScreen}
             >
               <Typography style={{ textDecorationLine: 'underline' }} color={Colors.Blue500}>
                 Zmień wybór
@@ -284,7 +270,7 @@ const EventScreen: React.FC = () => {
             :
             <Button
               variant='secondary'
-              onPress={() => router.push('/calendar/EventScreen?subView=ChooseAdvertScreen&subViewMode=screen')}
+              onPress={goToChooseAdvertScreen}
             >
               Wybierz Ogłoszenie
             </Button>
@@ -297,7 +283,7 @@ const EventScreen: React.FC = () => {
             </Typography>
             {selectedCandidate && <TouchableOpacity
               style={{ marginRight: 18 }}
-              onPress={() => router.push('/calendar/EventScreen?subView=ChooseAdvertScreen&subViewMode=screen')}
+              onPress={goToChooseAdvertScreen}
             >
               <Typography style={{ textDecorationLine: 'underline' }} color={Colors.Blue500}>
                 Zmień wybór
@@ -313,7 +299,7 @@ const EventScreen: React.FC = () => {
             :
             <Button
               variant='secondary'
-              onPress={() => router.push('/calendar/EventScreen?subView=ChooseCandidateScreen&subViewMode=screen')}
+              onPress={goToChooseCandidateScreen}
             >
               Wybierz Kandydata
             </Button>
@@ -342,11 +328,11 @@ const EventScreen: React.FC = () => {
               place={location?.formattedAddress}
               latitude={location?.position?.lat}
               longitude={location?.position?.lng}
-              onPress={() => router.push('/calendar/EventScreen?subView=MapScreen&subViewMode=screen')}
-              // onPress={() => navigation.navigate('MapScreen', {
-              //   callback: (address) => setLocation(address),
-              //   initialAddress: location
-              // })}
+              onPress={() => router.push({stack: 'CalendarStack', screen: 'EventScreen', params: {
+                subView: 'GoogleMap',
+                callback: (address) => setLocation(address),
+                initialAddress: location
+              }})}
             /> */}
           </View>
         </>}
