@@ -1,6 +1,6 @@
 // import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import axios from 'axios';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import generalActions from '../store/actionCreators/general/actions';
 import { Dispatch } from 'react';
 

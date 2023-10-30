@@ -26,7 +26,8 @@ import companyServices from '../services/companyServices';
 import candidatesServices from '../services/candidatesServices';
 import BottomTabs from '../components/organismes/BottomTabs';
 import SwipeablePanel from '../components/organismes/SwipeablePanel';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTypedDispatch } from '../hooks/useTypedDispatch';
 
 export type RootStackParamList = {
   MenuStack: MenuStackParamList;
@@ -129,83 +130,83 @@ export const screens: React.ComponentProps<typeof RootStack.Screen>[] = [
 ];
 
 const RootNavigator: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const { appLoading, isTabbarVisible, token, swipeablePanelProps, userCompany, candidateNotes, currentScreen } = useTypedSelector(state => state.general);
   const { setCurrentScreen, setIsTabbarVisible, setToken, setSwipeablePanelProps, setUserCompany } = useActions();
   const tempKeyboardAccess = useRef<boolean>(false);
   const appDataLoaded = useRef<boolean>(false);
   const prevToken = useRef<string | null>('default');
 
-  // useEffect(() => {
-  //   if (!appLoading) {
-  //     setTimeout(() => {
-  //       SplashScreen.hide();
-  //     }, 100);
-  //   }
-  // }, [appLoading]);
+/*   useEffect(() => {
+    if (!appLoading) {
+      setTimeout(() => {
+        SplashScreen.hide();
+      }, 100);
+    }
+  }, [appLoading]);
+ */
+  useEffect(() => {
+    (async () => {
+      console.log('token: ', token);
+      if (!appDataLoaded.current || (token && !prevToken.current)) {
+        const [
+          [k1, token],
+          [k2, refresh_token],
+        ] = await AsyncStorage.multiGet([
+          'token',
+          'refresh_token',
+        ]);
 
-  // useEffect(() => {
-  //   (async () => {
-  //     console.log('token: ', token);
-  //     if (!appDataLoaded.current || (token && !prevToken.current)) {
-  //       const [
-  //         [k1, token],
-  //         [k2, refresh_token],
-  //       ] = await AsyncStorage.multiGet([
-  //         'token',
-  //         'refresh_token',
-  //       ]);
+        const isOk = await dispatch(generalServices.getAppData(token));
+        if (!!isOk) {
+          appDataLoaded.current = true;
+          setToken({ refresh_token, token });
+        }
+      }
+      prevToken.current = token;
+    })();
+  }, [token]);
 
-  //       const isOk = await dispatch(generalServices.getAppData(token));
-  //       if (!!isOk) {
-  //         appDataLoaded.current = true;
-  //         setToken({ refresh_token, token });
-  //       }
-  //     }
-  //     prevToken.current = token;
-  //   })();
-  // }, [token]);
+  useEffect(() => {
+    if (userCompany?.id && token) {
+      let logo: MediaType | null = null;
+      let video: MediaType | null = null;
+      let photos: MediaType[] | null = null;
+      let certificates: MediaType[] | null = null;
+      let contactPersons: ContactPersonType[] | null = null;
 
-  // useEffect(() => {
-  //   if (userCompany?.id && token) {
-  //     let logo: MediaType | null = null;
-  //     let video: MediaType | null = null;
-  //     let photos: MediaType[] | null = null;
-  //     let certificates: MediaType[] | null = null;
-  //     let contactPersons: ContactPersonType[] | null = null;
+      dispatch(candidatesServices.getCandidateMarks(token, userCompany.id));
+      dispatch(candidatesServices.getCandidateNotes(token, userCompany.id));
 
-  //     dispatch(candidatesServices.getCandidateMarks(token, userCompany.id));
-  //     dispatch(candidatesServices.getCandidateNotes(token, userCompany.id));
-
-  //     if (userCompany.logo === undefined || userCompany.photos === undefined || userCompany.certificates === undefined || userCompany.contactPersons === undefined || userCompany.video === undefined) {
-  //       Promise.all([
-  //         ...(userCompany.logo === undefined ? [
-  //           dispatch(companyServices.getUserCompanyLogo(userCompany.id, token))
-  //         ] : []),
-  //         ...(userCompany.video === undefined ? [
-  //           dispatch(companyServices.getUserCompanyVideo(userCompany.id, token))
-  //         ] : []),
-  //         ...(userCompany.photos === undefined ? [
-  //           dispatch(companyServices.getUserCompanyPhotos(userCompany.id, token))
-  //         ] : []),
-  //         ...(userCompany.certificates === undefined ? [
-  //           dispatch(companyServices.getUserCompanyCertificates(userCompany.id, token))
-  //         ] : []),
-  //         ...(userCompany.contactPersons === undefined ? [
-  //           dispatch(companyServices.getUserCompanyContactPersons(userCompany.id, token))
-  //         ] : []),
-  //       ]).then((res) => {
-  //         const [getLogo, getVideo, getPhotos, getCertificates, getcompanyContactPersons] = res as any;
-  //         if (getLogo) logo = getLogo;
-  //         if (getVideo) video = getVideo;
-  //         if (getPhotos && getPhotos.length) photos = getPhotos;
-  //         if (getCertificates && getCertificates.length) certificates = getCertificates;
-  //         if (getcompanyContactPersons && getcompanyContactPersons.length) contactPersons = getcompanyContactPersons;
-  //         setUserCompany({ ...userCompany, logo, video, photos, certificates, contactPersons });
-  //       }).catch(() => { });
-  //     }
-  //   }
-  // }, [userCompany, token]);
+      if (userCompany.logo === undefined || userCompany.photos === undefined || userCompany.certificates === undefined || userCompany.contactPersons === undefined || userCompany.video === undefined) {
+        Promise.all([
+          ...(userCompany.logo === undefined ? [
+            dispatch(companyServices.getUserCompanyLogo(userCompany.id, token))
+          ] : []),
+          ...(userCompany.video === undefined ? [
+            dispatch(companyServices.getUserCompanyVideo(userCompany.id, token))
+          ] : []),
+          ...(userCompany.photos === undefined ? [
+            dispatch(companyServices.getUserCompanyPhotos(userCompany.id, token))
+          ] : []),
+          ...(userCompany.certificates === undefined ? [
+            dispatch(companyServices.getUserCompanyCertificates(userCompany.id, token))
+          ] : []),
+          ...(userCompany.contactPersons === undefined ? [
+            dispatch(companyServices.getUserCompanyContactPersons(userCompany.id, token))
+          ] : []),
+        ]).then((res) => {
+          const [getLogo, getVideo, getPhotos, getCertificates, getcompanyContactPersons] = res as any;
+          if (getLogo) logo = getLogo;
+          if (getVideo) video = getVideo;
+          if (getPhotos && getPhotos.length) photos = getPhotos;
+          if (getCertificates && getCertificates.length) certificates = getCertificates;
+          if (getcompanyContactPersons && getcompanyContactPersons.length) contactPersons = getcompanyContactPersons;
+          setUserCompany({ ...userCompany, logo, video, photos, certificates, contactPersons });
+        }).catch(() => { });
+      }
+    }
+  }, [userCompany, token]);
 
   useEffect(() => {
     if (tempKeyboardAccess.current || isTabbarVisible) {

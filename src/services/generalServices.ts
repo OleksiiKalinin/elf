@@ -1,6 +1,6 @@
 import axios, { errorHandler } from "./index";
 import { Dispatch } from "react";
-import AsyncStorage from "@react-native-community/async-storage";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // import { GoogleSignin } from "@react-native-google-signin/google-signin";
 // import { LoginManager } from "react-native-fbsdk-next";
 import generalActions from "../store/actionCreators/general/actions";

@@ -25,8 +25,8 @@
   },
   "dependencies": {
     "@gorhom/bottom-sheet": "^5.0.0-alpha.4",
+    "@react-native-async-storage/async-storage": "^1.19.3",
     "@react-native-clipboard/clipboard": "^1.11.2",
-    "@react-native-community/async-storage": "^1.12.1",
     "@react-native-community/datetimepicker": "^7.6.0",
     "@react-native-google-signin/google-signin": "^10.0.1",
     "@react-native-masked-view/masked-view": "^0.2.8",

@@ -13,7 +13,7 @@ import { SceneMap } from 'react-native-tab-view';
 import Colors from '../../colors/Colors';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch } from 'react-redux';
 import companyServices from '../../services/companyServices';
 import { MediaType, ContactPersonType } from '../../store/reducers/types';

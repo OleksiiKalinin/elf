@@ -62,7 +62,7 @@ export default function useRouter() {
     }
 
     useEffect(() => {
-        if (prevParams !== params.subView) {
+        if (prevParams !== params?.subView) {
             prevParams = params.subView;
             let Component: FC<any> | null = null;
 

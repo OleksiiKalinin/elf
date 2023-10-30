@@ -5,6 +5,7 @@ import { Dimensions } from "react-native";
 import { generalReducerAction } from "../actionCreators/general/types";
 import { generalActionTypes } from "../actions";
 import { generalReducerState } from "./types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const initialState: generalReducerState = {
     isTabbarVisible: true,
@@ -36,8 +37,8 @@ export const generalReducer = (state = initialState, action: generalReducerActio
     switch (action.type) {
         case generalActionTypes.SET_TOKEN:
             const { token, refresh_token } = action.payload;
-            // if (token && refresh_token) AsyncStorage.multiSet([['token', token], ['refresh_token', refresh_token]]);
-            // else AsyncStorage.multiRemove(['token', 'refresh_token']);
+            if (token && refresh_token) AsyncStorage.multiSet([['token', token], ['refresh_token', refresh_token]]);
+            else AsyncStorage.multiRemove(['token', 'refresh_token']);
 
             return { ...state, token, refresh_token };
         case generalActionTypes.SET_APP_DATA:
