@@ -173,7 +173,7 @@ const RootNavigator: React.FC = () => {
       let video: MediaType | null = null;
       let photos: MediaType[] | null = null;
       let certificates: MediaType[] | null = null;
-      let contactPersons: ContactPersonType[] | null = null;
+      let contactPersons: ContactPersonType[] | null = null; 
 
       dispatch(candidatesServices.getCandidateMarks(token, userCompany.id));
       dispatch(candidatesServices.getCandidateNotes(token, userCompany.id));
