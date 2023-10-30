@@ -26,6 +26,7 @@ export const screensTitles: ScreensTitlesType = {
     ChooseAdvertScreen: 'Wybierz ogłoszenie',
     ChooseCandidateScreen: 'Wybierz kandydata',
     GoogleMap: '',
+    JobCategoryScreen: '',
   },
   CandidatesStack: {
     MainScreen: 'Kandydaci',

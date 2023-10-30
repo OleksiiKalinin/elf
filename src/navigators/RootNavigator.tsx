@@ -145,7 +145,8 @@ const RootNavigator: React.FC = () => {
     }
   }, [appLoading]);
  */
-  useEffect(() => {
+
+/*   useEffect(() => {
     (async () => {
       console.log('token: ', token);
       if (!appDataLoaded.current || (token && !prevToken.current)) {
@@ -165,7 +166,7 @@ const RootNavigator: React.FC = () => {
       }
       prevToken.current = token;
     })();
-  }, [token]);
+  }, [token]); */
 
   useEffect(() => {
     if (userCompany?.id && token) {
@@ -173,7 +174,7 @@ const RootNavigator: React.FC = () => {
       let video: MediaType | null = null;
       let photos: MediaType[] | null = null;
       let certificates: MediaType[] | null = null;
-      let contactPersons: ContactPersonType[] | null = null; 
+      let contactPersons: ContactPersonType[] | null = null;
 
       dispatch(candidatesServices.getCandidateMarks(token, userCompany.id));
       dispatch(candidatesServices.getCandidateNotes(token, userCompany.id));

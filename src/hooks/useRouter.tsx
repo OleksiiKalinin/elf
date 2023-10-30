@@ -13,6 +13,7 @@ import getPathnameFromScreen from "./getPathnameFromScreen";
 import { RootStackParamList } from "../navigators/RootNavigator";
 import ChooseAdvertScreen from "../screens/CalendarScreens/ChooseAdvertScreen";
 import ChooseCandidateScreen from "../screens/CalendarScreens/ChooseCandidateScreen";
+import JobCategoryScreen from "../screens/JobCategoryScreen";
 
 export type SubViewType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? AllScreens<T, keyof RootStackParamList[T]['default']> : never;
 type AllScreens<T extends keyof RootStackParamList, K extends keyof RootStackParamList[T]['default'] = keyof RootStackParamList[T]['default']> = K extends K ? AllParams<RootStackParamList[T]['default'][K]> : never;
@@ -51,7 +52,9 @@ export default function useRouter() {
             (props.stack === 'CalendarStack' && props.screen === 'EventScreen' && (
                 props.params?.subView === 'GoogleMap' ||
                 props.params?.subView === 'ChooseAdvertScreen' ||
-                props.params?.subView === 'ChooseCandidateScreen'
+                props.params?.subView === 'ChooseCandidateScreen' ||
+                // Test
+                props.params?.subView === 'JobCategoryScreen'                
             )) ||
             false //something else
         ) {
@@ -63,7 +66,7 @@ export default function useRouter() {
 
     useEffect(() => {
         if (prevParams !== params?.subView) {
-            prevParams = params.subView;
+            prevParams = params?.subView;
             let Component: FC<any> | null = null;
 
             if ((Platform.OS !== 'web' || windowExists()) && !!params?.subView) {
@@ -73,6 +76,9 @@ export default function useRouter() {
                     Component = ChooseAdvertScreen;
                 } else if (params.subView === 'ChooseCandidateScreen') {
                     Component = ChooseCandidateScreen
+                    // Test
+                } else if (params.subView === 'JobCategoryScreen') {
+                    Component = JobCategoryScreen
                 } else {
                     return;
                 }

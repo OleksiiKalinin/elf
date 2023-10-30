@@ -142,6 +142,11 @@ const EventScreen: React.FC = () => {
     router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'ChooseCandidateScreen', callback: setSelectedCandidate, candidates: selectedAdvert?.candidate_data || [] } });
   }
 
+    // Test
+    const goToJobCategoryScreen = () => {
+      router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'JobCategoryScreen'} });
+    };
+
   return (
     <ScreenHeaderProvider>
       <ScrollView style={styles.Wrapper}>
@@ -343,6 +348,14 @@ const EventScreen: React.FC = () => {
         onPress={addEventHandler}
       >
         Zaplanuj
+      </Button>
+
+      {/* Test */}
+      <Button
+        onPress={goToJobCategoryScreen}
+        style={{marginTop: 30}}
+      >
+        Job category
       </Button>
     </ScreenHeaderProvider>
   );

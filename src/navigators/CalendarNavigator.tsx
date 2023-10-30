@@ -16,11 +16,14 @@ export type CalendarStackParamList = {
     | SubView<'GoogleMap'>
     | SubView<'ChooseAdvertScreen'>
     | SubView<'ChooseCandidateScreen'>
+    | SubView<'JobCategoryScreen'>
   },
   extended: {
     GoogleMap: GoogleMapProps,
     ChooseAdvertScreen: { callback: (advert: UserAdvertType) => void },
     ChooseCandidateScreen: { candidates: UserAdvertType['candidate_data'], callback: (candidate: CandidateDataType) => void },
+    // Test
+    JobCategoryScreen: any,
   }
 };
 

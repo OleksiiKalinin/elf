@@ -366,6 +366,79 @@ const MainScreen: React.FC = ({ }) => {
                 </Fragment>))}
             </View>
           ))}
+          <Button
+            variant='primary'
+            borderTop
+            borderBottom
+            icon={<SvgIcon icon='home'/>}
+            arrowRight
+          >
+            Test
+          </Button>
+          <Button
+            variant='secondary'
+            borderBottom
+            icon={<SvgIcon icon='home'/>}
+            arrowRight
+          >
+            Test
+          </Button>
+          <Button
+            variant='light'
+            borderBottom
+            icon={<SvgIcon icon='home'/>}
+            arrowRight
+          >
+            Test
+          </Button>
+          <Button
+            variant='white'
+            borderBottom
+            icon={<SvgIcon icon='home'/>}
+            arrowRight
+          >
+            Test
+          </Button>
+          <Button
+            variant='info'
+            borderBottom
+            icon={<SvgIcon icon='home'/>}
+            arrowRight
+          >
+            Test
+          </Button>
+          <Button
+            variant='info_alter'
+            borderBottom
+            icon={<SvgIcon icon='home'/>}
+            arrowRight
+          >
+            Test
+          </Button>
+          <Button
+            variant='text'
+            borderBottom
+            icon={<SvgIcon icon='home'/>}
+            arrowRight
+          >
+            Test
+          </Button>
+          <Button
+            variant='disabled'
+            borderBottom
+            icon={<SvgIcon icon='home'/>}
+            arrowRight
+          >
+            Test
+          </Button>
+          <Button
+            variant='active'
+            borderBottom
+            icon={<SvgIcon icon='home'/>}
+            arrowRight
+          >
+            Test
+          </Button>
         </ScrollView>
       </ScreenHeaderProvider>
       <CornerCircleButton {...useLink({ href: { stack: 'MenuStack', screen: 'MainScreen', params: { subView: 'options' } } })} />
