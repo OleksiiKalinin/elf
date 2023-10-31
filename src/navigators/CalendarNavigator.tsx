@@ -23,7 +23,7 @@ export type CalendarStackParamList = {
     ChooseAdvertScreen: { callback: (advert: UserAdvertType) => void },
     ChooseCandidateScreen: { candidates: UserAdvertType['candidate_data'], callback: (candidate: CandidateDataType) => void },
     // Test
-    JobCategoryScreen: any,
+    JobCategoryScreen: { callback: (industryId: number, positionId: number) => void },
   }
 };
 

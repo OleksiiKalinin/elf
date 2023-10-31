@@ -134,6 +134,11 @@ const EventScreen: React.FC = () => {
     // })
   }
 
+  // Test
+  const TestJobCategoryData = (industryId: number, positionId: number) => {
+    console.log(`Kategoria: ${industryId}, Stanowisko: ${positionId}`);
+  };
+
   const goToChooseAdvertScreen = () => {
     router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'ChooseAdvertScreen', callback: setSelectedAdvert } });
   }
@@ -144,7 +149,7 @@ const EventScreen: React.FC = () => {
 
     // Test
     const goToJobCategoryScreen = () => {
-      router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'JobCategoryScreen'} });
+      router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'JobCategoryScreen', callback: TestJobCategoryData} });
     };
 
   return (

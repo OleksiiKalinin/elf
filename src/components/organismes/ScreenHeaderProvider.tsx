@@ -104,6 +104,7 @@ type ScreenHeaderProviderProps = {
   otherActions?: Element,
   transparent?: boolean;
   staticContentHeight?: boolean;
+  callback?: () => void;
 };
 
 export const SCREEN_HEADER_HEIGHT = 50;
@@ -118,6 +119,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   transparent = false,
   staticContentHeight = false,
   alterTitle = null,
+  callback
 }) => {
   const { backToRemoveParams } = useRouter();
   const { currentScreen, windowSizes } = useTypedSelector(s => s.general);
@@ -144,7 +146,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
               width={50}
               height='100%'
               icon={<SvgIcon icon='arrowLeft' />}
-              onPress={backToRemoveParams}
+              onPress={callback ? callback : backToRemoveParams}
             />
             <Typography variant="h4" weight="Bold" style={{ alignSelf: 'center' }}>
               {title || currentTitle}
