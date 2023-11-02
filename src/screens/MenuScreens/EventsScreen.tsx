@@ -25,7 +25,7 @@ import SvgIcon from '../../components/atoms/SvgIcon';
 import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
-import GoogleMap from '../../components/organismes/GoogleMap';
+import GoogleMapScreen from '../GoogleMapScreen';
 
 const EventsScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
@@ -46,7 +46,7 @@ const EventsScreen: React.FC = () => {
 
   return (
     <View style={styles.Wrapper}>
-      <GoogleMap initialAddress={null} callback={(a) => console.log(a)} />
+      <GoogleMapScreen initialAddress={null} callback={(a) => console.log(a)} />
       {/* <ScreenHeaderProvider>
         {loading ? <LoadingScreen /> :
           <ScrollView contentContainerStyle={{ paddingBottom: 24 }} style={{ backgroundColor: Colors.Basic100 }}>

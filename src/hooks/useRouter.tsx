@@ -8,7 +8,7 @@ import { createParam } from "solito";
 import { FC, ReactElement, ReactNode, useEffect, useRef } from "react";
 import { Platform } from "react-native";
 import { cloneDeep } from "lodash";
-import GoogleMap from "../components/organismes/GoogleMap";
+import GoogleMapScreen from "../screens/GoogleMapScreen";
 import getPathnameFromScreen from "./getPathnameFromScreen";
 import { RootStackParamList } from "../navigators/RootNavigator";
 import ChooseAdvertScreen from "../screens/CalendarScreens/ChooseAdvertScreen";
@@ -71,7 +71,7 @@ export default function useRouter() {
 
             if ((Platform.OS !== 'web' || windowExists()) && !!params?.subView) {
                 if (params.subView === 'GoogleMap') {
-                    Component = GoogleMap;
+                    Component = GoogleMapScreen;
                 } else if (params.subView === 'ChooseAdvertScreen') {
                     Component = ChooseAdvertScreen;
                 } else if (params.subView === 'ChooseCandidateScreen') {

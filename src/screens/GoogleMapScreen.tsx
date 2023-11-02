@@ -4,11 +4,11 @@ import { Dimensions, Platform, StyleSheet, TouchableOpacity, View } from 'react-
 import geocoder from 'react-native-geocoder-reborn';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import MapView, { MapMarker, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { AddressType } from '../../store/reducers/types';
-import SvgIcon from '../atoms/SvgIcon';
-import Colors from '../../colors/Colors';
-import Button from '../molecules/Button';
-import { useTypedSelector } from '../../hooks/useTypedSelector';
+import { AddressType } from '../store/reducers/types';
+import SvgIcon from '../components/atoms/SvgIcon';
+import Colors from '../colors/Colors';
+import Button from '../components/molecules/Button';
+import { useTypedSelector } from '../hooks/useTypedSelector';
 import Autocomplete from "react-google-autocomplete";
 
 const Map = MapView as unknown as FC<ComponentProps<typeof MapView> & { options: any }> & { Marker: typeof MapMarker };
@@ -18,13 +18,13 @@ if (Platform.OS === 'android' || Platform.OS === 'ios') {
 
 const markerIcon: any = 'https://drive.google.com/uc?id=18XoaiN-bJE9zslCbZNk6xpRCVLdikwGr&export=download';
 
-export type GoogleMapProps = {
+export type GoogleMapScreenProps = {
     callback: (address: AddressType) => void,
     initialAddress: AddressType | null,
     hideControls?: boolean
 }
 
-const GoogleMap: FC<GoogleMapProps> = ({ callback, initialAddress, hideControls = false }) => {
+const GoogleMapScreen: FC<GoogleMapScreenProps> = ({ callback, initialAddress, hideControls = false }) => {
     const [location, setLocation] = useState(initialAddress);
     const [webInputValue, setWebInputValue] = useState<string>(location?.formattedAddress || '');
     const NativeInputRef = useRef<any>(null);
@@ -258,4 +258,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default GoogleMap;
+export default GoogleMapScreen;
