@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, Image } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Image, BackHandler } from 'react-native';
 import Colors from '../colors/Colors';
 import { useTypedSelector } from '../hooks/useTypedSelector';
 import ScreenHeaderProvider from '../components/organismes/ScreenHeaderProvider';
@@ -43,6 +43,17 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({mode, callback}) =
 
   useEffect(() => {
     setSearch('');
+
+    if (industryId && mode === 'industryAndPosition') {
+      const handler = BackHandler.addEventListener('hardwareBackPress', () => {
+        backToIndustry();
+        return true;
+      });
+
+      return () => {
+        handler.remove();
+      }
+    }
   }, [industryId]);
 
   const backToIndustry = () =>{
@@ -56,9 +67,7 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({mode, callback}) =
     setIndustryName(name);
     console.log(icon)
   };
-
-  // hardwareBackPress
-
+  
   return (
     <ScreenHeaderProvider 
       mainTitlePosition="flex-start" 

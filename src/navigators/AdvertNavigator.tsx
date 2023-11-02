@@ -23,8 +23,13 @@ export type AdvertStackParamList = {
     CandidatesScreen: { id: string },
   },
   extended: {
-    JobScreen: { callback: (id: number) => void, job_positions: JobPositionType[] },
-    JobCategoryScreen: { callback: (props: JobCategoryScreenCallbackProps) => void },
+    JobCategoryScreen: { 
+      mode: 'industry',
+      callback: (industryId: number) => void,
+      } | {
+      mode: 'industryAndPosition',
+      callback: (industryId: number, positionId: number) => void,
+    },
   }
 };
 
