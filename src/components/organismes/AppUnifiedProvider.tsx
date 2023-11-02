@@ -34,8 +34,8 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
           console.log('token: ', token);
           if (!appDataLoaded.current || (token && !prevToken.current)) {
             const [
-              [k1, token],
-              [k2, refresh_token],
+              [, token],
+              [, refresh_token],
             ] = await AsyncStorage.multiGet([
               'token',
               'refresh_token',

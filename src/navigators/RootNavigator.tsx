@@ -39,7 +39,7 @@ export type RootStackParamList = {
   AuthStack: AuthStackParamList;
 };
 
-type RootStackNavigatorType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? {[T in keyof RootStackParamList]: NavigatorScreenParams<RootStackParamList[T]['default']>} : never;
+type RootStackNavigatorType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: NavigatorScreenParams<RootStackParamList[T]['default']> } : never;
 
 const RootStack = createBottomTabNavigator<RootStackNavigatorType>();
 
@@ -137,36 +137,36 @@ const RootNavigator: React.FC = () => {
   const appDataLoaded = useRef<boolean>(false);
   const prevToken = useRef<string | null>('default');
 
-/*   useEffect(() => {
-    if (!appLoading) {
-      setTimeout(() => {
-        SplashScreen.hide();
-      }, 100);
-    }
-  }, [appLoading]);
- */
-
-/*   useEffect(() => {
-    (async () => {
-      console.log('token: ', token);
-      if (!appDataLoaded.current || (token && !prevToken.current)) {
-        const [
-          [k1, token],
-          [k2, refresh_token],
-        ] = await AsyncStorage.multiGet([
-          'token',
-          'refresh_token',
-        ]);
-
-        const isOk = await dispatch(generalServices.getAppData(token));
-        if (!!isOk) {
-          appDataLoaded.current = true;
-          setToken({ refresh_token, token });
-        }
+  /*   useEffect(() => {
+      if (!appLoading) {
+        setTimeout(() => {
+          SplashScreen.hide();
+        }, 100);
       }
-      prevToken.current = token;
-    })();
-  }, [token]); */
+    }, [appLoading]);
+   */
+
+  /*   useEffect(() => {
+      (async () => {
+        console.log('token: ', token);
+        if (!appDataLoaded.current || (token && !prevToken.current)) {
+          const [
+            [k1, token],
+            [k2, refresh_token],
+          ] = await AsyncStorage.multiGet([
+            'token',
+            'refresh_token',
+          ]);
+  
+          const isOk = await dispatch(generalServices.getAppData(token));
+          if (!!isOk) {
+            appDataLoaded.current = true;
+            setToken({ refresh_token, token });
+          }
+        }
+        prevToken.current = token;
+      })();
+    }, [token]); */
 
   useEffect(() => {
     if (userCompany?.id && token) {

@@ -6,12 +6,12 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
 import AdvertSmall from '../../components/organismes/AdvertSmall';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
-import { useRouter } from 'solito/router';
 import getPathnameFromScreen from '../../hooks/getPathnameFromScreen';
+import useRouter from '../../hooks/useRouter';
 
 const ChooseAdvertScreen: FC<CalendarStackParamList['extended']['ChooseAdvertScreen']> = ({callback}) => {
     const { userAdverts, currentScreen } = useTypedSelector(state => state.general);
-    const {replace} = useRouter();
+    const {backToRemoveParams} = useRouter();
     // const { callback } = route.params;
 
     return (
@@ -21,7 +21,8 @@ const ChooseAdvertScreen: FC<CalendarStackParamList['extended']['ChooseAdvertScr
                     <View style={{ marginTop: 12 }}>
                         <AdvertSmall {...item} onChoose={() => {
                             callback(item);
-                            replace(getPathnameFromScreen(currentScreen));
+                            backToRemoveParams();
+                            // replace(getPathnameFromScreen(currentScreen));
                             // navigation.goBack();
                         }} />
                     </View>

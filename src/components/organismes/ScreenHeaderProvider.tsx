@@ -79,7 +79,6 @@ export const screensTitles: ScreensTitlesType = {
     AdvertEditorScreen: 'Nowe ogłoszenie',
     CandidatesScreen: '',
     JobCategoryScreen: '',
-    JobScreen: '',
   },
   MenuStack: {
     MainScreen: 'Menu główne',

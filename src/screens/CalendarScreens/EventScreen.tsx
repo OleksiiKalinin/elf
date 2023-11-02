@@ -151,14 +151,14 @@ const EventScreen: React.FC = () => {
     router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'ChooseCandidateScreen', callback: setSelectedCandidate, candidates: selectedAdvert?.candidate_data || [] } });
   };
 
-    // Test
-    const goToJobCategoryScreenMode1 = () => {
-      router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'JobCategoryScreen', mode: 'industry', callback: TestJobCategoryDataMode1} });
-    };
-    // Test
-    const goToJobCategoryScreenMode2 = () => {
-      router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'JobCategoryScreen', mode: 'industryAndPosition', callback: TestJobCategoryDataMode2}  });
-    };
+  // Test
+  const goToJobCategoryScreenMode1 = () => {
+    router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'JobCategoryScreen', mode: 'industry', callback: TestJobCategoryDataMode1 } });
+  };
+  // Test
+  const goToJobCategoryScreenMode2 = () => {
+    router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'JobCategoryScreen', mode: 'industryAndPosition', callback: TestJobCategoryDataMode2 } });
+  };
 
   return (
     <ScreenHeaderProvider>
@@ -366,13 +366,13 @@ const EventScreen: React.FC = () => {
       {/* Test */}
       <Button
         onPress={goToJobCategoryScreenMode1}
-        style={{marginTop: 30}}
+        style={{ marginTop: 30 }}
       >
         Job category - mode 1
       </Button>
       <Button
         onPress={goToJobCategoryScreenMode2}
-        style={{marginTop: 30}}
+        style={{ marginTop: 30 }}
       >
         Job category - mode 2
       </Button>

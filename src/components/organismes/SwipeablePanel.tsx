@@ -44,7 +44,7 @@ const SwipeablePanel: React.FC = () => {
     const [height, setHeight] = useState<number>(0);
 
     const close = (closeAction: CloseActionType | undefined = 'history-replace&props-null') => {
-        console.log('cloes');
+        console.log('close');
 
         if (closeAction === 'history-replace&props-null') {
             replace(getPathnameFromScreen(currentScreen));
@@ -62,6 +62,7 @@ const SwipeablePanel: React.FC = () => {
 
     useEffect(() => {
         const style = window.document?.body?.style;
+        
         if (!!swipeablePanelProps) {
             if (style) style.overflowY = 'hidden';
             const handler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -113,7 +114,6 @@ const SwipeablePanel: React.FC = () => {
                 <Sheet
                     //CAN provide context like redux 
                     open={mode === 'screen' && !!swipeablePanelProps}
-                    onOpenChange={() => close()}
                     snapPoints={[100]}
                     disableDrag
                 >
@@ -127,6 +127,7 @@ const SwipeablePanel: React.FC = () => {
             {(Platform.OS === 'android' || Platform.OS === 'ios') && mode === 'screen' && !!swipeablePanelProps &&
                 <BottomSheet
                     // index={mode === 'screen' && !!swipeablePanelProps ? 0 : -1}
+                    index={0}
                     snapPoints={['100%']}
                     handleComponent={null}
                     enableContentPanningGesture={false}

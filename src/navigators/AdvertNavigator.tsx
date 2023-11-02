@@ -4,13 +4,8 @@ import MainScreen from '../screens/AdvertScreens/MainScreen';
 import AdvertEditorScreen from '../screens/AdvertScreens/AdvertEditorScreen';
 import AdvertScreen from '../screens/AdvertScreens/AdvertScreen';
 import CandidatesScreen from '../screens/AdvertScreens/CandidatesScreen';
-import { AddressType, CandidateDataType, JobPositionType, UserAdvertType } from '../store/reducers/types';
 import { PathConfigMap } from '@react-navigation/native';
-
-type JobCategoryScreenCallbackProps = {
-  industryId: number,
-  positionId: number
-}
+import { JobCategoryScreenProps } from '../screens/JobCategoryScreen';
 
 export type AdvertStackParamList = {
   default: {
@@ -23,13 +18,7 @@ export type AdvertStackParamList = {
     CandidatesScreen: { id: string },
   },
   extended: {
-    JobCategoryScreen: { 
-      mode: 'industry',
-      callback: (industryId: number) => void,
-      } | {
-      mode: 'industryAndPosition',
-      callback: (industryId: number, positionId: number) => void,
-    },
+    JobCategoryScreen: JobCategoryScreenProps,
   }
 };
 
