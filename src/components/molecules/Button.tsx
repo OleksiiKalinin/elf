@@ -116,6 +116,7 @@ const Button: React.FC<ButtonProps> = ({
         icon={withLoading ? <Spinner size='large' /> : undefined}
         iconAfter={arrowRight ? <SvgIcon icon='arrowRightSmall'/> : undefined}
         width={props.w ?? (fullwidth ? '100%' : undefined)}
+        focusStyle={{borderColor: 'none'}}
         {...props}
       >
         {!!children &&

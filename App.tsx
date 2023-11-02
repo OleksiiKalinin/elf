@@ -16,7 +16,7 @@ import SwipeablePanel from './src/components/organismes/SwipeablePanel';
 import AppUnifiedProvider from './src/components/organismes/AppUnifiedProvider';
 import Typography from './src/components/atoms/Typography';
 import TextField from './src/components/molecules/TextField';
-import GoogleMap from './src/components/organismes/GoogleMap';
+import GoogleMapScreen from './src/screens/GoogleMapScreen';
 
 LogBox.ignoreAllLogs();
 

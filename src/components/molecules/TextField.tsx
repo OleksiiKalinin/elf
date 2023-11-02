@@ -138,6 +138,7 @@ const styles = StyleSheet.create({
         fontFamily: `RedHatDisplay-Medium`,
         color: Colors.TextDark,
         padding: 0,
+        outlineStyle: 'none',
     },
     Label: {
         top: 0,
