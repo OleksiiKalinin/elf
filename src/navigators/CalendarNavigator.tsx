@@ -23,8 +23,14 @@ export type CalendarStackParamList = {
     ChooseAdvertScreen: { callback: (advert: UserAdvertType) => void },
     ChooseCandidateScreen: { candidates: UserAdvertType['candidate_data'], callback: (candidate: CandidateDataType) => void },
     // Test
-    JobCategoryScreen: { callback: (industryId: number, positionId: number) => void },
-  }
+    JobCategoryScreen: { 
+      mode: 'industry',
+      callback: (industryId: number) => void,
+      } | {
+      mode: 'industryAndPosition',
+      callback: (industryId: number, positionId: number) => void,
+    },
+  },
 };
 
 export const CalendarStackLinking: PathConfigMap<CalendarStackParamList['default']> = {
