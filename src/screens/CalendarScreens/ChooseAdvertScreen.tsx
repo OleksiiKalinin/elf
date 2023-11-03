@@ -6,13 +6,11 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
 import AdvertSmall from '../../components/organismes/AdvertSmall';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
-import getPathnameFromScreen from '../../hooks/getPathnameFromScreen';
 import useRouter from '../../hooks/useRouter';
 
-const ChooseAdvertScreen: FC<CalendarStackParamList['extended']['ChooseAdvertScreen']> = ({callback}) => {
-    const { userAdverts, currentScreen } = useTypedSelector(state => state.general);
-    const {backToRemoveParams} = useRouter();
-    // const { callback } = route.params;
+const ChooseAdvertScreen: FC<CalendarStackParamList['extended']['ChooseAdvertScreen']> = ({ callback }) => {
+    const { userAdverts } = useTypedSelector(state => state.general);
+    const { backToRemoveParams } = useRouter();
 
     return (
         <ScreenHeaderProvider title='Wybierz ogłoszenie'>
@@ -22,8 +20,6 @@ const ChooseAdvertScreen: FC<CalendarStackParamList['extended']['ChooseAdvertScr
                         <AdvertSmall {...item} onChoose={() => {
                             callback(item);
                             backToRemoveParams();
-                            // replace(getPathnameFromScreen(currentScreen));
-                            // navigation.goBack();
                         }} />
                     </View>
                 ))}

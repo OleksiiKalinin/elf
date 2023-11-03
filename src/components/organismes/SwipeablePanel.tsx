@@ -5,11 +5,10 @@ import Colors from '../../colors/Colors';
 import Typography from '../atoms/Typography';
 import { Sheet } from 'tamagui';
 import { SwipeablePanelParamsType } from '../../hooks/useSwipeablePanelParams';
-import { useRouter } from 'solito/router';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import getPathnameFromScreen from '../../hooks/getPathnameFromScreen';
 import { useActions } from '../../hooks/useActions';
 import BottomSheet from '@gorhom/bottom-sheet';
+import useRouter from '../../hooks/useRouter';
 
 const BAR_HEIGHT = 20;
 
@@ -27,16 +26,15 @@ export type SwipeablePanelProps = {
 };
 
 const SwipeablePanel: React.FC = () => {
-    const { replace } = useRouter();
-    const { swipeablePanelProps, currentScreen, windowSizes } = useTypedSelector(s => s.general);
+    const { backToRemoveParams } = useRouter();
+    const { swipeablePanelProps, windowSizes } = useTypedSelector(s => s.general);
     const { setSwipeablePanelProps } = useActions();
     const { buttons, title, children, subTitle, hideBar = false, mode = 'options' } = swipeablePanelProps || {};
     const [height, setHeight] = useState<number>(0);
 
     const close = (closeAction: CloseActionType | undefined = 'history-replace&props-null') => {
         if (closeAction === 'history-replace&props-null') {
-            replace(getPathnameFromScreen(currentScreen));
-            setSwipeablePanelProps(null);
+            backToRemoveParams();
             return;
         }
         if (closeAction === 'props-null') {
@@ -68,7 +66,7 @@ const SwipeablePanel: React.FC = () => {
 
     return (
         <>
-            <View
+            {mode !== 'screen' && <View
                 //to count inner height first
                 onLayout={e => {
                     if (!!buttons?.length || !!title || !!children || !!subTitle) {
@@ -88,7 +86,7 @@ const SwipeablePanel: React.FC = () => {
                     visibility: 'hidden',
                 }}>
                 <Content {...swipeablePanelProps} close={close} />
-            </View>
+            </View>}
             {Platform.OS === 'web' && <View
                 //workaround - wrapper to provide context like redux
                 style={{

@@ -21,11 +21,6 @@ import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import generalServices from '../../services/generalServices';
 import CornerCircleButton from '../../components/molecules/CornerCircleButton';
 import { createParam } from 'solito';
-import EventsScreen from './EventsScreen';
-import hasKey from '../../hooks/hasKey';
-import { useSwipeablePanelParams } from '../../hooks/useSwipeablePanelParams';
-import getPathnameFromScreen from '../../hooks/getPathnameFromScreen';
-// import { useRouter } from 'solito/router';
 import { Image, Separator } from 'tamagui';
 import { MenuDemo } from './demo2';
 import { DateTimePickerDemo } from './demo3';
@@ -37,7 +32,6 @@ import withUrl from '../../hooks/withUrl';
 import { MenuStackParamList } from '../../navigators/MenuNavigator';
 import useRouter from '../../hooks/useRouter'
 import TextField from '../../components/molecules/TextField';
-import BottomSheet from '@gorhom/bottom-sheet';
 
 const { useParam } = createParam<NonNullable<MenuStackParamList['default']['MainScreen']>>();
 

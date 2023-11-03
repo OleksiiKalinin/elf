@@ -14,13 +14,10 @@ import { RootStackParamList } from "../navigators/RootNavigator";
 import ChooseAdvertScreen from "../screens/CalendarScreens/ChooseAdvertScreen";
 import ChooseCandidateScreen from "../screens/CalendarScreens/ChooseCandidateScreen";
 import JobCategoryScreen from "../screens/JobCategoryScreen";
-import Typography from "../components/atoms/Typography";
-import { useFocusEffect } from "@react-navigation/native";
 
 export type SubViewType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? AllScreens<T, keyof RootStackParamList[T]['default']> : never;
 type AllScreens<T extends keyof RootStackParamList, K extends keyof RootStackParamList[T]['default'] = keyof RootStackParamList[T]['default']> = K extends K ? AllParams<RootStackParamList[T]['default'][K]> : never;
 type AllParams<T> = T extends { subView?: any } ? T['subView'] : never;
-
 
 type ReplaceParams = Parameters<ReturnType<typeof useSolitoRouter>['replace']>;
 type PushParams = Parameters<ReturnType<typeof useSolitoRouter>['push']>;
@@ -28,11 +25,9 @@ type PushParams = Parameters<ReturnType<typeof useSolitoRouter>['push']>;
 const { useParams } = createParam<{ subView?: SubViewType }>();
 
 let componentProps: any = null;
-
+let activeId: string | null = null;
 //f*cking fix of 4x params re-render???
 let prevParams: string | undefined = undefined;
-
-let paramsGeneralHandlerAccess = true;
 
 const validateUrl = (props: WithUrlProps): string => {
     const newProps: WithUrlProps = cloneDeep(props);
@@ -60,11 +55,11 @@ const validateUrl = (props: WithUrlProps): string => {
 }
 
 export default function useRouter() {
-    const { currentScreen, swipeablePanelProps } = useTypedSelector(s => s.general);
+    const { currentScreen } = useTypedSelector(s => s.general);
     const { setSwipeablePanelProps } = useActions();
     const { back, parseNextPath, push, replace } = useSolitoRouter();
     const { params, setParams } = useParams();
-    const paramsLocalHandlerAccess = useRef(false);
+    const id = useRef(Math.random().toString() + Math.random().toString());
 
     const preProcessHandler = () => {
         // console.log('pressed');
@@ -72,21 +67,18 @@ export default function useRouter() {
 
     useEffect(() => {
         return () => {
-            paramsGeneralHandlerAccess = true;
+            if (activeId === id.current) activeId = null;
         }
     }, []);
 
     useEffect(() => {
-        if (prevParams !== params?.subView) {
-            prevParams = params?.subView;
+        if (activeId === null || activeId === id.current) {
+            if ((!!prevParams || !!params?.subView) && (prevParams !== params?.subView)) {
+                prevParams = params?.subView;
 
-            if (paramsGeneralHandlerAccess || paramsLocalHandlerAccess.current) {
-                paramsGeneralHandlerAccess = false;
-                paramsLocalHandlerAccess.current = true;
+                if (!!params?.subView) {
+                    let Component: FC<any> | null = null;
 
-                let Component: FC<any> | null = null;
-
-                if ((Platform.OS !== 'web' || windowExists()) && !!params?.subView) {
                     if (params.subView === 'GoogleMap') {
                         Component = GoogleMapScreen;
                     } else if (params.subView === 'ChooseAdvertScreen') {
@@ -101,6 +93,8 @@ export default function useRouter() {
                     }
 
                     if (!!componentProps && !!Component) {
+                        activeId = id.current;
+
                         setSwipeablePanelProps({
                             mode: 'screen',
                             children: <Component {...componentProps} />
@@ -109,11 +103,33 @@ export default function useRouter() {
                         setParams({ subView: undefined });
                     }
                 } else {
+                    activeId = null;
                     setSwipeablePanelProps(null);
                 }
             }
         }
     }, [params]);
+
+    const backOrReplace = () => {
+        if (Platform.OS === 'web') {
+            let popStatus = false;
+            const callback = () => popStatus = true;
+            window.addEventListener('popstate', callback);
+
+            back();
+
+            setTimeout(() => {
+                if (!popStatus) {
+                    const [stack, screen] = currentScreen.split('-');
+                    replace(withUrl({ stack: (screen === 'MainScreen' ? 'MenuStack' : stack as any) }));
+                }
+
+                window.removeEventListener('popstate', callback);
+            }, 200);
+        } else {
+            back();
+        }
+    }
 
     return {
         useLink: ({ href, ...props }: Omit<UseLinkProps, 'href'> & { href: WithUrlProps }): ReturnType<typeof solitoLink> => {
@@ -128,21 +144,14 @@ export default function useRouter() {
             }
         },
         parseNextPath,
-        back: () => {
-            if (Platform.OS !== 'web' || windowExists() && window.history && window.history.state && window.history.state.idx > 0) {
-                back();
-            } else {
-                const [stack, screen] = currentScreen.split('-');
-                replace(withUrl({ stack: (screen === 'MainScreen' ? 'MenuStack' : stack as any) }));
-            }
-        },
+        back: backOrReplace,
         backToRemoveParams: () => {
-            if (Platform.OS !== 'web' && !!swipeablePanelProps) {
-                replace(getPathnameFromScreen(currentScreen))
-                setSwipeablePanelProps(null);
+            if (Platform.OS === 'web') {
+                backOrReplace();
             } else {
-                back();
+                replace(getPathnameFromScreen(currentScreen))
             }
+            setSwipeablePanelProps(null);
         },
         push: (url: WithUrlProps, as?: PushParams[1], transitionOptions?: PushParams[2]) => {
             preProcessHandler();

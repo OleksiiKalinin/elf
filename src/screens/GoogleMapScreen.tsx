@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { ComponentProps, FC, HTMLFactory, useEffect, useRef, useState } from 'react';
+import React, { ComponentProps, FC, HTMLFactory, useCallback, useEffect, useRef, useState } from 'react';
 import { Dimensions, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import geocoder from 'react-native-geocoder-reborn';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
@@ -10,6 +10,7 @@ import Colors from '../colors/Colors';
 import Button from '../components/molecules/Button';
 import { useTypedSelector } from '../hooks/useTypedSelector';
 import Autocomplete from "react-google-autocomplete";
+import useRouter from '../hooks/useRouter';
 
 const Map = MapView as unknown as FC<ComponentProps<typeof MapView> & { options: any }> & { Marker: typeof MapMarker };
 if (Platform.OS === 'android' || Platform.OS === 'ios') {
@@ -29,29 +30,24 @@ const GoogleMapScreen: FC<GoogleMapScreenProps> = ({ callback, initialAddress, h
     const [webInputValue, setWebInputValue] = useState<string>(location?.formattedAddress || '');
     const NativeInputRef = useRef<any>(null);
     const WebInputRef = useRef<HTMLInputElement | null>(null);
-    const {currentScreen} = useTypedSelector(s => s.general)
-console.log(currentScreen);
-
-    // const navigation = useNavigation();
-
-    // useEffect(() => {
-    //     const style = window?.document?.body?.style;
-    //     if (style) style.overflowY = 'hidden';
-
-    //     return () => {
-    //         if (style) style.overflowY = 'auto';
-    //     }
-    // }, []);
+    const { backToRemoveParams } = useRouter();
 
     useEffect(() => {
-        console.log(location);
-        
         if (location) {
             NativeInputRef.current?.setAddressText(location.formattedAddress);
             setWebInputValue(location.formattedAddress || '');
             if (WebInputRef.current) WebInputRef.current.value = location.formattedAddress || '';
         }
     }, [location]);
+
+    const BackButton = useCallback(() => (
+        <TouchableOpacity
+            style={styles.BackButton}
+            onPress={backToRemoveParams}
+        >
+            <SvgIcon icon="arrowLeft" />
+        </TouchableOpacity>
+    ), []);
 
     return (
         <View style={{ backgroundColor: Colors.Basic100, flex: 1, position: 'relative' }}>
@@ -65,14 +61,7 @@ console.log(currentScreen);
                             .catch(err => console.log(err));
                     }}
                     onFail={(e) => console.log(e)}
-                    renderLeftButton={() => (
-                        <TouchableOpacity
-                            style={styles.BackButton}
-                        // onPress={() => navigation.goBack()}
-                        >
-                            <SvgIcon icon="arrowLeft" />
-                        </TouchableOpacity>
-                    )}
+                    renderLeftButton={() => <BackButton />}
                     renderRightButton={() => hideControls ? <></> : (
                         <TouchableOpacity
                             style={styles.ClearButton}
@@ -103,12 +92,7 @@ console.log(currentScreen);
                     }}
                 />}
                 {Platform.OS === 'web' && <View style={{ flexDirection: 'row', width: '100%', height: 42 }}>
-                    <TouchableOpacity
-                        style={styles.BackButton}
-                    // onPress={() => navigation.goBack()}
-                    >
-                        <SvgIcon icon="arrowLeft" />
-                    </TouchableOpacity>
+                    <BackButton />
                     <Autocomplete
                         ref={WebInputRef}
                         style={styles.InputWeb}
@@ -180,7 +164,7 @@ console.log(currentScreen);
                     onPress={() => {
                         if (location) {
                             callback(location);
-                            // navigation.goBack();
+                            backToRemoveParams();
                         }
                     }}
                 >

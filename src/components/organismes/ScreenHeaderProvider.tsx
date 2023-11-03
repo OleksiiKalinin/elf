@@ -5,13 +5,11 @@ import Typography from '../atoms/Typography';
 import Button from '../molecules/Button';
 import Colors from '../../colors/Colors';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import { useActions } from '../../hooks/useActions';
-import getPathnameFromScreen from '../../hooks/getPathnameFromScreen';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import useRouter from '../../hooks/useRouter';
 
-type ScreensTitlesType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: {[K in keyof RootStackParamList[T]['default']]: string} } : never;
-// type ScreensTitlesType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: {[K in keyof RootStackParamList[T]['default'] | keyof RootStackParamList[T]['extended']]: string} } : never;
+// type ScreensTitlesType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: {[K in keyof RootStackParamList[T]['default']]: string} } : never;
+type ScreensTitlesType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: { [K in keyof RootStackParamList[T]['default'] | keyof RootStackParamList[T]['extended']]: string } } : never;
 
 export const screensTitles: ScreensTitlesType = {
   AuthStack: {
@@ -121,8 +119,8 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   alterTitle = null,
   callback
 }) => {
-  const { backToRemoveParams } = useRouter();
-  const { currentScreen, windowSizes } = useTypedSelector(s => s.general);
+  const { backToRemoveParams, back } = useRouter();
+  const { currentScreen, windowSizes, swipeablePanelProps } = useTypedSelector(s => s.general);
   const [stack, screen] = currentScreen.split('-');
   // @ts-ignore
   const currentTitle: string = screensTitles[stack][screen] || '';
@@ -146,7 +144,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
               width={50}
               height='100%'
               icon={<SvgIcon icon='arrowLeft' />}
-              onPress={callback ? callback : backToRemoveParams}
+              onPress={callback ? callback : (!!swipeablePanelProps ? backToRemoveParams : back)}
             />
             <Typography variant="h4" weight="Bold" style={{ alignSelf: 'center' }}>
               {title || currentTitle}
