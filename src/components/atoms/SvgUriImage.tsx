@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Platform, TextStyle } from 'react-native';
+import { Platform, ViewStyle } from 'react-native';
 import { SvgUri } from 'react-native-svg';
 import { StyleProp } from 'react-native';
 import { Image } from 'tamagui';
@@ -8,14 +8,14 @@ type SvgUriImageProps = {
  src: string,
  width?: string | number,
  height?: string | number,
- style?: StyleProp<TextStyle>;
+ style?: StyleProp<ViewStyle>;
 };
 
 const SvgUriImage: FC<SvgUriImageProps> = ({
   src,
   width = '',
   height = '',
-  ...style
+  style
 }) => {
 
   return (
@@ -25,16 +25,14 @@ const SvgUriImage: FC<SvgUriImageProps> = ({
           src={{ uri: src }}
           width={width}
           height={height}
-          {...style}
+          style={style}
         />
-
         :
-
         <SvgUri 
           uri={src}
           height={width}
           width={height}
-          {...style}
+          style={style}
         />
       }
     </>
