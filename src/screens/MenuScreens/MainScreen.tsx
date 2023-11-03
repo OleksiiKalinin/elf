@@ -311,6 +311,7 @@ const MainScreen: React.FC = ({ }) => {
       //   </TouchableOpacity>
       // </View>}
       >
+        <DateTimePickerDemo />
         <ScrollView
           contentContainerStyle={{ alignItems: 'center' }}
           style={{ backgroundColor: Colors.Basic100, flex: 1 }}

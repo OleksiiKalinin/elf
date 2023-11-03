@@ -4,19 +4,12 @@ import Button from '../molecules/Button';
 import Colors from '../../colors/Colors';
 import Typography from '../atoms/Typography';
 import { Sheet } from 'tamagui';
-import { SwipeablePanelParamsType, useSwipeablePanelParams } from '../../hooks/useSwipeablePanelParams';
-import { createParam } from 'solito';
-import { ScrollView } from '../molecules/ScrollView';
+import { SwipeablePanelParamsType } from '../../hooks/useSwipeablePanelParams';
 import { useRouter } from 'solito/router';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import getPathnameFromScreen from '../../hooks/getPathnameFromScreen';
 import { useActions } from '../../hooks/useActions';
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import TextField from '../molecules/TextField';
 import BottomSheet from '@gorhom/bottom-sheet';
-
-
-
 
 const BAR_HEIGHT = 20;
 
@@ -28,13 +21,10 @@ export type SwipeablePanelProps = {
     title?: string;
     subTitle?: string;
     backgroundColor?: string;
-    // onClose: () => void;
-    // isActive: boolean;
     hideBar?: boolean;
     buttons?: (React.ComponentProps<typeof Button> & { closeAction?: CloseActionType })[];
     mode?: SwipeablePanelParamsType['subViewMode'],
 };
-// export type SwipeablePanelNoControlProps = Omit<SwipeablePanelProps, "isActive" | "onClose">;
 
 const SwipeablePanel: React.FC = () => {
     const { replace } = useRouter();
@@ -44,8 +34,6 @@ const SwipeablePanel: React.FC = () => {
     const [height, setHeight] = useState<number>(0);
 
     const close = (closeAction: CloseActionType | undefined = 'history-replace&props-null') => {
-        console.log('close');
-
         if (closeAction === 'history-replace&props-null') {
             replace(getPathnameFromScreen(currentScreen));
             setSwipeablePanelProps(null);
@@ -62,7 +50,7 @@ const SwipeablePanel: React.FC = () => {
 
     useEffect(() => {
         const style = window.document?.body?.style;
-        
+
         if (!!swipeablePanelProps) {
             if (style) style.overflowY = 'hidden';
             const handler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -126,7 +114,6 @@ const SwipeablePanel: React.FC = () => {
             </View>}
             {(Platform.OS === 'android' || Platform.OS === 'ios') && mode === 'screen' && !!swipeablePanelProps &&
                 <BottomSheet
-                    // index={mode === 'screen' && !!swipeablePanelProps ? 0 : -1}
                     index={0}
                     snapPoints={['100%']}
                     handleComponent={null}
@@ -143,11 +130,9 @@ const SwipeablePanel: React.FC = () => {
                 dismissOnSnapToBottom
             >
                 {!hideBar && <Sheet.Handle h={4} bg={Colors.White} opacity={1} mx='45%' my={8} />}
-                <Sheet.Overlay />
+                {mode === 'options' && !!swipeablePanelProps && !!height && <Sheet.Overlay />}
                 <Sheet.Frame br={0} userSelect='none'>
-                    <Sheet.ScrollView>
-                        {mode === 'options' && <Content {...swipeablePanelProps} close={close} />}
-                    </Sheet.ScrollView>
+                    {mode === 'options' && <Content {...swipeablePanelProps} close={close} />}
                 </Sheet.Frame>
             </Sheet>
         </>

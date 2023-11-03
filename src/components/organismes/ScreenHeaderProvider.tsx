@@ -10,7 +10,8 @@ import getPathnameFromScreen from '../../hooks/getPathnameFromScreen';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import useRouter from '../../hooks/useRouter';
 
-type ScreensTitlesType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: {[K in keyof RootStackParamList[T]['default'] | keyof RootStackParamList[T]['extended']]: string} } : never;
+type ScreensTitlesType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: {[K in keyof RootStackParamList[T]['default']]: string} } : never;
+// type ScreensTitlesType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: {[K in keyof RootStackParamList[T]['default'] | keyof RootStackParamList[T]['extended']]: string} } : never;
 
 export const screensTitles: ScreensTitlesType = {
   AuthStack: {
@@ -124,7 +125,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   const { currentScreen, windowSizes } = useTypedSelector(s => s.general);
   const [stack, screen] = currentScreen.split('-');
   // @ts-ignore
-  const currentTitle: string = screensTitles[stack][screen];
+  const currentTitle: string = screensTitles[stack][screen] || '';
 
   return (
     <View style={{

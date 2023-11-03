@@ -17,49 +17,49 @@ geocoder.setLanguage('pl');
 registerTranslation('en-GB', enGB)
 
 const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
-    const { setWindowSizes } = useActions();
-    const appDataLoaded = useRef<boolean>(false);
-    const prevToken = useRef<string | null>('default');
-    const dispatch = useTypedDispatch();
-    const { token } = useTypedSelector(state => state.general);
-    const { setToken } = useActions();
+  const { setWindowSizes } = useActions();
+  const appDataLoaded = useRef<boolean>(false);
+  const prevToken = useRef<string | null>('default');
+  const dispatch = useTypedDispatch();
+  const { token } = useTypedSelector(state => state.general);
+  const { setToken } = useActions();
 
-    useEffect(() => {
-        Dimensions.addEventListener('change', ({ window }) => setWindowSizes(window));
-        setWindowSizes(Dimensions.get('window'));
-    }, [])
+  useEffect(() => {
+    Dimensions.addEventListener('change', ({ window }) => setWindowSizes(window));
+    setWindowSizes(Dimensions.get('window'));
+  }, [])
 
-    useEffect(() => {
-        (async () => {
-          console.log('token: ', token);
-          if (!appDataLoaded.current || (token && !prevToken.current)) {
-            const [
-              [, token],
-              [, refresh_token],
-            ] = await AsyncStorage.multiGet([
-              'token',
-              'refresh_token',
-            ]);
-    
-            const isOk = await dispatch(generalServices.getAppData(token));
-            if (!!isOk) {
-              appDataLoaded.current = true;
-              setToken({ refresh_token, token });
-            }
-          }
-          prevToken.current = token;
-        })();
-      }, [token]);
+  useEffect(() => {
+    (async () => {
+      console.log('token: ', token);
+      if (!appDataLoaded.current || (token && !prevToken.current)) {
+        const [
+          [, token],
+          [, refresh_token],
+        ] = await AsyncStorage.multiGet([
+          'token',
+          'refresh_token',
+        ]);
 
-    return (
-        <>
-            <MenuProvider>
-                <PaperProvider theme={{dark: false}}>
-                    {children}
-                </PaperProvider>
-            </MenuProvider>
-        </>
-    );
+        const isOk = await dispatch(generalServices.getAppData(token));
+        if (!!isOk) {
+          appDataLoaded.current = true;
+          setToken({ refresh_token, token });
+        }
+      }
+      prevToken.current = token;
+    })();
+  }, [token]);
+
+  return (
+    <>
+      <MenuProvider>
+        <PaperProvider theme={{ dark: false }}>
+          {children}
+        </PaperProvider>
+      </MenuProvider>
+    </>
+  );
 };
 
 export default AppUnifiedProvider;

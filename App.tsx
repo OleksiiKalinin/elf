@@ -14,9 +14,6 @@ import RootNavigator, { navigationLinking } from './src/navigators/RootNavigator
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import SwipeablePanel from './src/components/organismes/SwipeablePanel';
 import AppUnifiedProvider from './src/components/organismes/AppUnifiedProvider';
-import Typography from './src/components/atoms/Typography';
-import TextField from './src/components/molecules/TextField';
-import GoogleMapScreen from './src/screens/GoogleMapScreen';
 
 LogBox.ignoreAllLogs();
 
