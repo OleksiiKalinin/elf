@@ -10,8 +10,9 @@ import Typography from '../components/atoms/Typography';
 import { Separator } from 'tamagui';
 import { SkeletonContainer, Skeleton } from 'react-native-skeleton-component';
 import  useRouter from '../hooks/useRouter';
-import { JobPositionType } from '../store/reducers/types';
+import { JobIndustryType, JobPositionType } from '../store/reducers/types';
 import Button from '../components/molecules/Button';
+import SvgUriImage from '../components/atoms/SvgUriImage';
 
 export type JobCategoryScreenProps = {
   mode: 'industry',
@@ -23,28 +24,25 @@ export type JobCategoryScreenProps = {
 
 const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({mode, callback}) => {
   const [search, setSearch] = useState<string>('');
-  const [industryId, setIndustryId] = useState<number | null>(null);
-  const [positionId, setPositionId] = useState<number | null>(null);
-  const [industryIcon, setIndustryIcon] = useState<string>('');
-  const [industryName, setIndustryName] = useState<string>('');
-  const [jobPositions, setJobPositions] = useState<JobPositionType[] | null>(null);
+  const [selectedIndustry, setSelectedIndustry] = useState<JobIndustryType | null>(null);
+  const [selectedPosition, setSelectedPositions] = useState<JobPositionType | null>(null);
   const { jobIndustries } = useTypedSelector(state => state.general);
   const { backToRemoveParams} = useRouter();
 
   useEffect(() => {
-    if (mode === 'industry' && industryId) {
-      callback(industryId);
+    if (mode === 'industry' && selectedIndustry) {
+      callback(selectedIndustry.id);
       backToRemoveParams();
-    } else if(mode === 'industryAndPosition' && industryId && positionId){
-      callback(industryId, positionId);
+    } else if(mode === 'industryAndPosition' && selectedIndustry && selectedPosition){
+      callback(selectedIndustry.id, selectedPosition.id);
       backToRemoveParams();
     };
-  }, [positionId, industryId]);
+  }, [selectedPosition, selectedIndustry]);
 
   useEffect(() => {
     setSearch('');
 
-    if (industryId && mode === 'industryAndPosition') {
+    if (selectedIndustry && mode === 'industryAndPosition') {
       const handler = BackHandler.addEventListener('hardwareBackPress', () => {
         backToIndustry();
         return true;
@@ -54,17 +52,14 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({mode, callback}) =
         handler.remove();
       }
     }
-  }, [industryId]);
+  }, [selectedIndustry]);
 
   const backToIndustry = () =>{
-    setIndustryId(null);
+    setSelectedIndustry(null);
   };
 
   const handleActiveCategory = (id: number, job_positions: JobPositionType[], icon: string, name: string) =>{
-    setIndustryId(id);
     setJobPositions(job_positions);
-    setIndustryIcon(icon);
-    setIndustryName(name);
     console.log(icon)
   };
   
@@ -72,12 +67,12 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({mode, callback}) =
     <ScreenHeaderProvider 
       mainTitlePosition="flex-start" 
       mode='backAction'
-      title={industryId ? 'Stanowiska' : 'Kategorie'}
-      callback={industryId ? backToIndustry : undefined}
+      title={selectedIndustry ? 'Stanowiska' : 'Kategorie'}
+      callback={selectedIndustry ? backToIndustry : undefined}
     >
       <View style={styles.Wrapper}>
         <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
-          { industryId === null || mode === 'industry' ?
+          { selectedIndustry === null || mode === 'industry' ?
             <>
               <View style={styles.Textfield}>
                 <TextField
@@ -105,7 +100,7 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({mode, callback}) =
                   <Fragment key={id}>
                     <TouchableOpacity 
                       style={styles.Button} 
-                      onPress={() => handleActiveCategory(id, job_positions, icon, name)}
+                      onPress={() => setSelectedIndustry({id, job_positions, icon, name})}
                     >
                       <View style={{ width: 34, height: 34, position: 'relative' }}>
                         <View style={{ position: 'absolute' }}>
@@ -113,7 +108,7 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({mode, callback}) =
                             <Skeleton style={{ width: 34, height: 34, borderRadius: 17 }} />
                           </SkeletonContainer>
                         </View>
-                        <Image style={styles.IndustryIcon} source={{uri: icon}}/>
+                        <SvgUriImage style={styles.IndustryIcon} src={icon}/>
                       </View>
                       <View style={{ flex: 1, marginLeft: 8 }}>
                         <Typography variant='h5' weight='SemiBold'>{name}</Typography>
@@ -133,9 +128,10 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({mode, callback}) =
             <>
               <View style={styles.ActiveCategory}>
                 <View style={styles.ActiveCategoryName}>
-                  <Image style={{ height: 34, width: 34 }} source={{uri: industryIcon}}/>
-                  <Typography variant="h4" style={{ alignSelf: "center" }}>
-                    {industryName}
+                <SvgUriImage style={styles.IndustryIcon} src={selectedIndustry.icon}/>
+                  <Typography variant="h4" style={{ alignSelf: 
+                  'center' }}>
+                    {selectedIndustry.name}
                   </Typography>
                 </View>
                 <Button
@@ -163,12 +159,11 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({mode, callback}) =
                   }
                 />
               </View>
-              { jobPositions &&
-                jobPositions.map(({ id, name }) => !!name.includes(search) && (
+              { selectedIndustry.job_positions.map(({ id, name }, i) => !!name.includes(search) && (
                   <View style={{ borderBottomWidth: 1, borderColor: Colors.Basic300 }}>
                     <TouchableOpacity style={styles.Category}
                       onPress={() => {
-                        setPositionId(id)
+                        setSelectedPositions({id, name})
                       }}
                     >
                       <Typography color={Colors.Basic900}>{name}</Typography>
