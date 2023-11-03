@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, Image, BackHandler } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, BackHandler } from 'react-native';
 import Colors from '../colors/Colors';
 import { useTypedSelector } from '../hooks/useTypedSelector';
 import ScreenHeaderProvider from '../components/organismes/ScreenHeaderProvider';
@@ -9,42 +9,40 @@ import SvgIcon from '../components/atoms/SvgIcon';
 import Typography from '../components/atoms/Typography';
 import { Separator } from 'tamagui';
 import { SkeletonContainer, Skeleton } from 'react-native-skeleton-component';
-import  useRouter from '../hooks/useRouter';
-import { JobPositionType } from '../store/reducers/types';
+import useRouter from '../hooks/useRouter';
+import { JobIndustryType, JobPositionType } from '../store/reducers/types';
 import Button from '../components/molecules/Button';
+import SvgUriImage from '../components/atoms/SvgUriImage';
 
 export type JobCategoryScreenProps = {
   mode: 'industry',
   callback: (industryId: number) => void,
-  } | {
+} | {
   mode: 'industryAndPosition',
   callback: (industryId: number, positionId: number) => void,
 };
 
-const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({mode, callback}) => {
+const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({ mode, callback }) => {
   const [search, setSearch] = useState<string>('');
-  const [industryId, setIndustryId] = useState<number | null>(null);
-  const [positionId, setPositionId] = useState<number | null>(null);
-  const [industryIcon, setIndustryIcon] = useState<string>('');
-  const [industryName, setIndustryName] = useState<string>('');
-  const [jobPositions, setJobPositions] = useState<JobPositionType[] | null>(null);
+  const [selectedIndustry, setSelectedIndustry] = useState<JobIndustryType | null>(null);
+  const [selectedPosition, setSelectedPositions] = useState<JobPositionType | null>(null);
   const { jobIndustries } = useTypedSelector(state => state.general);
-  const { backToRemoveParams} = useRouter();
+  const { backToRemoveParams } = useRouter();
 
   useEffect(() => {
-    if (mode === 'industry' && industryId) {
-      callback(industryId);
+    if (mode === 'industry' && selectedIndustry) {
+      callback(selectedIndustry.id);
       backToRemoveParams();
-    } else if(mode === 'industryAndPosition' && industryId && positionId){
-      callback(industryId, positionId);
+    } else if (mode === 'industryAndPosition' && selectedIndustry && selectedPosition) {
+      callback(selectedIndustry.id, selectedPosition.id);
       backToRemoveParams();
     };
-  }, [positionId, industryId]);
+  }, [selectedPosition, selectedIndustry]);
 
   useEffect(() => {
     setSearch('');
 
-    if (industryId && mode === 'industryAndPosition') {
+    if (selectedIndustry && mode === 'industryAndPosition') {
       const handler = BackHandler.addEventListener('hardwareBackPress', () => {
         backToIndustry();
         return true;
@@ -54,30 +52,22 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({mode, callback}) =
         handler.remove();
       }
     }
-  }, [industryId]);
+  }, [selectedIndustry]);
 
-  const backToIndustry = () =>{
-    setIndustryId(null);
+  const backToIndustry = () => {
+    setSelectedIndustry(null);
   };
 
-  const handleActiveCategory = (id: number, job_positions: JobPositionType[], icon: string, name: string) =>{
-    setIndustryId(id);
-    setJobPositions(job_positions);
-    setIndustryIcon(icon);
-    setIndustryName(name);
-    console.log(icon)
-  };
-  
   return (
-    <ScreenHeaderProvider 
-      mainTitlePosition="flex-start" 
+    <ScreenHeaderProvider
+      mainTitlePosition="flex-start"
       mode='backAction'
-      title={industryId ? 'Stanowiska' : 'Kategorie'}
-      callback={industryId ? backToIndustry : undefined}
+      title={selectedIndustry ? 'Stanowiska' : 'Kategorie'}
+      callback={selectedIndustry ? backToIndustry : undefined}
     >
       <View style={styles.Wrapper}>
         <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
-          { industryId === null || mode === 'industry' ?
+          {selectedIndustry === null || mode === 'industry' ?
             <>
               <View style={styles.Textfield}>
                 <TextField
@@ -87,13 +77,13 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({mode, callback}) =
                   value={search}
                   onChangeText={setSearch}
                   left={<SvgIcon icon='search' />}
-                  right={ search &&
+                  right={search &&
                     <Button
                       height={21}
                       variant='text'
-                      icon={<SvgIcon icon='crossBig' fill={Colors.Basic500} style={{ marginRight: -15}}/>}
+                      icon={<SvgIcon icon='crossBig' fill={Colors.Basic500} style={{ marginRight: -15 }} />}
                       onPress={() => setSearch('')}
-                    />         
+                    />
                   }
                 />
               </View>
@@ -103,9 +93,9 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({mode, callback}) =
               <View style={{ marginBottom: 20 }}>
                 {jobIndustries.filter(({ name }) => name.toLowerCase().includes(search.toLowerCase())).map(({ icon, id, name, job_positions }) => (
                   <Fragment key={id}>
-                    <TouchableOpacity 
-                      style={styles.Button} 
-                      onPress={() => handleActiveCategory(id, job_positions, icon, name)}
+                    <TouchableOpacity
+                      style={styles.Button}
+                      onPress={() => setSelectedIndustry({ id, job_positions, icon, name })}
                     >
                       <View style={{ width: 34, height: 34, position: 'relative' }}>
                         <View style={{ position: 'absolute' }}>
@@ -113,7 +103,7 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({mode, callback}) =
                             <Skeleton style={{ width: 34, height: 34, borderRadius: 17 }} />
                           </SkeletonContainer>
                         </View>
-                        <Image style={styles.IndustryIcon} source={{uri: icon}}/>
+                        <SvgUriImage style={styles.IndustryIcon} src={icon} />
                       </View>
                       <View style={{ flex: 1, marginLeft: 8 }}>
                         <Typography variant='h5' weight='SemiBold'>{name}</Typography>
@@ -133,17 +123,20 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({mode, callback}) =
             <>
               <View style={styles.ActiveCategory}>
                 <View style={styles.ActiveCategoryName}>
-                  <Image style={{ height: 34, width: 34 }} source={{uri: industryIcon}}/>
-                  <Typography variant="h4" style={{ alignSelf: "center" }}>
-                    {industryName}
+                  <SvgUriImage style={styles.IndustryIcon} src={selectedIndustry.icon} />
+                  <Typography variant="h4" style={{
+                    alignSelf:
+                      'center'
+                  }}>
+                    {selectedIndustry.name}
                   </Typography>
                 </View>
                 <Button
                   variant='text'
-                  style={{ width: 60, marginRight: -20}}
+                  style={{ width: 60, marginRight: -20 }}
                   icon={<SvgIcon icon='crossBig' fill={Colors.Basic500} />}
                   onPress={() => backToIndustry()}
-                />    
+                />
               </View>
               <View style={styles.Textfield}>
                 <TextField
@@ -153,28 +146,27 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({mode, callback}) =
                   value={search}
                   onChangeText={setSearch}
                   left={<SvgIcon icon='search' />}
-                  right={ search &&
+                  right={search &&
                     <Button
                       height={21}
                       variant='text'
-                      icon={<SvgIcon icon='crossBig' fill={Colors.Basic500} style={{ marginRight: -15}}/>}
+                      icon={<SvgIcon icon='crossBig' fill={Colors.Basic500} style={{ marginRight: -15 }} />}
                       onPress={() => setSearch('')}
-                    />          
+                    />
                   }
                 />
               </View>
-              { jobPositions &&
-                jobPositions.map(({ id, name }) => !!name.includes(search) && (
-                  <View style={{ borderBottomWidth: 1, borderColor: Colors.Basic300 }}>
-                    <TouchableOpacity style={styles.Category}
-                      onPress={() => {
-                        setPositionId(id)
-                      }}
-                    >
-                      <Typography color={Colors.Basic900}>{name}</Typography>
-                    </TouchableOpacity>
-                  </View>
-                ))
+              {selectedIndustry.job_positions.map(({ id, name }, i) => !!name.includes(search) && (
+                <View style={{ borderBottomWidth: 1, borderColor: Colors.Basic300 }}>
+                  <TouchableOpacity style={styles.Category}
+                    onPress={() => {
+                      setSelectedPositions({ id, name })
+                    }}
+                  >
+                    <Typography color={Colors.Basic900}>{name}</Typography>
+                  </TouchableOpacity>
+                </View>
+              ))
               }
             </>
           }
@@ -186,7 +178,7 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({mode, callback}) =
 
 const styles = StyleSheet.create({
   Wrapper: {
-    backgroundColor: Colors.Basic100, 
+    backgroundColor: Colors.Basic100,
     height: '100%',
   },
   Button: {
@@ -206,7 +198,7 @@ const styles = StyleSheet.create({
     marginVertical: 16,
   },
   IndustryIcon: {
-    width: 34, 
+    width: 34,
     height: 34,
   },
   IndustryButton: {

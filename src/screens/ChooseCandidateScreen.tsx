@@ -2,22 +2,28 @@ import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView, SectionList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useDispatch } from 'react-redux';
-import Colors from '../../colors/Colors';
-import { useActions } from '../../hooks/useActions';
-import { useTypedSelector } from '../../hooks/useTypedSelector';
-import { AdvertStackParamList } from '../../navigators/AdvertNavigator';
-import { CalendarStackParamList } from '../../navigators/CalendarNavigator';
-import advertsServices from '../../services/advertsServices';
-import { CandidateDataType } from '../../store/reducers/types';
-import LoadingScreen from '../../components/atoms/LoadingScreen';
-import Typography from '../../components/atoms/Typography';
-import CandidateCard from '../../components/organismes/CandidateCard';
-import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
-import { useTypedDispatch } from '../../hooks/useTypedDispatch';
+import Colors from '../colors/Colors';
+import { useActions } from '../hooks/useActions';
+import { useTypedSelector } from '../hooks/useTypedSelector';
+import { AdvertStackParamList } from '../navigators/AdvertNavigator';
+import { CalendarStackParamList } from '../navigators/CalendarNavigator';
+import advertsServices from '../services/advertsServices';
+import { CandidateDataType, UserAdvertType } from '../store/reducers/types';
+import LoadingScreen from '../components/atoms/LoadingScreen';
+import Typography from '../components/atoms/Typography';
+import CandidateCard from '../components/organismes/CandidateCard';
+import ScreenHeaderProvider from '../components/organismes/ScreenHeaderProvider';
+import { useTypedDispatch } from '../hooks/useTypedDispatch';
+import useRouter from '../hooks/useRouter';
 
-const CandidatesScreen: React.FC<CalendarStackParamList['extended']['ChooseCandidateScreen']> = ({callback, candidates: candidatesWithRating}) => {
+export type ChooseCandidateScreenProps = {
+  candidates: UserAdvertType['candidate_data'],
+  callback: (candidate: CandidateDataType) => void 
+};
+
+const ChooseCandidateScreen: React.FC<ChooseCandidateScreenProps> = ({callback, candidates: candidatesWithRating}) => {
   const dispatch = useTypedDispatch();
-  // const { candidates: candidatesWithRating, callback } = route.params;
+  const { backToRemoveParams } = useRouter();
   const { token } = useTypedSelector(s => s.general);
   const [loading, setLoading] = useState<boolean>(true);
   const [candidates, setCandidates] = useState<CandidateDataType[]>([]);
@@ -51,7 +57,7 @@ const CandidatesScreen: React.FC<CalendarStackParamList['extended']['ChooseCandi
             rating={candidatesWithRating.find(e => e.candidate_id === item.id)?.fit_rating}
             onChoose={() => {
               callback(item);
-              // navigation.goBack();
+              backToRemoveParams();
             }}
           />
         </TouchableOpacity>
@@ -77,4 +83,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CandidatesScreen;
+export default ChooseCandidateScreen;

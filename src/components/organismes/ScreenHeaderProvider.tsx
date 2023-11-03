@@ -8,8 +8,7 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import useRouter from '../../hooks/useRouter';
 
-// type ScreensTitlesType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: {[K in keyof RootStackParamList[T]['default']]: string} } : never;
-type ScreensTitlesType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: { [K in keyof RootStackParamList[T]['default'] | keyof RootStackParamList[T]['extended']]: string } } : never;
+type ScreensTitlesType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: {[K in keyof RootStackParamList[T]['default']]: string} } : never;
 
 export const screensTitles: ScreensTitlesType = {
   AuthStack: {
@@ -22,10 +21,6 @@ export const screensTitles: ScreensTitlesType = {
   CalendarStack: {
     MainScreen: '',
     EventScreen: 'Zaplanuj wydarzenie',
-    ChooseAdvertScreen: 'Wybierz ogłoszenie',
-    ChooseCandidateScreen: 'Wybierz kandydata',
-    GoogleMap: '',
-    JobCategoryScreen: '',
   },
   CandidatesStack: {
     MainScreen: 'Kandydaci',
@@ -66,9 +61,6 @@ export const screensTitles: ScreensTitlesType = {
     ShareCamera: 'Polityka prywatności',
     ShareContacts: 'Polityka prywatności',
     ShareLocation: 'Polityka prywatności',
-    AddConractPersonsScreen: 'Dane do kontaktu',
-    CompanyDescriptionScreen: 'Opis firmy',
-    CompanyInvoiceScreen: 'Dane do faktury',
     PackagesScreen: 'Pakiety',
     SettingsScreen: 'Ustawienia',
   },
@@ -77,7 +69,6 @@ export const screensTitles: ScreensTitlesType = {
     AdvertScreen: '',
     AdvertEditorScreen: 'Nowe ogłoszenie',
     CandidatesScreen: '',
-    JobCategoryScreen: '',
   },
   MenuStack: {
     MainScreen: 'Menu główne',
