@@ -11,7 +11,7 @@ import useRouter from '../hooks/useRouter';
 import { UserAdvertType } from '../store/reducers/types';
 
 export type ChooseAdvertScreenProps = {
-    callback: (advert: UserAdvertType) => void;
+  callback: (advert: UserAdvertType) => void;
 };
 
 const ChooseAdvertScreen: FC<CalendarStackParamList['extended']['ChooseAdvertScreen']> = ({callback}) => {

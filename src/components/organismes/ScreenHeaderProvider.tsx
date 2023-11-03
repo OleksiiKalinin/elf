@@ -64,7 +64,6 @@ export const screensTitles: ScreensTitlesType = {
     ShareCamera: 'Polityka prywatności',
     ShareContacts: 'Polityka prywatności',
     ShareLocation: 'Polityka prywatności',
-    CompanyInvoiceScreen: 'Dane do faktury',
     PackagesScreen: 'Pakiety',
     SettingsScreen: 'Ustawienia',
   },

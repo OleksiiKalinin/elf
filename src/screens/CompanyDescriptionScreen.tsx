@@ -14,7 +14,7 @@ import TextField from '../components/molecules/TextField';
 import ScreenHeaderProvider from '../components/organismes/ScreenHeaderProvider';
 import Button from '../components/molecules/Button';
 
-export type JobCategoryScreenProps = {
+export type CompanyDescriptionScreenProps = {
   description: string | null, 
   callback: (p: string) => void, 
   title?: string,

@@ -19,7 +19,7 @@ export type AddContactPersonsScreenProps = {
     changeCompanyDataHandler: (name: keyof CompanyDataType, value: string | number | AddressType, replaceSpaces?: boolean) => void
   };
 
-const AddConractPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) => {
+const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) => {
     const { companyData, changeCompanyDataHandler, contactPersons: initContactPersons, setContactPersons: changeContactPersonsHandler } = props;
     const [contactHours, setContactHours] = useState<string>(companyData.contact_hours || '08:00-18:00');
     const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(initContactPersons);
@@ -143,4 +143,4 @@ const AddConractPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
     );
 };
 
-export default AddConractPersonsScreen;
+export default AddContactPersonsScreen;

@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { ImageProps, Platform, TextStyle } from 'react-native';
+import { Platform, TextStyle } from 'react-native';
 import { SvgUri } from 'react-native-svg';
 import { StyleProp } from 'react-native';
 import { Image } from 'tamagui';
