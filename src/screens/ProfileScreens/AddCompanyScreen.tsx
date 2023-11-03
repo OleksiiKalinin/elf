@@ -455,7 +455,7 @@ const AddCompanyScreen: React.FC = () => {
         <View style={{ marginBottom: 32 }}>
           {/* <ButtonArrowSelector
             text='Dane do kontaktu'
-            onPress={() => navigation.navigate('AddConractPersonsScreen', {
+            onPress={() => navigation.navigate('AddContactPersonsScreen', {
               contactPersons,
               setContactPersons,
               companyData,

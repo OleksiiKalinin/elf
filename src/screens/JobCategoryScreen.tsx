@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, Image, BackHandler } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, BackHandler } from 'react-native';
 import Colors from '../colors/Colors';
 import { useTypedSelector } from '../hooks/useTypedSelector';
 import ScreenHeaderProvider from '../components/organismes/ScreenHeaderProvider';
@@ -58,11 +58,6 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({mode, callback}) =
     setSelectedIndustry(null);
   };
 
-  const handleActiveCategory = (id: number, job_positions: JobPositionType[], icon: string, name: string) =>{
-    setJobPositions(job_positions);
-    console.log(icon)
-  };
-  
   return (
     <ScreenHeaderProvider 
       mainTitlePosition="flex-start" 

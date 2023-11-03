@@ -1,18 +1,25 @@
 import React, { Fragment, useState } from 'react';
 import { View, ScrollView, TouchableOpacity, Dimensions, Slider } from 'react-native';
-import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
+import { ProfileStackParamList } from '../navigators/ProfileNavigator';
 import { CompositeScreenProps } from '@react-navigation/native';
-import { ContactPersonType } from '../../store/reducers/types';
-import minutesToHours from '../../hooks/minutesToHours';
-import hoursToMinutes from '../../hooks/hoursToMinutes';
-import Typography from '../../components/atoms/Typography';
-import TextField from '../../components/molecules/TextField';
-import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
-import Button from '../../components/molecules/Button';
-import Colors from '../../colors/Colors';
-import { useTypedSelector } from '../../hooks/useTypedSelector';
+import { AddressType, CompanyDataType, ContactPersonType } from '../store/reducers/types';
+import minutesToHours from '../hooks/minutesToHours';
+import hoursToMinutes from '../hooks/hoursToMinutes';
+import Typography from '../components/atoms/Typography';
+import TextField from '../components/molecules/TextField';
+import ScreenHeaderProvider from '../components/organismes/ScreenHeaderProvider';
+import Button from '../components/molecules/Button';
+import Colors from '../colors/Colors';
+import { useTypedSelector } from '../hooks/useTypedSelector';
 
-const AddConractPersonsScreen: React.FC<ProfileStackParamList['extended']['AddConractPersonsScreen']> = (props) => {
+export type AddContactPersonsScreenProps = {
+    contactPersons: ContactPersonType[],
+    setContactPersons: React.Dispatch<React.SetStateAction<ContactPersonType[]>>,
+    companyData: CompanyDataType,
+    changeCompanyDataHandler: (name: keyof CompanyDataType, value: string | number | AddressType, replaceSpaces?: boolean) => void
+  };
+
+const AddConractPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) => {
     const { companyData, changeCompanyDataHandler, contactPersons: initContactPersons, setContactPersons: changeContactPersonsHandler } = props;
     const [contactHours, setContactHours] = useState<string>(companyData.contact_hours || '08:00-18:00');
     const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(initContactPersons);
@@ -49,7 +56,7 @@ const AddConractPersonsScreen: React.FC<ProfileStackParamList['extended']['AddCo
     }
 
     return (
-        <ScreenHeaderProvider>
+        <ScreenHeaderProvider title='Dane do kontaktu'>
             <ScrollView style={{ backgroundColor: Colors.Basic100, flex: 1 }} contentContainerStyle={{ paddingTop: 15 }}>
                 {contactPersons.map(({ account_facebook, account_instagram, email, mobile_number, id }, index) => (<View style={{ paddingHorizontal: 19 }} key={id}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>

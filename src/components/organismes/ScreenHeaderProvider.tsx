@@ -24,10 +24,6 @@ export const screensTitles: ScreensTitlesType = {
   CalendarStack: {
     MainScreen: '',
     EventScreen: 'Zaplanuj wydarzenie',
-    ChooseAdvertScreen: 'Wybierz ogłoszenie',
-    ChooseCandidateScreen: 'Wybierz kandydata',
-    GoogleMap: '',
-    JobCategoryScreen: '',
   },
   CandidatesStack: {
     MainScreen: 'Kandydaci',
@@ -68,8 +64,6 @@ export const screensTitles: ScreensTitlesType = {
     ShareCamera: 'Polityka prywatności',
     ShareContacts: 'Polityka prywatności',
     ShareLocation: 'Polityka prywatności',
-    AddConractPersonsScreen: 'Dane do kontaktu',
-    CompanyDescriptionScreen: 'Opis firmy',
     CompanyInvoiceScreen: 'Dane do faktury',
     PackagesScreen: 'Pakiety',
     SettingsScreen: 'Ustawienia',
@@ -79,7 +73,6 @@ export const screensTitles: ScreensTitlesType = {
     AdvertScreen: '',
     AdvertEditorScreen: 'Nowe ogłoszenie',
     CandidatesScreen: '',
-    JobCategoryScreen: '',
   },
   MenuStack: {
     MainScreen: 'Menu główne',

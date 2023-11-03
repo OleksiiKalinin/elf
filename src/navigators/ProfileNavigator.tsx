@@ -18,6 +18,9 @@ import NoCompanyScreen from '../screens/ProfileScreens/NoCompanyScreen';
 import PackagesScreen from '../screens/ProfileScreens/PackagesScreen';
 import SettingsScreen from '../screens/ProfileScreens/SettingsScreen';
 import { PathConfigMap } from '@react-navigation/native';
+import { AddContactPersonsScreenProps } from '../screens/AddContactPersonsScreen';
+import { CompanyDescriptionScreenProps } from '../screens/CompanyDescriptionScreen';
+import { CompanyInvoiceScreenProps } from '../screens/CompanyInvoiceScreen';
 
 export type ProfileStackParamList = {
   default: {
@@ -58,20 +61,9 @@ export type ProfileStackParamList = {
     //??????
   },
   extended: {
-    AddConractPersonsScreen: {
-      contactPersons: ContactPersonType[],
-      setContactPersons: React.Dispatch<React.SetStateAction<ContactPersonType[]>>,
-      companyData: CompanyDataType,
-      changeCompanyDataHandler: (name: keyof CompanyDataType, value: string | number | AddressType, replaceSpaces?: boolean) => void
-    },
-    CompanyDescriptionScreen: { description: string | null, callback: (p: string) => void, title?: string },
-    CompanyInvoiceScreen: {
-      address: AddressType | null,
-      NIP: string | null,
-      full_name: string | null,
-      title?: string,
-      callback: (address: AddressType | null, NIP: string, full_name: string) => void,
-    }
+    AddContactPersonsScreen: AddContactPersonsScreenProps,
+    CompanyDescriptionScreen: CompanyDescriptionScreenProps,
+    CompanyInvoiceScreen: CompanyInvoiceScreenProps,
   }
 }
 

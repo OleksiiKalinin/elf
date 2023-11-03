@@ -1,18 +1,24 @@
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Image, Dimensions } from 'react-native';
-import Colors from '../../colors/Colors';
+import Colors from '../colors/Colors';
 import { SceneMap } from 'react-native-tab-view';
-import { nativeStore } from '../../store';
-import { advertActionTypes, companyActionTypes } from '../../store/actions';
-import AboutCard from './CompanyScreenRoutes/AboutCard/AboutCard';
-import OpinionCard from './CompanyScreenRoutes/OpinionCard/OpinionCard';
-import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
-import { useActions } from '../../hooks/useActions';
-import { useTypedSelector } from '../../hooks/useTypedSelector';
-import TextField from '../../components/molecules/TextField';
-import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
-import Button from '../../components/molecules/Button';
+import { nativeStore } from '../store';
+import { advertActionTypes, companyActionTypes } from '../store/actions';
+import AboutCard from './ProfileScreens/CompanyScreenRoutes/AboutCard/AboutCard';
+import OpinionCard from './ProfileScreens/CompanyScreenRoutes/OpinionCard/OpinionCard';
+import { ProfileStackParamList } from '../navigators/ProfileNavigator';
+import { useActions } from '../hooks/useActions';
+import { useTypedSelector } from '../hooks/useTypedSelector';
+import TextField from '../components/molecules/TextField';
+import ScreenHeaderProvider from '../components/organismes/ScreenHeaderProvider';
+import Button from '../components/molecules/Button';
+
+export type JobCategoryScreenProps = {
+  description: string | null, 
+  callback: (p: string) => void, 
+  title?: string,
+};
 
 const CompanyDescriptionScreen: React.FC<ProfileStackParamList['extended']['CompanyDescriptionScreen']> = (props) => {
   const {callback, description, title} = props;

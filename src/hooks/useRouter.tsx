@@ -11,8 +11,8 @@ import { cloneDeep } from "lodash";
 import GoogleMapScreen from "../screens/GoogleMapScreen";
 import getPathnameFromScreen from "./getPathnameFromScreen";
 import { RootStackParamList } from "../navigators/RootNavigator";
-import ChooseAdvertScreen from "../screens/CalendarScreens/ChooseAdvertScreen";
-import ChooseCandidateScreen from "../screens/CalendarScreens/ChooseCandidateScreen";
+import ChooseAdvertScreen from "../screens/ChooseAdvertScreen";
+import ChooseCandidateScreen from "../screens/ChooseCandidateScreen";
 import JobCategoryScreen from "../screens/JobCategoryScreen";
 import Typography from "../components/atoms/Typography";
 import { useFocusEffect } from "@react-navigation/native";
@@ -45,7 +45,7 @@ const validateUrl = (props: WithUrlProps): string => {
 
     if (
         (props.stack === 'CalendarStack' && props.screen === 'EventScreen' && (
-            props.params?.subView === 'GoogleMap' ||
+            props.params?.subView === 'GoogleMapScreen' ||
             props.params?.subView === 'ChooseAdvertScreen' ||
             props.params?.subView === 'ChooseCandidateScreen' ||
             // Test
@@ -87,7 +87,7 @@ export default function useRouter() {
                 let Component: FC<any> | null = null;
 
                 if ((Platform.OS !== 'web' || windowExists()) && !!params?.subView) {
-                    if (params.subView === 'GoogleMap') {
+                    if (params.subView === 'GoogleMapScreen') {
                         Component = GoogleMapScreen;
                     } else if (params.subView === 'ChooseAdvertScreen') {
                         Component = ChooseAdvertScreen;
