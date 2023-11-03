@@ -9,7 +9,7 @@ type SvgUriImageProps = {
  width?: string | number,
  height?: string | number,
  style?: StyleProp<TextStyle>;
-}
+};
 
 const SvgUriImage: FC<SvgUriImageProps> = ({
   src,

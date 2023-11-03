@@ -8,15 +8,9 @@ import AdvertNavigator, { AdvertStackLinking, AdvertStackParamList } from './Adv
 import MessengerNavigator, { MessengerStackLinking, MessengerStackParamList, } from './MessengerNavigator';
 import MenuNavigator, { MenuStackLinking, MenuStackParamList } from './MenuNavigator';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-// import BottomTabs from '../components/organisms/BottomTabs/BottomTabs';
 import { useTypedSelector } from '../hooks/useTypedSelector';
 import { useActions } from '../hooks/useActions';
 import { Keyboard, StyleSheet } from 'react-native';
-// import SplashScreen from "react-native-splash-screen";
-// import AsyncStorage from '@react-native-community/async-storage';
-// import SwipeablePanel from '../components/organisms/SwipeablePanel/SwipeablePanel';
-// import { GoogleSignin } from '@react-native-google-signin/google-signin';
-// import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
 import Colors from '../colors/Colors';
 import BottomTabs from '../components/organismes/BottomTabs';
 
