@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { Keyboard, View, Dimensions } from 'react-native';
+import { Keyboard, View, Dimensions, Platform } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import SvgIcon, { IconTypes } from '../atoms/SvgIcon';
 import { useActions } from '../../hooks/useActions';
@@ -71,7 +71,7 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes }) => {
     // }, [isTabbarVisible]);
 
     return (
-        <Animated.View style={[{ flexDirection: 'row', backgroundColor: Colors.White, height: isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0, visibility: isTabbarVisible ? 'visible' : 'hidden' }]}>
+        <Animated.View style={[{ flexDirection: 'row', backgroundColor: Colors.White, height: isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0, visibility: isTabbarVisible ? 'visible' : 'hidden', maxWidth: 768, flex: Platform.select({ web: 1, native: undefined })}]}>
             {/* <Animated.View style={[{ flexDirection: 'row', backgroundColor: Colors.White }, animationStyle]}> */}
             {routes.map((route) => {
                 const stack = route as keyof RootStackParamList;

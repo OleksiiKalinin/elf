@@ -29,7 +29,9 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
         left: 0,
         right: 0,
         width: '100%',
-        backgroundColor: Colors.White
+        backgroundColor: Colors.White,
+        flexDirection: 'row',
+        justifyContent: 'center',
       }}>
         <BottomTabs routes={Object.keys(navigationLinking.config?.screens || {})} />
       </View>

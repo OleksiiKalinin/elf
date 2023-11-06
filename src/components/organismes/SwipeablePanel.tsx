@@ -94,7 +94,8 @@ const SwipeablePanel: React.FC = () => {
                     top: mode === 'screen' && !!swipeablePanelProps ? 0 : '100%',
                     width: '100%',
                     height: '100%',
-                    backgroundColor: 'rgba(255,255,255,.5)'
+                    backgroundColor: 'rgba(255,255,255,.5)',
+                    maxWidth: 768
                 }}
             >
                 <Sheet
@@ -147,7 +148,7 @@ const Content = (props: SwipeablePanelProps & { close: (closeAction?: CloseActio
                 {subTitle && <Typography style={{ marginTop: 12 }}>{subTitle}</Typography>}
             </View>
         )}
-        <View style={mode === 'screen' ? { flex: 1 } : {}}>
+        <View style={mode === 'screen' ? { flex: 1, maxWidth: 768, display: 'none' } : {}}>
             {children}
             {buttons?.map(
                 ({

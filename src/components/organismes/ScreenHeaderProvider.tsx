@@ -203,7 +203,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     zIndex: 1,
-    backgroundColor: Colors.White
+    backgroundColor: Colors.White,
+    maxWidth: 768
   },
   ButtonBack: {
     flexDirection: 'row',
