@@ -95,7 +95,6 @@ const SwipeablePanel: React.FC = () => {
                     width: '100%',
                     height: '100%',
                     backgroundColor: 'rgba(255,255,255,.5)',
-                    maxWidth: 768
                 }}
             >
                 <Sheet
@@ -130,7 +129,7 @@ const SwipeablePanel: React.FC = () => {
             >
                 {!hideBar && <Sheet.Handle h={4} bg={Colors.White} opacity={1} mx='45%' my={8} />}
                 {mode === 'options' && !!swipeablePanelProps && !!height && <Sheet.Overlay />}
-                <Sheet.Frame br={0} userSelect='none'>
+                <Sheet.Frame br={0} userSelect='none' /* style={{maxWidth: 768}} */>
                     {mode === 'options' && <Content {...swipeablePanelProps} close={close} />}
                 </Sheet.Frame>
             </Sheet>

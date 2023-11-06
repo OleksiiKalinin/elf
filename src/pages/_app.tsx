@@ -49,7 +49,7 @@ const Providers = ({ children }: { children: ReactNode }) => {
       >
         <SafeAreaProvider
           initialMetrics={initialMetrics} //https://github.com/th3rdwave/react-native-safe-area-context#web-ssr
-          style={[styles.safeAreaProvider, (Platform.OS === 'web' && swipeablePanelProps !== null) && { transform: swipeablePanelProps?.mode !== 'screen' ? `translateX(-${scrollBarWidth})` : 'none',}]}
+          style={styles.safeAreaProvider}
         >
           <GestureHandlerRootView style={styles.container}>
             <AppUnifiedProvider>

@@ -472,8 +472,8 @@ const styles = StyleSheet.create({
   GridButtonWrapper: {
     padding: 10,
     aspectRatio: 1,
-    // width: '44%',
-    // height: '44%',
+ /*    width: '44%',
+    height: '44%', */
     width: 150,
     height: 150,
   },
