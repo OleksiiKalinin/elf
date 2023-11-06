@@ -148,7 +148,7 @@ const Content = (props: SwipeablePanelProps & { close: (closeAction?: CloseActio
                 {subTitle && <Typography style={{ marginTop: 12 }}>{subTitle}</Typography>}
             </View>
         )}
-        <View style={mode === 'screen' ? { flex: 1, maxWidth: 768, display: 'none' } : {}}>
+        <View style={mode === 'screen' ? { flex: 1, maxWidth: 768 } : {}}>
             {children}
             {buttons?.map(
                 ({
