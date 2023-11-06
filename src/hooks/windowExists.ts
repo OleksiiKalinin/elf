@@ -1,1 +1,1 @@
-export default () => window !== undefined;
+export default () => typeof window !== 'undefined';

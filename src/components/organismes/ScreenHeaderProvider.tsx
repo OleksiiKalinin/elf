@@ -1,4 +1,4 @@
-import { StyleSheet, View, Platform, TouchableOpacity, Dimensions } from 'react-native';
+import { StyleSheet, View, Platform, TouchableOpacity, Dimensions, StyleProp, ViewStyle, ColorValue } from 'react-native';
 import React, { useEffect, useRef } from 'react';
 import SvgIcon, { IconTypes } from '../atoms/SvgIcon';
 import Typography from '../atoms/Typography';
@@ -7,8 +7,10 @@ import Colors from '../../colors/Colors';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import useRouter from '../../hooks/useRouter';
+import { BOTTOM_TABS_HEIGHT } from './BottomTabs';
 
-type ScreensTitlesType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: {[K in keyof RootStackParamList[T]['default']]: string} } : never;
+
+type ScreensTitlesType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: { [K in keyof RootStackParamList[T]['default']]: string } } : never;
 
 export const screensTitles: ScreensTitlesType = {
   AuthStack: {
@@ -94,6 +96,7 @@ type ScreenHeaderProviderProps = {
   transparent?: boolean;
   staticContentHeight?: boolean;
   callback?: () => void;
+  backgroundColor?: ColorValue
 };
 
 export const SCREEN_HEADER_HEIGHT = 50;
@@ -108,10 +111,11 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   transparent = false,
   staticContentHeight = false,
   alterTitle = null,
-  callback
+  callback,
+  backgroundColor,
 }) => {
   const { backToRemoveParams, back } = useRouter();
-  const { currentScreen, windowSizes, swipeablePanelProps } = useTypedSelector(s => s.general);
+  const { currentScreen, windowSizes, swipeablePanelProps, isTabbarVisible } = useTypedSelector(s => s.general);
   const [stack, screen] = currentScreen.split('-');
   // @ts-ignore
   const currentTitle: string = screensTitles[stack][screen] || '';
@@ -121,10 +125,9 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
       flex: 1,
       minHeight: Platform.select({
         native: undefined,
-        web: windowSizes.height,
+        web: windowSizes.height - (isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0),
       }),
     }}>
-      {/* <LinearGradient style={[styles.Header]} {...(transparent ? { locations: [0.1, 0.4, 0.5, 0.65, 0.8, 0.9, 1] } : {})} colors={['rgba(255, 255, 255, 1)', ...(transparent ? ['rgba(255, 255, 255, 0.85)', 'rgba(255, 255, 255, 0.75)', 'rgba(255, 255, 255, 0.6)', 'rgba(255, 255, 255, 0.35)', 'rgba(255, 255, 255, 0.2)', 'rgba(255, 255, 255, 0)'] : ['rgba(255, 255, 255, 1)'])]}> */}
       <View style={[styles.Header]}>
         {mode === 'backAction' && (
           <View style={{ flex: 1, height: '100%', alignItems: 'flex-start', flexDirection: 'row' }}>
@@ -178,12 +181,11 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
         )}
         {/* {otherActions} */}
       </View>
-      {/* </LinearGradient> */}
       <View style={[{
-        height: staticContentHeight ? windowSizes.height - (transparent ? 0 : SCREEN_HEADER_HEIGHT) : undefined,
+        height: staticContentHeight ? windowSizes.height - (transparent ? 0 : SCREEN_HEADER_HEIGHT) - (isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0) : undefined,
         flex: !staticContentHeight ? 1 : undefined,
-        paddingTop: transparent ? 0 : SCREEN_HEADER_HEIGHT,
-        backgroundColor: Colors.White
+        marginTop: transparent ? 0 : SCREEN_HEADER_HEIGHT,
+        backgroundColor
       }]}>
         {children}
       </View>

@@ -20,6 +20,7 @@ const transpilePackages = [
   'react-native-google-places-autocomplete',
   'react-native-maps',
   'react-native-vector-icons',
+  'expo-linear-gradient',
 ];
 
 const plugins = [

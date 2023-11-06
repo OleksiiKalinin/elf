@@ -99,9 +99,9 @@ const MainScreen: React.FC = () => {
   }, [userEvents]);
 
   return (<>
-    <ScreenHeaderProvider mode="mainTitle" title={monthTitle}>
+    <ScreenHeaderProvider staticContentHeight mode="mainTitle" title={monthTitle}>
       <Agenda
-      getCurrentDate={setMonthTitle}
+        getCurrentDate={setMonthTitle}
       //  events={userEvents} 
       />
     </ScreenHeaderProvider>
@@ -110,7 +110,7 @@ const MainScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  
+
 });
 
 /*

@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useEffect, useRef } from 'react';
+import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import calendarLocaleConfig from '../../hooks/calendarLocaleConfig';
 import { Dimensions } from 'react-native';
 import { useActions } from '../../hooks/useActions';
@@ -26,11 +26,16 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const dispatch = useTypedDispatch();
   const { token, userCompany } = useTypedSelector(state => state.general);
   const { setToken, setUserCompany } = useActions();
+  const [ssrWindowSizes, setSsrWindowSizes] = useState<any>({})
 
   useEffect(() => {
+    setSsrWindowSizes(Dimensions.get('window'));
     Dimensions.addEventListener('change', ({ window }) => setWindowSizes(window));
-    setWindowSizes(Dimensions.get('window'));
-  }, [])
+  }, []);
+
+  useEffect(() => {
+    setWindowSizes(ssrWindowSizes);
+  }, [ssrWindowSizes]);
 
   useEffect(() => {
     (async () => {

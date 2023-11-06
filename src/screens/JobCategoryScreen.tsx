@@ -58,120 +58,91 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({ mode, callback })
     setSelectedIndustry(null);
   };
 
+  const SearchField = (<View style={styles.Textfield}>
+    <TextField
+      placeholder="Kogo szukasz?"
+      textContentType="emailAddress"
+      keyboardType="email-address"
+      value={search}
+      onChangeText={setSearch}
+      left={<SvgIcon icon='search' />}
+      right={search &&
+        <Button
+          height={21}
+          variant='text'
+          icon={<SvgIcon icon='crossBig' fill={Colors.Basic500} style={{ marginRight: -15 }} />}
+          onPress={() => setSearch('')}
+        />
+      }
+    />
+  </View>);
+
   return (
     <ScreenHeaderProvider
       mainTitlePosition="flex-start"
       mode='backAction'
       title={selectedIndustry ? 'Stanowiska' : 'Kategorie'}
       callback={selectedIndustry ? backToIndustry : undefined}
+      backgroundColor={Colors.Basic100}
     >
-      <View style={styles.Wrapper}>
-        <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
-          {selectedIndustry === null || mode === 'industry' ?
-            <>
-              <View style={styles.Textfield}>
-                <TextField
-                  placeholder="Kogo szukasz?"
-                  textContentType="emailAddress"
-                  keyboardType="email-address"
-                  value={search}
-                  onChangeText={setSearch}
-                  left={<SvgIcon icon='search' />}
-                  right={search &&
-                    <Button
-                      height={21}
-                      variant='text'
-                      icon={<SvgIcon icon='crossBig' fill={Colors.Basic500} style={{ marginRight: -15 }} />}
-                      onPress={() => setSearch('')}
-                    />
-                  }
-                />
-              </View>
-              <Typography color={Colors.Basic600} style={{ marginTop: 16, marginBottom: 10, marginLeft: 19 }}>
-                Popularne kategorie
+      <ScrollView style={{ backgroundColor: Colors.Basic100 }} disableWindowScroll>
+        {selectedIndustry === null || mode === 'industry' ? <>
+          {SearchField}
+          <Typography color={Colors.Basic600} style={{ marginTop: 16, marginBottom: 10, marginLeft: 19 }}>
+            Popularne kategorie
+          </Typography>
+          <View style={{ marginBottom: 20 }}>
+            {jobIndustries.filter(({ name }) => name.toLowerCase().includes(search.toLowerCase())).map(({ icon, id, name, job_positions }) => (
+              <Fragment key={id}>
+                <TouchableOpacity
+                  style={styles.Button}
+                  onPress={() => setSelectedIndustry({ id, job_positions, icon, name })}
+                >
+                  <View style={{ width: 34, height: 34, position: 'relative' }}>
+                    <View style={{ position: 'absolute' }}>
+                      <SkeletonContainer animation='wave' speed={600}>
+                        <Skeleton style={{ width: 34, height: 34, borderRadius: 17 }} />
+                      </SkeletonContainer>
+                    </View>
+                    <SvgUriImage style={styles.IndustryIcon} src={icon} />
+                  </View>
+                  <View style={{ flex: 1, marginLeft: 8 }}>
+                    <Typography variant='h5' weight='SemiBold'>{name}</Typography>
+                  </View>
+                  <View>
+                    <SvgIcon icon="arrowRightSmall" style={{ alignSelf: 'center' }} />
+                  </View>
+                </TouchableOpacity>
+                <Separator />
+              </Fragment>
+            ))}
+          </View>
+        </> : <>
+          <View style={styles.ActiveCategory}>
+            <View style={styles.ActiveCategoryName}>
+              <SvgUriImage style={styles.IndustryIcon} src={selectedIndustry.icon} />
+              <Typography variant="h4" style={{ alignSelf: 'center' }}>
+                {selectedIndustry.name}
               </Typography>
-              <View style={{ marginBottom: 20 }}>
-                {jobIndustries.filter(({ name }) => name.toLowerCase().includes(search.toLowerCase())).map(({ icon, id, name, job_positions }) => (
-                  <Fragment key={id}>
-                    <TouchableOpacity
-                      style={styles.Button}
-                      onPress={() => setSelectedIndustry({ id, job_positions, icon, name })}
-                    >
-                      <View style={{ width: 34, height: 34, position: 'relative' }}>
-                        <View style={{ position: 'absolute' }}>
-                          <SkeletonContainer animation='wave' speed={600}>
-                            <Skeleton style={{ width: 34, height: 34, borderRadius: 17 }} />
-                          </SkeletonContainer>
-                        </View>
-                        <SvgUriImage style={styles.IndustryIcon} src={icon} />
-                      </View>
-                      <View style={{ flex: 1, marginLeft: 8 }}>
-                        <Typography variant='h5' weight='SemiBold'>{name}</Typography>
-                      </View>
-                      <View>
-                        <SvgIcon icon="arrowRightSmall" style={{ alignSelf: 'center' }} />
-                      </View>
-                    </TouchableOpacity>
-                    <Separator />
-                  </Fragment>
-                ))}
-              </View>
-            </>
-
-            :
-
-            <>
-              <View style={styles.ActiveCategory}>
-                <View style={styles.ActiveCategoryName}>
-                  <SvgUriImage style={styles.IndustryIcon} src={selectedIndustry.icon} />
-                  <Typography variant="h4" style={{
-                    alignSelf:
-                      'center'
-                  }}>
-                    {selectedIndustry.name}
-                  </Typography>
-                </View>
-                <Button
-                  variant='text'
-                  style={{ width: 60, marginRight: -20 }}
-                  icon={<SvgIcon icon='crossBig' fill={Colors.Basic500} />}
-                  onPress={() => backToIndustry()}
-                />
-              </View>
-              <View style={styles.Textfield}>
-                <TextField
-                  placeholder="Kogo szukasz?"
-                  textContentType="emailAddress"
-                  keyboardType="email-address"
-                  value={search}
-                  onChangeText={setSearch}
-                  left={<SvgIcon icon='search' />}
-                  right={search &&
-                    <Button
-                      height={21}
-                      variant='text'
-                      icon={<SvgIcon icon='crossBig' fill={Colors.Basic500} style={{ marginRight: -15 }} />}
-                      onPress={() => setSearch('')}
-                    />
-                  }
-                />
-              </View>
-              {selectedIndustry.job_positions.map(({ id, name }, i) => !!name.includes(search) && (
-                <View style={{ borderBottomWidth: 1, borderColor: Colors.Basic300 }}>
-                  <TouchableOpacity style={styles.Category}
-                    onPress={() => {
-                      setSelectedPositions({ id, name })
-                    }}
-                  >
-                    <Typography color={Colors.Basic900}>{name}</Typography>
-                  </TouchableOpacity>
-                </View>
-              ))
-              }
-            </>
-          }
-        </ScrollView>
-      </View>
+            </View>
+            <Button
+              variant='text'
+              circular
+              style={{ marginRight: -10 }}
+              icon={<SvgIcon icon='crossBig' fill={Colors.Basic500} />}
+              onPress={backToIndustry}
+            />
+          </View>
+          {SearchField}
+          {selectedIndustry.job_positions.map(({ id, name }) => !!name.includes(search) && (
+            <View style={{ borderBottomWidth: 1, borderColor: Colors.Basic300 }}>
+              <TouchableOpacity style={styles.Category} onPress={() => setSelectedPositions({ id, name })}>
+                <Typography color={Colors.Basic900}>{name}</Typography>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </>}
+      </ScrollView>
     </ScreenHeaderProvider>
   );
 };

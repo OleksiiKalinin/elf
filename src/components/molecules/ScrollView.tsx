@@ -11,5 +11,5 @@ export function ScrollView({ disableWindowScroll = false, ...props }: Props) {
         default: ScrollViewNative,
     })
     //@ts-ignore
-    return <Component {...props} {...(Platform.OS === 'web' && !disableWindowScroll ? {style: {...props.style, ...props.contentContainerStyle}} : {})} />
+    return <Component showsVerticalScrollIndicator={Platform.OS === 'web'} {...props} {...(Platform.OS === 'web' && !disableWindowScroll ? {style: {...props.style, ...props.contentContainerStyle}} : {})} />
 }
