@@ -127,7 +127,7 @@ const SwipeablePanel: React.FC = () => {
 			>
 				{!hideBar && <Sheet.Handle h={4} bg={Colors.White} opacity={1} mx='45%' my={8} />}
 				{mode === 'options' && !!swipeablePanelProps && !!height && <Sheet.Overlay />}
-				<Sheet.Frame br={0} userSelect='none'>
+				<Sheet.Frame br={0} userSelect='none' /* style={{maxWidth: 768}} */>
 					{mode === 'options' && <Content {...swipeablePanelProps} close={close} />}
 				</Sheet.Frame>
 			</Sheet>
@@ -145,7 +145,7 @@ const Content = (props: SwipeablePanelProps & { close: (closeAction?: CloseActio
 				{subTitle && <Typography style={{ marginTop: 12 }}>{subTitle}</Typography>}
 			</View>
 		)}
-		<View style={mode === 'screen' ? { flex: 1 } : {}}>
+		<View style={mode === 'screen' ? { flex: 1, maxWidth: 768 } : {}}>
 			{children}
 			{buttons?.map(
 				({
