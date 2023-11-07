@@ -106,20 +106,20 @@ const QuestionsScreen: React.FC = () => {
   const [list, setList] = useState(Questions)
   const [name, setName] = useState<string>('');
 
-  const handleChange = (categoryIndex: number, questionIndex: number) =>{
+  const handleChange = (categoryIndex: number, questionIndex: number) => {
     const newList = [...list];
     const currentValue = newList[categoryIndex].questions[questionIndex].checked;
     newList[categoryIndex].questions[questionIndex].checked = !currentValue;
     setList(newList);
   };
 
-  const handleConfirm = () =>{
+  const handleConfirm = () => {
     const filteredList = [...list]
-    .filter(category => category.questions.some(question => question.checked === true))
-    .map(category => ({
-      ...category,
-      questions: category.questions.filter(question => question.checked === true)
-    }));
+      .filter(category => category.questions.some(question => question.checked === true))
+      .map(category => ({
+        ...category,
+        questions: category.questions.filter(question => question.checked === true)
+      }));
 
     const removeChecked = filteredList.map(category => ({
       ...category,
@@ -129,7 +129,7 @@ const QuestionsScreen: React.FC = () => {
       })
     }));
 
-    console.log({name: name, list: removeChecked});
+    console.log({ name: name, list: removeChecked });
   };
 
   return (
@@ -145,35 +145,33 @@ const QuestionsScreen: React.FC = () => {
           />
         </View>
         <View style={styles.ListContainer}>
-          {list.map(({id, category, questions}, categoryIndex) =>
+          {list.map(({ id, category, questions }, categoryIndex) =>
             <View style={styles.CategoryContainer}>
               <Typography id={id} size={20} weight='Bold'>
                 {category}
               </Typography>
               <View style={styles.Questions}>
-                {questions.map(({id, question, checked}, questionIndex) => 
-                  <>
-                    {questionIndex === 0 && <Separator />}
-                    <CheckBox 
-                      checked={checked}
-                      onCheckedChange={()=> handleChange(categoryIndex, questionIndex)}
-                      leftTextView={
-                        <Typography style={{paddingVertical: 21}}>
-                          {question}
-                        </Typography>
-                      }
-                      id={id}
-                      style={[styles.CheckBox, !checked && {backgroundColor: Colors.Basic100, borderColor: Colors.Basic600}]}
-                    />
-                    <Separator />
-                  </>
-                )}
+                {questions.map(({ id, question, checked }, questionIndex) => <>
+                  {questionIndex === 0 && <Separator />}
+                  <CheckBox
+                    checked={checked}
+                    onCheckedChange={() => handleChange(categoryIndex, questionIndex)}
+                    leftTextView={
+                      <Typography style={{ paddingVertical: 21 }}>
+                        {question}
+                      </Typography>
+                    }
+                    id={id}
+                    style={[styles.CheckBox, !checked && { backgroundColor: Colors.Basic100, borderColor: Colors.Basic600 }]}
+                  />
+                  <Separator />
+                </>)}
               </View>
             </View>
           )}
         </View>
       </ScrollView>
-      <Button onPress={()=> handleConfirm()}>
+      <Button onPress={() => handleConfirm()}>
         Potwierdź wybory
       </Button>
     </ScreenHeaderProvider>
