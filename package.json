@@ -34,6 +34,7 @@
     "@react-navigation/drawer": "^6.6.2",
     "@react-navigation/native": "^6.1.7",
     "@react-navigation/native-stack": "^6.9.13",
+    "@tamagui/accordion": "^1.76.0",
     "@tamagui/animations-react-native": "1.7.2",
     "@tamagui/animations-reanimated": "1.7.2",
     "@tamagui/babel-plugin": "1.7.2",

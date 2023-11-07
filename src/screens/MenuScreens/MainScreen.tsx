@@ -91,6 +91,16 @@ const MainScreen: React.FC = ({ }) => {
             missedEvents: 10,
             badge: 'Nowe',
           },
+          {
+            title: 'Lista pytań',
+            backgroundColor: Colors.Sea300,
+            icon: 'pencil',
+            ...useLink({
+              href: { stack: 'MenuStack', screen: 'QuestionsScreen' }
+            }),
+            missedEvents: 10,
+            badge: 'Nowe',
+          },
           // {
           //   title: 'Zaplanowane spotkania',
           //   backgroundColor: Colors.Sea300,
