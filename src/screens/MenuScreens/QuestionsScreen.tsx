@@ -1,172 +1,179 @@
 import { CompositeScreenProps } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import Colors from '../../colors/Colors';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Typography from '../../components/atoms/Typography';
 import CheckBox from '../../components/atoms/CheckBox';
 import Button from '../../components/molecules/Button';
+/* import { Accordion, Separator, Square, Paragraph } from 'tamagui'; */
+import TextField from '../../components/molecules/TextField';
+import { QuestionsCategoryType } from '../../store/reducers/types';
+import { ChevronDown } from '@tamagui/lucide-icons';
+/* import { Accordion } from '@tamagui/accordion'; */
+/* import { Accordion } from '@tamagui/accordion'; */
 import { Separator } from 'tamagui';
+import style from '../../../node_modules_modified/react-native-calendars/src/calendar/header/style';
 
-const Questions = [
-  'Jakie jest Pana/Pani ostatnie miejsce pracy?',
-  'Czy pracował/a Pan/i na podobnym stanowisku?',
-  'Gdzie dotychczas Pan/i pracował/a?',
-  'Ile lat pracuje Pan/i w zawodzie?',
-  'W jak dużych zespołach Pan/i pracował/a?',
-  'Czy ma Pan/i wykształcenie kierunkowe?',
-  'Czy brał/a Pan/i udział w szkoleniach/kursach? Jakich?',
-  'W jaki sposób aktualnie zdobywa Pan/i wiedzę?',
-  'Czy zdobył/a Pan/i certyfikaty?',
-  'Jak ocenia Pan/i poziom swoich umiejętności?',
-  'Jakich narzędzi używał/a Pan/i w pracy?',
-  'Jakie zabiegi Pan/i wykonywała?',
-  'Jakich metod używał/a Pan/i w pracy?',
-  'Czy ma Pan/i portfolio swoich prac?',
-  'Jakim rodzajem umowy jest Pan/i zainteresowany/a?',
-  'Kiedy możemy rozpocząć współpracę?',
-  'Jaki wymiar godzin Pana/ią interesuje?',
-  'Jakie są Pan/i oczekiwania finansowe?',
-  'Co jest Pana/i mocną stroną?',
-  'Czy ma Pan/i ważne dokumenty pobytowe?',
-  'Czy płynnie rozmawia Pan/i po polsku?',
-  'Jak długo mieszka Pan/i w Polsce?',
-  'W jak dużych zespołach Pan/i pracował/a?',
+const Questions: QuestionsCategoryType[] = [
+  {
+    id: '',
+    category: 'Doświadczenie',
+    questions: [
+      {
+        id: '',
+        question: 'Jakie były Pana/Pani doświadczenia na podobnym stanowisku pracy?',
+        checked: false,
+      },
+      {
+        id: '',
+        question: 'Jaki był Pana/Pani największy sukces na poprzednim stanowisku pracy?',
+        checked: false,
+      },
+      {
+        id: '',
+        question: 'Jaki projekt zawodowy szczególnie Pana/Panią zainspirował? Z czego to wynikało?',
+        checked: false,
+      },
+    ],
+  },
+  {
+    id: '',
+    category: 'Wykształcenie',
+    questions: [
+      {
+        id: '',
+        question: 'Jakie posiada Pan/Pani wykształcenie?',
+        checked: false,
+      },
+      {
+        id: '',
+        question: 'Czy ukończył/a Pan/Pani jakieś szkolenia branżowe?',
+        checked: false,
+      },
+      {
+        id: '',
+        question: 'Czy posiada Pan/Pani jakieś certyfikaty związane ze swoim stanowiskiem pracy?',
+        checked: false,
+      },
+    ],
+  },
+  {
+    id: '',
+    category: 'Umiejętności',
+    questions: [
+      {
+        id: '',
+        question: 'Jakie umiejętności uważa Pan/Pani za najważniejsze na swoim stanowisku pracy?',
+        checked: false,
+      },
+      {
+        id: '',
+        question: 'Z jakich narzędzi korzysta Pan/Pani w pracy?',
+        checked: false,
+      },
+      {
+        id: '',
+        question: 'Jak biegle włada Pan/Pani językiem angielskim?',
+        checked: false,
+      },
+    ],
+  },
+  {
+    id: '',
+    category: 'Dodatkowe pytania',
+    questions: [
+      {
+        id: '',
+        question: 'Dlaczego chca Pan/Pani pracować w naszej firmie?',
+        checked: false,
+      },
+      {
+        id: '',
+        question: 'Jakie są Pana/Pani długoterminowe cele zawodowe?',
+        checked: false,
+      },
+      {
+        id: '',
+        question: 'Jak reaguje Pan/Pani na pracę pod presją?',
+        checked: false,
+      },
+    ],
+  },
 ];
 
 const QuestionsScreen: React.FC = () => {
-  // const data = useTypedSelector(state => state.calendar);
-  // const [questionsState, setQuestionsState] = useState<any>(data.questions);
+  const [list, setList] = useState(Questions)
+  const [name, setName] = useState<string>('');
+
+  const handleChange = (categoryIndex: number, questionIndex: number) =>{
+    const newList = [...list];
+    const currentValue = newList[categoryIndex].questions[questionIndex].checked;
+    newList[categoryIndex].questions[questionIndex].checked = !currentValue;
+    setList(newList);
+  };
+
+  const handleConfirm = () =>{
+    const filteredList = [...list]
+    .filter(category => category.questions.some(question => question.checked === true))
+    .map(category => ({
+      ...category,
+      questions: category.questions.filter(question => question.checked === true)
+    }));
+
+    const removeChecked = filteredList.map(category => ({
+      ...category,
+      questions: category.questions.map(question => {
+        const { checked, ...newQuestion } = question;
+        return newQuestion;
+      })
+    }));
+
+    console.log({name: name, list: removeChecked});
+  };
 
   return (
     <ScreenHeaderProvider mainTitlePosition="flex-start">
       <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
-        <View>
-          <Typography weight="Bold" style={styles.Title}>
-            Doświadczenie
-          </Typography>
-          {/* {Questions.map(
-            (item, index) => index < 5 && (<>
-              <CheckBox
-                leftText={item}
-                checked={questionsState.includes(index)}
-                onCheckedChange={(checked) =>
-                  !questionsState.includes(index)
-                    ? setQuestionsState((state: any) => [...state, index])
-                    : setQuestionsState((state: any[]) =>
-                      state.filter(item => item !== index),
-                    )
-                }
-                style={{ padding: 16 }}
-              />
-              <Separator />
-            </>))} */}
+        <View style={styles.Title}>
+          <TextField
+            placeholder="Nazwa listy"
+            textContentType="emailAddress"
+            keyboardType="email-address"
+            value={name}
+            onChangeText={setName}
+          />
         </View>
-
-        <View>
-          <Typography weight="Bold" style={styles.Title}>
-            Wykształcenie
-          </Typography>
-          {/* {Questions.map(
-            (item, index) => index > 4 && index < 9 && (<>
-              <CheckBox
-                leftText={item}
-                checked={questionsState.includes(index)}
-                onCheckedChange={(checked) =>
-                  !questionsState.includes(index)
-                    ? setQuestionsState((state: any) => [...state, index])
-                    : setQuestionsState((state: any[]) =>
-                      state.filter(item => item !== index),
-                    )
-                }
-                style={{ padding: 16 }}
-              />
-              <Separator />
-            </>))} */}
-        </View>
-
-        <View>
-          <Typography weight="Bold" style={styles.Title}>
-            Umiejętności
-          </Typography>
-          {/* {Questions.map(
-            (item, index) => index > 8 && index < 14 && (<>
-              <CheckBox
-                leftText={item}
-                checked={questionsState.includes(index)}
-                onCheckedChange={(checked) =>
-                  !questionsState.includes(index)
-                    ? setQuestionsState((state: any) => [...state, index])
-                    : setQuestionsState((state: any[]) =>
-                      state.filter(item => item !== index),
-                    )
-                }
-                style={{ padding: 16 }}
-              />
-              <Separator />
-            </>))} */}
-        </View>
-
-        <View>
-          <Typography weight="Bold" style={styles.Title}>
-            Współpraca
-          </Typography>
-          {/* {Questions.map(
-            (item, index) => index > 13 && index < 18 && (<>
-              <CheckBox
-                leftText={item}
-                checked={questionsState.includes(index)}
-                onCheckedChange={(checked) =>
-                  !questionsState.includes(index)
-                    ? setQuestionsState((state: any) => [...state, index])
-                    : setQuestionsState((state: any[]) =>
-                      state.filter(item => item !== index),
-                    )
-                }
-                style={{ padding: 16 }}
-              />
-              <Separator />
-            </>))} */}
-        </View>
-
-        <View>
-          <Typography weight="Bold" style={styles.Title}>
-            Dodatkowe
-          </Typography>
-          {/* {Questions.map(
-            (item, index) => index > 17 && (<>
-              <CheckBox
-                leftText={item}
-                checked={questionsState.includes(index)}
-                onCheckedChange={(checked) =>
-                  !questionsState.includes(index)
-                    ? setQuestionsState((state: any) => [...state, index])
-                    : setQuestionsState((state: any[]) =>
-                      state.filter(item => item !== index),
-                    )
-                }
-                style={{ padding: 16 }}
-              />
-              <Separator />
-            </>))} */}
-        </View>
-
-        <View style={{ marginBottom: 40 }}>
-
+        <View style={styles.ListContainer}>
+          {list.map(({id, category, questions}, categoryIndex) =>
+            <View style={styles.CategoryContainer}>
+              <Typography id={id} size={20} weight='Bold'>
+                {category}
+              </Typography>
+              <View style={styles.Questions}>
+                {questions.map(({id, question, checked}, questionIndex) => 
+                  <>
+                    {questionIndex === 0 && <Separator />}
+                    <CheckBox 
+                      checked={checked}
+                      onCheckedChange={()=> handleChange(categoryIndex, questionIndex)}
+                      leftTextView={
+                        <Typography style={{paddingVertical: 21}}>
+                          {question}
+                        </Typography>
+                      }
+                      id={id}
+                      style={[styles.CheckBox, !checked && {backgroundColor: Colors.Basic100, borderColor: Colors.Basic600}]}
+                    />
+                    <Separator />
+                  </>
+                )}
+              </View>
+            </View>
+          )}
         </View>
       </ScrollView>
-
-      <Button
-        // onPress={() => (
-        //   nativeStore.dispatch({
-        //     type: calendarActionTypes.SAVE_QUESTIONS,
-        //     payload: {
-        //       questionsState: questionsState,
-        //     },
-        //   }),
-        //   navigation.navigate('MainScreen')
-        // )}
-        >
+      <Button onPress={()=> handleConfirm()}>
         Potwierdź wybory
       </Button>
     </ScreenHeaderProvider>
@@ -175,16 +182,24 @@ const QuestionsScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   Title: {
-    fontSize: 20,
-    marginTop: 24,
-    marginBottom: 4,
-    left: 20,
+    paddingHorizontal: 16,
+    marginTop: 40
   },
-  Text: {
-    color: Colors.Basic900,
-    fontSize: 16,
-    flexWrap: 'wrap',
-    marginRight: 20,
+  ListContainer: {
+    marginTop: 20,
+    paddingHorizontal: 16,
+  },
+  CategoryContainer: {
+    marginBottom: 24
+  },
+  Questions: {
+    marginTop: 10
+  },
+  CheckBox: {
+    alignItems: 'center',
+    paddingVertical: 12,
+    alignSelf: 'center',
+    /* backgroundColor: Colors.Basic700 */
   },
 });
 

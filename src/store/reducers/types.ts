@@ -270,3 +270,15 @@ export interface AddressType {
     subLocality: string | null,
     flat_number: string | null,
 }
+
+export interface QuestionType {
+    id: string,
+    question: string,
+    checked: boolean,
+}
+
+export interface QuestionsCategoryType {
+    id: string,
+    category: string,
+    questions: QuestionType[],
+}
