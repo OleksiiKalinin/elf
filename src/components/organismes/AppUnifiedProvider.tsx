@@ -26,7 +26,7 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const dispatch = useTypedDispatch();
   const { token, userCompany } = useTypedSelector(state => state.general);
   const { setToken, setUserCompany } = useActions();
-  const [ssrWindowSizes, setSsrWindowSizes] = useState<any>({})
+  const [ssrWindowSizes, setSsrWindowSizes] = useState(Dimensions.get('window'));
 
   useEffect(() => {
     setSsrWindowSizes(Dimensions.get('window'));
