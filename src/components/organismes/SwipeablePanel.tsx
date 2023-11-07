@@ -50,7 +50,7 @@ const SwipeablePanel: React.FC = () => {
 		const style = window.document?.body?.style;
 
 		if (!!swipeablePanelProps) {
-			if (style) style.overflowY = 'hidden';
+			if (style) style.overflowY = mode === 'options' ? 'auto' : 'hidden';
 			const handler = BackHandler.addEventListener('hardwareBackPress', () => {
 				close();
 				return true;
@@ -127,7 +127,7 @@ const SwipeablePanel: React.FC = () => {
 			>
 				{!hideBar && <Sheet.Handle h={4} bg={Colors.White} opacity={1} mx='45%' my={8} />}
 				{mode === 'options' && !!swipeablePanelProps && !!height && <Sheet.Overlay />}
-				<Sheet.Frame br={0} userSelect='none' /* style={{maxWidth: 768}} */>
+				<Sheet.Frame br={0} userSelect='none' style={{maxWidth: 768, alignSelf: 'center'}}>
 					{mode === 'options' && <Content {...swipeablePanelProps} close={close} />}
 				</Sheet.Frame>
 			</Sheet>

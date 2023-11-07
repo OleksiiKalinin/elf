@@ -2,6 +2,8 @@ import { DatePickerModal, TimePickerModal } from 'react-native-paper-dates';
 import { Text, View } from 'react-native';
 import Button from '../../components/molecules/Button';
 import { useCallback, useState } from 'react';
+import {RemoveScroll} from 'react-remove-scroll';
+import ScrollLock from '../../components/atoms/ScrollLock';
 
 export const DateTimePickerDemo = () => {
     const [date, setDate] = useState(undefined);
@@ -37,27 +39,31 @@ export const DateTimePickerDemo = () => {
             <Button onPress={() => setOpen(true)}>
                 Pick single date
             </Button>
-            <DatePickerModal
+            <ScrollLock enabled={open} removeScrollBar={false}>
+              <DatePickerModal
                 locale="en"
                 mode="single"
                 visible={open}
                 onDismiss={onDismissSingle}
                 date={date}
                 onConfirm={onConfirmSingle}
-            />
+              /> 
+            </ScrollLock>
             <Button onPress={() => setVisible(true)}>
               Pick time
             </Button>
-            <TimePickerModal
-              visible={visible}
-              onDismiss={onDismiss}
-              onConfirm={onConfirm}
-              hours={12}
-              minutes={14}
-              use24HourClock
-              inputFontSize={38}
-              keyboardIcon='keyboard-outline'
-            />
+            <ScrollLock enabled={visible} removeScrollBar={false}>
+              <TimePickerModal
+                visible={visible}
+                onDismiss={onDismiss}
+                onConfirm={onConfirm}
+                hours={12}
+                minutes={14}
+                use24HourClock
+                inputFontSize={38}
+                keyboardIcon='keyboard-outline'
+              />
+            </ScrollLock>
         </View>
     )
 };
