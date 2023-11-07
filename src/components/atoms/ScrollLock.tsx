@@ -1,31 +1,11 @@
-import React, { FC } from 'react';
+import { ComponentProps, FC } from 'react';
 import { Platform } from 'react-native';
-import {RemoveScroll} from 'react-remove-scroll';
+import { RemoveScroll } from 'react-remove-scroll';
 
-type ScrollLockProps = {
- children: React.ReactElement,
-} & React.ComponentProps<typeof RemoveScroll>;
+type ScrollLockProps = ComponentProps<typeof RemoveScroll>;
 
-const ScrollLock: FC<ScrollLockProps> = ({
-  children,
-  ...props
-}) => {
-
-  return (
-    <>
-      {Platform.OS === 'web' ?
-        <RemoveScroll {...props}>
-          {children}
-        </RemoveScroll>
-
-        :
-
-        <>
-          {children}
-        </>
-      }
-    </>
-  );
+const ScrollLock: FC<ScrollLockProps> = (props) => {
+  return Platform.OS === 'web' ? <RemoveScroll {...props} /> : props.children;
 };
 
 export default ScrollLock;

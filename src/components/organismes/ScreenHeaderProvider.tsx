@@ -124,7 +124,6 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
     <View style={{
       flex: 1,
       minHeight: Platform.select({
-        native: undefined,
         web: windowSizes.height - (isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0),
       }),
     }}>
@@ -160,7 +159,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
               </Typography>}
           </View>
         )}
-        {actions && (
+        {!!actions?.length && (
           <View style={styles.Actions}>
             {actions.map(({ icon, onPress }, index) => (
               <View style={{ marginLeft: 20 }} key={index}>
@@ -173,7 +172,6 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
                     backgroundColor='transparent'
                     icon={<SvgIcon icon={icon} />}
                     onPress={onPress}
-                  // colorScheme={Colors.Basic100}
                   >{' '}</Button>
                 )}
               </View>))}
@@ -182,8 +180,8 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
         {/* {otherActions} */}
       </View>
       <View style={[{
-        height: staticContentHeight ? windowSizes.height - (transparent ? 0 : SCREEN_HEADER_HEIGHT) - (isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0) : undefined,
-        flex: !staticContentHeight ? 1 : undefined,
+        height: Platform.select({ web: staticContentHeight ? windowSizes.height - (transparent ? 0 : SCREEN_HEADER_HEIGHT) - (isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0) : undefined }),
+        flex: Platform.select({ native: 1 }),
         marginTop: transparent ? 0 : SCREEN_HEADER_HEIGHT,
         backgroundColor
       }]}>

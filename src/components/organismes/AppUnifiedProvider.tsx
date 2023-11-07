@@ -1,6 +1,6 @@
 import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import calendarLocaleConfig from '../../hooks/calendarLocaleConfig';
-import { Dimensions } from 'react-native';
+import { Dimensions, Platform } from 'react-native';
 import { useActions } from '../../hooks/useActions';
 import geocoder from 'react-native-geocoder-reborn';
 import { MenuProvider } from 'react-native-popup-menu';
@@ -26,7 +26,8 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const dispatch = useTypedDispatch();
   const { token, userCompany } = useTypedSelector(state => state.general);
   const { setToken, setUserCompany } = useActions();
-  const [ssrWindowSizes, setSsrWindowSizes] = useState(Dimensions.get('window'));
+  // ssr huck
+  const [ssrWindowSizes, setSsrWindowSizes] = useState<any>(Platform.OS === 'web' ? {} : Dimensions.get('window'));
 
   useEffect(() => {
     setSsrWindowSizes(Dimensions.get('window'));

@@ -47,7 +47,7 @@ input[type=number] {
 ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
-    background: linear-gradient(360deg, #00001F 0%, #3E116B 109.57%);
+    background: #dfdfdf;
 }
 
 /* html>*::-webkit-scrollbar {
@@ -56,16 +56,16 @@ input[type=number] {
 } */
 
 ::-webkit-scrollbar-thumb {
-    background: #1C7296;
-    border-radius: 10px;
+    background: #bebebe;
+    /* border-radius: 10px; */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #19a5b8;
+    background: #c4c4c4;
 }
 
 ::-webkit-scrollbar-thumb:active {
-    background: #1BB9CE;
+    background: #cacaca;
 }
 
 input:-webkit-autofill,
