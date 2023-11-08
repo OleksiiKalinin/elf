@@ -274,7 +274,7 @@ export interface AddressType {
 export interface QuestionType {
     id: string,
     question: string,
-    checked: boolean,
+    checked?: boolean,
 }
 
 export interface QuestionsCategoryType {
