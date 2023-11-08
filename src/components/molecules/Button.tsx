@@ -112,7 +112,7 @@ const Button: React.FC<ButtonProps> = ({
         hoverStyle={{bg: variants[variant].hoverColor}} pressStyle={{bg: variants[variant].hoverColor, opacity: .5}}
         height={props.h ?? (arrowRight ? 58 : 50)}
         borderRadius={0}
-        bg={props.bg || props.backgroundColor || variants[variant].activeColor}
+        bg={props.bg || props.backgroundColor || props.disabled ? variants[variant].disabledColor : variants[variant].activeColor}
         icon={withLoading ? <Spinner size='large' /> : undefined}
         iconAfter={arrowRight ? <SvgIcon icon='arrowRightSmall'/> : undefined}
         width={props.w ?? (fullwidth ? '100%' : undefined)}
