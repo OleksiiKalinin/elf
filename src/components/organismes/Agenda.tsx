@@ -4,16 +4,24 @@ import { Agenda as Agnd, LocaleConfig } from '../../../node_modules_modified/rea
 import Colors from '../../colors/Colors';
 import SvgIcon from '../atoms/SvgIcon';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
+import { UserEventType } from '../../store/reducers/types';
 
-const Agenda: React.FC<{ getCurrentDate: (s: string) => void }> = ({ getCurrentDate }) => {
+
+function timeToString(time: number) {
+    const date = new Date(time);
+    return date.toISOString().split('T')[0];
+}
+
+const Agenda: React.FC<{ getCurrentDate: (s: string) => void, events: UserEventType[] }> = ({ getCurrentDate, events }) => {
     const [date] = useState<string>(new Date().toISOString().replace(/T.*$/, ''));
     const [items, setitems] = useState<any>({})
     const [isOpened, setIsOpened] = useState<boolean>(false);
     const [loaded, setloaded] = useState<boolean>(false);
+    const calendarLocale = LocaleConfig.locales['pl'];
 
     useEffect(() => {
         const [year, month] = date.split('-');
-        getCurrentDate && getCurrentDate(`${LocaleConfig.locales['pl'].monthNames?.[Number(month) - 1]} ${Number(year)}`);
+        getCurrentDate && getCurrentDate(`${calendarLocale.monthNames?.[Number(month) - 1]} ${Number(year)}`);
     }, []);
 
     useEffect(() => {
@@ -29,7 +37,7 @@ const Agenda: React.FC<{ getCurrentDate: (s: string) => void }> = ({ getCurrentD
                 if (!items[strTime]) {
                     items[strTime] = [];
 
-                    const numItems = Math.floor(Math.random() * 3);
+                    const numItems = Math.floor(Math.random() * 5);
                     for (let j = 0; j < numItems; j++) {
                         items[strTime].push({
                             name: 'Item for ' + strTime + ' #' + j,
@@ -48,15 +56,6 @@ const Agenda: React.FC<{ getCurrentDate: (s: string) => void }> = ({ getCurrentD
         }, 1000);
     };
 
-    const rowHasChanged = (r1: any, r2: any) => {
-        return r1.name !== r2.name;
-    };
-
-    function timeToString(time: number) {
-        const date = new Date(time);
-        return date.toISOString().split('T')[0];
-    }
-
     return loaded && (
         <Agnd
             items={items}
@@ -70,7 +69,6 @@ const Agenda: React.FC<{ getCurrentDate: (s: string) => void }> = ({ getCurrentD
             selected={date}
             pastScrollRange={6}
             futureScrollRange={12}
-            rowHasChanged={rowHasChanged}
             renderItem={(item, firstItemInDay) => {
                 // const { timeStart, timeEnd, isPhoneCall, address, firstName, lastName, jobPosition, id } = item as ItemType;
                 return (
@@ -137,7 +135,7 @@ const Agenda: React.FC<{ getCurrentDate: (s: string) => void }> = ({ getCurrentD
                     width: 5,
                     height: 5,
                     borderRadius: 2.5,
-                    marginTop: 8,
+                    marginTop: 6,
                 },
                 //@ts-ignore
                 'stylesheet.day.basic': {
@@ -187,9 +185,8 @@ const Agenda: React.FC<{ getCurrentDate: (s: string) => void }> = ({ getCurrentD
                     },
                 }
             }}
-        // onDayChange={date => getCurrentDate(`${LocaleConfig.locales['pl'].monthNames[date.month - 1]} ${date.year}`)}
-        // onDayPress={date => getCurrentDate(`${LocaleConfig.locales['pl'].monthNames[date.month - 1]} ${date.year}`)}
-        // {...props}
+            onDayChange={date => getCurrentDate(`${calendarLocale.monthNames?.[(date as any).month - 1]} ${(date as any).year}`)}
+            onDayPress={date => getCurrentDate(`${calendarLocale.monthNames?.[date.month - 1]} ${date.year}`)}
         />
     );
 };

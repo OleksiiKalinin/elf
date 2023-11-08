@@ -30,8 +30,7 @@ const getAppData = (token: string | null) => async (dispatch: Dispatch<any>) => 
     ]).then(async res => {
         const [appData, userData, userCompanyData, userEventsData] = res;
 
-        // console.log(appData.data);
-        console.log(JSON.stringify(appData.data, null, 4));
+        // console.log(JSON.stringify(appData.data, null, 4));
 
         // if (userData?.data && !userData?.data?.is_employer) {
         //     await axios.post('/employer/create_user/', {}, { headers: { Authorization: `Bearer ${token}` } });

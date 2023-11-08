@@ -5,13 +5,13 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'RedHatDisplay', sans-serif;
+    scrollbar-color: #bebebe #dfdfdf;
+    scrollbar-width: thin;
 }
 
 html {
     width: 100%;
     min-height: 100vh;
-    scrollbar-color: #1C7296 #3E116B;
-    scrollbar-width: thin;
 }
 
 body {
@@ -45,15 +45,10 @@ input[type=number] {
 }
 
 ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     background: #dfdfdf;
 }
-
-/* html>*::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-} */
 
 ::-webkit-scrollbar-thumb {
     background: #bebebe;
@@ -61,11 +56,11 @@ input[type=number] {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #c4c4c4;
+    background: #919191;
 }
 
 ::-webkit-scrollbar-thumb:active {
-    background: #cacaca;
+    background: #6e6e6e;
 }
 
 input:-webkit-autofill,
@@ -76,3 +71,14 @@ input:-webkit-autofill:active {
     -webkit-text-fill-color: white !important;
     background-clip: content-box !important;
 }
+
+@media (hover: none) {
+    *,
+    *::before,
+    *::after {
+        scrollbar-width: none;
+    }
+    ::-webkit-scrollbar {
+        display: none;
+    }
+  }

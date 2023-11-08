@@ -10,9 +10,10 @@ import TextField from '../../components/molecules/TextField';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import Button from '../../components/molecules/Button';
-import { useLink } from 'solito/link';
+import useRouter from '../../hooks/useRouter';
 
 const AddPaymentScreen: React.FC = () => {
+  const { useLink } = useRouter();
   const [formData, setFormData] = useState({
     phone: '',
     date: '',
@@ -94,7 +95,7 @@ const AddPaymentScreen: React.FC = () => {
 
         </ScrollView>
         <View style={{ marginVertical: 24 }}>
-          <Button {...useLink({href: '/profile/PaymentScreen'})}>
+          <Button {...useLink({href: {stack: 'ProfileStack', screen: 'PaymentScreen'}})}>
             Zapisz
           </Button>
         </View>

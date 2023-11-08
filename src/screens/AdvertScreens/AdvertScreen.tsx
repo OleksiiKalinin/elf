@@ -18,9 +18,8 @@ import { ScrollView } from '../../components/molecules/ScrollView';
 import Typography from '../../components/atoms/Typography';
 import AdvertLarge from '../../components/organismes/AdvertLarge';
 import TabbarMenu, { TabbarRoute } from '../../components/organismes/TabbarMenu';
-import { useLink } from 'solito/link';
 import { createParam } from 'solito';
-import { useRouter } from 'solito/router';
+import useRouter from '../../hooks/useRouter';
 
 const { useParam } = createParam<AdvertStackParamList['default']['AdvertScreen']>();
 
@@ -35,7 +34,7 @@ const AdvertScreen: React.FC = () => {
   const { setSwipeablePanelProps } = useActions();
   const [isPanelActive, setIsPanelActive] = useState(false);
   const [isPanelActive2, setIsPanelActive2] = useState(false);
-  const router = useRouter();
+  const { useLink, push } = useRouter();
   const [id] = useParam('id')
   console.log(id);
   
@@ -49,7 +48,7 @@ const AdvertScreen: React.FC = () => {
       buttons: [
         {
           children: 'Edytuj',
-          onPress: () => router.push(`/adverts/AdvertEditorScreen?id=${id}`),
+          onPress: () => push({stack: 'AdvertStack', screen: 'AdvertEditorScreen', params: {id}}),
         },
         {
           children: 'Usuń',
@@ -71,7 +70,7 @@ const AdvertScreen: React.FC = () => {
           contentColor: Colors.Danger,
           contentVariant: 'h5',
           ...useLink({
-            href: '/adverts',
+            href: {stack: 'AdvertStack'},
           }),
           // nativeStore.dispatch({
           //   type: advertActionTypes.REMOVE_ADVERT,

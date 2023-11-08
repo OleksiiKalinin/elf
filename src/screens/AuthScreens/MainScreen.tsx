@@ -17,10 +17,11 @@ import { IconTypes } from '../../components/atoms/SvgIcon';
 import Typography from '../../components/atoms/Typography';
 import Button from '../../components/molecules/Button';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
-import { useLink } from 'solito/link';
+import useRouter from '../../hooks/useRouter';
 
 const MainScreen: FC = () => {
   const dispatch = useTypedDispatch();
+  const { useLink } = useRouter();
 
   // const additionalButtons: Array<{ icon: IconTypes; color: string; onPress: () => void; }> = [
   //   {
@@ -47,14 +48,14 @@ const MainScreen: FC = () => {
           </Typography>
         </View>
         <View style={styles.Button}>
-          <Button style={styles.loginButton} {...useLink({href: '/auth/LoginScreen'})}>
+          <Button style={styles.loginButton} {...useLink({href: {stack: 'AuthStack', screen: 'LoginScreen'}})}>
             <Typography color={Colors.Basic100} textAlign="center" variant="h5" weight="Bold">
               ZALOGUJ SIĘ
             </Typography>
           </Button>
         </View>
         <View>
-          <Button style={styles.loginButton} color={Colors.Basic500} {...useLink({href: '/auth/RegistrationScreen'})}>
+          <Button style={styles.loginButton} color={Colors.Basic500} {...useLink({href: {stack: 'AuthStack', screen: 'RegistrationScreen'}})}>
             <Typography color={Colors.Basic900} textAlign="center" variant="h5" weight="Bold">
               ZAREJESTRUJ SIĘ
             </Typography>
@@ -77,7 +78,7 @@ const MainScreen: FC = () => {
         </View> */}
       </ScrollView>
       <View>
-        <Button variant="text" {...useLink({href: '/home'})}>
+        <Button variant="text" {...useLink({href: {stack: 'MenuStack'}})}>
           <Typography color={Colors.Basic600} textAlign="center" variant="h5" weight="SemiBold">
             Anuluj
           </Typography>

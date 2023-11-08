@@ -10,10 +10,11 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import Agenda from '../../components/organismes/Agenda';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import CornerCircleButton from '../../components/molecules/CornerCircleButton';
-import { useLink } from 'solito/link';
+import useRouter from '../../hooks/useRouter';
 
 const MainScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
+  const { useLink } = useRouter();
   const { token, userEvents, jobIndustries } = useTypedSelector(state => state.general);
   const [monthTitle, setMonthTitle] = useState<string>('');
   const { current: remindedEvents } = useRef<number[]>([]);
@@ -100,12 +101,9 @@ const MainScreen: React.FC = () => {
 
   return (<>
     <ScreenHeaderProvider staticContentHeight mode="mainTitle" title={monthTitle}>
-      <Agenda
-        getCurrentDate={setMonthTitle}
-      //  events={userEvents} 
-      />
+      <Agenda getCurrentDate={setMonthTitle} events={userEvents} />
     </ScreenHeaderProvider>
-    <CornerCircleButton {...useLink({ href: '/calendar/EventScreen' })} />
+    <CornerCircleButton {...useLink({ href: {stack: 'CalendarStack', screen: 'EventScreen', params: undefined} })} />
   </>);
 };
 

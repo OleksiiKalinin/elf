@@ -16,7 +16,6 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import Button from '../../components/molecules/Button';
 import Typography from '../../components/atoms/Typography';
 import { ScrollView } from '../../components/molecules/ScrollView';
-import { useLink } from 'solito/link';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import generalServices from '../../services/generalServices';
 import CornerCircleButton from '../../components/molecules/CornerCircleButton';

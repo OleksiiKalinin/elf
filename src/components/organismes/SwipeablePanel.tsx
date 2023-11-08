@@ -104,7 +104,9 @@ const SwipeablePanel: React.FC = () => {
 					disableDrag
 				>
 					<Sheet.Frame br={0} userSelect='none'>
-						{mode === 'screen' && <Content {...swipeablePanelProps} close={close} />}
+						<Sheet.ScrollView>
+							{mode === 'screen' && <Content {...swipeablePanelProps} close={close} />}
+						</Sheet.ScrollView>
 					</Sheet.Frame>
 				</Sheet>
 			</View>}
@@ -127,7 +129,7 @@ const SwipeablePanel: React.FC = () => {
 			>
 				{!hideBar && <Sheet.Handle h={4} bg={Colors.White} opacity={1} mx='45%' my={8} />}
 				{mode === 'options' && !!swipeablePanelProps && !!height && <Sheet.Overlay />}
-				<Sheet.Frame br={0} userSelect='none' style={{maxWidth: 768, alignSelf: 'center'}}>
+				<Sheet.Frame br={0} userSelect='none' style={{ maxWidth: 768, alignSelf: 'center' }}>
 					{mode === 'options' && <Content {...swipeablePanelProps} close={close} />}
 				</Sheet.Frame>
 			</Sheet>

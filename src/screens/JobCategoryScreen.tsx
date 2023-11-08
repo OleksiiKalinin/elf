@@ -85,7 +85,7 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({ mode, callback })
       callback={selectedIndustry ? backToIndustry : undefined}
       backgroundColor={Colors.Basic100}
     >
-      <ScrollView style={{ backgroundColor: Colors.Basic100 }} disableWindowScroll>
+      <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
         {selectedIndustry === null || mode === 'industry' ? <>
           {SearchField}
           <Typography color={Colors.Basic600} style={{ marginTop: 16, marginBottom: 10, marginLeft: 19 }}>

@@ -10,7 +10,6 @@ import { MessengerStackParamList } from '../../navigators/MessengerNavigator';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Button from '../../components/molecules/Button';
 import Typography from '../../components/atoms/Typography';
-import { useLink } from 'solito/link';
 
 const MainScreen: React.FC = () => {
     // const MainScreen: React.FC<MainScreenProps> = () => {

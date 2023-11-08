@@ -17,6 +17,7 @@ const CornerCircleButton: React.FC<{ onPress: (event: GestureResponderEvent) => 
                 web: 20 + (isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0),
             }),
             right: 20,
+            zIndex: 1,
         }}>
             <TouchableOpacity onPress={onPress} {...props}>
                 <SvgIcon icon='addBig' />
