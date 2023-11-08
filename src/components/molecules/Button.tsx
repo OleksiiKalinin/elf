@@ -105,39 +105,35 @@ const Button: React.FC<ButtonProps> = ({
 
   return (
     <>
-      { borderTop &&
-        <Separator borderColor={Colors.Basic300} alignSelf="stretch"/>
-      }
+      {borderTop && <Separator borderColor={Colors.Basic300} alignSelf="stretch" />}
       <TamaButton
-        hoverStyle={{bg: variants[variant].hoverColor}} pressStyle={{bg: variants[variant].hoverColor, opacity: .5}}
+        hoverStyle={{ bg: variants[variant].hoverColor }} pressStyle={{ bg: variants[variant].hoverColor, opacity: .5 }}
         height={props.h ?? (arrowRight ? 58 : 50)}
         borderRadius={0}
         bg={props.bg || props.backgroundColor || props.disabled ? variants[variant].disabledColor : variants[variant].activeColor}
         icon={withLoading ? <Spinner size='large' /> : undefined}
-        iconAfter={arrowRight ? <SvgIcon icon='arrowRightSmall'/> : undefined}
+        iconAfter={arrowRight ? <SvgIcon icon='arrowRightSmall' /> : undefined}
         width={props.w ?? (fullwidth ? '100%' : undefined)}
-        focusStyle={{borderColor: 'none'}}
+        focusStyle={{ borderColor: 'none' }}
         {...props}
       >
         {!!children &&
-        <Typography 
-          variant={contentVariant} 
-          weight={contentWeight} 
-          color={contentColor || variants[variant].contentColor} 
-          {...(arrowRight ? { style: { flex: 1, textAlign: 'left'}} : {})}
-        >
-          {children}
-        </Typography>}
+          <Typography
+            variant={contentVariant}
+            weight={contentWeight}
+            color={contentColor || variants[variant].contentColor}
+            {...(arrowRight ? { style: { flex: 1, textAlign: 'left' } } : {})}
+          >
+            {children}
+          </Typography>}
       </TamaButton>
-      { borderBottom &&
-        <Separator borderColor={Colors.Basic300} alignSelf="stretch"/>
-      }
+      {borderBottom && <Separator borderColor={Colors.Basic300} alignSelf="stretch" />}
     </>
   );
 };
 
 const styles = StyleSheet.create({
-    
+
 });
 
 export default Button;

@@ -15,10 +15,9 @@ type Props = {
 
 const CheckBox: FC<ComponentProps<typeof TamaCheckBox> & Props> = ({ rightTextView, leftTextView, leftText, rightText, flexDirection, removeSpaces = false, checked, onCheckedChange, ...props }) => {
     const isFlexDirectionRow = !flexDirection || (flexDirection === 'row') || (flexDirection === 'row-reverse');
-    const [id, setId] = useState<string>(Math.random().toString());
 
     return (
-        <TouchableOpacity activeOpacity={.9} style={{ flexDirection: flexDirection || 'row' }} onPress={()=> onCheckedChange?.(!checked)}>
+        <TouchableOpacity activeOpacity={.9} style={{ flexDirection: flexDirection || 'row' }} onPress={() => onCheckedChange?.(!checked)}>
             {(leftText || leftTextView) && <View style={{ flex: 1, ...(!removeSpaces ? (isFlexDirectionRow ? { marginRight: 12 } : { marginBottom: 12 }) : {}) }}>
                 {leftText && <Typography variant='small'>{leftText}</Typography>}
                 {leftTextView && leftTextView}
@@ -32,8 +31,7 @@ const CheckBox: FC<ComponentProps<typeof TamaCheckBox> & Props> = ({ rightTextVi
                     borderColor: Colors.Basic600,
                     backgroundColor: Colors.Basic100
                 })}
-                id={id}
-                focusStyle={{borderColor: 'none'}}
+                focusStyle={{ borderColor: 'none' }}
                 {...props}
                 checked={checked}
             >
