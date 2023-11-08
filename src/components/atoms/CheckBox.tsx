@@ -48,6 +48,7 @@ const CheckBox: FC<ComponentProps<typeof TamaCheckBox> & Props> = ({ rightTextVi
                     backgroundColor: '$color1'
                 })}
                 id='CheckBox'
+                focusStyle={{borderColor: 'none'}}
                 {...props}
             >
                 <TamaCheckBox.Indicator>

@@ -9,11 +9,11 @@ import Button from '../../components/molecules/Button';
 /* import { Accordion, Separator, Square, Paragraph } from 'tamagui'; */
 import TextField from '../../components/molecules/TextField';
 import { QuestionsCategoryType } from '../../store/reducers/types';
-import { ChevronDown } from '@tamagui/lucide-icons';
 /* import { Accordion } from '@tamagui/accordion'; */
 /* import { Accordion } from '@tamagui/accordion'; */
 import { Separator } from 'tamagui';
 import style from '../../../node_modules_modified/react-native-calendars/src/calendar/header/style';
+import { es } from 'react-native-paper-dates';
 
 const Questions: QuestionsCategoryType[] = [
   {
@@ -23,17 +23,14 @@ const Questions: QuestionsCategoryType[] = [
       {
         id: '',
         question: 'Jakie były Pana/Pani doświadczenia na podobnym stanowisku pracy?',
-        checked: false,
       },
       {
         id: '',
         question: 'Jaki był Pana/Pani największy sukces na poprzednim stanowisku pracy?',
-        checked: false,
       },
       {
         id: '',
         question: 'Jaki projekt zawodowy szczególnie Pana/Panią zainspirował? Z czego to wynikało?',
-        checked: false,
       },
     ],
   },
@@ -44,17 +41,14 @@ const Questions: QuestionsCategoryType[] = [
       {
         id: '',
         question: 'Jakie posiada Pan/Pani wykształcenie?',
-        checked: false,
       },
       {
         id: '',
         question: 'Czy ukończył/a Pan/Pani jakieś szkolenia branżowe?',
-        checked: false,
       },
       {
         id: '',
         question: 'Czy posiada Pan/Pani jakieś certyfikaty związane ze swoim stanowiskiem pracy?',
-        checked: false,
       },
     ],
   },
@@ -65,17 +59,14 @@ const Questions: QuestionsCategoryType[] = [
       {
         id: '',
         question: 'Jakie umiejętności uważa Pan/Pani za najważniejsze na swoim stanowisku pracy?',
-        checked: false,
       },
       {
         id: '',
         question: 'Z jakich narzędzi korzysta Pan/Pani w pracy?',
-        checked: false,
       },
       {
         id: '',
         question: 'Jak biegle włada Pan/Pani językiem angielskim?',
-        checked: false,
       },
     ],
   },
@@ -86,50 +77,98 @@ const Questions: QuestionsCategoryType[] = [
       {
         id: '',
         question: 'Dlaczego chca Pan/Pani pracować w naszej firmie?',
-        checked: false,
       },
       {
         id: '',
         question: 'Jakie są Pana/Pani długoterminowe cele zawodowe?',
-        checked: false,
       },
       {
         id: '',
         question: 'Jak reaguje Pan/Pani na pracę pod presją?',
-        checked: false,
       },
     ],
   },
 ];
 
 const QuestionsScreen: React.FC = () => {
-  const [list, setList] = useState(Questions)
   const [name, setName] = useState<string>('');
+  const [nameValid, setNameValid] = useState(false);
+  const [list, setList] = useState(Questions);
+  const [listValid, setListValid] = useState(false);
+  const [showTips, setShowTips] = useState<boolean>(false);
+
+  useEffect(()=> {
+    const newList = Questions.map((category) => ({
+      ...category,
+      questions: category.questions.map((question) => ({
+        ...question,
+        checked: false,
+      })),
+    }));
+    setList(newList);
+  },[])
+
+  useEffect(() => {
+    if(name.length >= 3){
+      setNameValid(true);
+    } else{
+      setNameValid(false);
+    };
+  }, [name]);
+
+  useEffect(() => {
+    const listValid = validateList();
+    if(listValid){
+      setListValid(true)
+    } else {
+      setListValid(false);
+    };
+  }, [list]);
 
   const handleChange = (categoryIndex: number, questionIndex: number) => {
     const newList = [...list];
-    const currentValue = newList[categoryIndex].questions[questionIndex].checked;
-    newList[categoryIndex].questions[questionIndex].checked = !currentValue;
+    const prevValue = newList[categoryIndex].questions[questionIndex].checked;
+    newList[categoryIndex].questions[questionIndex].checked = !prevValue;
     setList(newList);
   };
 
-  const handleConfirm = () => {
+  const validateList = () => {
+    const check = list.some(category => {
+      return category.questions.some(question => question.checked);
+    });
+
+    return check;
+  };
+
+  const filterList = () => {
     const filteredList = [...list]
       .filter(category => category.questions.some(question => question.checked === true))
       .map(category => ({
         ...category,
         questions: category.questions.filter(question => question.checked === true)
+      }))
+      .map(category => ({
+        ...category,
+        questions: category.questions.map(question => {
+          const { checked, ...newQuestion } = question;
+          return newQuestion;
+        })
       }));
 
-    const removeChecked = filteredList.map(category => ({
-      ...category,
-      questions: category.questions.map(question => {
-        const { checked, ...newQuestion } = question;
-        return newQuestion;
-      })
-    }));
+    return filteredList;
+  };
 
-    console.log({ name: name, list: removeChecked });
+  const handleConfirm = () => {
+    if(nameValid && listValid){
+      const filteredList = filterList();
+      console.log({ name: name, list: filteredList });
+    } else{
+      if(!nameValid){
+        setShowTips(true);
+      } else if(!listValid){
+
+      };
+    };
   };
 
   return (
@@ -142,22 +181,24 @@ const QuestionsScreen: React.FC = () => {
             keyboardType="email-address"
             value={name}
             onChangeText={setName}
+            {...(showTips && !nameValid && { bottomText: 'Nazwa musi zawierać minimum 3 znaki' })}
           />
         </View>
         <View style={styles.ListContainer}>
           {list.map(({ id, category, questions }, categoryIndex) =>
             <View style={styles.CategoryContainer}>
-              <Typography id={id} size={20} weight='Bold'>
+              <Typography key={id} size={20} weight='Bold'>
                 {category}
               </Typography>
               <View style={styles.Questions}>
                 {questions.map(({ id, question, checked }, questionIndex) => <>
                   {questionIndex === 0 && <Separator />}
                   <CheckBox
+                    key={id}
                     checked={checked}
                     onCheckedChange={() => handleChange(categoryIndex, questionIndex)}
                     leftTextView={
-                      <Typography style={{ paddingVertical: 21 }}>
+                      <Typography style={styles.Question}>
                         {question}
                       </Typography>
                     }
@@ -195,9 +236,16 @@ const styles = StyleSheet.create({
   },
   CheckBox: {
     alignItems: 'center',
-    paddingVertical: 12,
     alignSelf: 'center',
-    /* backgroundColor: Colors.Basic700 */
+/*     marginTop: 20,
+    marginBottom: 20, */
+  },
+  Question: {
+    /* paddingVertical: 20 */
+    marginTop: 20,
+    marginBottom: 20,
+    alignSelf: 'center',
+    justifyContent: 'center',
   },
 });
 
