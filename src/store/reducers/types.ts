@@ -282,3 +282,9 @@ export interface QuestionsCategoryType {
     category: string,
     questions: QuestionType[],
 }
+
+export interface QuestionsUserListType {
+    id: string,
+    name: string,
+    list: QuestionsCategoryType[]
+}

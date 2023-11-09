@@ -103,7 +103,7 @@ const SwipeablePanel: React.FC = () => {
 					snapPoints={[100]}
 					disableDrag
 				>
-					<Sheet.Frame br={0} userSelect='none'>
+					<Sheet.Frame br={0} userSelect='none' maxWidth={768}>
 						<Sheet.ScrollView>
 							{mode === 'screen' && <Content {...swipeablePanelProps} close={close} />}
 						</Sheet.ScrollView>

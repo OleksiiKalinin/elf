@@ -78,7 +78,9 @@ export const screensTitles: ScreensTitlesType = {
     EventsScreen: 'Twoje wydarzenia',
     NewsDetailsScreen: '',
     NewsScreen: 'Artykuły i nowości',
-    QuestionsScreen: 'Lista pytań do kandydata',
+    QuestionEditorScreen: 'Lista pytań do kandydata',
+    QuestionsListScreen: 'Lista pytań',
+    QuestionsScreen: '',
   },
 };
 

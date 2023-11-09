@@ -95,7 +95,7 @@ const MainScreen: React.FC = ({ }) => {
             backgroundColor: Colors.Sea300,
             icon: 'pencil',
             ...useLink({
-              href: { stack: 'MenuStack', screen: 'QuestionsScreen' }
+              href: { stack: 'MenuStack', screen: 'QuestionsListScreen' }
             }),
             missedEvents: 10,
             badge: 'Nowe',

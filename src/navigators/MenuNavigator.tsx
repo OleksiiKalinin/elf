@@ -5,8 +5,10 @@ import CallsScreen from '../screens/MenuScreens/CallsScreen';
 import EventsScreen from '../screens/MenuScreens/EventsScreen';
 import NewsScreen from '../screens/MenuScreens/NewsScreen';
 import NewsDetailsScreen from '../screens/MenuScreens/NewsDetailsScreen';
-import QuestionsScreen from '../screens/MenuScreens/QuestionsScreen';
+import QuestionEditorScreen from '../screens/MenuScreens/QuestionEditorScreen';
 import { PathConfigMap } from '@react-navigation/native';
+import QuestionsListScreen from '../screens/MenuScreens/QuestionsListScreen';
+import QuestionsScreen from '../screens/MenuScreens/QuestionsScreen';
 
 export type MenuStackParamList = {
   default: {
@@ -18,7 +20,9 @@ export type MenuStackParamList = {
     EventsScreen: undefined,
     NewsScreen: undefined,
     NewsDetailsScreen: undefined,
-    QuestionsScreen: undefined,
+    QuestionEditorScreen: { id: string } | undefined,
+    QuestionsListScreen: undefined,
+    QuestionsScreen: { id: string },
   },
   extended: {
   }
@@ -30,6 +34,8 @@ export const MenuStackLinking: PathConfigMap<MenuStackParamList['default']> = {
   EventsScreen: 'EventsScreen',
   NewsDetailsScreen: 'NewsDetailsScreen',
   NewsScreen: 'NewsScreen',
+  QuestionEditorScreen: 'QuestionEditorScreen',
+  QuestionsListScreen: 'QuestionsListScreen',
   QuestionsScreen: 'QuestionsScreen',
 }
 
@@ -43,6 +49,8 @@ const MenuNavigator: React.FC = () => {
       <MenuStack.Screen name="EventsScreen" component={EventsScreen} />
       <MenuStack.Screen name="NewsScreen" component={NewsScreen} />
       <MenuStack.Screen name="NewsDetailsScreen" component={NewsDetailsScreen} />
+      <MenuStack.Screen name="QuestionEditorScreen" component={QuestionEditorScreen} />
+      <MenuStack.Screen name="QuestionsListScreen" component={QuestionsListScreen} />
       <MenuStack.Screen name="QuestionsScreen" component={QuestionsScreen} />
     </MenuStack.Navigator>
   );
