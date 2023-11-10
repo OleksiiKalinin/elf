@@ -6,12 +6,15 @@ import Typography from '../../components/atoms/Typography';
 import CheckBox from '../../components/atoms/CheckBox';
 import Button from '../../components/molecules/Button';
 import TextField from '../../components/molecules/TextField';
-import { QuestionsCategoryType } from '../../store/reducers/types';
+import { QuestionsCategoryType, UserQuestionsType } from '../../store/reducers/types';
 import { Separator } from 'tamagui';
 import { ScrollView } from '../../components/molecules/ScrollView';
 import { cloneDeep } from 'lodash';
 import { MenuStackParamList } from '../../navigators/MenuNavigator';
 import { createParam } from 'solito';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
+import { useActions } from '../../hooks/useActions';
+import useRouter from '../../hooks/useRouter';
 
 const Questions: QuestionsCategoryType[] = [
   {
@@ -137,7 +140,12 @@ const QuestionEditorScreen: React.FC = () => {
   const [list, setList] = useState(Questions);
   const [listValid, setListValid] = useState(false);
   const [showTips, setShowTips] = useState<boolean>(false);
+  const [index, setIndex] = useState<number | null>(null);
   const [id] = useParam('id');
+  const router = useRouter();
+  
+  const { setUserQuestions } = useActions();
+  const { userQuestions } = useTypedSelector(state => state.general);
 
   useEffect(()=> {
     if(!id){
@@ -147,9 +155,18 @@ const QuestionEditorScreen: React.FC = () => {
 
   useEffect(()=> {
     if(id){
-      compareArrays();
-    }
+      const index = userQuestions.findIndex(item => item.id === id);
+      if(index >= 0){
+        setIndex(index);
+      } else{
+        router.push({ stack: 'MenuStack', screen: 'QuestionsListScreen', params: undefined});
+      }
+    };
   },[id]);
+
+  useEffect(()=> {
+    compareArrays();
+  },[index]);
 
   useEffect(() => {
     if(name.length >= 3 && name.length <= 50 ){
@@ -169,24 +186,29 @@ const QuestionEditorScreen: React.FC = () => {
   }, [list]);
 
   const compareArrays = () => {
-    const newList = cloneDeep(Questions);
-    newList.forEach((category) => {
-      const compareCategory = UserQuestions.find((userCategory) => userCategory.id === category.id);
-      if (compareCategory) {
-        category.questions.forEach((question) => {
-          const compareQuestion = compareCategory.questions.find((userQuestion) => userQuestion.id === question.id);
-          if (compareQuestion) {
-            question.checked = true;
-          } else {
-            question.checked = false;
-          }
-        });
-      } else {
-        category.questions.forEach((question) => (question.checked = false));
-      };
-    });
+    if(index !== null){
+      const userList = userQuestions[index].list;
 
-    setList(newList);
+      const newList = cloneDeep(Questions);
+      newList.forEach((category) => {
+        const compareCategory = userList.find((userCategory) => userCategory.id === category.id);
+        if (compareCategory) {
+          category.questions.forEach((question) => {
+            const compareQuestion = compareCategory.questions.find((userQuestion) => userQuestion.id === question.id);
+            if (compareQuestion) {
+              question.checked = true;
+            } else {
+              question.checked = false;
+            }
+          });
+        } else {
+          category.questions.forEach((question) => (question.checked = false));
+        };
+      });
+
+      setName(userQuestions[index].name)
+      setList(newList);
+    }
   };
 
   const initialArray = () => {
@@ -235,11 +257,20 @@ const QuestionEditorScreen: React.FC = () => {
   const handleConfirm = () => {
     if(nameValid && listValid){
       const filteredList = filterList();
-      console.log({ name: name, list: filteredList });
+      const newUserQuestions = cloneDeep(userQuestions);
+      if(!id){
+        newUserQuestions.push({id: Math.random().toString(), name: name, list: filteredList});
+        setUserQuestions(newUserQuestions);
+        router.push({ stack: 'MenuStack', screen: 'QuestionsListScreen', params: {newlist: true}});
+      } else if(id && index !== null){
+        newUserQuestions[index] = {id, name: name, list: filteredList}
+        setUserQuestions(newUserQuestions);
+        router.push({ stack: 'MenuStack', screen: 'QuestionsScreen', params: {id: id}});
+      }
     } else{
-      if(!nameValid){
-        setShowTips(true);
-      };
+        if(!nameValid){
+          setShowTips(true);
+        };
     };
   };
 

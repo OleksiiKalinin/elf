@@ -9,6 +9,7 @@ import useRouter from '../../hooks/useRouter';
 import CornerCircleButton from '../../components/molecules/CornerCircleButton';
 import { MenuStackParamList } from '../../navigators/MenuNavigator';
 import { createParam } from 'solito';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
 
 const QuestionsList/* : QuestionsList[] */ = [
   {
@@ -31,6 +32,7 @@ const QuestionsListScreen: React.FC = () => {
 
   const {useLink} = useRouter();
   const router = useRouter();
+  const { userQuestions } = useTypedSelector(state => state.general);
 
   const goToQuestionsScreen = (id: string) => {
     router.push({ stack: 'MenuStack', screen: 'QuestionsScreen', params: {id}});
@@ -40,7 +42,7 @@ const QuestionsListScreen: React.FC = () => {
     <ScreenHeaderProvider mainTitlePosition="flex-start">
       <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
         <View style={styles.ListContainer}>
-          {QuestionsList.map(({id, name}, i)=>
+          {userQuestions.map(({id, name}, i)=>
             <Button
               key={id}
               variant='text'

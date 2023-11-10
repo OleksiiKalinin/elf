@@ -1,6 +1,6 @@
 import { SwipeablePanelProps } from "../../../components/organismes/SwipeablePanel";
 import { generalActionTypes } from "../../actions";
-import { CandidateMarkType, CandidateNotesType, CompanyDataType, InvoiceType, JobIndustryType, UserAdvertType, UserDataType, UserEventType, WindowSizesType } from "../../reducers/types";
+import { CandidateMarkType, CandidateNotesType, CompanyDataType, InvoiceType, JobIndustryType, UserAdvertType, UserDataType, UserEventType, UserQuestionsType, WindowSizesType } from "../../reducers/types";
 import { AppDataType, generalReducerAction } from "./types";
 
 const setToken = (payload: {token: string | null, refresh_token: string | null}): generalReducerAction => ({
@@ -92,6 +92,11 @@ const LogOut = (): generalReducerAction => ({
     type: generalActionTypes.LOG_OUT,
 })
 
+const setUserQuestions = (payload: UserQuestionsType[]): generalReducerAction => ({
+    type: generalActionTypes.SET_USER_QUESTIONS,
+    payload
+})
+
 const generalActions = {
     setToken,
     setIsTabbarVisible,
@@ -111,6 +116,7 @@ const generalActions = {
     setCandidateNotes,
     setUserInvoices,
     setWindowSizes,
+    setUserQuestions,
 };
 
 export default generalActions;

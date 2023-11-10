@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Colors from '../../colors/Colors';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
@@ -7,12 +7,13 @@ import Button from '../../components/molecules/Button';
 import { ScrollView } from '../../components/molecules/ScrollView';
 import useRouter from '../../hooks/useRouter';
 import CornerCircleButton from '../../components/molecules/CornerCircleButton';
-import { QuestionsCategoryType, QuestionsUserListType } from '../../store/reducers/types';
+import { QuestionsCategoryType, UserQuestionsType } from '../../store/reducers/types';
 import { Separator } from 'tamagui';
 import { MenuStackParamList } from '../../navigators/MenuNavigator';
 import { createParam } from 'solito';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
 
-const UserList: QuestionsUserListType = {
+const UserList: UserQuestionsType = {
   id: '1',
   name: 'Fryzjer',
   list: [
@@ -96,20 +97,29 @@ const QuestionsScreen: React.FC = () => {
   const {useLink} = useRouter();
   const router = useRouter();
   const [id] = useParam('id');
+  const [selectedList, setSelectedList] = useState<UserQuestionsType>();
+  const { userQuestions } = useTypedSelector(state => state.general);
 
   useEffect(()=> {
-    console.log(id);
+    const index = userQuestions.findIndex(item => item.id === id);
+    setSelectedList(userQuestions[index]);
   },[])
 
-  const goToQuestionEditorScreen = (id: string) => {
-    router.push({ stack: 'MenuStack', screen: 'QuestionEditorScreen', params: {id}});
+  const goToQuestionEditorScreen = () => {
+    if(id){
+      router.push({ stack: 'MenuStack', screen: 'QuestionEditorScreen', params: {id: id}});
+    }
   };
 
   return (
-    <ScreenHeaderProvider title={UserList.name} mainTitlePosition="flex-start">
+    <ScreenHeaderProvider 
+      title={selectedList ? selectedList.name : ''} 
+      mainTitlePosition="flex-start"
+      actions={[{icon: 'threeDots', onPress: goToQuestionEditorScreen}]}
+    >
       <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
       <View style={styles.ListContainer}>
-          {UserList.list.map(({ id, category, questions }, categoryIndex) =>
+        {selectedList?.list.map(({ id, category, questions }) =>
             <View key={id} style={styles.CategoryContainer}>
               <Typography size={20} weight='Bold'>
                 {category}
