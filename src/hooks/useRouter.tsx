@@ -100,7 +100,7 @@ export default function useRouter() {
                             children: <Component {...componentProps} />
                         })
                     } else {
-                        setParams({ subView: undefined });
+                        setParams({ subView: undefined }, { webBehavior: 'replace' });
                     }
                 } else {
                     activeId = null;

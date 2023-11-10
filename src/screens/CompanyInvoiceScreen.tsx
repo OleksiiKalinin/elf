@@ -1,6 +1,6 @@
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Image, Dimensions, ScrollView } from 'react-native';
+import { StyleSheet, View, Image, Dimensions } from 'react-native';
 import Colors from '../colors/Colors';
 import { SceneMap } from 'react-native-tab-view';
 import { nativeStore } from '../store';
@@ -15,6 +15,7 @@ import ScreenHeaderProvider from '../components/organismes/ScreenHeaderProvider'
 import { AddressType } from '../store/reducers/types';
 import Button from '../components/molecules/Button';
 import useRouter from '../hooks/useRouter';
+import { ScrollView } from '../components/molecules/ScrollView';
 
 export type CompanyInvoiceScreenProps = {
   address: AddressType | null,

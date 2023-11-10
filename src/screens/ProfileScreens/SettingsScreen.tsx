@@ -1,6 +1,6 @@
 import { CompositeScreenProps } from '@react-navigation/native';
 import React, { FC } from 'react';
-import { Dimensions, ScrollView, TouchableOpacity, View } from 'react-native';
+import { Dimensions, TouchableOpacity, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import Colors from '../../colors/Colors';
 import { useActions } from '../../hooks/useActions';
@@ -11,6 +11,7 @@ import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { useRouter } from 'solito/router';
+import { ScrollView } from '../../components/molecules/ScrollView';
 
 const settings: {
     title: string,

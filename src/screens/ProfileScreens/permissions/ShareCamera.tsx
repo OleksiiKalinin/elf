@@ -1,4 +1,4 @@
-import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Linking, StyleSheet, Text, View } from 'react-native';
 import React, { useState } from 'react';
 import { CompositeScreenProps, useRoute } from '@react-navigation/native';
 import Colors from '../../../colors/Colors';
@@ -6,6 +6,7 @@ import Typography from '../../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../../components/organismes/ScreenHeaderProvider';
 import { ProfileStackParamList } from '../../../navigators/ProfileNavigator';
 import Switch from '../../../components/atoms/Switch';
+import { ScrollView } from '../../../components/molecules/ScrollView';
 
 const ShareCamera: React.FC = () => {
   const [switchState, setSwitchState] = useState(false);

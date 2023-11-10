@@ -19,7 +19,7 @@ import { useActions } from '../../hooks/useActions';
 import SvgIcon from '../../components/atoms/SvgIcon';
 import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
-// import { LocaleConfig as CalendarLocaleConfig } from '../../../node_modules_modified/react-native-calendars/src';
+// import { LocaleConfig as CalendarLocaleConfig } from '../../../modified_modules/react-native-calendars/src';
 
 const CallsScreen: React.FC = () => {
   // const dataCalendar = useTypedSelector(state => state.calendar);

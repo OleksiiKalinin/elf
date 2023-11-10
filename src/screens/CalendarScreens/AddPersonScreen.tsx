@@ -1,11 +1,12 @@
 import { CompositeScreenProps } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Colors from '../../colors/Colors';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Typography from '../../components/atoms/Typography';
 import TextField from '../../components/molecules/TextField';
 import Button from '../../components/molecules/Button';
+import { ScrollView } from '../../components/molecules/ScrollView';
 
 const AddPersonScreen: React.FC = () => {
   type inputs = 'fullName' | 'phone';

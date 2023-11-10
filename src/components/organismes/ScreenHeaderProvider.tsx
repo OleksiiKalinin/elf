@@ -89,7 +89,7 @@ type ScreenHeaderProviderProps = {
   title?: string;
   alterTitle?: any;
   actions?: {
-    icon: IconTypes | Element;
+    icon: IconTypes | Exclude<React.ReactElement, string | number | boolean> | (string & {});
     onPress: () => void;
   }[];
   otherActions?: Element,
@@ -163,17 +163,12 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
           <View style={styles.Actions}>
             {actions.map(({ icon, onPress }, index) => (
               <View style={{ marginLeft: 20 }} key={index}>
-                {(typeof icon === 'object') ? (
-                  <TouchableOpacity style={{ padding: 5 }} onPress={onPress}></TouchableOpacity>
-                  // <TouchableOpacity style={{ padding: 5 }} onPress={onPress}>{icon}</TouchableOpacity>
-                ) : (
-                  <Button
-                    circular
-                    backgroundColor='transparent'
-                    icon={<SvgIcon icon={icon} />}
-                    onPress={onPress}
-                  >{' '}</Button>
-                )}
+                <Button
+                  circular
+                  backgroundColor='transparent'
+                  icon={(typeof icon === 'string' ? <SvgIcon icon={icon as IconTypes} /> : (typeof icon === 'object' ? icon : undefined)) as any}
+                  onPress={onPress}
+                />
               </View>))}
           </View>
         )}

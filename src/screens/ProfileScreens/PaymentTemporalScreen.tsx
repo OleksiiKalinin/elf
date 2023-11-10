@@ -1,4 +1,4 @@
-import { Alert, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { CompositeScreenProps, useIsFocused, useRoute } from '@react-navigation/native';
 import Colors from '../../colors/Colors';
@@ -15,6 +15,7 @@ import TextField from '../../components/molecules/TextField';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Button from '../../components/molecules/Button';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
+import { ScrollView } from '../../components/molecules/ScrollView';
 
 const bankNumber = '72 1140 2004 0000 3402 7920 9976';
 const bankOwnerName = 'JobAssistant Sp. z o.o.';

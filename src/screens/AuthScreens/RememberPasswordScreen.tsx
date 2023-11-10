@@ -1,4 +1,4 @@
-import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Linking, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { AuthStackParamList } from '../../navigators/AuthNavigator';
 import { CompositeScreenProps } from '@react-navigation/native';

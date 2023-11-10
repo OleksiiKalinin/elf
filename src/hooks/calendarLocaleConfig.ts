@@ -1,4 +1,4 @@
-import { LocaleConfig } from '../../node_modules_modified/react-native-calendars/src'
+import { LocaleConfig } from "../components/modified_modules/react-native-calendars/src";
 
 export default function calendarLocaleConfig() {
     LocaleConfig.locales['pl'] = {

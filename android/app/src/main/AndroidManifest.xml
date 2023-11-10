@@ -1,5 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.elfemployer">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.elfemployer">
 
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.CAMERA" />
@@ -20,9 +19,14 @@
     android:theme="@style/AppTheme"
     android:usesCleartextTraffic="true"
   >
-    <!-- <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id" />
-    <meta-data android:name="com.facebook.sdk.ClientToken" android:value="@string/facebook_client_token" /> -->
-    <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyBLA1spwwoOjY2rOvMliOBc2C87k6ZOJ_s" />
+    <!-- <meta-data android:name="com.facebook.sdk.ApplicationId"
+    android:value="@string/facebook_app_id" />
+    <meta-data android:name="com.facebook.sdk.ClientToken"
+    android:value="@string/facebook_client_token" /> -->
+    <meta-data
+      android:name="com.google.android.geo.API_KEY"
+      android:value="AIzaSyBLA1spwwoOjY2rOvMliOBc2C87k6ZOJ_s"
+    />
     <activity
       android:exported="true"
       android:name=".MainActivity"
@@ -30,8 +34,8 @@
       android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
       android:launchMode="singleTask"
       android:windowSoftInputMode="adjustResize"
-      android:screenOrientation="sensorPortrait"
     >
+      <!-- android:screenOrientation="sensorPortrait" -->
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />

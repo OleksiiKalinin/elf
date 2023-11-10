@@ -16,7 +16,7 @@ import {
 import { MenuStackParamList } from '../../navigators/MenuNavigator';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useActions } from '../../hooks/useActions';
-// import { LocaleConfig as CalendarLocaleConfig } from '../../../node_modules_modified/react-native-calendars/src';
+// import { LocaleConfig as CalendarLocaleConfig } from '../../../modified_modules/react-native-calendars/src';
 import { CandidateDataType, JobPositionType } from '../../store/reducers/types';
 import { useDispatch } from 'react-redux';
 import advertsServices from '../../services/advertsServices';

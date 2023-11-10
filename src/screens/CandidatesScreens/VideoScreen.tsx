@@ -13,7 +13,7 @@ import Colors from '../../colors/Colors';
 // } from 'react-native-popup-menu';
 import { nativeStore } from '../../store';
 // import { useActions } from '../../hooks/useActions';
-import { Dimensions, ScrollView, StyleSheet, TouchableHighlight, TouchableOpacity, View, Image } from 'react-native';
+import { Dimensions, StyleSheet, TouchableHighlight, TouchableOpacity, View, Image } from 'react-native';
 /// import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import { JobPositionType } from '../../store/reducers/types';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';

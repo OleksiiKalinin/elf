@@ -48,6 +48,7 @@ export default class Agenda extends Component {
     knobTracker;
     _isMounted;
     scrollPad = React.createRef();
+    scrollPadSize = { width: 0, height: 0 };
     calendar = React.createRef();
     knob = React.createRef();
     list = React.createRef();
@@ -179,13 +180,21 @@ export default class Agenda extends Component {
         const key = toMarkingFormat(selectedDay);
         return { ...markedDates, [key]: { ...(markedDates[key] || {}), ...{ selected: true } } };
     });
-    onScrollPadLayout = () => {
+    onScrollPadLayout = (e) => {
+        const { width: currWidth, height: currHeight } = e.nativeEvent.layout;
+        const { width: prevWidth, height: prevHeight } = this.scrollPadSize;
+        this.scrollPadSize = { height: currHeight, width: currWidth };
+
+        if (prevWidth && prevHeight && ((currWidth !== prevWidth) || (currHeight !== prevHeight))) {
+            return;
+        }
+
         // When user touches knob, the actual component that receives touch events is a ScrollView.
         // It needs to be scrolled to the bottom, so that when user moves finger downwards,
         // scroll position actually changes (it would stay at 0, when scrolled to the top).
         this.setScrollPadPosition(this.initialScrollPadPosition(), false);
         // delay rendering calendar in full height because otherwise it still flickers sometimes
-        setTimeout(() => this.setState({ calendarIsReady: true }), 100);
+        setTimeout(() => this.setState({ calendarIsReady: true }), 0);
     };
     onCalendarListLayout = () => {
         this.calendar?.current?.scrollToDay(this.state.selectedDay, this.calendarOffset(), false);
@@ -193,6 +202,7 @@ export default class Agenda extends Component {
     onLayout = (event) => {
         this.viewHeight = event.nativeEvent.layout.height;
         this.viewWidth = event.nativeEvent.layout.width;
+        this.calendar?.current?.scrollToDay(this.state.selectedDay, this.calendarOffset(), false);
         this.forceUpdate();
     };
     onClick = () => {
@@ -340,7 +350,7 @@ export default class Agenda extends Component {
                 </Animated.View>
                 {this.renderKnob()}
             </Animated.View>
-            <Animated.View style={weekdaysStyle}> 
+            <Animated.View style={weekdaysStyle}>
                 {this.renderWeekNumbersSpace()}
                 {this.renderWeekDaysNames()}
             </Animated.View>

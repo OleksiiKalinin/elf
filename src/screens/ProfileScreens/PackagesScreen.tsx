@@ -1,6 +1,6 @@
 import { CompositeScreenProps } from '@react-navigation/native';
 import React, { FC } from 'react';
-import { Dimensions, ScrollView, View } from 'react-native';
+import { Dimensions, View } from 'react-native';
 // import SelectDropdown from 'react-native-select-dropdown';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import SvgIcon from '../../components/atoms/SvgIcon';
@@ -9,6 +9,7 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import Button from '../../components/molecules/Button';
 import Colors from '../../colors/Colors';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
+import { ScrollView } from '../../components/molecules/ScrollView';
 
 const packageTypes = [
     { price: 50, type: 'Standard' },
@@ -41,7 +42,7 @@ const PackagesScreen: FC = () => {
     return (
         <ScreenHeaderProvider>
             <ScrollView style={{ backgroundColor: Colors.White }}>
-                <ScrollView showsHorizontalScrollIndicator horizontal contentContainerStyle={{ paddingLeft: 20 }}>
+                <ScrollView disableWindowScroll showsHorizontalScrollIndicator horizontal contentContainerStyle={{ paddingLeft: 20 }}>
                     {packageTypes.map((item) =>
                         <View style={{ maxWidth: 320, width: windowSizes.width - 100, marginVertical: 20, marginRight: 20, backgroundColor: Colors.Basic100 }}>
                             <Typography variant="h2" weight="Bold" style={{ marginLeft: 19 }}>

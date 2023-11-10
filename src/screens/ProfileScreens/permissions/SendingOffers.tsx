@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import React, { useState } from 'react';
 import { CompositeScreenProps, useRoute } from '@react-navigation/native';
 import Colors from '../../../colors/Colors';
@@ -6,6 +6,7 @@ import Typography from '../../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../../components/organismes/ScreenHeaderProvider';
 import Switch from '../../../components/atoms/Switch';
 import { ProfileStackParamList } from '../../../navigators/ProfileNavigator';
+import { ScrollView } from '../../../components/molecules/ScrollView';
 
 const SendingOffers: React.FC = () => {
   const [switchState, setSwitchState] = useState(false);

@@ -1,4 +1,4 @@
-import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Linking, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { CompositeScreenProps, useIsFocused, useRoute } from '@react-navigation/native';
 import Colors from '../../colors/Colors';
@@ -8,6 +8,7 @@ import SvgIcon from '../../components/atoms/SvgIcon';
 import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
+import { ScrollView } from '../../components/molecules/ScrollView';
 
 const PaymentScreen: React.FC = () => {
   return (

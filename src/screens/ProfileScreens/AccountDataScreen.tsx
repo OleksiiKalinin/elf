@@ -1,4 +1,4 @@
-import { Linking, ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { Linking, StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import React, { Children, useEffect, useState } from 'react'
 import { AuthStackParamList } from '../../navigators/AuthNavigator';
 import { CompositeScreenProps, useRoute } from '@react-navigation/native';
@@ -14,6 +14,7 @@ import TextField from '../../components/molecules/TextField';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Button from '../../components/molecules/Button';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
+import { ScrollView } from '../../components/molecules/ScrollView';
 
 export type RegistDataType = {
   email: string,

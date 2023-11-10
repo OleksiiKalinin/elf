@@ -8,6 +8,7 @@ import { sameDate } from '../../dateutils';
 import { toMarkingFormat } from '../../interface';
 import styleConstructor from './style';
 import Reservation from './reservation';
+import { Platform } from 'react-native';
 class ReservationList extends Component {
     static displayName = 'ReservationList';
     static propTypes = {
@@ -71,7 +72,7 @@ class ReservationList extends Component {
             for (let i = 0; i < reservations.scrollPosition; i++) {
                 scrollPosition += this.heights[i] || 0;
             }
-            this.scrollOver = false;
+            this.scrollOver = Platform.OS === 'web';
             this.list?.current?.scrollToOffset({ offset: scrollPosition, animated: true });
         }
         this.selectedDay = selectedDay;

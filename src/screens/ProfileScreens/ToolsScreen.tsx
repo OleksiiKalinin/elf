@@ -1,6 +1,6 @@
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import Colors from '../../colors/Colors';
 import CheckBox from '../../components/atoms/CheckBox';
 import TextField from '../../components/molecules/TextField';
@@ -9,6 +9,7 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import Button from '../../components/molecules/Button';
 import { Separator } from 'tamagui';
+import { ScrollView } from '../../components/molecules/ScrollView';
 
 const ToolsScreen: React.FC = () => {
   // const { languages, category, subcategories, methods, tools } = route.params;

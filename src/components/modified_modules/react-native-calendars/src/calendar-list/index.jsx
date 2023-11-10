@@ -174,9 +174,11 @@ const CalendarList = (props, ref) => {
         const dateString = toMarkingFormat(item);
         const [year, month] = dateString.split('-');
         const testId = `${testID}.item_${year}-${month}`;
-        return (<CalendarListItem {...calendarProps} testID={testId} markedDates={getMarkedDatesForItem(item)} item={item} style={calendarStyle}
+        return (<CalendarListItem
+            {...calendarProps} testID={testId} markedDates={getMarkedDatesForItem(item)} item={item} style={calendarStyle}
             // @ts-expect-error - type mismatch - ScrollView's 'horizontal' is nullable
-            horizontal={horizontal} calendarWidth={calendarWidth} calendarHeight={calendarHeight} scrollToMonth={scrollToMonth} visible={isDateInRange(item)} />);
+            horizontal={horizontal} calendarWidth={calendarWidth} calendarHeight={calendarHeight} scrollToMonth={scrollToMonth} visible={isDateInRange(item)}
+        />);
     }, [horizontal, calendarStyle, calendarWidth, testID, getMarkedDatesForItem, isDateInRange, calendarProps]);
 
     const renderStaticHeader = () => {

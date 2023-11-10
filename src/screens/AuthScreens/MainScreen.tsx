@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { BackHandler, ScrollView, StyleSheet, View } from 'react-native';
+import { BackHandler, StyleSheet, View } from 'react-native';
 import Colors from '../../colors/Colors';
 // import Typography from '../../components/atoms/Typography/Typography';
 // import ButtonRipple from '../../components/molecules/ButtonRipple/ButtonRipple';
@@ -18,6 +18,7 @@ import Typography from '../../components/atoms/Typography';
 import Button from '../../components/molecules/Button';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import useRouter from '../../hooks/useRouter';
+import { ScrollView } from '../../components/molecules/ScrollView';
 
 const MainScreen: FC = () => {
   const dispatch = useTypedDispatch();

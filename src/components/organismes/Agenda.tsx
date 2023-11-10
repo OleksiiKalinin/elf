@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Platform } from "react-native";
-import { Agenda as Agnd, LocaleConfig } from '../../../node_modules_modified/react-native-calendars/src';
+import { Agenda as Agnd, LocaleConfig } from '../modified_modules/react-native-calendars/src';
 import Colors from '../../colors/Colors';
 import SvgIcon from '../atoms/SvgIcon';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
@@ -76,7 +76,7 @@ const Agenda: React.FC<{ getCurrentDate: (s: string) => void, events: UserEventT
                         // onPress={() => options(id)} 
                         style={{
                             flex: 1,
-                            height: 110,
+                            minHeight: 110,
                             backgroundColor: Colors.White,
                             // borderRadius: 10,
                             padding: 10,

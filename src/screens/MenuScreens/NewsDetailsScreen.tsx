@@ -1,8 +1,9 @@
 import { CompositeScreenProps } from '@react-navigation/native';
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Colors from '../../colors/Colors';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { ScrollView } from '../../components/molecules/ScrollView';
 
 const NewsDetailsScreen: React.FC = () => {
   // const { title, content } = route.params;

@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import { View, ScrollView, TouchableOpacity, Dimensions, Slider } from 'react-native';
+import { View, TouchableOpacity, Dimensions, Slider } from 'react-native';
 import { ProfileStackParamList } from '../navigators/ProfileNavigator';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { AddressType, CompanyDataType, ContactPersonType } from '../store/reducers/types';
@@ -12,6 +12,7 @@ import Button from '../components/molecules/Button';
 import Colors from '../colors/Colors';
 import { useTypedSelector } from '../hooks/useTypedSelector';
 import useRouter from '../hooks/useRouter';
+import { ScrollView } from '../components/molecules/ScrollView';
 
 export type AddContactPersonsScreenProps = {
     contactPersons: ContactPersonType[],

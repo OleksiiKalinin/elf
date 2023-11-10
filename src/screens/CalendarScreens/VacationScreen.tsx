@@ -1,16 +1,14 @@
 import { CompositeScreenProps } from '@react-navigation/native';
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Colors from '../../colors/Colors';
 import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import { ScrollView } from '../../components/molecules/ScrollView';
 
 const VacationScreen: React.FC = () => {
   return (
-    <ScreenHeaderProvider
-      mainTitlePosition="flex-start"
-    >
-
+    <ScreenHeaderProvider mainTitlePosition="flex-start">
       <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
         <Typography
           weight="Bold"

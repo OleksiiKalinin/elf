@@ -4,8 +4,7 @@ import { Dimensions, Platform } from 'react-native';
 import { useActions } from '../../hooks/useActions';
 import geocoder from 'react-native-geocoder-reborn';
 import { MenuProvider } from 'react-native-popup-menu';
-import { PaperProvider } from 'react-native-paper';
-import { enGB, registerTranslation } from 'react-native-paper-dates'
+import { PaperProvider, MD3LightTheme, configureFonts } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
@@ -13,11 +12,13 @@ import generalServices from '../../services/generalServices';
 import { ContactPersonType, MediaType } from '../../store/reducers/types';
 import candidatesServices from '../../services/candidatesServices';
 import companyServices from '../../services/companyServices';
+import { pl, registerTranslation } from '../modified_modules/react-native-paper-dates';
 
 calendarLocaleConfig();
 geocoder.fallbackToGoogle('AIzaSyBLA1spwwoOjY2rOvMliOBc2C87k6ZOJ_s');
 geocoder.setLanguage('pl');
-registerTranslation('en-GB', enGB)
+
+registerTranslation('pl', pl);
 
 const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { setWindowSizes } = useActions();
@@ -104,10 +105,13 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <>
       <MenuProvider>
-        <PaperProvider theme={{ dark: false }}>
+        <PaperProvider theme={{
+          ...MD3LightTheme,
+          fonts: configureFonts({ config: { fontFamily: 'RedHatDisplay-Regular' } }),
+        }}>
           {children}
         </PaperProvider>
-      </MenuProvider>
+      </MenuProvider >
     </>
   );
 };
