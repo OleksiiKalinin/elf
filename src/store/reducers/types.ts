@@ -24,7 +24,8 @@ export interface generalReducerState {
     candidateMarks: CandidateMarkType[],
     marksData: MarkDataType[],
     notesData: NoteDataType[],
-    userInvoices: InvoiceType[]
+    userInvoices: InvoiceType[],
+    userQuestions: UserQuestionsType[];
 }
 
 export type WindowSizesType = ScaledSize;
@@ -281,4 +282,10 @@ export interface QuestionsCategoryType {
     id: string,
     category: string,
     questions: QuestionType[],
+}
+
+export interface UserQuestionsType {
+    id: string,
+    name: string,
+    list: QuestionsCategoryType[]
 }

@@ -60,6 +60,7 @@ const getAppData = (token: string | null) => async (dispatch: Dispatch<any>) => 
             jobExperiences: appData.data?.experience || [],
             marksData: appData.data?.notes_candidate_scoring || [],
             notesData: appData.data?.notes_flags1 || [],
+            userQuestions: [],
         }));
         isOk = true;
     }).catch(error => {

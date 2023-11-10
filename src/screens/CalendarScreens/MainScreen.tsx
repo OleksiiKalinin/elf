@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
       buttons: [
         {
           children: 'Zobacz',
-          onPress: () => navigation.navigate('QuestionsScreen'),
+          onPress: () => navigation.navigate('QuestionEditorScreen'),
         },
       ],
     },
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
       buttons: [
         {
           children: 'Przedłuż pakiet',
-          onPress: () => navigation.navigate('QuestionsScreen'),
+          onPress: () => navigation.navigate('QuestionEditorScreen'),
         },
       ],
     },

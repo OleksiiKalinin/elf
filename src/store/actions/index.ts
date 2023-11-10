@@ -18,6 +18,7 @@ export enum generalActionTypes {
   SET_CANDIDATE_NOTES = 'SET_CANDIDATE_NOTES',
   SET_USER_INVOICES = 'SET_USER_INVOICES',
   SET_WINDOW_SIZES = 'SET_WINDOW_SIZES',
+  SET_USER_QUESTIONS = 'SET_USER_QUESTIONS',
 }
 
 export enum bookmarkActionTypes {
