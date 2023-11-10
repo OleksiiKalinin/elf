@@ -132,7 +132,7 @@ const UserQuestions: QuestionsCategoryType[] = [
   },
 ];
 
-const { useParam } = createParam<NonNullable<MenuStackParamList['default']['QuestionEditorScreen']>>();
+const { useParam,useParams } = createParam<NonNullable<MenuStackParamList['default']['QuestionEditorScreen']>>();
 
 const QuestionEditorScreen: React.FC = () => {
   const [name, setName] = useState<string>('');
@@ -142,26 +142,25 @@ const QuestionEditorScreen: React.FC = () => {
   const [showTips, setShowTips] = useState<boolean>(false);
   const [index, setIndex] = useState<number | null>(null);
   const [id] = useParam('id');
+  const {setParams} = useParams();
   const router = useRouter();
   
   const { setUserQuestions } = useActions();
   const { userQuestions } = useTypedSelector(state => state.general);
 
   useEffect(()=> {
-    if(!id){
-      initialArray();
-    };
-  },[]);
-
-  useEffect(()=> {
+    console.log(id, window.location.search);
     if(id){
       const index = userQuestions.findIndex(item => item.id === id);
       if(index >= 0){
         setIndex(index);
       } else{
         router.push({ stack: 'MenuStack', screen: 'QuestionsListScreen', params: undefined});
+ /*        setParams({id: undefined}) */
       }
-    };
+    } else{
+      initialArray();
+    }
   },[id]);
 
   useEffect(()=> {
@@ -275,7 +274,7 @@ const QuestionEditorScreen: React.FC = () => {
   };
 
   return (
-    <ScreenHeaderProvider mainTitlePosition="flex-start">
+    <ScreenHeaderProvider  mainTitlePosition="flex-start">
       <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
         <View style={styles.Title}>
           <TextField

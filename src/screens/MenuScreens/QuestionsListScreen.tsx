@@ -40,25 +40,25 @@ const QuestionsListScreen: React.FC = () => {
 
   return (
     <ScreenHeaderProvider mainTitlePosition="flex-start">
-      <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
-        <View style={styles.ListContainer}>
-          {userQuestions.map(({id, name}, i)=>
-            <Button
-              key={id}
-              variant='text'
-              arrowRight
-              borderTop={i === 0 ? true : false}
-              borderBottom
-              onPress={()=> goToQuestionsScreen(id)}
-            >
-              <Typography>
-                {name}
-              </Typography>
-            </Button>
-          )}
-        </View>
-      </ScrollView>
-      <CornerCircleButton {...useLink({ href: { stack: 'MenuStack', screen: 'QuestionEditorScreen', params: undefined } })} />
+        <ScrollView style={{ backgroundColor: Colors.Basic100}}>
+          <View style={styles.ListContainer}>
+            {userQuestions.map(({id, name}, i)=>
+              <Button
+                key={id}
+                variant='text'
+                arrowRight
+                borderTop={i === 0 ? true : false}
+                borderBottom
+                onPress={()=> goToQuestionsScreen(id)}
+              >
+                <Typography>
+                  {name}
+                </Typography>
+              </Button>
+            )}
+          </View>
+        </ScrollView>
+        <CornerCircleButton {...useLink({ href: { stack: 'MenuStack', screen: 'QuestionEditorScreen', params: undefined } })} />
     </ScreenHeaderProvider>
   );
 };

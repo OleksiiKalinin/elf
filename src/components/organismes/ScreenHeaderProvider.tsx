@@ -182,7 +182,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
         {/* {otherActions} */}
       </View>
       <View style={[{
-        height: Platform.select({ web: staticContentHeight ? windowSizes.height - (transparent ? 0 : SCREEN_HEADER_HEIGHT) - (isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0) : undefined }),
+        height: Platform.select({ web: staticContentHeight ? windowSizes.height - (transparent ? 0 : SCREEN_HEADER_HEIGHT) - (isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0) : '100%' }),
         flex: Platform.select({ native: 1 }),
         marginTop: transparent ? 0 : SCREEN_HEADER_HEIGHT,
         backgroundColor
