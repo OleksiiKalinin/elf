@@ -1,20 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, View} from 'react-native';
 import Colors from '../../colors/Colors';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Typography from '../../components/atoms/Typography';
-import Button from '../../components/molecules/Button';
-import { ScrollView } from '../../components/molecules/ScrollView';
+import {ScrollView} from '../../components/molecules/ScrollView';
 import useRouter from '../../hooks/useRouter';
-import {
-  UserQuestionsType,
-} from '../../store/reducers/types';
-import { Separator } from 'tamagui';
-import { MenuStackParamList } from '../../navigators/MenuNavigator';
-import { createParam } from 'solito';
-import { useTypedSelector } from '../../hooks/useTypedSelector';
+import {UserQuestionsType} from '../../store/reducers/types';
+import {Separator} from 'tamagui';
+import {MenuStackParamList} from '../../navigators/MenuNavigator';
+import {createParam} from 'solito';
+import {useTypedSelector} from '../../hooks/useTypedSelector';
 import SvgIcon from '../../components/atoms/SvgIcon';
-import { useActions } from '../../hooks/useActions';
+import {useActions} from '../../hooks/useActions';
 
 const UserList: UserQuestionsType = {
   id: '1',
@@ -99,18 +96,21 @@ const UserList: UserQuestionsType = {
     },
   ],
 };
-const { useParam } =
+const {useParam} =
   createParam<NonNullable<MenuStackParamList['default']['QuestionsScreen']>>();
 
 const QuestionsScreen: React.FC = () => {
-  const { replace } = useRouter();
+  const {replace} = useRouter();
   const router = useRouter();
   const [id] = useParam('id');
   const [subView] = useParam('subView');
   const [index, setIndex] = useState<number | null>(null);
+  const [subViewMode, setSubViewMode] = useState<'optionsMenu' | 'deleteMenu'>(
+    'optionsMenu',
+  );
   const [selectedList, setSelectedList] = useState<UserQuestionsType>();
-  const { userQuestions } = useTypedSelector(state => state.general);
-  const { setSwipeablePanelProps, setUserQuestions } = useActions();
+  const {userQuestions} = useTypedSelector(state => state.general);
+  const {setSwipeablePanelProps, setUserQuestions} = useActions();
 
   useEffect(() => {
     if (id) {
@@ -128,6 +128,19 @@ const QuestionsScreen: React.FC = () => {
   }, [id]);
 
   useEffect(() => {
+    if (subViewMode === 'optionsMenu') {
+      editModeSubView();
+    } else if (subViewMode === 'deleteMenu') {
+      deleteModeSubView();
+    }
+  }, [subView, subViewMode]);
+
+  useEffect(() => {
+    const index = userQuestions.findIndex(item => item.id === id);
+    setSelectedList(userQuestions[index]);
+  }, []);
+
+  const editModeSubView = () => {
     if (id) {
       setSwipeablePanelProps(
         (() => {
@@ -144,12 +157,42 @@ const QuestionsScreen: React.FC = () => {
                     replace({
                       stack: 'MenuStack',
                       screen: 'QuestionEditorScreen',
-                      params: { id: id },
+                      params: {id: id},
                     }),
                 },
                 {
-                  children: 'Usuń listę',
-                  icon: <SvgIcon icon="crossBig" />,
+                  children: (
+                    <Typography size={16} color={Colors.Danger}>
+                      Usuń listę
+                    </Typography>
+                  ),
+                  icon: <SvgIcon icon="crossBig" fill={Colors.Danger} />,
+                  closeAction: 'none',
+                  onPress: () => setSubViewMode('deleteMenu'),
+                },
+              ],
+            };
+          return null;
+        })(),
+      );
+    }
+  };
+
+  const deleteModeSubView = () => {
+    if (id) {
+      setSwipeablePanelProps(
+        (() => {
+          if (subView === 'options')
+            return {
+              title: 'Czy chcesz usunąć pytanie?',
+              closeButton: true,
+              buttons: [
+                {
+                  children: (
+                    <Typography size={16} color={Colors.Danger}>
+                      Tak
+                    </Typography>
+                  ),
                   closeAction: 'props-null',
                   onPress: () => {
                     deleteList(),
@@ -160,18 +203,18 @@ const QuestionsScreen: React.FC = () => {
                       });
                   },
                 },
+                {
+                  children: 'Nie',
+                  closeAction: 'none',
+                  onPress: () => setSubViewMode('optionsMenu'),
+                },
               ],
             };
           return null;
         })(),
       );
     }
-  }, [subView]);
-
-  useEffect(() => {
-    const index = userQuestions.findIndex(item => item.id === id);
-    setSelectedList(userQuestions[index]);
-  }, []);
+  };
 
   const deleteList = () => {
     if (index !== null) {
@@ -184,10 +227,11 @@ const QuestionsScreen: React.FC = () => {
 
   const handleSubView = () => {
     if (id) {
+      setSubViewMode('optionsMenu');
       router.push({
         stack: 'MenuStack',
         screen: 'QuestionsScreen',
-        params: { id: id, subView: 'options' },
+        params: {id: id, subView: 'options'},
       });
     }
   };
@@ -198,27 +242,25 @@ const QuestionsScreen: React.FC = () => {
         <ScreenHeaderProvider
           title={selectedList ? selectedList.name : ''}
           mainTitlePosition="flex-start"
-          actions={[{ icon: 'threeDots', onPress: handleSubView }]}
-        >
-          <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
+          actions={[{icon: 'threeDots', onPress: handleSubView}]}>
+          <ScrollView style={styles.ScrollView}>
             <View style={styles.ListContainer}>
-              {selectedList?.list.map(({ id, category, questions }) => (
+              {selectedList?.list.map(({id, category, questions}) => (
                 <View key={id} style={styles.CategoryContainer}>
                   <Typography size={20} weight="Bold">
                     {category}
                   </Typography>
                   <View style={styles.Questions}>
-                    {questions.map(({ id, question }, i) => (
+                    {questions.map(({id, question}, i) => (
                       <>
                         {i === 0 && <Separator />}
                         <View key={id} style={styles.Question}>
                           <Typography
                             weight="Bold"
-                            variant="small"
                             style={styles.QuestionNumber}>
                             {i + 1}
                           </Typography>
-                          <Typography variant="small">{question}</Typography>
+                          <Typography>{question}</Typography>
                         </View>
                         <Separator />
                       </>
@@ -235,6 +277,11 @@ const QuestionsScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  ScrollView: {
+    backgroundColor: Colors.Basic100,
+    minHeight: '100%',
+    flex: 1,
+  },
   ListContainer: {
     marginTop: 50,
     paddingHorizontal: 16,
@@ -250,7 +297,7 @@ const styles = StyleSheet.create({
     paddingVertical: 17,
   },
   QuestionNumber: {
-    width: 12,
+    width: 15,
   },
   QuestionContent: {},
 });
