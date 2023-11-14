@@ -15,6 +15,8 @@ import { createParam } from 'solito';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useActions } from '../../hooks/useActions';
 import useRouter from '../../hooks/useRouter';
+import { InitialPropsFromParams } from '../../hooks/types';
+import { type } from 'os';
 
 const Questions: QuestionsCategoryType[] = [
   {
@@ -132,52 +134,54 @@ const UserQuestions: QuestionsCategoryType[] = [
   },
 ];
 
-const { useParam,useParams } = createParam<NonNullable<MenuStackParamList['default']['QuestionEditorScreen']>>();
+type Params = NonNullable<MenuStackParamList['default']['QuestionEditorScreen']>;
 
-const QuestionEditorScreen: React.FC = () => {
+const { useParam, useParams } = createParam<Params>();
+
+const QuestionEditorScreen: React.FC<InitialPropsFromParams<Params>> = ({ idInitial }) => {
   const [name, setName] = useState<string>('');
   const [nameValid, setNameValid] = useState(false);
   const [list, setList] = useState(Questions);
   const [listValid, setListValid] = useState(false);
   const [showTips, setShowTips] = useState<boolean>(false);
   const [index, setIndex] = useState<number | null>(null);
-  const [id] = useParam('id');
-  const {setParams} = useParams();
+  const [id] = useParam('id', { initial: idInitial });
+  const { setParams } = useParams();
   const router = useRouter();
-  
+
   const { setUserQuestions } = useActions();
   const { userQuestions } = useTypedSelector(state => state.general);
 
-  useEffect(()=> {
-    console.log(id, window.location.search);
-    if(id){
+  useEffect(() => {
+    console.log(id);
+    if (id) {
       const index = userQuestions.findIndex(item => item.id === id);
-      if(index >= 0){
+      if (index >= 0) {
         setIndex(index);
-      } else{
-        router.push({ stack: 'MenuStack', screen: 'QuestionsListScreen', params: undefined});
- /*        setParams({id: undefined}) */
+      } else {
+        router.push({ stack: 'MenuStack', screen: 'QuestionsListScreen', params: undefined });
+        /*        setParams({id: undefined}) */
       }
-    } else{
+    } else {
       initialArray();
     }
-  },[id]);
-
-  useEffect(()=> {
-    compareArrays();
-  },[index]);
+  }, [id]);
 
   useEffect(() => {
-    if(name.length >= 3 && name.length <= 50 ){
+    compareArrays();
+  }, [index]);
+
+  useEffect(() => {
+    if (name.length >= 3 && name.length <= 50) {
       setNameValid(true);
-    } else{
+    } else {
       setNameValid(false);
     };
   }, [name]);
 
   useEffect(() => {
     const listValid = validateList();
-    if(listValid){
+    if (listValid) {
       setListValid(true)
     } else {
       setListValid(false);
@@ -185,7 +189,7 @@ const QuestionEditorScreen: React.FC = () => {
   }, [list]);
 
   const compareArrays = () => {
-    if(index !== null){
+    if (index !== null) {
       const userList = userQuestions[index].list;
 
       const newList = cloneDeep(Questions);
@@ -254,27 +258,27 @@ const QuestionEditorScreen: React.FC = () => {
   };
 
   const handleConfirm = () => {
-    if(nameValid && listValid){
+    if (nameValid && listValid) {
       const filteredList = filterList();
       const newUserQuestions = cloneDeep(userQuestions);
-      if(!id){
-        newUserQuestions.push({id: Math.random().toString(), name: name, list: filteredList});
+      if (!id) {
+        newUserQuestions.push({ id: Math.random().toString(), name: name, list: filteredList });
         setUserQuestions(newUserQuestions);
-        router.push({ stack: 'MenuStack', screen: 'QuestionsListScreen', params: {newlist: true}});
-      } else if(id && index !== null){
-        newUserQuestions[index] = {id, name: name, list: filteredList}
+        router.push({ stack: 'MenuStack', screen: 'QuestionsListScreen', params: { newlist: true } });
+      } else if (id && index !== null) {
+        newUserQuestions[index] = { id, name: name, list: filteredList }
         setUserQuestions(newUserQuestions);
-        router.push({ stack: 'MenuStack', screen: 'QuestionsScreen', params: {id: id}});
+        router.push({ stack: 'MenuStack', screen: 'QuestionsScreen', params: { id: id } });
       }
-    } else{
-        if(!nameValid){
-          setShowTips(true);
-        };
+    } else {
+      if (!nameValid) {
+        setShowTips(true);
+      };
     };
   };
 
   return (
-    <ScreenHeaderProvider  mainTitlePosition="flex-start">
+    <ScreenHeaderProvider mainTitlePosition="flex-start">
       <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
         <View style={styles.Title}>
           <TextField
@@ -294,7 +298,7 @@ const QuestionEditorScreen: React.FC = () => {
                 {category}
               </Typography>
               <View style={styles.Questions}>
-                {questions.map(({ id, question, checked }, questionIndex) => 
+                {questions.map(({ id, question, checked }, questionIndex) =>
                   <>
                     {questionIndex === 0 && <Separator />}
                     <CheckBox
@@ -308,15 +312,15 @@ const QuestionEditorScreen: React.FC = () => {
                       }
                       style={styles.CheckBox}
                     />
-                  <Separator />
-                </>)}
+                    <Separator />
+                  </>)}
               </View>
             </View>
           )}
         </View>
       </ScrollView>
-      <Button 
-        onPress={() => handleConfirm()} 
+      <Button
+        onPress={() => handleConfirm()}
         disabled={!listValid}
       >
         Potwierdź wybory

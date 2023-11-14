@@ -185,7 +185,7 @@ export default class Agenda extends Component {
         const { width: prevWidth, height: prevHeight } = this.scrollPadSize;
         this.scrollPadSize = { height: currHeight, width: currWidth };
 
-        if (prevWidth && prevHeight && ((currWidth !== prevWidth) || (currHeight !== prevHeight))) {
+        if (this.state.calendarScrollable && prevWidth && prevHeight && ((currWidth !== prevWidth) || (currHeight !== prevHeight))) {
             return;
         }
 
