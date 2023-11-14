@@ -159,6 +159,9 @@ const EventScreen: React.FC = () => {
   const goToJobCategoryScreenMode2 = () => {
     router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'JobCategoryScreen', mode: 'industryAndPosition', callback: TestJobCategoryDataMode2 } });
   };
+  const goToJobCategoryScreenMode3 = () => {
+    router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'JobCategoryScreen', mode: 'industryAndPosition', callback: TestJobCategoryDataMode2, initialIndustry: 2 } });
+  };
 
   return (
     <ScreenHeaderProvider>
@@ -375,6 +378,12 @@ const EventScreen: React.FC = () => {
         style={{ marginTop: 30 }}
       >
         Job category - mode 2
+      </Button>
+      <Button
+        onPress={goToJobCategoryScreenMode3}
+        style={{ marginTop: 30 }}
+      >
+        Job category - mode 2 (initial industry)
       </Button>
     </ScreenHeaderProvider>
   );

@@ -11,7 +11,7 @@ import {
 import Colors from '../../colors/Colors';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import SvgIcon, { IconTypes } from '../../components/atoms/SvgIcon';
+import SvgIcon, { IconTypes, icons } from '../../components/atoms/SvgIcon';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Button from '../../components/molecules/Button';
 import Typography from '../../components/atoms/Typography';
@@ -373,7 +373,7 @@ const MainScreen: React.FC = ({ }) => {
                 </Fragment>))}
             </View>
           ))}
-          <Button
+{/*           <Button
             variant='primary'
             borderTop
             borderBottom
@@ -445,7 +445,18 @@ const MainScreen: React.FC = ({ }) => {
             arrowRight
           >
             Test
-          </Button>
+          </Button> */}
+          {/* {icons.map(item=>
+            <View style={{
+              height: 100,
+              width: 100,
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+            }}>
+              <SvgIcon icon={item.name}/>
+              <Typography>{item.name}</Typography>
+            </View>  
+          )} */}
         </ScrollView>
       </ScreenHeaderProvider>
       <CornerCircleButton {...useLink({ href: { stack: 'MenuStack', screen: 'MainScreen', params: { subView: 'options' } } })} />

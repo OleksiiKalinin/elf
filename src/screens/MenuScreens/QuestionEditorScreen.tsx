@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {Platform, StyleSheet, View} from 'react-native';
 import Colors from '../../colors/Colors';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Typography from '../../components/atoms/Typography';
 import CheckBox from '../../components/atoms/CheckBox';
 import Button from '../../components/molecules/Button';
 import TextField from '../../components/molecules/TextField';
-import { QuestionsCategoryType } from '../../store/reducers/types';
-import { Separator } from 'tamagui';
-import { ScrollView } from '../../components/molecules/ScrollView';
-import { cloneDeep } from 'lodash';
-import { MenuStackParamList } from '../../navigators/MenuNavigator';
-import { createParam } from 'solito';
-import { useTypedSelector } from '../../hooks/useTypedSelector';
-import { useActions } from '../../hooks/useActions';
+import {QuestionsCategoryType} from '../../store/reducers/types';
+import {Separator} from 'tamagui';
+import {ScrollView} from '../../components/molecules/ScrollView';
+import {cloneDeep} from 'lodash';
+import {MenuStackParamList} from '../../navigators/MenuNavigator';
+import {createParam} from 'solito';
+import {useTypedSelector} from '../../hooks/useTypedSelector';
+import {useActions} from '../../hooks/useActions';
 import useRouter from '../../hooks/useRouter';
-import { InitialPropsFromParams } from '../../hooks/types';
-import { type } from 'os';
+import {InitialPropsFromParams} from '../../hooks/types';
+import {type} from 'os';
 
 const Questions: QuestionsCategoryType[] = [
   {
@@ -98,41 +98,34 @@ const Questions: QuestionsCategoryType[] = [
   },
 ];
 
+type Params = NonNullable<
+  MenuStackParamList['default']['QuestionEditorScreen']
+>;
 
-type Params = NonNullable<MenuStackParamList['default']['QuestionEditorScreen']>;
+const {useParam} = createParam<Params>();
 
-const { useParam } = createParam<Params>();
-
-const QuestionEditorScreen: React.FC<InitialPropsFromParams<Params>> = ({ idInitial }) => {
+const QuestionEditorScreen: React.FC<InitialPropsFromParams<Params>> = ({
+  idInitial,
+}) => {
   const [name, setName] = useState<string>('');
   const [nameValid, setNameValid] = useState(false);
   const [list, setList] = useState(Questions);
   const [listValid, setListValid] = useState(false);
   const [showTips, setShowTips] = useState<boolean>(false);
   const [index, setIndex] = useState<number | null>(null);
-  const [display, setDisplay] = useState<boolean>(false);
-  const [id] = useParam('id', { initial: idInitial });
+  const [display, setDisplay] = useState(Platform.OS !== 'web');
+  const [id] = useParam('id', {initial: idInitial});
   const router = useRouter();
 
-  const { setUserQuestions } = useActions();
-  const { userQuestions } = useTypedSelector(state => state.general);
-
-  useEffect(() => {
-    if (Platform.OS === 'web') {
-      const timer = setTimeout(() => {
-        setDisplay(true);
-      }, 300);
-      return () => clearTimeout(timer);
-    } else {
-      setDisplay(true);
-    };
-  }, []);
+  const {setUserQuestions} = useActions();
+  const {userQuestions} = useTypedSelector(state => state.general);
 
   useEffect(() => {
     if (id) {
       const index = userQuestions.findIndex(item => item.id === id);
       if (index >= 0) {
         setIndex(index);
+        setDisplay(true);
       } else {
         router.push({
           stack: 'MenuStack',
@@ -141,24 +134,25 @@ const QuestionEditorScreen: React.FC<InitialPropsFromParams<Params>> = ({ idInit
         });
       }
     } else {
+      setDisplay(true);
       initialArray();
     }
-  }, [id]);
+  }, []);
 
   useEffect(() => {
     compareArrays();
   }, [index]);
 
   useEffect(() => {
-    if (name.length >= 3 && name.length <= 50) {
-      setNameValid(true);
-    } else {
-      setNameValid(false);
-    }
+    setNameValid(name.length >= 3 && name.length <= 50);
   }, [name]);
 
   useEffect(() => {
-    setListValid(list.some(category => category.questions.some(question => question.checked)));
+    setListValid(
+      list.some(category =>
+        category.questions.some(question => question.checked),
+      ),
+    );
   }, [list]);
 
   const compareArrays = () => {
@@ -222,7 +216,7 @@ const QuestionEditorScreen: React.FC<InitialPropsFromParams<Params>> = ({ idInit
       .map(category => ({
         ...category,
         questions: category.questions.map(question => {
-          const { checked, ...newQuestion } = question;
+          const {checked, ...newQuestion} = question;
           return newQuestion;
         }),
       }));
@@ -244,25 +238,25 @@ const QuestionEditorScreen: React.FC<InitialPropsFromParams<Params>> = ({ idInit
         router.push({
           stack: 'MenuStack',
           screen: 'QuestionsListScreen',
-          params: { newlist: true },
+          params: {newlist: 'true'},
         });
       } else if (id && index !== null) {
         setUserQuestions([
           ...userQuestions.slice(0, index),
-          { id, name: name, list: filteredList },
+          {id, name: name, list: filteredList},
           ...userQuestions.slice(index + 1),
         ]);
         router.push({
           stack: 'MenuStack',
           screen: 'QuestionsScreen',
-          params: { id: id },
+          params: {id: id},
         });
       }
     } else {
       if (!nameValid) {
         setShowTips(true);
-      };
-    };
+      }
+    }
   };
 
   return (
@@ -275,7 +269,7 @@ const QuestionEditorScreen: React.FC<InitialPropsFromParams<Params>> = ({ idInit
               : 'Utwórz nową listę pytań'
           }
           mainTitlePosition="flex-start">
-          <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
+          <ScrollView style={{backgroundColor: Colors.Basic100}}>
             <View style={styles.Title}>
               <TextField
                 label="Nazwa listy"
@@ -286,18 +280,18 @@ const QuestionEditorScreen: React.FC<InitialPropsFromParams<Params>> = ({ idInit
                 onChangeText={setName}
                 {...(showTips &&
                   !nameValid && {
-                  bottomText: 'Nazwa musi zawierać od 3 do 50 znaków',
-                })}
+                    bottomText: 'Nazwa musi zawierać od 3 do 50 znaków',
+                  })}
               />
             </View>
             <View style={styles.ListContainer}>
-              {list.map(({ id, category, questions }, categoryIndex) => (
+              {list.map(({id, category, questions}, categoryIndex) => (
                 <View key={id} style={styles.CategoryContainer}>
                   <Typography size={20} weight="Bold">
                     {category}
                   </Typography>
                   <View style={styles.Questions}>
-                    {questions.map(({ id, question, checked }, questionIndex) => (
+                    {questions.map(({id, question, checked}, questionIndex) => (
                       <>
                         {questionIndex === 0 && <Separator />}
                         <CheckBox
@@ -325,7 +319,10 @@ const QuestionEditorScreen: React.FC<InitialPropsFromParams<Params>> = ({ idInit
               ))}
             </View>
           </ScrollView>
-          <Button onPress={() => handleConfirm()} disabled={!listValid}>
+          <Button
+            stickyBottom
+            onPress={() => handleConfirm()}
+            disabled={!listValid}>
             Potwierdź wybory
           </Button>
         </ScreenHeaderProvider>

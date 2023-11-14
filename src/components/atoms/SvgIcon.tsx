@@ -127,8 +127,9 @@ import AddBigIcon from "../../assets/icons/AddBigIcon";
 import CoinsIcon from "../../assets/icons/CoinsIcon";
 import RefreshIcon from "../../assets/icons/RefreshIcon";
 import EventsHistoryIcon from "../../assets/icons/EventsHistoryIcon";
+import DoneCircleIcon from "../../assets/icons/DoneCircleIcon";
 
-const icons = [
+export const icons = [
     {
         name: 'appleLittle',
         value: <AppleLittleIcon />
@@ -577,6 +578,10 @@ const icons = [
     {
         name: 'eventsHistory',
         value: <EventsHistoryIcon />
+    },
+    {
+        name: 'doneCircle',
+        value: <DoneCircleIcon />
     },
 ] as const;
 
