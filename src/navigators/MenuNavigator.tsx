@@ -21,7 +21,7 @@ export type MenuStackParamList = {
     NewsScreen: undefined,
     NewsDetailsScreen: undefined,
     QuestionEditorScreen: { id: string } | undefined,
-    QuestionsListScreen: {newlist: boolean} | undefined,
+    QuestionsListScreen: {newlist: string} | undefined,
     QuestionsScreen: { id: string, subView?: 'options' },
   },
   extended: {

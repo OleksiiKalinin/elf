@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { ActivityIndicator, Platform, StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 // import { ActivityIndicator, TouchableRipple } from 'react-native-paper';
 import Colors from '../../colors/Colors';
 // import Typography from '../../atoms/Typography/Typography';
@@ -24,6 +24,7 @@ type ButtonProps = {
   borderBottom?: boolean,
   children?: React.ReactNode,
   arrowRight?: boolean,
+  stickyBottom?: boolean,
 } & React.ComponentProps<typeof TamaButton>;
 
 const variants: { [k in VariantType]: {
@@ -100,6 +101,7 @@ const Button: React.FC<ButtonProps> = ({
   arrowRight,
   borderTop,
   borderBottom,
+  stickyBottom,
   ...props
 }) => {
 
@@ -115,6 +117,7 @@ const Button: React.FC<ButtonProps> = ({
         iconAfter={arrowRight ? <SvgIcon icon='arrowRightSmall' /> : undefined}
         width={props.w ?? (fullwidth ? '100%' : undefined)}
         focusStyle={{ borderColor: 'none' }}
+        {...(stickyBottom && Platform.OS === 'web') ? {style: {position: 'sticky' as any, bottom: 0}} : {}}
         {...props}
       >
         {!!children &&

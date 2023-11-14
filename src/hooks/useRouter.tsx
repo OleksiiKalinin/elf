@@ -49,6 +49,14 @@ const validateUrl = (props: WithUrlProps): string => {
         false //something else
     ) {
         exec(props.params);
+    } else if (
+        (props.stack === 'CandidatesStack' && props.screen === 'FilterScreen' && (
+            props.params?.subView === 'GoogleMapScreen' ||
+            props.params?.subView === 'JobCategoryScreen'
+        )) ||
+        false //something else
+    ) {
+        exec(props.params);
     }
 
     return withUrl(newProps);

@@ -8,6 +8,10 @@ import FavSettingsScreen from '../screens/CandidatesScreens/FavSettingsScreen';
 import VideoScreen from '../screens/CandidatesScreens/VideoScreen';
 import { AddressType, CandidateDataType } from '../store/reducers/types';
 import { PathConfigMap } from '@react-navigation/native';
+import { GoogleMapScreenProps } from '../screens/GoogleMapScreen';
+import { JobCategoryScreenProps } from '../screens/JobCategoryScreen';
+
+type SubView<T extends keyof CandidatesStackParamList['extended']> = { subView: T } & CandidatesStackParamList['extended'][T]
 
 export type CandidatesStackParamList = {
   default: {
@@ -16,9 +20,15 @@ export type CandidatesStackParamList = {
     FavSettingsScreen: undefined,
     ProfileScreen: { id: string },
     VideoScreen: { id: string },
-    FilterScreen: undefined,
+    FilterScreen: 
+    | undefined
+    | SubView<'GoogleMapScreen'>
+    | SubView<'JobCategoryScreen'>
   },
-  extended: {}
+  extended: {
+    GoogleMapScreen: GoogleMapScreenProps,
+    JobCategoryScreen: JobCategoryScreenProps,
+  };
 };
 
 export const CandidatesStackLinking: PathConfigMap<CandidatesStackParamList['default']> = {

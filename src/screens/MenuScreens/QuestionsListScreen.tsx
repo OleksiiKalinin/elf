@@ -1,5 +1,5 @@
-import React from 'react';
-import {StyleSheet, View} from 'react-native';
+import React, {useEffect} from 'react';
+import {Platform, StyleSheet, View} from 'react-native';
 import Colors from '../../colors/Colors';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Typography from '../../components/atoms/Typography';
@@ -10,20 +10,38 @@ import CornerCircleButton from '../../components/molecules/CornerCircleButton';
 import {MenuStackParamList} from '../../navigators/MenuNavigator';
 import {createParam} from 'solito';
 import {useTypedSelector} from '../../hooks/useTypedSelector';
+import {Snackbar} from 'react-native-paper';
+import SvgIcon from '../../components/atoms/SvgIcon';
+import {InitialPropsFromParams} from '../../hooks/types';
 
-const {useParam} =
-  createParam<
-    NonNullable<MenuStackParamList['default']['QuestionsListScreen']>
-  >();
+type Params = NonNullable<MenuStackParamList['default']['QuestionsListScreen']>;
 
-const QuestionsListScreen: React.FC = () => {
-  const {useLink} = useRouter();
+const {useParam} = createParam<Params>();
+
+const QuestionsListScreen: React.FC<InitialPropsFromParams<Params>> = ({
+  newlistInitial,
+}) => {
+  const {replace, useLink} = useRouter();
   const router = useRouter();
+  const [snackbar, setSnackbar] = React.useState(false);
   const {userQuestions} = useTypedSelector(state => state.general);
+  const [newList] = useParam('newlist', {initial: newlistInitial});
 
   const goToQuestionsScreen = (id: string) => {
     router.push({stack: 'MenuStack', screen: 'QuestionsScreen', params: {id}});
   };
+
+  useEffect(() => {
+    console.log(newList);
+    if (newList) {
+      setSnackbar(true);
+      replace({
+        stack: 'MenuStack',
+        screen: 'QuestionsListScreen',
+        params: undefined,
+      });
+    }
+  }, [newList]);
 
   return (
     <ScreenHeaderProvider mainTitlePosition="flex-start">
@@ -48,6 +66,22 @@ const QuestionsListScreen: React.FC = () => {
           </Typography>
         )}
       </ScrollView>
+      <Snackbar
+        visible={snackbar}
+        duration={3000}
+        onDismiss={() => setSnackbar(false)}
+        wrapperStyle={[
+          styles.SnackbarWrapper,
+          {position: Platform.OS === 'web' ? 'fixed' : 'absolute'},
+        ]}
+        style={styles.Snackbar}>
+        <View style={styles.SnackbarContent}>
+          <SvgIcon icon="doneCircle" />
+          <Typography size={18} style={styles.SnackbarText}>
+            Lista kandydatów stworzona
+          </Typography>
+        </View>
+      </Snackbar>
       <CornerCircleButton
         {...useLink({
           href: {
@@ -78,6 +112,30 @@ const styles = StyleSheet.create({
   },
   Button: {
     color: Colors.Basic900,
+  },
+  SnackbarWrapper: {
+    zIndex: 9999999,
+    backgroundColor: 'none',
+    maxWidth: 768,
+    height: 43,
+  },
+  Snackbar: {
+    backgroundColor: Colors.Green500,
+    padding: 0,
+    margin: 0,
+    borderRadius: 0,
+    boxShadow: 'none',
+  },
+  SnackbarContent: {
+    width: '100%',
+    flexDirection: 'row',
+    backgroundColor: Colors.Green500,
+    gap: 10,
+    alignItems: 'center',
+    transform: 'translateY(-10px)',
+  },
+  SnackbarText: {
+    color: Colors.White,
   },
 });
 
