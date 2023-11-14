@@ -23,6 +23,7 @@ import { createParam } from 'solito';
 import { Image, Separator } from 'tamagui';
 import { MenuDemo } from './demo2';
 import { DateTimePickerDemo } from './demo3';
+import {ToastDemo} from './ToastDemo';
 import Carousel from '../../components/organismes/Carousel';
 import demo4 from './demo4';
 import Demo4 from './demo4';
@@ -315,6 +316,8 @@ const MainScreen: React.FC = ({ }) => {
       // </View>}
       >
         <DateTimePickerDemo />
+        <DateTimePickerDemo />
+        {/* <ToastDemo/> */}
         <ScrollView
           contentContainerStyle={{ alignItems: 'center' }}
           style={{ backgroundColor: Colors.Basic100, flex: 1 }}

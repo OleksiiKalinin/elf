@@ -79,7 +79,7 @@ export const screensTitles: ScreensTitlesType = {
     NewsDetailsScreen: '',
     NewsScreen: 'Artykuły i nowości',
     QuestionEditorScreen: 'Lista pytań do kandydata',
-    QuestionsListScreen: 'Lista pytań',
+    QuestionsListScreen: 'Listy pytań',
     QuestionsScreen: '',
   },
 };

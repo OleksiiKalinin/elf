@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import Colors from '../../colors/Colors';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Typography from '../../components/atoms/Typography';
 import CheckBox from '../../components/atoms/CheckBox';
 import Button from '../../components/molecules/Button';
 import TextField from '../../components/molecules/TextField';
-import { QuestionsCategoryType, UserQuestionsType } from '../../store/reducers/types';
+import { QuestionsCategoryType } from '../../store/reducers/types';
 import { Separator } from 'tamagui';
 import { ScrollView } from '../../components/molecules/ScrollView';
 import { cloneDeep } from 'lodash';
@@ -25,15 +25,18 @@ const Questions: QuestionsCategoryType[] = [
     questions: [
       {
         id: '11',
-        question: 'Jakie były Pana/Pani doświadczenia na podobnym stanowisku pracy?',
+        question:
+          'Jakie były Pana/Pani doświadczenia na podobnym stanowisku pracy?',
       },
       {
         id: '22',
-        question: 'Jaki był Pana/Pani największy sukces na poprzednim stanowisku pracy?',
+        question:
+          'Jaki był Pana/Pani największy sukces na poprzednim stanowisku pracy?',
       },
       {
         id: '33',
-        question: 'Jaki projekt zawodowy szczególnie Pana/Panią zainspirował? Z czego to wynikało?',
+        question:
+          'Jaki projekt zawodowy szczególnie Pana/Panią zainspirował? Z czego to wynikało?',
       },
     ],
   },
@@ -51,7 +54,8 @@ const Questions: QuestionsCategoryType[] = [
       },
       {
         id: '66',
-        question: 'Czy posiada Pan/Pani jakieś certyfikaty związane ze swoim stanowiskiem pracy?',
+        question:
+          'Czy posiada Pan/Pani jakieś certyfikaty związane ze swoim stanowiskiem pracy?',
       },
     ],
   },
@@ -61,7 +65,8 @@ const Questions: QuestionsCategoryType[] = [
     questions: [
       {
         id: '77',
-        question: 'Jakie umiejętności uważa Pan/Pani za najważniejsze na swoim stanowisku pracy?',
+        question:
+          'Jakie umiejętności uważa Pan/Pani za najważniejsze na swoim stanowisku pracy?',
       },
       {
         id: '88',
@@ -93,50 +98,10 @@ const Questions: QuestionsCategoryType[] = [
   },
 ];
 
-const UserQuestions: QuestionsCategoryType[] = [
-  {
-    id: '1',
-    category: 'Doświadczenie',
-    questions: [
-      {
-        id: '11',
-        question: 'Jakie były Pana/Pani doświadczenia na podobnym stanowisku pracy?',
-      },
-      {
-        id: '33',
-        question: 'Jaki projekt zawodowy szczególnie Pana/Panią zainspirował? Z czego to wynikało?',
-      },
-    ],
-  },
-  {
-    id: '2',
-    category: 'Wykształcenie',
-    questions: [
-      {
-        id: '55',
-        question: 'Czy ukończył/a Pan/Pani jakieś szkolenia branżowe?',
-      },
-      {
-        id: '66',
-        question: 'Czy posiada Pan/Pani jakieś certyfikaty związane ze swoim stanowiskiem pracy?',
-      },
-    ],
-  },
-  {
-    id: '4',
-    category: 'Dodatkowe pytania',
-    questions: [
-      {
-        id: '1111',
-        question: 'Dlaczego chca Pan/Pani pracować w naszej firmie?',
-      },
-    ],
-  },
-];
 
 type Params = NonNullable<MenuStackParamList['default']['QuestionEditorScreen']>;
 
-const { useParam, useParams } = createParam<Params>();
+const { useParam } = createParam<Params>();
 
 const QuestionEditorScreen: React.FC<InitialPropsFromParams<Params>> = ({ idInitial }) => {
   const [name, setName] = useState<string>('');
@@ -145,22 +110,35 @@ const QuestionEditorScreen: React.FC<InitialPropsFromParams<Params>> = ({ idInit
   const [listValid, setListValid] = useState(false);
   const [showTips, setShowTips] = useState<boolean>(false);
   const [index, setIndex] = useState<number | null>(null);
+  const [display, setDisplay] = useState<boolean>(false);
   const [id] = useParam('id', { initial: idInitial });
-  const { setParams } = useParams();
   const router = useRouter();
 
   const { setUserQuestions } = useActions();
   const { userQuestions } = useTypedSelector(state => state.general);
 
   useEffect(() => {
-    console.log(id);
+    if (Platform.OS === 'web') {
+      const timer = setTimeout(() => {
+        setDisplay(true);
+      }, 300);
+      return () => clearTimeout(timer);
+    } else {
+      setDisplay(true);
+    };
+  }, []);
+
+  useEffect(() => {
     if (id) {
       const index = userQuestions.findIndex(item => item.id === id);
       if (index >= 0) {
         setIndex(index);
       } else {
-        router.push({ stack: 'MenuStack', screen: 'QuestionsListScreen', params: undefined });
-        /*        setParams({id: undefined}) */
+        router.push({
+          stack: 'MenuStack',
+          screen: 'QuestionsListScreen',
+          params: undefined,
+        });
       }
     } else {
       initialArray();
@@ -176,16 +154,11 @@ const QuestionEditorScreen: React.FC<InitialPropsFromParams<Params>> = ({ idInit
       setNameValid(true);
     } else {
       setNameValid(false);
-    };
+    }
   }, [name]);
 
   useEffect(() => {
-    const listValid = validateList();
-    if (listValid) {
-      setListValid(true)
-    } else {
-      setListValid(false);
-    };
+    setListValid(list.some(category => category.questions.some(question => question.checked)));
   }, [list]);
 
   const compareArrays = () => {
@@ -193,11 +166,15 @@ const QuestionEditorScreen: React.FC<InitialPropsFromParams<Params>> = ({ idInit
       const userList = userQuestions[index].list;
 
       const newList = cloneDeep(Questions);
-      newList.forEach((category) => {
-        const compareCategory = userList.find((userCategory) => userCategory.id === category.id);
+      newList.forEach(category => {
+        const compareCategory = userList.find(
+          userCategory => userCategory.id === category.id,
+        );
         if (compareCategory) {
-          category.questions.forEach((question) => {
-            const compareQuestion = compareCategory.questions.find((userQuestion) => userQuestion.id === question.id);
+          category.questions.forEach(question => {
+            const compareQuestion = compareCategory.questions.find(
+              userQuestion => userQuestion.id === question.id,
+            );
             if (compareQuestion) {
               question.checked = true;
             } else {
@@ -205,19 +182,19 @@ const QuestionEditorScreen: React.FC<InitialPropsFromParams<Params>> = ({ idInit
             }
           });
         } else {
-          category.questions.forEach((question) => (question.checked = false));
-        };
+          category.questions.forEach(question => (question.checked = false));
+        }
       });
 
-      setName(userQuestions[index].name)
+      setName(userQuestions[index].name);
       setList(newList);
     }
   };
 
   const initialArray = () => {
-    const newList = Questions.map((category) => ({
+    const newList = Questions.map(category => ({
       ...category,
-      questions: category.questions.map((question) => ({
+      questions: category.questions.map(question => ({
         ...question,
         checked: false,
       })),
@@ -225,18 +202,14 @@ const QuestionEditorScreen: React.FC<InitialPropsFromParams<Params>> = ({ idInit
     setList(newList);
   };
 
-  const handleChange = (categoryIndex: number, questionIndex: number, checked: boolean) => {
+  const handleChange = (
+    categoryIndex: number,
+    questionIndex: number,
+    checked: boolean,
+  ) => {
     const newList = cloneDeep(list);
     newList[categoryIndex].questions[questionIndex].checked = checked;
     setList(newList);
-  };
-
-  const validateList = () => {
-    const check = list.some(category => {
-      return category.questions.some(question => question.checked);
-    });
-
-    return check;
   };
 
   const filterList = () => {
@@ -244,14 +217,14 @@ const QuestionEditorScreen: React.FC<InitialPropsFromParams<Params>> = ({ idInit
       .filter(category => category.questions.some(question => question.checked))
       .map(category => ({
         ...category,
-        questions: category.questions.filter(question => question.checked)
+        questions: category.questions.filter(question => question.checked),
       }))
       .map(category => ({
         ...category,
         questions: category.questions.map(question => {
           const { checked, ...newQuestion } = question;
           return newQuestion;
-        })
+        }),
       }));
 
     return filteredList;
@@ -262,13 +235,28 @@ const QuestionEditorScreen: React.FC<InitialPropsFromParams<Params>> = ({ idInit
       const filteredList = filterList();
       const newUserQuestions = cloneDeep(userQuestions);
       if (!id) {
-        newUserQuestions.push({ id: Math.random().toString(), name: name, list: filteredList });
+        newUserQuestions.push({
+          id: Math.random().toString(),
+          name: name,
+          list: filteredList,
+        });
         setUserQuestions(newUserQuestions);
-        router.push({ stack: 'MenuStack', screen: 'QuestionsListScreen', params: { newlist: true } });
+        router.push({
+          stack: 'MenuStack',
+          screen: 'QuestionsListScreen',
+          params: { newlist: true },
+        });
       } else if (id && index !== null) {
-        newUserQuestions[index] = { id, name: name, list: filteredList }
-        setUserQuestions(newUserQuestions);
-        router.push({ stack: 'MenuStack', screen: 'QuestionsScreen', params: { id: id } });
+        setUserQuestions([
+          ...userQuestions.slice(0, index),
+          { id, name: name, list: filteredList },
+          ...userQuestions.slice(index + 1),
+        ]);
+        router.push({
+          stack: 'MenuStack',
+          screen: 'QuestionsScreen',
+          params: { id: id },
+        });
       }
     } else {
       if (!nameValid) {
@@ -278,71 +266,88 @@ const QuestionEditorScreen: React.FC<InitialPropsFromParams<Params>> = ({ idInit
   };
 
   return (
-    <ScreenHeaderProvider mainTitlePosition="flex-start">
-      <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
-        <View style={styles.Title}>
-          <TextField
-            placeholder="Nazwa listy"
-            textContentType="name"
-            keyboardType='default'
-            value={name}
-            maxLength={50}
-            onChangeText={setName}
-            {...(showTips && !nameValid && { bottomText: 'Nazwa musi zawierać od 3 do 50 znaków' })}
-          />
-        </View>
-        <View style={styles.ListContainer}>
-          {list.map(({ id, category, questions }, categoryIndex) =>
-            <View key={id} style={styles.CategoryContainer}>
-              <Typography size={20} weight='Bold'>
-                {category}
-              </Typography>
-              <View style={styles.Questions}>
-                {questions.map(({ id, question, checked }, questionIndex) =>
-                  <>
-                    {questionIndex === 0 && <Separator />}
-                    <CheckBox
-                      key={id}
-                      checked={checked}
-                      onCheckedChange={(checked) => handleChange(categoryIndex, questionIndex, !!checked)}
-                      leftTextView={
-                        <Typography style={styles.Question}>
-                          {question}
-                        </Typography>
-                      }
-                      style={styles.CheckBox}
-                    />
-                    <Separator />
-                  </>)}
-              </View>
+    <>
+      {display && (
+        <ScreenHeaderProvider
+          title={
+            index !== null
+              ? `Edytuj listę: ${userQuestions[index].name}`
+              : 'Utwórz nową listę pytań'
+          }
+          mainTitlePosition="flex-start">
+          <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
+            <View style={styles.Title}>
+              <TextField
+                label="Nazwa listy"
+                textContentType="name"
+                keyboardType="default"
+                value={name}
+                maxLength={50}
+                onChangeText={setName}
+                {...(showTips &&
+                  !nameValid && {
+                  bottomText: 'Nazwa musi zawierać od 3 do 50 znaków',
+                })}
+              />
             </View>
-          )}
-        </View>
-      </ScrollView>
-      <Button
-        onPress={() => handleConfirm()}
-        disabled={!listValid}
-      >
-        Potwierdź wybory
-      </Button>
-    </ScreenHeaderProvider>
+            <View style={styles.ListContainer}>
+              {list.map(({ id, category, questions }, categoryIndex) => (
+                <View key={id} style={styles.CategoryContainer}>
+                  <Typography size={20} weight="Bold">
+                    {category}
+                  </Typography>
+                  <View style={styles.Questions}>
+                    {questions.map(({ id, question, checked }, questionIndex) => (
+                      <>
+                        {questionIndex === 0 && <Separator />}
+                        <CheckBox
+                          key={id}
+                          checked={checked}
+                          onCheckedChange={checked =>
+                            handleChange(
+                              categoryIndex,
+                              questionIndex,
+                              !!checked,
+                            )
+                          }
+                          leftTextView={
+                            <Typography style={styles.Question}>
+                              {question}
+                            </Typography>
+                          }
+                          style={styles.CheckBox}
+                        />
+                        <Separator />
+                      </>
+                    ))}
+                  </View>
+                </View>
+              ))}
+            </View>
+          </ScrollView>
+          <Button onPress={() => handleConfirm()} disabled={!listValid}>
+            Potwierdź wybory
+          </Button>
+        </ScreenHeaderProvider>
+      )}
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   Title: {
     paddingHorizontal: 16,
-    marginTop: 40
+    marginTop: 40,
   },
   ListContainer: {
     marginTop: 20,
     paddingHorizontal: 16,
   },
   CategoryContainer: {
-    marginBottom: 24
+    marginBottom: 24,
   },
   Questions: {
-    marginTop: 10
+    marginTop: 10,
   },
   CheckBox: {
     marginTop: 20,
