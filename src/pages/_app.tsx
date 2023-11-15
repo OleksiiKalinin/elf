@@ -15,7 +15,9 @@ import Script from 'next/script';
 import { nextStore } from '../store/nextstore';
 import { Layout } from './Layout';
 import AppUnifiedProvider from '../components/organismes/AppUnifiedProvider';
-import { useTypedSelector } from '../hooks/useTypedSelector';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { googleSigninConfig } from '../services';
+import Colors from '../colors/Colors';
 
 const insets = {
   top: 0,
@@ -35,32 +37,31 @@ const initialMetrics = { insets, frame };
 
 const Providers = ({ children }: { children: ReactNode }) => {
   const [theme, setTheme] = useRootTheme();
-  const { swipeablePanelProps } = useTypedSelector(s => s.general);
-
-  const scrollBarWidth = '5px';
 
   return (
-    <NextThemeProvider enableSystem={false} onChangeTheme={setTheme}>
-      <TamaguiProvider
-        config={config}
-        disableInjectCSS
-        // disableRootThemeClass
-        defaultTheme={theme}
-      >
-        <SafeAreaProvider
-          initialMetrics={initialMetrics} //https://github.com/th3rdwave/react-native-safe-area-context#web-ssr
-          style={styles.safeAreaProvider}
+    <GoogleOAuthProvider clientId={googleSigninConfig.webClientId}>
+      <NextThemeProvider enableSystem={false} onChangeTheme={setTheme}>
+        <TamaguiProvider
+          config={config}
+          disableInjectCSS
+          // disableRootThemeClass
+          defaultTheme={theme}
         >
-          <GestureHandlerRootView style={styles.container}>
-            <AppUnifiedProvider>
-              <Layout>
-                {children}
-              </Layout>
-            </AppUnifiedProvider>
-          </GestureHandlerRootView>
-        </SafeAreaProvider>
-      </TamaguiProvider>
-    </NextThemeProvider>
+          <SafeAreaProvider
+            initialMetrics={initialMetrics}
+            style={styles.safeAreaProvider}
+          >
+            <GestureHandlerRootView style={styles.container}>
+              <AppUnifiedProvider>
+                <Layout>
+                  {children}
+                </Layout>
+              </AppUnifiedProvider>
+            </GestureHandlerRootView>
+          </SafeAreaProvider>
+        </TamaguiProvider>
+      </NextThemeProvider>
+    </GoogleOAuthProvider>
   );
 };
 
@@ -95,11 +96,12 @@ export default nextStore.withRedux(MyApp);
 
 const styles = StyleSheet.create({
   safeAreaProvider: {
-    flexDirection: 'row', 
+    flexDirection: 'row',
     justifyContent: 'center',
   },
   container: {
     flex: 1,
-    maxWidth: 768,
+    // maxWidth: 768,
+    // backgroundColor: Colors.Basic200,
   },
 });

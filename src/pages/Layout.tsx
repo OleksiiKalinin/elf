@@ -20,8 +20,10 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
 
   return (
     <>
-      <View style={{ paddingBottom: isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0, minHeight: '100vh', }}>
-        {children}
+      <View style={{ paddingBottom: isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0, minHeight: '100vh', backgroundColor: Colors.Basic200, alignItems: 'center'}}>
+        <View style={{height: '100%', maxWidth: 768, width: '100%', flex: 1}}>
+          {children}
+        </View>
       </View>
       <View style={{
         position: 'fixed',

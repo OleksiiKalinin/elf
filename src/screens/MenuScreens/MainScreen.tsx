@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Dimensions,
   GestureResponderEvent,
@@ -17,32 +17,20 @@ import Button from '../../components/molecules/Button';
 import Typography from '../../components/atoms/Typography';
 import { ScrollView } from '../../components/molecules/ScrollView';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
-import generalServices from '../../services/generalServices';
 import CornerCircleButton from '../../components/molecules/CornerCircleButton';
 import { createParam } from 'solito';
-import { Image, Separator } from 'tamagui';
-import { MenuDemo } from './demo2';
-import { DateTimePickerDemo } from './demo3';
-import {ToastDemo} from './ToastDemo';
-import Carousel from '../../components/organismes/Carousel';
-import demo4 from './demo4';
-import Demo4 from './demo4';
-import { useNavigation } from '@react-navigation/native';
-import withUrl from '../../hooks/withUrl';
 import { MenuStackParamList } from '../../navigators/MenuNavigator';
-import useRouter from '../../hooks/useRouter'
-import TextField from '../../components/molecules/TextField';
+import useRouter from '../../hooks/useRouter';
 
 const { useParam } = createParam<NonNullable<MenuStackParamList['default']['MainScreen']>>();
 
 const MainScreen: React.FC = ({ }) => {
   const dispatch = useTypedDispatch();
   const { replace, push, useLink } = useRouter();
-  // const router2 = useRouter2();
   const [subView] = useParam('subView');
-  // const { subView, subViewMode } = useSwipeablePanelParams();
   const { isMainMenuFlatList, userData, token, currentScreen } = useTypedSelector(state => state.general);
   const { setIsMainMenuFlatList, setSwipeablePanelProps } = useActions();
+  const authLinking = useLink({ href: { stack: 'AuthStack' } });
 
   useEffect(() => {
     setSwipeablePanelProps((() => {
@@ -76,7 +64,7 @@ const MainScreen: React.FC = ({ }) => {
       icon: IconTypes,
       missedEvents: number,
       badge: string,
-    } & ReturnType<typeof useLink>)[]
+    } & (ReturnType<typeof useLink> | { onPress: () => void }))[]
   }[] = [
       {
         sectionTitle: 'Aktualności',
@@ -92,164 +80,152 @@ const MainScreen: React.FC = ({ }) => {
             badge: 'Nowe',
           },
           {
-            title: 'Lista pytań',
+            title: 'Zaplanowane spotkania',
             backgroundColor: Colors.Sea300,
-            icon: 'pencil',
+            icon: 'meeting',
             ...useLink({
-              href: { stack: 'MenuStack', screen: 'QuestionsListScreen', params: undefined}
+              href: { stack: 'CalendarStack' }
             }),
-            missedEvents: 10,
-            badge: 'Nowe',
+            missedEvents: 0,
+            badge: ''
           },
-          // {
-          //   title: 'Zaplanowane spotkania',
-          //   backgroundColor: Colors.Sea300,
-          //   icon: 'meeting',
-          //   ...useLink({
-          //     href: '/home/EventsScreen'
-          //   }),
-          //   missedEvents: 0,
-          //   badge: ''
-          // },
-          // {
-          //   title: 'Kalendarz',
-          //   backgroundColor: Colors.Sea300,
-          //   icon: 'calendar',
-          //   ...useLink({
-          //     href: '/calendar',
-          //   }),
-          //   missedEvents: 0,
-          //   badge: ''
-          // },
-          // {
-          //   title: 'Powiadomienia',
-          //   backgroundColor: Colors.Sea300,
-          //   icon: 'notification',
-          //   ...useLink({
-          //     href: '/home/EventsScreen'
-          //   }),
-          //   missedEvents: 0,
-          //   badge: ''
-          // },
+          {
+            title: 'Kalendarz',
+            backgroundColor: Colors.Sea300,
+            icon: 'calendar',
+            ...useLink({
+              href: { stack: 'CalendarStack' }
+            }),
+            missedEvents: 0,
+            badge: ''
+          },
+          {
+            title: 'Powiadomienia',
+            backgroundColor: Colors.Sea300,
+            icon: 'notification',
+            ...useLink({
+              href: { stack: 'MenuStack', screen: 'EventsScreen' }
+            }),
+            missedEvents: 0,
+            badge: ''
+          },
         ]
       },
-      // {
-      //   sectionTitle: 'Organizacja',
-      //   buttons: [
-      //     {
-      //       title: 'Kandydaci',
-      //       backgroundColor: Colors.Blue100,
-      //       icon: 'candidates',
-      //       missedEvents: 0,
-      //       ...useLink({
-      //         href: '/candidates',
-      //       }),
-      //       badge: ''
-      //     },
-      //     {
-      //       title: 'Twoi ulubieni kandydaci',
-      //       backgroundColor: Colors.Blue100,
-      //       icon: 'cardOutlined',
-      //       ...useLink({
-      //         href: '/home/EventsScreen'
-      //       }),
-      //       missedEvents: 0,
-      //       badge: ''
-      //     },
-      //     {
-      //       title: 'Ogłoszenia',
-      //       backgroundColor: Colors.Blue100,
-      //       icon: 'work',
-      //       ...useLink({
-      //         href: '/adverts',
-      //       }),
-      //       missedEvents: 0,
-      //       badge: '',
-      //     },
-      //     {
-      //       title: 'Profil',
-      //       backgroundColor: Colors.Blue100,
-      //       icon: 'user',
-      //       ...useLink({
-      //         href: '/profile',
-      //       }),
-      //       missedEvents: 0,
-      //       badge: ''
-      //     },
-      //     {
-      //       title: 'Pakiety',
-      //       backgroundColor: Colors.Blue100,
-      //       icon: 'bag',
-      //       ...useLink({
-      //         href: '/profile/PaymentTemporalScreen',
-      //       }),
-      //       missedEvents: 0,
-      //       badge: ''
-      //     },
-      //   ]
-      // },
-      // {
-      //   sectionTitle: 'Baza wiedzy',
-      //   buttons: [
-      //     {
-      //       title: 'Kalkulator wynagrodzeń',
-      //       backgroundColor: Colors.Basic200,
-      //       icon: 'calculator',
-      //       ...useLink({
-      //         href: '/home/EventsScreen'
-      //       }),
-      //       missedEvents: 0,
-      //       badge: ''
-      //     },
-      //     {
-      //       title: 'Lista pytań',
-      //       backgroundColor: Colors.Basic200,
-      //       icon: 'list',
-      //       ...useLink({
-      //         href: '/home/EventsScreen'
-      //       }),
-      //       missedEvents: 0,
-      //       badge: ''
-      //     },
-      //     {
-      //       title: 'Artykuły i nowości',
-      //       backgroundColor: Colors.Basic200,
-      //       icon: 'fileDocument',
-      //       ...useLink({
-      //         href: '/home/EventsScreen'
-      //       }),
-      //       missedEvents: 0,
-      //       badge: 'Nowe',
-      //     },
-      //     {
-      //       title: 'Wszystkie instrukcje',
-      //       backgroundColor: Colors.Basic200,
-      //       icon: 'fileDocument',
-      //       ...useLink({
-      //         href: '/home/EventsScreen'
-      //       }),
-      //       missedEvents: 0,
-      //       badge: ''
-      //     },
-      //   ]
-      // },
+      {
+        sectionTitle: 'Organizacja',
+        buttons: [
+          {
+            title: 'Kandydaci',
+            backgroundColor: Colors.Blue100,
+            icon: 'candidates',
+            missedEvents: 0,
+            ...useLink({ href: { stack: 'CandidatesStack' } }),
+            badge: ''
+          },
+          {
+            title: 'Twoi ulubieni kandydaci',
+            backgroundColor: Colors.Blue100,
+            icon: 'cardOutlined',
+            ...useLink({
+              href: { stack: 'CandidatesStack', screen: 'FavouritesScreen' }
+            }),
+            missedEvents: 0,
+            badge: ''
+          },
+          {
+            title: 'Ogłoszenia',
+            backgroundColor: Colors.Blue100,
+            icon: 'work',
+            ...useLink({
+              href: { stack: 'AdvertStack' },
+            }),
+            missedEvents: 0,
+            badge: '',
+          },
+          {
+            title: 'Profil',
+            backgroundColor: Colors.Blue100,
+            icon: 'user',
+            ...useLink({
+              href: { stack: 'ProfileStack' },
+            }),
+            missedEvents: 0,
+            badge: ''
+          },
+          {
+            title: 'Pakiety',
+            backgroundColor: Colors.Blue100,
+            icon: 'bag',
+            ...useLink({
+              href: { stack: 'ProfileStack', screen: 'PackagesScreen' },
+            }),
+            missedEvents: 0,
+            badge: ''
+          },
+        ]
+      },
+      {
+        sectionTitle: 'Baza wiedzy',
+        buttons: [
+          {
+            title: 'Kalkulator wynagrodzeń',
+            backgroundColor: Colors.Basic200,
+            icon: 'calculator',
+            ...useLink({
+              href: { stack: 'MenuStack' }
+            }),
+            missedEvents: 0,
+            badge: ''
+          },
+          {
+            title: 'Lista pytań',
+            backgroundColor: Colors.Basic200,
+            icon: 'list',
+            ...useLink({
+              href: { stack: 'MenuStack', screen: 'QuestionsListScreen', params: undefined }
+            }),
+            missedEvents: 0,
+            badge: ''
+          },
+          {
+            title: 'Artykuły i nowości',
+            backgroundColor: Colors.Basic200,
+            icon: 'fileDocument',
+            ...useLink({
+              href: { stack: 'MenuStack' }
+            }),
+            missedEvents: 0,
+            badge: 'Nowe',
+          },
+          {
+            title: 'Wszystkie instrukcje',
+            backgroundColor: Colors.Basic200,
+            icon: 'fileDocument',
+            ...useLink({
+              href: { stack: 'MenuStack' }
+            }),
+            missedEvents: 0,
+            badge: ''
+          },
+        ]
+      },
     ];
 
-  // useEffect(() => {
-  //   console.log('userData: ', userData);
-  //   if ((currentScreen !== 'AuthStack-FillUserDataScreen') && userData && !(userData.email && userData.first_name && userData.last_name)) {
-  //     setSwipeablePanelProps({
-  //       title: 'Brakuje nam twoich danych po zalogowaniu poprzez media społecznościowe!',
-  //       subTitle: 'Nie będą Ci dostępne większość funkcji aplikacji dopóki nie uzupełnisz te dane.',
-  //       buttons: [
-  //         {
-  //           children: 'Uzupełnij dane',
-  //           onPress: () => {}//navigation.navigate('AuthStack', { screen: 'FillUserDataScreen' })
-  //         },
-  //       ]
-  //     })
-  //   }
-  // }, [userData]);
+  useEffect(() => {
+    console.log('userData: ', userData);
+    if ((currentScreen !== 'AuthStack-FillUserDataScreen') && userData && !(userData.email && userData.first_name && userData.last_name)) {
+      setSwipeablePanelProps({
+        title: 'Brakuje nam twoich danych po zalogowaniu poprzez media społecznościowe!',
+        subTitle: 'Nie będą Ci dostępne większość funkcji aplikacji dopóki nie uzupełnisz te dane.',
+        buttons: [
+          {
+            children: 'Uzupełnij dane',
+            onPress: () => push({ stack: 'AuthStack', screen: 'FillUserDataScreen' })
+          },
+        ]
+      })
+    }
+  }, [userData]);
 
   return (
     <View style={styles.Wrapper}>
@@ -258,66 +234,64 @@ const MainScreen: React.FC = ({ }) => {
         mainTitlePosition="flex-start"
         alterTitle={
           <View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 15 }}>
-            {/* <View style={{marginRight: 12}}>
+            <View style={{ marginRight: 12 }}>
               <SvgIcon icon="logo" />
-            </View> */}
-            {/* {!!!token && <View style={{ marginRight: 12 }}> */}
-            {<View style={{ marginRight: 12 }}>
-              <Button
-                br={4} h={30} px={8.5} w='auto'
-                contentWeight='Regular'
-                variant="secondary"
-                {...useLink({ href: { stack: 'AuthStack' } })}
-              >
-                Zaloguj
-              </Button>
-            </View>}
-            {/* {!!token && <View style={{ marginRight: 12 }}> */}
-            {<View style={{ marginRight: 12 }}>
-              <Typography variant='h5' weight='Bold'>Witaj, {'userData?.first_name'}</Typography>
-            </View>}
-            {/* <View style={{marginLeft: 8}}>
-              <SvgIcon icon="search" />
-            </View> */}
+            </View>
+            {!userData ? <>
+              <View style={{ marginRight: 12 }}>
+                <Button
+                  br={4} h={30} px={8.5} w='auto'
+                  contentWeight='Regular'
+                  variant="secondary"
+                  {...authLinking}
+                >
+                  Zaloguj
+                </Button>
+              </View>
+            </> : <>
+              <View style={{ marginRight: 12 }}>
+                <Typography variant='h5' weight='Bold'>Witaj, {userData.first_name}</Typography>
+              </View>
+              <View style={{ marginLeft: 8 }}>
+                <SvgIcon icon="search" />
+              </View>
+            </>}
           </View>
         }
-      // otherActions={<View style={styles.LayoutToggler}>
-      //   <TouchableOpacity
-      //     onPress={() => setIsMainMenuFlatList(true)}
-      //     style={{
-      //       backgroundColor: isMainMenuFlatList ? Colors.Basic200 : Colors.White,
-      //       width: 28,
-      //       height: 28,
-      //       justifyContent: 'center',
-      //       alignItems: 'center',
-      //       borderRadius: 50,
-      //       marginRight: 20
-      //     }}>
-      //     <SvgIcon
-      //       icon="horizontal"
-      //       fill={isMainMenuFlatList ? Colors.Basic900 : Colors.Basic400}
-      //     />
-      //   </TouchableOpacity>
-      //   <TouchableOpacity
-      //     onPress={() => setIsMainMenuFlatList(false)}
-      //     style={{
-      //       backgroundColor: isMainMenuFlatList ? Colors.White : Colors.Basic200,
-      //       width: 28,
-      //       height: 28,
-      //       justifyContent: 'center',
-      //       alignItems: 'center',
-      //       borderRadius: 28,
-      //     }}>
-      //     <SvgIcon
-      //       icon="grid"
-      //       fill={isMainMenuFlatList ? Colors.Basic400 : Colors.Basic900}
-      //     />
-      //   </TouchableOpacity>
-      // </View>}
+        otherActions={<View style={styles.LayoutToggler}>
+          <TouchableOpacity
+            onPress={() => setIsMainMenuFlatList(true)}
+            style={{
+              backgroundColor: isMainMenuFlatList ? Colors.Basic200 : Colors.White,
+              width: 28,
+              height: 28,
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderRadius: 50,
+              marginRight: 20
+            }}>
+            <SvgIcon
+              icon="horizontal"
+              fill={isMainMenuFlatList ? Colors.Basic900 : Colors.Basic400}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => setIsMainMenuFlatList(false)}
+            style={{
+              backgroundColor: isMainMenuFlatList ? Colors.White : Colors.Basic200,
+              width: 28,
+              height: 28,
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderRadius: 28,
+            }}>
+            <SvgIcon
+              icon="grid"
+              fill={isMainMenuFlatList ? Colors.Basic400 : Colors.Basic900}
+            />
+          </TouchableOpacity>
+        </View>}
       >
-        <DateTimePickerDemo />
-        <DateTimePickerDemo />
-        {/* <ToastDemo/> */}
         <ScrollView
           contentContainerStyle={{ alignItems: 'center' }}
           style={{ backgroundColor: Colors.Basic100, flex: 1 }}
@@ -327,10 +301,10 @@ const MainScreen: React.FC = ({ }) => {
               <Typography weight='Bold' size={20} style={{ width: '88%', marginLeft: isMainMenuFlatList ? 0 : 20, marginBottom: isMainMenuFlatList ? 5 : 0 }}>
                 {sectionTitle}
               </Typography>
-              {buttons.map(({ backgroundColor, badge, icon, missedEvents, title, ...props }, index) => (
+              {buttons.map(({ backgroundColor, badge, icon, missedEvents, title, ...clickProps }, index) => (
                 <Fragment key={index}>
                   {isMainMenuFlatList ?
-                    <TouchableOpacity activeOpacity={0.5} style={styles.FlatButton} {...props}>
+                    <TouchableOpacity activeOpacity={0.5} style={styles.FlatButton} {...clickProps}>
                       <View style={{ height: '100%', paddingVertical: 10, paddingRight: 15, paddingLeft: 5 }}>
                         <View style={[styles.FlatIconBG, { backgroundColor }]}>
                           <SvgIcon icon={icon} />
@@ -350,7 +324,7 @@ const MainScreen: React.FC = ({ }) => {
                     </TouchableOpacity>
                     :
                     <View style={styles.GridButtonWrapper}>
-                      <TouchableOpacity activeOpacity={0.5} style={[styles.GridButton]} {...props}>
+                      <TouchableOpacity activeOpacity={0.5} style={[styles.GridButton]} {...clickProps}>
                         <View style={[styles.GridIconBG, { backgroundColor }]}>
                           <SvgIcon icon={icon} />
                         </View>
@@ -373,90 +347,6 @@ const MainScreen: React.FC = ({ }) => {
                 </Fragment>))}
             </View>
           ))}
-{/*           <Button
-            variant='primary'
-            borderTop
-            borderBottom
-            icon={<SvgIcon icon='home'/>}
-            arrowRight
-          >
-            Test
-          </Button>
-          <Button
-            variant='secondary'
-            borderBottom
-            icon={<SvgIcon icon='home'/>}
-            arrowRight
-          >
-            Test
-          </Button>
-          <Button
-            variant='light'
-            borderBottom
-            icon={<SvgIcon icon='home'/>}
-            arrowRight
-          >
-            Test
-          </Button>
-          <Button
-            variant='white'
-            borderBottom
-            icon={<SvgIcon icon='home'/>}
-            arrowRight
-          >
-            Test
-          </Button>
-          <Button
-            variant='info'
-            borderBottom
-            icon={<SvgIcon icon='home'/>}
-            arrowRight
-          >
-            Test
-          </Button>
-          <Button
-            variant='info_alter'
-            borderBottom
-            icon={<SvgIcon icon='home'/>}
-            arrowRight
-          >
-            Test
-          </Button>
-          <Button
-            variant='text'
-            borderBottom
-            icon={<SvgIcon icon='home'/>}
-            arrowRight
-          >
-            Test
-          </Button>
-          <Button
-            variant='disabled'
-            borderBottom
-            icon={<SvgIcon icon='home'/>}
-            arrowRight
-          >
-            Test
-          </Button>
-          <Button
-            variant='active'
-            borderBottom
-            icon={<SvgIcon icon='home'/>}
-            arrowRight
-          >
-            Test
-          </Button> */}
-          {/* {icons.map(item=>
-            <View style={{
-              height: 100,
-              width: 100,
-              flexDirection: 'row',
-              flexWrap: 'wrap',
-            }}>
-              <SvgIcon icon={item.name}/>
-              <Typography>{item.name}</Typography>
-            </View>  
-          )} */}
         </ScrollView>
       </ScreenHeaderProvider>
       <CornerCircleButton {...useLink({ href: { stack: 'MenuStack', screen: 'MainScreen', params: { subView: 'options' } } })} />
@@ -495,10 +385,10 @@ const styles = StyleSheet.create({
   GridButtonWrapper: {
     padding: 10,
     aspectRatio: 1,
- /*    width: '44%',
-    height: '44%', */
-    width: 150,
-    height: 150,
+    width: '44%',
+    height: '44%',
+    // width: 150,
+    // height: 150,
   },
   GridButton: {
     backgroundColor: Colors.White,

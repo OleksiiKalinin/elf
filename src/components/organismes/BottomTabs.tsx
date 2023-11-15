@@ -1,6 +1,5 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { Keyboard, View, Dimensions, Platform } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { View, Platform } from 'react-native';
 import SvgIcon, { IconTypes } from '../atoms/SvgIcon';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
@@ -40,13 +39,8 @@ const hiddenTabbarScreens: ScreensType = {
 };
 
 const BottomTabs: FC<BottomTabsProps> = ({ routes }) => {
-    // const animation = useSharedValue({ height: BOTTOM_TABS_HEIGHT });
     const { isTabbarVisible, currentScreen } = useTypedSelector(state => state.general);
     const { setIsTabbarVisible } = useActions();
-
-    // const animationStyle = useAnimatedStyle(() => ({
-    //     height: withTiming(animation.value.height, { duration: 10 })
-    // }), []);
 
     const badgeNumbers: { [k in keyof RootStackParamList]: number } = {
         MenuStack: 90,
@@ -66,38 +60,41 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes }) => {
         }
     }, [currentScreen]);
 
-    // useEffect(() => {
-    //     animation.value = { height: isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0 };
-    // }, [isTabbarVisible]);
-
     return (
-        <Animated.View style={[{ flexDirection: 'row', backgroundColor: Colors.White, height: isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0, visibility: isTabbarVisible ? 'visible' : 'hidden', maxWidth: 768, flex: Platform.select({ web: 1, native: undefined })}]}>
-            {/* <Animated.View style={[{ flexDirection: 'row', backgroundColor: Colors.White }, animationStyle]}> */}
-            {routes.map((route) => {
-                const stack = route as keyof RootStackParamList;
-                const isFocused = (currentScreen.split('-')[0] === stack) || (stack === 'MenuStack' && currentScreen.split('-')[0] === 'ProfileStack');
+        <View style={[{
+            height: isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0,
+            visibility: isTabbarVisible ? 'visible' : 'hidden',
+            flex: Platform.select({ web: 1 }),
+            alignItems: 'center',
+            backgroundColor: Colors.Basic200,
+        }]}>
+            <View style={[{ flexDirection: 'row', backgroundColor: Colors.White, maxWidth: 768, width: '100%', flex: 1 }]}>
+                {routes.map((route) => {
+                    const stack = route as keyof RootStackParamList;
+                    const isFocused = (currentScreen.split('-')[0] === stack) || (stack === 'MenuStack' && currentScreen.split('-')[0] === 'ProfileStack');
 
-                const excludedStacks: Array<keyof RootStackParamList> = ['AuthStack', 'ProfileStack'];
-                if (excludedStacks.includes(stack)) return null;
+                    const excludedStacks: Array<keyof RootStackParamList> = ['AuthStack', 'ProfileStack'];
+                    if (excludedStacks.includes(stack)) return null;
 
-                return (
-                    <Button
-                        key={stack}
-                        variant='white'
-                        accessibilityState={isFocused ? { selected: true } : {}}
-                        style={{ height: '100%', flex: 1 }}
-                        {...useLink({ href: withUrl({ stack: stack as any }) })}
-                    >
-                        <View style={{ position: 'relative', width: '100%', height: '100%' }}>
-                            {!!badgeNumbers[stack] && <View style={{ position: 'absolute', borderRadius: 8, paddingLeft: 5, paddingRight: 5, backgroundColor: Colors.Basic900, zIndex: 1, left: 16, top: -8 }}>
-                                <Typography color={Colors.Basic100} variant='small'>{badgeNumbers[stack] > 50 ? '50+' : badgeNumbers[stack]}</Typography>
-                            </View>}
-                            <SvgIcon icon={icons[stack]} fill={Colors[isFocused ? 'Basic900' : 'Basic600']} />
-                        </View>
-                    </Button>
-                )
-            })}
-        </Animated.View>
+                    return (
+                        <Button
+                            key={stack}
+                            variant='white'
+                            accessibilityState={isFocused ? { selected: true } : {}}
+                            style={{ height: '100%', flex: 1 }}
+                            {...useLink({ href: withUrl({ stack: stack as any }) })}
+                        >
+                            <View style={{ position: 'relative', width: '100%', height: '100%' }}>
+                                {!!badgeNumbers[stack] && <View style={{ position: 'absolute', borderRadius: 8, paddingLeft: 5, paddingRight: 5, backgroundColor: Colors.Basic900, zIndex: 1, left: 16, top: -8 }}>
+                                    <Typography color={Colors.Basic100} variant='small'>{badgeNumbers[stack] > 50 ? '50+' : badgeNumbers[stack]}</Typography>
+                                </View>}
+                                <SvgIcon icon={icons[stack]} fill={Colors[isFocused ? 'Basic900' : 'Basic600']} />
+                            </View>
+                        </Button>
+                    )
+                })}
+            </View>
+        </View>
     );
 }
 

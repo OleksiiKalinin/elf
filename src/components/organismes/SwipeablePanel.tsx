@@ -23,16 +23,17 @@ export type SwipeablePanelProps = {
 	hideBar?: boolean;
 	buttons?: (React.ComponentProps<typeof Button> & { closeAction?: CloseActionType })[];
 	mode?: SwipeablePanelParamsType['subViewMode'],
+	defaultCloseAction?: CloseActionType,
 };
 
 const SwipeablePanel: React.FC = () => {
 	const { backToRemoveParams } = useRouter();
 	const { swipeablePanelProps, windowSizes } = useTypedSelector(s => s.general);
 	const { setSwipeablePanelProps } = useActions();
-	const { buttons, title, children, subTitle, hideBar = false, mode = 'options' } = swipeablePanelProps || {};
+	const { buttons, title, children, subTitle, hideBar = false, mode = 'options', defaultCloseAction = 'history-replace&props-null' } = swipeablePanelProps || {};
 	const [height, setHeight] = useState<number>(0);
 
-	const close = (closeAction: CloseActionType | undefined = 'history-replace&props-null') => {
+	const close = (closeAction: CloseActionType | undefined = defaultCloseAction) => {
 		if (closeAction === 'history-replace&props-null') {
 			backToRemoveParams();
 			return;

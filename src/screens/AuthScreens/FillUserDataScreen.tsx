@@ -13,6 +13,7 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import Button from '../../components/molecules/Button';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { ScrollView } from '../../components/molecules/ScrollView';
+import useRouter from '../../hooks/useRouter';
 
 
 const FillUserDataScreen: React.FC = () => {
@@ -24,10 +25,11 @@ const FillUserDataScreen: React.FC = () => {
   const [first_name, setFirstName] = useState<string>('');
   const [last_name, setLastName] = useState<string>('');
   const { userData, token } = useTypedSelector(state => state.general);
+  const { replace } = useRouter();
 
   useEffect(() => {
     if (token && userData && userData.email && userData.first_name && userData.last_name) {
-      // navigation.navigate('MenuStack', { screen: 'MainScreen' });
+      replace({ stack: 'MenuStack' });
     }
   }, [token, userData]);
 
@@ -94,7 +96,7 @@ const FillUserDataScreen: React.FC = () => {
         </View>
       </View>
     </ScreenHeaderProvider>
-  ) : <></>
+  ) : <Typography>hi</Typography>
 }
 
 const styles = StyleSheet.create({

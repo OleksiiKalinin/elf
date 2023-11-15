@@ -1,5 +1,4 @@
-// import AsyncStorage from "@react-native-community/async-storage";
-// import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 // import { LoginManager } from "react-native-fbsdk-next";
 import { Dimensions } from "react-native";
 import { generalReducerAction } from "../actionCreators/general/types";
@@ -67,7 +66,7 @@ export const generalReducer = (state = initialState, action: generalReducerActio
         case generalActionTypes.SET_APP_LOADING:
             return { ...state, appLoading: action.payload };
         case generalActionTypes.SET_IS_MAIN_MENU_FLAT_LIST:
-            // AsyncStorage.setItem('isMainMenuFlatList', Number(action.payload).toString());
+            AsyncStorage.setItem('isMainMenuFlatList', Number(action.payload).toString());
             return { ...state, isMainMenuFlatList: action.payload };
         case generalActionTypes.SET_PROFILE_HELP_SCREEN_DISPLAYED:
             return { ...state, profileHelpScreenDisplayed: action.payload };
@@ -78,7 +77,7 @@ export const generalReducer = (state = initialState, action: generalReducerActio
         case generalActionTypes.SET_USER_QUESTIONS:
             return { ...state, userQuestions: action.payload };
         case generalActionTypes.LOG_OUT:
-            // AsyncStorage.multiRemove(['token', 'refresh_token']);
+            AsyncStorage.multiRemove(['token', 'refresh_token']);
             // GoogleSignin.signOut();
             // LoginManager.logOut();
             return {

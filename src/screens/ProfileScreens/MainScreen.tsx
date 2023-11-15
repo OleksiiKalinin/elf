@@ -50,7 +50,7 @@ const MainScreen: React.FC = () => {
   const router = useRouter();
 
   const logoutHandler = async () => {
-    // await dispatch(authServices.logout(token));
+    await dispatch(authServices.logout(token));
     setSwipeablePanelProps({
       title: 'Pomyślnie się wylogowałeś',
       closeButton: false,

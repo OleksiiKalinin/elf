@@ -1,5 +1,5 @@
 import { StyleSheet, View, Platform, TouchableOpacity, Dimensions, StyleProp, ViewStyle, ColorValue } from 'react-native';
-import React, { useEffect, useRef } from 'react';
+import React, { ReactNode, useEffect, useRef } from 'react';
 import SvgIcon, { IconTypes } from '../atoms/SvgIcon';
 import Typography from '../atoms/Typography';
 import Button from '../molecules/Button';
@@ -85,7 +85,7 @@ export const screensTitles: ScreensTitlesType = {
 };
 
 type ScreenHeaderProviderProps = {
-  children: React.ReactNode;
+  children: ReactNode;
   mode?: 'backAction' | 'mainTitle';
   mainTitlePosition?: 'flex-start' | 'center';
   title?: string;
@@ -94,7 +94,7 @@ type ScreenHeaderProviderProps = {
     icon: IconTypes | Exclude<React.ReactElement, string | number | boolean> | (string & {});
     onPress: () => void;
   }[];
-  otherActions?: Element,
+  otherActions?: ReactNode,
   transparent?: boolean;
   staticContentHeight?: boolean;
   callback?: () => void;
@@ -128,61 +128,65 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
       minHeight: Platform.select({
         web: windowSizes.height - (isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0),
       }),
+      alignItems: 'center',
+      backgroundColor: Colors.Basic200,
     }}>
-      <View style={[styles.Header]}>
-        {mode === 'backAction' && (
-          <View style={{ flex: 1, height: '100%', alignItems: 'flex-start', flexDirection: 'row' }}>
-            <Button
-              bg='transparent'
-              p={0}
-              alignItems='center'
-              width={50}
-              height='100%'
-              icon={<SvgIcon icon='arrowLeft' />}
-              onPress={callback ? callback : (!!swipeablePanelProps ? backToRemoveParams : back)}
-            />
-            <Typography variant="h4" weight="Bold" style={{ alignSelf: 'center' }}>
-              {title || currentTitle}
-            </Typography>
-          </View>
-        )}
-        {mode === 'mainTitle' && (
-          <View
-            style={{
-              alignItems: mainTitlePosition,
-              position: 'absolute',
-              width: '100%',
-            }}>
-            {alterTitle ?
-              alterTitle
-              :
-              <Typography variant="h4" weight="Bold" style={{ paddingLeft: mainTitlePosition === 'center' ? 0 : 15 }}>
+      <View style={{ maxWidth: 768, width: '100%', flex: 1 }}>
+        <View style={[styles.Header]}>
+          {mode === 'backAction' && (
+            <View style={{ flex: 1, height: '100%', alignItems: 'flex-start', flexDirection: 'row' }}>
+              <Button
+                bg='transparent'
+                p={0}
+                alignItems='center'
+                width={50}
+                height='100%'
+                icon={<SvgIcon icon='arrowLeft' />}
+                onPress={callback ? callback : (!!swipeablePanelProps ? backToRemoveParams : back)}
+              />
+              <Typography variant="h4" weight="Bold" style={{ alignSelf: 'center' }}>
                 {title || currentTitle}
-              </Typography>}
-          </View>
-        )}
-        {!!actions?.length && (
-          <View style={styles.Actions}>
-            {actions.map(({ icon, onPress }, index) => (
-              <View style={{ marginLeft: 20 }} key={index}>
-                <Button
-                  circular
-                  backgroundColor='transparent'
-                  icon={(typeof icon === 'string' ? <SvgIcon icon={icon as IconTypes} /> : (typeof icon === 'object' ? icon : undefined)) as any}
-                  onPress={onPress}
-                />
-              </View>))}
-          </View>
-        )}
-        {/* {otherActions} */}
-      </View>
-      <View style={[{
-        height: Platform.select({ web: staticContentHeight ? windowSizes.height - (transparent ? 0 : SCREEN_HEADER_HEIGHT) - (isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0) : '100%' }),
-        flex: Platform.select({ native: 1 }),
-        marginTop: transparent ? 0 : SCREEN_HEADER_HEIGHT,
-        backgroundColor
-      }]}>
-        {children}
+              </Typography>
+            </View>
+          )}
+          {mode === 'mainTitle' && (
+            <View
+              style={{
+                alignItems: mainTitlePosition,
+                position: 'absolute',
+                width: '100%',
+              }}>
+              {alterTitle ?
+                alterTitle
+                :
+                <Typography variant="h4" weight="Bold" style={{ paddingLeft: mainTitlePosition === 'center' ? 0 : 15 }}>
+                  {title || currentTitle}
+                </Typography>}
+            </View>
+          )}
+          {!!actions?.length && (
+            <View style={styles.Actions}>
+              {actions.map(({ icon, onPress }, index) => (
+                <View style={{ marginLeft: 20 }} key={index}>
+                  <Button
+                    circular
+                    backgroundColor='transparent'
+                    icon={(typeof icon === 'string' ? <SvgIcon icon={icon as IconTypes} /> : (typeof icon === 'object' ? icon : undefined)) as any}
+                    onPress={onPress}
+                  />
+                </View>))}
+            </View>
+          )}
+          {otherActions && otherActions}
+        </View>
+        <View style={[{
+          height: Platform.select({ web: staticContentHeight ? windowSizes.height - (transparent ? 0 : SCREEN_HEADER_HEIGHT) - (isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0) : '100%' }),
+          flex: Platform.select({ native: 1 }),
+          marginTop: transparent ? 0 : SCREEN_HEADER_HEIGHT,
+          backgroundColor
+        }]}>
+          {children}
+        </View>
       </View>
     </View>
   );
@@ -201,7 +205,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 1,
     backgroundColor: Colors.White,
-    maxWidth: 768
+    maxWidth: 768,
   },
   ButtonBack: {
     flexDirection: 'row',

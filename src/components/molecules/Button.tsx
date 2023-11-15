@@ -117,7 +117,7 @@ const Button: React.FC<ButtonProps> = ({
         iconAfter={arrowRight ? <SvgIcon icon='arrowRightSmall' /> : undefined}
         width={props.w ?? (fullwidth ? '100%' : undefined)}
         focusStyle={{ borderColor: 'none' }}
-        {...(stickyBottom && Platform.OS === 'web') ? {style: {position: 'sticky' as any, bottom: 0}} : {}}
+        {...(stickyBottom && Platform.OS === 'web') ? { position: 'sticky' as any, bottom: 0 } : {}}
         {...props}
       >
         {!!children &&
