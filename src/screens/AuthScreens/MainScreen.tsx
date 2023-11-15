@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { BackHandler, StyleSheet, View } from 'react-native';
+import { BackHandler, Platform, StyleSheet, View } from 'react-native';
 import Colors from '../../colors/Colors';
 import Typography from '../../components/atoms/Typography';
 import Button from '../../components/molecules/Button';
@@ -12,11 +12,12 @@ import { useGoogleLogin } from '@react-oauth/google';
 
 const MainScreen: FC = () => {
   const dispatch = useTypedDispatch();
-  const { useLink } = useRouter();
+  const { useLink, back } = useRouter();
 
-  const login = useGoogleLogin({
-    onSuccess: tokenResponse => console.log(tokenResponse),
-  });
+  const googleSignin = Platform.OS === 'web' ?
+    useGoogleLogin({ onSuccess: ({ access_token }) => dispatch(authServices.googleSignin(access_token)) })
+    :
+    () => dispatch(authServices.googleSignin());
 
   const additionalButtons: Array<{ icon: IconTypes; color: string; onPress: () => void; }> = [
     {
@@ -27,10 +28,7 @@ const MainScreen: FC = () => {
     {
       icon: 'googleLittle',
       color: Colors.White,
-      onPress: () => {
-        login();
-        // dispatch(authServices.googleSignin()),
-      }
+      onPress: googleSignin
     },
   ];
 
@@ -75,9 +73,8 @@ const MainScreen: FC = () => {
               bg={color} onPress={onPress}
               variant='text'
               style={styles.SocialButton}
-            >
-              <SvgIcon icon={icon} />
-            </Button>
+              icon={<SvgIcon icon={icon} />}
+            />
           ))}
         </View>
       </ScrollView>
@@ -85,7 +82,7 @@ const MainScreen: FC = () => {
         variant="text"
         contentVariant="h5"
         contentWeight="SemiBold"
-        {...useLink({ href: { stack: 'MenuStack' } })}
+        onPress={back}
       >
         Anuluj
       </Button>
@@ -112,7 +109,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   SocialButton: {
-    marginHorizontal: 6,
+    marginLeft: 6,
+    marginRight: 6,
     height: 60,
     width: 98,
     borderRadius: 4

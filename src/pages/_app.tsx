@@ -15,9 +15,6 @@ import Script from 'next/script';
 import { nextStore } from '../store/nextstore';
 import { Layout } from './Layout';
 import AppUnifiedProvider from '../components/organismes/AppUnifiedProvider';
-import { GoogleOAuthProvider } from '@react-oauth/google';
-import { googleSigninConfig } from '../services';
-import Colors from '../colors/Colors';
 
 const insets = {
   top: 0,
@@ -39,29 +36,27 @@ const Providers = ({ children }: { children: ReactNode }) => {
   const [theme, setTheme] = useRootTheme();
 
   return (
-    <GoogleOAuthProvider clientId={googleSigninConfig.webClientId}>
-      <NextThemeProvider enableSystem={false} onChangeTheme={setTheme}>
-        <TamaguiProvider
-          config={config}
-          disableInjectCSS
-          // disableRootThemeClass
-          defaultTheme={theme}
+    <NextThemeProvider enableSystem={false} onChangeTheme={setTheme}>
+      <TamaguiProvider
+        config={config}
+        disableInjectCSS
+        // disableRootThemeClass
+        defaultTheme={theme}
+      >
+        <SafeAreaProvider
+          initialMetrics={initialMetrics}
+          style={styles.safeAreaProvider}
         >
-          <SafeAreaProvider
-            initialMetrics={initialMetrics}
-            style={styles.safeAreaProvider}
-          >
-            <GestureHandlerRootView style={styles.container}>
-              <AppUnifiedProvider>
-                <Layout>
-                  {children}
-                </Layout>
-              </AppUnifiedProvider>
-            </GestureHandlerRootView>
-          </SafeAreaProvider>
-        </TamaguiProvider>
-      </NextThemeProvider>
-    </GoogleOAuthProvider>
+          <GestureHandlerRootView style={styles.container}>
+            <AppUnifiedProvider>
+              <Layout>
+                {children}
+              </Layout>
+            </AppUnifiedProvider>
+          </GestureHandlerRootView>
+        </SafeAreaProvider>
+      </TamaguiProvider>
+    </NextThemeProvider>
   );
 };
 
@@ -101,7 +96,5 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    // maxWidth: 768,
-    // backgroundColor: Colors.Basic200,
   },
 });

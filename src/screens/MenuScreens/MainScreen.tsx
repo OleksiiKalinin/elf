@@ -70,6 +70,16 @@ const MainScreen: React.FC = ({ }) => {
         sectionTitle: 'Aktualności',
         buttons: [
           {
+            title: 'Kandydaci - filtry',
+            backgroundColor: Colors.Sea300,
+            icon: 'search',
+            ...useLink({
+              href: { stack: 'CandidatesStack', screen: 'FilterScreen', params: undefined }
+            }),
+            missedEvents: 10,
+            badge: 'Nowe',
+          },
+          {
             title: 'Historia wydarzeń',
             backgroundColor: Colors.Sea300,
             icon: 'eventsHistory',

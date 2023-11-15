@@ -1,10 +1,10 @@
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
-// import { LoginManager } from "react-native-fbsdk-next";
+/// import { LoginManager } from "react-native-fbsdk-next";
 import { Dimensions } from "react-native";
 import { generalReducerAction } from "../actionCreators/general/types";
 import { generalActionTypes } from "../actions";
 import { generalReducerState } from "./types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { googleSignOut } from "../../components/organismes/GoogleSignin";
 
 const initialState: generalReducerState = {
     isTabbarVisible: true,
@@ -78,7 +78,7 @@ export const generalReducer = (state = initialState, action: generalReducerActio
             return { ...state, userQuestions: action.payload };
         case generalActionTypes.LOG_OUT:
             AsyncStorage.multiRemove(['token', 'refresh_token']);
-            // GoogleSignin.signOut();
+            googleSignOut();
             // LoginManager.logOut();
             return {
                 ...initialState,

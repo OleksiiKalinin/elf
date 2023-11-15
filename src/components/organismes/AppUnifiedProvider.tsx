@@ -12,13 +12,20 @@ import generalServices from '../../services/generalServices';
 import { ContactPersonType, MediaType } from '../../store/reducers/types';
 import candidatesServices from '../../services/candidatesServices';
 import companyServices from '../../services/companyServices';
-import { pl, registerTranslation } from '../modified_modules/react-native-paper-dates';
+import { pl, registerTranslation as datePickerLocaleConfig } from '../modified_modules/react-native-paper-dates';
+import { GoogleSigninProvider, googleSignOut } from './GoogleSignin';
+import { ConfigureParams } from '@react-native-google-signin/google-signin';
 
 calendarLocaleConfig();
 geocoder.fallbackToGoogle('AIzaSyBLA1spwwoOjY2rOvMliOBc2C87k6ZOJ_s');
 geocoder.setLanguage('pl');
+datePickerLocaleConfig('pl', pl);
 
-registerTranslation('pl', pl);
+export const googleSigninConfig: ConfigureParams & { webClientId: string } = {
+  webClientId: '766851891222-ut39jbn8qkotddl1v24k3ogf207ubaev.apps.googleusercontent.com',
+  // iosClientId: '716572673445-3poodfeo7g3viri30h12vvlfgeqa80oc.apps.googleusercontent.com',
+  offlineAccess: true,
+};
 
 const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { setWindowSizes } = useActions();
@@ -40,6 +47,7 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, [ssrWindowSizes]);
 
   useEffect(() => {
+    googleSignOut();
     (async () => {
       console.log('token: ', token);
       if (!appDataLoaded.current || (token && !prevToken.current)) {
@@ -103,7 +111,7 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, [userCompany, token]);
 
   return (
-    <>
+    <GoogleSigninProvider>
       <MenuProvider>
         <PaperProvider theme={{
           ...MD3LightTheme,
@@ -112,7 +120,7 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
           {children}
         </PaperProvider>
       </MenuProvider >
-    </>
+    </GoogleSigninProvider>
   );
 };
 

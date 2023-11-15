@@ -1,12 +1,10 @@
 import axios, { errorHandler, pythonAdmin } from './index';
 import { Dispatch } from 'react';
-import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 // import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
 import { RegistDataType } from '../screens/AuthScreens/RegistrationScreen';
 import generalActions from '../store/actionCreators/general/actions';
 import { LoginDataType } from '../screens/AuthScreens/LoginScreen';
-import { Platform } from 'react-native';
-import { useGoogleLogin } from '@react-oauth/google';
+import { getTokens, hasPlayServices, signIn } from '../components/organismes/GoogleSignin';
 
 const registrate = (formData: RegistDataType) => async (dispatch: Dispatch<any>) => {
     try {
@@ -73,42 +71,42 @@ const resetPassword = (email: string) => async (dispatch: Dispatch<any>) => {
     }
 };
 
-const googleSignin = () => async (dispatch: Dispatch<any>) => {
-    if (Platform.OS === 'web') {
-        console.log('svsdfv');
-        
-        useGoogleLogin({
-            onSuccess: tokenResponse => console.log(tokenResponse),
-        });
-    } else {
-        try {
-            // dispatch(generalActions.setAppLoading(true));
-            // await GoogleSignin.hasPlayServices();
-            // await GoogleSignin.signIn();
-            // const { accessToken } = await GoogleSignin.getTokens();
-            // if (accessToken) {
-            //     console.log(accessToken);
+const googleSignin = (initialToken?: string) => async (dispatch: Dispatch<any>) => {
+    try {
+        let token = initialToken;
 
-            //     const res = await axios.post(`/api-auth/convert-token/`, { ...pythonAdmin, grant_type: 'convert_token', token: accessToken, backend: 'google-oauth2' });
-            //     const { access_token, refresh_token } = res.data as { access_token: string | null, refresh_token: string | null };
-            //     await axios.post('/employer/create_user/', {}, { headers: { Authorization: `Bearer ${access_token}` } }).catch(() => { });
-            //     await dispatch(generalActions.setToken({ token: access_token, refresh_token }));
-            //     await dispatch(generalActions.setAppLoading(false));
-            // } else {
-            //     throw new Error('');
-            // }
-        } catch (error: any) {
-            // await errorHandler(error, dispatch);
-            // if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-            //     // user cancelled the login flow
-            // } else if (error.code === statusCodes.IN_PROGRESS) {
-            //     // operation (e.g. sign in) is in progress already
-            // } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-            //     // play services not available or outdated
-            // } else {
-            //     // some other error happened
-            // }
+        dispatch(generalActions.setAppLoading(true));
+        if (!token) {
+            await hasPlayServices();
+            await signIn();
+            const { accessToken } = await getTokens();
+            token = accessToken;
         }
+        if (token) {
+            const { data } = await axios.post(`/api-auth/convert-token/`, {
+                ...pythonAdmin,
+                token,
+                grant_type: 'convert_token',
+                backend: 'google-oauth2'
+            });
+            const { access_token, refresh_token } = data as { access_token: string | null, refresh_token: string | null };
+            await axios.post('/employer/create_user/', {}, { headers: { Authorization: `Bearer ${access_token}` } }).catch(() => { });
+            await dispatch(generalActions.setToken({ token: access_token, refresh_token }));
+            await dispatch(generalActions.setAppLoading(false));
+        } else {
+            throw new Error('no token');
+        }
+    } catch (error: any) {
+        await errorHandler(error, dispatch);
+        // if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        //     // user cancelled the login flow
+        // } else if (error.code === statusCodes.IN_PROGRESS) {
+        //     // operation (e.g. sign in) is in progress already
+        // } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        //     // play services not available or outdated
+        // } else {
+        //     // some other error happened
+        // }
     }
 };
 

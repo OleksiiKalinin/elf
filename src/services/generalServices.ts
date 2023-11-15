@@ -1,11 +1,11 @@
 import axios, { errorHandler } from "./index";
 import { Dispatch } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-// import { GoogleSignin } from "@react-native-google-signin/google-signin";
 // import { LoginManager } from "react-native-fbsdk-next";
 import generalActions from "../store/actionCreators/general/actions";
 import { convertToFrontEndAddress } from "../hooks/convertAddress";
 import { AppDispatch } from "../store";
+import { googleSignOut } from "../components/organismes/GoogleSignin";
 
 const getAppData = (token: string | null) => async (dispatch: Dispatch<any>) => {
     let isOk = false;
@@ -38,7 +38,7 @@ const getAppData = (token: string | null) => async (dispatch: Dispatch<any>) => 
         // }
 
         if (!token) {
-            // GoogleSignin.signOut();
+            googleSignOut();
             // LoginManager.logOut();
         }
 

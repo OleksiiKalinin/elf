@@ -1,16 +1,7 @@
-import { ConfigureParams, GoogleSignin } from '@react-native-google-signin/google-signin';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import generalActions from '../store/actionCreators/general/actions';
 import { Dispatch } from 'react';
-
-export const googleSigninConfig: ConfigureParams & {webClientId: string} = {
-    webClientId: '766851891222-ut39jbn8qkotddl1v24k3ogf207ubaev.apps.googleusercontent.com',
-    // iosClientId: '716572673445-3poodfeo7g3viri30h12vvlfgeqa80oc.apps.googleusercontent.com',
-    offlineAccess: true,
-};
-
-// GoogleSignin.configure(googleSigninConfig);
 
 export const pythonAdmin = {
     client_id: 'e6nB1kx-rcAEqvMiIsyazg',
@@ -34,7 +25,7 @@ export const errorHandler = async (error: any, dispatch: Dispatch<any>) => {
 
     if (error?.response?.status === 401) {
         const refresh_token = await AsyncStorage.getItem('refresh_token');
-        
+
         if (refresh_token) {
             try {
                 const res = await instance.post(`/api-auth/token`, {
