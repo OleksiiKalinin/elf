@@ -456,7 +456,7 @@ const MainScreen: React.FC = ({ }) => {
           >
             Test
           </Button> */}
-{/*           {icons.map(item=>
+          {/* {icons.map(item=>
             <View style={{
               height: 100,
               width: 100,
