@@ -396,7 +396,7 @@ const styles = StyleSheet.create({
     padding: 10,
     aspectRatio: 1,
     width: '44%',
-    height: '44%',
+    height: 'auto',
     // width: 150,
     // height: 150,
   },

@@ -1,5 +1,5 @@
 import {CompositeScreenProps, useIsFocused} from '@react-navigation/native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {StyleSheet, Touchable, View, Text, TouchableOpacity} from 'react-native';
 import {CandidatesStackParamList} from '../../navigators/CandidatesNavigator';
 import Colors from '../../colors/Colors';
@@ -13,14 +13,15 @@ import Typography from '../../components/atoms/Typography';
 import Button from '../../components/molecules/Button';
 import {Separator} from 'tamagui';
 import useRouter from '../../hooks/useRouter';
-import { AddressType, JobPositionType } from '../../store/reducers/types';
+import { AddressType, CandidatesFiltersType, JobAvailabilityType, JobContractType, JobPositionType, JobSortingModeType, JobWorkModeType } from '../../store/reducers/types';
 import SvgIcon from '../../components/atoms/SvgIcon';
 import HorizontalMenuButton from '../../components/molecules/HorizontalMenuButton';
 import CheckBox from '../../components/atoms/CheckBox';
 import { List } from 'react-native-paper';
 import TextField from '../../components/molecules/TextField';
+import { isArray } from 'lodash';
 
-const sortingModes = [
+const sortingModes: JobSortingModeType[] = [
   {
     id: 1,
     name: 'Najnowsi',
@@ -52,7 +53,7 @@ const sortingModes = [
 ];
 
 
-const availability  = [
+const availability: JobAvailabilityType[]  = [
   {
     id: 1,
     name: 'Od zaraz',
@@ -71,7 +72,7 @@ const availability  = [
   },
 ];
 
-const workModes = [
+const workModes: JobWorkModeType[] = [
   {
     id: 1,
     name: 'Pełny etat',
@@ -94,7 +95,7 @@ const workModes = [
   },
 ];
 
-const contracts = [
+const contracts: JobContractType[] = [
   {
     id: 1,
     name: 'Umowa o pracę',
@@ -121,32 +122,72 @@ const contracts = [
   },
 ];
 
+const initFilters: CandidatesFiltersType = {
+  sorting_id: 1,
+  positions_id: [],
+  locations_id: [],
+  distance_id: '0',
+  availability_id: [],
+  workModes_id: [],
+  contracts: [],
+  languages: [],
+}
+
 const FilterScreen: React.FC = () => {
   const [sortingBy, setSortingBy] = useState(1);
-  const [selectedPositions, setSelectedPositions] = useState<JobPositionType[]>([]);
+  const [filters, setFilters] = useState<CandidatesFiltersType>(initFilters);
+/*   const [selectedPositions, setSelectedPositions] = useState<JobPositionType[]>([]);
   const [selectedLocations, setSelectedLocations] = useState<AddressType[]>([]);
   const [distance, setDistance] = useState('0');
   const [selectedAvailability, setSelectedAvailability] = useState<number[]>([]);
   const [selectedWorkModes, setSelectedWorkModes] = useState<number[]>([]);
-  const [selectedContracts, setSelectedContracts] = useState<number[]>([]);
+  const [selectedContracts, setSelectedContracts] = useState<number[]>([]); */
   const [withoutCV, setWithoutCV] = useState(false);
   const router = useRouter();
-  const {jobIndustries} = useTypedSelector(state => state.general);
+  const {jobIndustries, userCompany} = useTypedSelector(state => state.general);
   const userIndustry = 2;
 
-  const updateFlatArray = (array: number[], id: number) =>{
-    if (array.includes(id)) {
-      const index = array.findIndex(item => item === id);
-      return ([
-        ...array.slice(0, index),
-        ...array.slice(index + 1),
-      ]);
-    } else {
-      return ([...array, id]);
-    };
+  const positions = useMemo(() => {
+    return jobIndustries
+      .find(item=> item.id === userIndustry)?.job_positions
+      .filter(item=> filters.positions_id
+      .includes(item.id))
+  },[filters.positions_id, jobIndustries]);
+
+  const changeFiltersHandler = (name: keyof CandidatesFiltersType, value: string | number | AddressType | null) => {
+    
+      setFilters(prev => ({
+        ...prev,
+        [name]: updateFlatArray(prev[name] as number[], value as number)
+      }));
+
   };
 
-  const addJobPosition = (industryId: number, positionId: number) =>{
+  const updateFlatArray = (array: number[], id: number) =>{
+    const mySet1 = new Set([...array]);
+    if(mySet1.has(id)){
+      mySet1.delete(id)
+    } else{
+      mySet1.add(id)
+    };
+
+    return [...mySet1];
+    // if (array.includes(id)) {
+    //   const index = array.findIndex(item => item === id);
+    //   return ([
+    //     ...array.slice(0, index),
+    //     ...array.slice(index + 1),
+    //   ]);
+    // } else {
+    //   return ([...array, id]);
+    // };
+  };
+
+  const handleJobPositions = (industryId: number, positionId: number) =>{
+    changeFiltersHandler('positions_id', positionId);
+  };
+
+  /* const addJobPosition = (industryId: number, positionId: number) =>{
     const newArray = [...selectedPositions];
     jobIndustries.forEach(industry => {
       const selectedPosition = industry.job_positions.find(position => position.id === positionId);
@@ -156,29 +197,30 @@ const FilterScreen: React.FC = () => {
     });
     
     setSelectedPositions(newArray);
-  };
+  }; */
 
-  const addLocation = (location: AddressType) =>{
-    const newArray = [...selectedLocations];
-    newArray.push(location);
-    setSelectedLocations(newArray);
-  };
+  // const addLocation = (location: AddressType) =>{
+  //   /* console.log(); */
+  //   const newArray = [...selectedLocations];
+  //   newArray.push(location);
+  //   setSelectedLocations(newArray);
+  // };
 
-  const removeJobPosition = (id: number) =>{
-    const index = selectedPositions.findIndex(item => item.id === id);
-    setSelectedPositions([
-      ...selectedPositions.slice(0, index),
-      ...selectedPositions.slice(index + 1),
-    ]);
-  };
+  // const removeJobPosition = (id: number) =>{
+  //   const index = selectedPositions.findIndex(item => item.id === id);
+  //   setSelectedPositions([
+  //     ...selectedPositions.slice(0, index),
+  //     ...selectedPositions.slice(index + 1),
+  //   ]);
+  // };
 
   const goToJobCategoryScreen = () =>{
-    router.push({ stack: 'CandidatesStack', screen: 'FilterScreen', params: { subView: 'JobCategoryScreen', mode: 'industryAndPosition', callback: addJobPosition, initialIndustry: userIndustry } });
+    router.push({ stack: 'CandidatesStack', screen: 'FilterScreen', params: { subView: 'JobCategoryScreen', mode: 'industryAndPosition', callback: handleJobPositions, initialIndustry: userIndustry } });
   };
 
-  const goToJobGoogleMapScreen = () =>{
-    router.push({ stack: 'CandidatesStack', screen: 'FilterScreen', params: { subView: 'GoogleMapScreen', callback: addLocation, initialAddress: null } });
-  };
+  // const goToJobGoogleMapScreen = () =>{
+  //   router.push({ stack: 'CandidatesStack', screen: 'FilterScreen', params: { subView: 'GoogleMapScreen', callback: addLocation, initialAddress: null } });
+  // };
 
   const searchButton = () =>{
 
@@ -186,18 +228,14 @@ const FilterScreen: React.FC = () => {
 
   return (
     <ScreenHeaderProvider>
+      <View style={{flex: 1, backgroundColor: Colors.Basic100}}>
       <ScrollView style={styles.ScrollView}>
         <Typography style={styles.Title} size={18} weight="Bold">
           Sortuj po
         </Typography>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginLeft: 19, marginBottom: 30, flexDirection: 'row', width: '100%'}}>
+        <ScrollView horizontal disableWindowScroll showsHorizontalScrollIndicator={false} style={{ marginLeft: 19, marginBottom: 30}}>
           {sortingModes.map(({id, name}, i) => (
-            <HorizontalMenuButton
-              key={id}
-              name={name}
-              selected={id === sortingBy}
-              onPress={() => setSortingBy(id)}
-            />
+           <Typography>Test</Typography>
           ))}
         </ScrollView>
         <Typography style={styles.Title} size={18} weight="Bold">
@@ -213,37 +251,37 @@ const FilterScreen: React.FC = () => {
             Wybierz stanowisko
           </Typography>
         </Button>
-        {selectedPositions.length > 0 &&
-          <View style={styles.SelectedItems}>
-            {selectedPositions.map(({id, name})=>
-              <TouchableOpacity 
-                onPress={()=> removeJobPosition(id)}
-                key={id} 
-                style={styles.SelectedItem}
-              >
-                <Typography size={14}>
-                  {name}
-                </Typography>
-                <SvgIcon icon='closeCircle' fill={Colors.Basic200}/>
-              </TouchableOpacity>
-            )}
-          </View>
-        }
+          {filters.positions_id.length > 0 &&
+            <View style={styles.SelectedItems}>
+              { positions?.map(({id, name})=>
+                <TouchableOpacity 
+                  onPress={()=> changeFiltersHandler('positions_id', id)}
+                  key={id} 
+                  style={styles.SelectedItem}
+                >
+                  <Typography size={14}>
+                    {name}
+                  </Typography>
+                  <SvgIcon icon='closeCircle' fill={Colors.Basic200}/>
+                </TouchableOpacity>
+              )}
+            </View>
+          }
         <Separator/>
         <Button
           arrowRight
           variant='text'
-          onPress={()=> goToJobGoogleMapScreen()}
+          // onPress={()=> goToJobGoogleMapScreen()}
         >
           <Typography size={16} weight='SemiBold'>
             Lokalizacja
           </Typography>
         </Button>
-        {selectedLocations.length > 0 &&
+        {/* {[selectedLocations].length > 0 &&
           <View style={styles.SelectedItems}>
             {selectedLocations.map(({locality}, i)=>
               <TouchableOpacity 
-                /* onPress={()=> removeJobPosition(id)} */
+                onPress={()=> removeJobPosition(id)}
                 key={i} 
                 style={styles.SelectedItem}
               >
@@ -254,9 +292,9 @@ const FilterScreen: React.FC = () => {
               </TouchableOpacity>
             )}
           </View>
-        }
+        } */}
         <Separator/>
-        <List.Accordion
+        {/* <List.Accordion
           title={<Typography size={16}>Odległość od Twojej lokalizacji</Typography>}
           right={props => <SvgIcon icon='arrowRightSmall' style={{transform: props.isExpanded ? [{ rotate: '-90deg' }] : [{ rotate: '90deg' }]}}/>}
           style={{backgroundColor: Colors.Basic100, height: 58, paddingRight: 19}}
@@ -269,15 +307,15 @@ const FilterScreen: React.FC = () => {
               value={distance}
               maxLength={3}
               onChangeText={setDistance}
-  /*             {...(showTips &&
+              {...(showTips &&
                 !nameValid && {
                   bottomText: 'Nazwa musi zawierać od 3 do 50 znaków',
-                })} */
+                })}
             />
           </View>
-        </List.Accordion>
+        </List.Accordion> */}
         <Separator/>
-        <List.Accordion
+        {/* <List.Accordion
           title={<Typography size={16}>Dostępność</Typography>}
           right={props => <SvgIcon icon='arrowRightSmall' style={{transform: props.isExpanded ? [{ rotate: '-90deg' }] : [{ rotate: '90deg' }]}}/>}
           style={{backgroundColor: Colors.Basic100, height: 58, paddingRight: 19}}
@@ -292,9 +330,9 @@ const FilterScreen: React.FC = () => {
               />
             ))}
           </ScrollView>
-        </List.Accordion>
+        </List.Accordion> */}
         <Separator/>
-        <List.Accordion
+        {/* <List.Accordion
           title={<Typography size={16} >Tryb pracy</Typography>}
           right={props => <SvgIcon icon='arrowRightSmall' style={{transform: props.isExpanded ? [{ rotate: '-90deg' }] : [{ rotate: '90deg' }]}}/>}
           style={{backgroundColor: Colors.Basic100, height: 58, paddingRight: 19}}
@@ -309,11 +347,11 @@ const FilterScreen: React.FC = () => {
               />
             ))}
           </ScrollView>
-        </List.Accordion>
+        </List.Accordion> */}
 
         <Separator/>
 
-        <List.Accordion
+        {/* <List.Accordion
           title={<Typography size={16}>Rodzaj umowy</Typography>}
           right={props => <SvgIcon icon='arrowRightSmall' style={{transform: props.isExpanded ? [{ rotate: '-90deg' }] : [{ rotate: '90deg' }]}}/>}
           style={{backgroundColor: Colors.Basic100, height: 58, paddingRight: 19}}
@@ -328,7 +366,7 @@ const FilterScreen: React.FC = () => {
               />
             ))}
           </ScrollView>
-        </List.Accordion>
+        </List.Accordion> */}
         <Button
           arrowRight
           variant='text'
@@ -354,6 +392,8 @@ const FilterScreen: React.FC = () => {
         </View>
         <Separator />
       </ScrollView>
+      </View>
+
       <Button
         stickyBottom
         onPress={() => searchButton()}
@@ -367,10 +407,6 @@ const FilterScreen: React.FC = () => {
 const styles = StyleSheet.create({
   ScrollView: {
     paddingTop: 15,
-    backgroundColor: Colors.Basic100,
-    flex: 1,
-    width: '100%', 
-    overflowX: 'hidden',
   },
   Title: {
     paddingHorizontal: 19,
