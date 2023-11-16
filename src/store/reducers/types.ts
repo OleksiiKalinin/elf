@@ -125,6 +125,17 @@ export interface CandidateDataType {
     certificates?: MediaType[] | null,
 }
 
+export interface CandidatesFiltersType {
+    sorting_id: number;
+    positions_id: number[];
+    locations_id: string[];
+    distance_id: string;
+    availability_id: number[];
+    workModes_id: number[];
+    contracts: number[];
+    languages: number[];
+}
+
 export interface UserEventType {
     id: number,
     attendees: [{
@@ -203,6 +214,26 @@ export interface JobSalaryTaxType {
 }
 
 export interface JobPositionType {
+    name: string,
+    id: number
+}
+
+export interface JobSortingModeType {
+    name: string,
+    id: number
+}
+
+export interface JobAvailabilityType {
+    name: string,
+    id: number
+}
+
+export interface JobWorkModeType {
+    name: string,
+    id: number
+}
+
+export interface JobContractType {
     name: string,
     id: number
 }

@@ -69,7 +69,11 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({
 
     if (selectedIndustry && mode === 'industryAndPosition') {
       const handler = BackHandler.addEventListener('hardwareBackPress', () => {
-        backToIndustry();
+        if(initialIndustry){
+          backToFilterScreen();
+        } else{
+          backToIndustry();
+        }
         return true;
       });
 
@@ -81,6 +85,10 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({
 
   const backToIndustry = () => {
     setSelectedIndustry(null);
+  };
+
+  const backToFilterScreen = () => {
+    backToRemoveParams();
   };
 
   const SearchField = (
@@ -117,7 +125,7 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({
       mainTitlePosition="flex-start"
       mode="backAction"
       title={selectedIndustry ? 'Stanowiska' : 'Kategorie'}
-      callback={selectedIndustry ? backToIndustry : undefined}
+      callback={initialIndustry ? backToFilterScreen : selectedIndustry ? backToIndustry : undefined}
       backgroundColor={Colors.Basic100}>
       <ScrollView style={{backgroundColor: Colors.Basic100}}>
         {selectedIndustry === null || mode === 'industry' ? (
@@ -180,13 +188,15 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({
                   {selectedIndustry.name}
                 </Typography>
               </View>
-              <Button
-                variant="text"
-                circular
-                style={{marginRight: -10}}
-                icon={<SvgIcon icon="crossBig" fill={Colors.Basic500} />}
-                onPress={backToIndustry}
-              />
+              {!initialIndustry &&
+                <Button
+                  variant="text"
+                  circular
+                  style={{marginRight: -10}}
+                  icon={<SvgIcon icon="crossBig" fill={Colors.Basic500} />}
+                  onPress={backToIndustry}
+                />
+              }
             </View>
             {SearchField}
             {selectedIndustry.job_positions.map(
