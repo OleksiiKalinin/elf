@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { BackHandler, Platform, StyleSheet, View } from 'react-native';
+import { BackHandler, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Colors from '../../colors/Colors';
 import Typography from '../../components/atoms/Typography';
 import Button from '../../components/molecules/Button';
@@ -69,12 +69,12 @@ const MainScreen: FC = () => {
         </View>
         <View style={styles.Social}>
           {additionalButtons.map(({ color, icon, onPress }) => (
-            <Button
-              bg={color} onPress={onPress}
-              variant='text'
-              style={styles.SocialButton}
-              icon={<SvgIcon icon={icon} />}
-            />
+            <TouchableOpacity
+              onPress={onPress}
+              style={[styles.SocialButton, { backgroundColor: color }]}
+            >
+              <SvgIcon icon={icon} />
+            </TouchableOpacity>
           ))}
         </View>
       </ScrollView>
@@ -113,7 +113,9 @@ const styles = StyleSheet.create({
     marginRight: 6,
     height: 60,
     width: 98,
-    borderRadius: 4
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: "center"
   },
   InfoText: {
     paddingHorizontal: 72,

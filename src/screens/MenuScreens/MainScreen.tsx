@@ -262,9 +262,9 @@ const MainScreen: React.FC = ({ }) => {
               <View style={{ marginRight: 12 }}>
                 <Typography variant='h5' weight='Bold'>Witaj, {userData.first_name}</Typography>
               </View>
-              <View style={{ marginLeft: 8 }}>
+              {/* <View style={{ marginLeft: 8 }}>
                 <SvgIcon icon="search" />
-              </View>
+              </View> */}
             </>}
           </View>
         }
@@ -396,9 +396,7 @@ const styles = StyleSheet.create({
     padding: 10,
     aspectRatio: 1,
     width: '44%',
-    height: '44%',
-    // width: 150,
-    // height: 150,
+    height: 'auto',
   },
   GridButton: {
     backgroundColor: Colors.White,

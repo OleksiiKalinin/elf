@@ -164,20 +164,22 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
                 </Typography>}
             </View>
           )}
-          {!!actions?.length && (
+          {(!!actions?.length || !!otherActions) && (
             <View style={styles.Actions}>
-              {actions.map(({ icon, onPress }, index) => (
-                <View style={{ marginLeft: 20 }} key={index}>
-                  <Button
-                    circular
-                    backgroundColor='transparent'
-                    icon={(typeof icon === 'string' ? <SvgIcon icon={icon as IconTypes} /> : (typeof icon === 'object' ? icon : undefined)) as any}
-                    onPress={onPress}
-                  />
-                </View>))}
+              {!!actions?.length && <View style={{ flex: 1, marginRight: 12 }}>
+                {actions.map(({ icon, onPress }, index) => (
+                  <View style={{ marginLeft: 20 }} key={index}>
+                    <Button
+                      circular
+                      backgroundColor='transparent'
+                      icon={(typeof icon === 'string' ? <SvgIcon icon={icon as IconTypes} /> : (typeof icon === 'object' ? icon : undefined)) as any}
+                      onPress={onPress}
+                    />
+                  </View>))}
+              </View>}
+              {otherActions && otherActions}
             </View>
           )}
-          {otherActions && otherActions}
         </View>
         <View style={[{
           height: Platform.select({ web: staticContentHeight ? windowSizes.height - (transparent ? 0 : SCREEN_HEADER_HEIGHT) - (isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0) : '100%' }),
@@ -215,7 +217,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     flexDirection: 'row',
     alignItems: 'center',
-    right: 12,
+    right: 0,
     flex: 1,
   },
 });

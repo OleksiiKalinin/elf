@@ -79,6 +79,7 @@ export const generalReducer = (state = initialState, action: generalReducerActio
         case generalActionTypes.LOG_OUT:
             AsyncStorage.multiRemove(['token', 'refresh_token']);
             googleSignOut();
+            
             // LoginManager.logOut();
             return {
                 ...initialState,
