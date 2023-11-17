@@ -81,7 +81,9 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
           __html: "document.documentElement.classList.add('t_unmounted')",
         }}
       />
+      {/* don't touch googleapis */}
       <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBLA1spwwoOjY2rOvMliOBc2C87k6ZOJ_s&libraries=places&language=pl&region=pl"></script>
+      {/* don't touch googleapis */}
       <Providers>{contents}</Providers>
     </>
   );

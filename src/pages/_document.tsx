@@ -10,8 +10,6 @@ import {
 import { AppRegistry } from 'react-native';
 import config from '../../app.json';
 import Tamagui from '../../tamagui';
-//@ts-ignore
-import iconFont from 'react-native-vector-icons/Fonts/FontAwesome.ttf';
 
 function MyDocument() {
   return (
@@ -38,12 +36,7 @@ MyDocument.getInitialProps = async ({
       dangerouslySetInnerHTML={{
         __html: Tamagui.getCSS(),
       }}
-    />,
-    <style dangerouslySetInnerHTML={{
-      __html: `@font-face {
-      src: url(${iconFont});
-      font-family: FontAwesome;
-    }`}} />
+    />
   ];
   return { ...page, styles: Children.toArray(styles) };
 };

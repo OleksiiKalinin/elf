@@ -9,6 +9,7 @@ import { ScrollView } from '../../components/molecules/ScrollView';
 import authServices from '../../services/authServices';
 import SvgIcon, { IconTypes } from '../../components/atoms/SvgIcon';
 import { useGoogleLogin } from '@react-oauth/google';
+import { FacebookSigninButton, facebookSignOut } from '../../components/organismes/FacebookSignin';
 
 const MainScreen: FC = () => {
   const dispatch = useTypedDispatch();
@@ -19,18 +20,7 @@ const MainScreen: FC = () => {
     :
     () => dispatch(authServices.googleSignin());
 
-  const additionalButtons: Array<{ icon: IconTypes; color: string; onPress: () => void; }> = [
-    {
-      icon: 'facebookLittle',
-      color: Colors.Link,
-      onPress: () => dispatch(authServices.facebookSignin()),
-    },
-    {
-      icon: 'googleLittle',
-      color: Colors.White,
-      onPress: googleSignin
-    },
-  ];
+  const facebookSignin = (accessToken: string | null) => dispatch(authServices.facebookSignin(accessToken));
 
   return (
     <View style={styles.Wrapper}>
@@ -68,14 +58,21 @@ const MainScreen: FC = () => {
           </Typography>
         </View>
         <View style={styles.Social}>
-          {additionalButtons.map(({ color, icon, onPress }) => (
-            <TouchableOpacity
-              onPress={onPress}
-              style={[styles.SocialButton, { backgroundColor: color }]}
+          <FacebookSigninButton
+            onSuccess={facebookSignin}
+            render={<TouchableOpacity
+              style={[styles.SocialButton, { backgroundColor: Colors.Link }]}
             >
-              <SvgIcon icon={icon} />
+              <SvgIcon icon='facebookLittle' />
             </TouchableOpacity>
-          ))}
+            }
+          />
+          <TouchableOpacity
+            onPress={() => googleSignin()}
+            style={[styles.SocialButton, { backgroundColor: Colors.White }]}
+          >
+            <SvgIcon icon='googleLittle' />
+          </TouchableOpacity>
         </View>
       </ScrollView>
       <Button
