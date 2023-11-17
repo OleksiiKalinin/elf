@@ -128,12 +128,13 @@ export interface CandidateDataType {
 export interface CandidatesFiltersType {
     sorting_id: number;
     positions_id: number[];
-    locations_id: string[];
-    distance_id: string;
+    locations_id: AddressType[];
+    distance: number;
     availability_id: number[];
     workModes_id: number[];
-    contracts: number[];
+    contracts_id: number[];
     languages: number[];
+    only_with_cv: boolean;
 }
 
 export interface UserEventType {
