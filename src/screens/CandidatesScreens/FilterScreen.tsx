@@ -290,7 +290,7 @@ const FilterScreen: React.FC = () => {
             </Typography>
             <Slider
               value={filters.distance}
-              onValueChange={(value: any) =>
+              onValueChange={(value) =>
                 changeFiltersHandler('distance', !isNaN(value) ? value : 0)
               }
               style={{ height: 60 }}
