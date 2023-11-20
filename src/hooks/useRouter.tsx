@@ -14,6 +14,7 @@ import { RootStackParamList } from "../navigators/RootNavigator";
 import ChooseAdvertScreen from "../screens/ChooseAdvertScreen";
 import ChooseCandidateScreen from "../screens/ChooseCandidateScreen";
 import JobCategoryScreen from "../screens/JobCategoryScreen";
+import ItemSelectorScreen from "../screens/ItemSelectorScreen";
 
 export type SubViewType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? AllScreens<T, keyof RootStackParamList[T]['default']> : never;
 type AllScreens<T extends keyof RootStackParamList, K extends keyof RootStackParamList[T]['default'] = keyof RootStackParamList[T]['default']> = K extends K ? AllParams<RootStackParamList[T]['default'][K]> : never;
@@ -52,7 +53,8 @@ const validateUrl = (props: WithUrlProps): string => {
     } else if (
         (props.stack === 'CandidatesStack' && props.screen === 'FilterScreen' && (
             props.params?.subView === 'GoogleMapScreen' ||
-            props.params?.subView === 'JobCategoryScreen'
+            props.params?.subView === 'JobCategoryScreen' ||
+            props.params?.subView === 'ItemSelectorScreen'
         )) ||
         false //something else
     ) {
@@ -96,6 +98,8 @@ export default function useRouter() {
                         // Test
                     } else if (params.subView === 'JobCategoryScreen') {
                         Component = JobCategoryScreen
+                    } else if (params.subView === 'ItemSelectorScreen') {
+                        Component = ItemSelectorScreen
                     } else {
                         return;
                     }

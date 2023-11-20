@@ -133,7 +133,7 @@ export interface CandidatesFiltersType {
     availability_id: number[];
     workModes_id: number[];
     contracts_id: number[];
-    languages: number[];
+    languages_id: number[];
     only_with_cv: boolean;
 }
 
@@ -235,6 +235,11 @@ export interface JobWorkModeType {
 }
 
 export interface JobContractType {
+    name: string,
+    id: number
+}
+
+export interface LanguageType {
     name: string,
     id: number
 }

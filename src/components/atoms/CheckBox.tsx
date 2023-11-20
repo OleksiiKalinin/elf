@@ -11,9 +11,10 @@ type Props = {
     leftText?: string,
     rightText?: string,
     removeSpaces?: boolean,
+    hideCheckBox?: boolean,
 }
 
-const CheckBox: FC<ComponentProps<typeof TamaCheckBox> & Props> = ({ rightTextView, leftTextView, leftText, rightText, flexDirection, removeSpaces = false, checked, onCheckedChange, ...props }) => {
+const CheckBox: FC<ComponentProps<typeof TamaCheckBox> & Props> = ({ rightTextView, leftTextView, leftText, rightText, flexDirection, removeSpaces = false, hideCheckBox = false, checked, onCheckedChange, ...props }) => {
     const isFlexDirectionRow = !flexDirection || (flexDirection === 'row') || (flexDirection === 'row-reverse');
 
     return (
@@ -22,23 +23,25 @@ const CheckBox: FC<ComponentProps<typeof TamaCheckBox> & Props> = ({ rightTextVi
                 {leftText && <Typography variant='small'>{leftText}</Typography>}
                 {leftTextView && leftTextView}
             </View>}
-            <TamaCheckBox
-                br='$1' bw='$1'
-                {...(checked ? {
-                    borderColor: Colors.Basic900,
-                    backgroundColor: Colors.Basic900
-                } : {
-                    borderColor: Colors.Basic600,
-                    backgroundColor: Colors.Basic100
-                })}
-                focusStyle={{ borderColor: 'none' }}
-                {...props}
-                checked={checked}
-            >
-                <TamaCheckBox.Indicator>
-                    <Check width='16' height='16' color={Colors.White} />
-                </TamaCheckBox.Indicator>
-            </TamaCheckBox>
+            {!hideCheckBox &&
+                <TamaCheckBox
+                    br='$1' bw='$1'
+                    {...(checked ? {
+                        borderColor: Colors.Basic900,
+                        backgroundColor: Colors.Basic900
+                    } : {
+                        borderColor: Colors.Basic600,
+                        backgroundColor: Colors.Basic100
+                    })}
+                    focusStyle={{ borderColor: 'none' }}
+                    {...props}
+                    checked={checked}
+                >
+                    <TamaCheckBox.Indicator>
+                        <Check width='16' height='16' color={Colors.White} />
+                    </TamaCheckBox.Indicator>
+                </TamaCheckBox>
+            }
             {(rightText || rightTextView) && <View style={{ flex: 1, ...(!removeSpaces ? (isFlexDirectionRow ? { marginLeft: 12 } : { marginTop: 12 }) : {}) }}>
                 {rightText && <Typography variant='small'>{rightText}</Typography>}
                 {rightTextView && rightTextView}

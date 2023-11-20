@@ -1,12 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import React, {useEffect, useMemo, useState} from 'react';
+import {StyleSheet, View, TouchableOpacity} from 'react-native';
 import Colors from '../../colors/Colors';
-import { useTypedSelector } from '../../hooks/useTypedSelector';
+import {useTypedSelector} from '../../hooks/useTypedSelector';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
-import { ScrollView } from '../../components/molecules/ScrollView';
+import {ScrollView} from '../../components/molecules/ScrollView';
 import Typography from '../../components/atoms/Typography';
 import Button from '../../components/molecules/Button';
-import { Separator } from 'tamagui';
+import {Separator} from 'tamagui';
 import useRouter from '../../hooks/useRouter';
 import {
   AddressType,
@@ -15,12 +15,14 @@ import {
   JobContractType,
   JobSortingModeType,
   JobWorkModeType,
+  LanguageType,
 } from '../../store/reducers/types';
 import SvgIcon from '../../components/atoms/SvgIcon';
 import CheckBox from '../../components/atoms/CheckBox';
-import { isArray, isBoolean, isNaN, isNumber, isString } from 'lodash';
+import {isArray, isBoolean, isNaN, isNumber, isString} from 'lodash';
 import Accordion from '../../components/molecules/Accordion';
 import Slider from '@react-native-community/slider';
+import {Language} from 'react-native-google-places-autocomplete';
 
 const sortingModes: JobSortingModeType[] = [
   {
@@ -106,6 +108,37 @@ const contracts: JobContractType[] = [
   },
 ];
 
+const languages: LanguageType[] = [
+  {
+    id: 1,
+    name: 'Polski',
+  },
+  {
+    id: 2,
+    name: 'Angielski',
+  },
+  {
+    id: 3,
+    name: 'Włoski',
+  },
+  {
+    id: 4,
+    name: 'Francuski',
+  },
+  {
+    id: 5,
+    name: 'Ukraiński',
+  },
+  {
+    id: 6,
+    name: 'Hiszpański',
+  },
+  {
+    id: 7,
+    name: 'Niemiecki',
+  },
+];
+
 const initFilters: CandidatesFiltersType = {
   sorting_id: 1,
   positions_id: [],
@@ -114,14 +147,14 @@ const initFilters: CandidatesFiltersType = {
   availability_id: [],
   workModes_id: [],
   contracts_id: [],
-  languages: [],
+  languages_id: [],
   only_with_cv: false,
 };
 
 const FilterScreen: React.FC = () => {
   const [filters, setFilters] = useState<CandidatesFiltersType>(initFilters);
   const router = useRouter();
-  const { jobIndustries, userCompany } = useTypedSelector(state => state.general);
+  const {jobIndustries, userCompany} = useTypedSelector(state => state.general);
   const userIndustry = 2;
 
   const selectedPositions = useMemo(() => {
@@ -129,6 +162,10 @@ const FilterScreen: React.FC = () => {
       .find(item => item.id === userIndustry)
       ?.job_positions.filter(item => filters.positions_id.includes(item.id));
   }, [filters.positions_id, jobIndustries]);
+
+  const selectedLanguages = useMemo(() => {
+    return languages.filter(item => filters.languages_id.includes(item.id));
+  }, [filters.languages_id, languages]);
 
   const changeFiltersHandler = (
     name: keyof CandidatesFiltersType,
@@ -150,19 +187,26 @@ const FilterScreen: React.FC = () => {
           [name]: value !== null ? [value] : [],
         }));
       } else {
-        setFilters(prev => ({
-          ...prev,
-          [name]: (() => {
-            const array = prev[name] as any;
-            const mySet1 = new Set([...array]);
-            if (mySet1.has(value)) {
-              mySet1.delete(value);
-            } else {
-              mySet1.add(value);
-            }
-            return [...mySet1];
-          })(),
-        }));
+        if (isNumber(value)) {
+          setFilters(prev => ({
+            ...prev,
+            [name]: (() => {
+              const array = prev[name] as any;
+              const mySet1 = new Set([...array]);
+              if (mySet1.has(value)) {
+                mySet1.delete(value);
+              } else {
+                mySet1.add(value);
+              }
+              return [...mySet1];
+            })(),
+          }));
+        } else if (isArray(value)) {
+          setFilters(prev => ({
+            ...prev,
+            [name]: value,
+          }));
+        }
       }
     }
   };
@@ -173,6 +217,14 @@ const FilterScreen: React.FC = () => {
 
   const addLocation = (location: AddressType) => {
     changeFiltersHandler('locations_id', location);
+  };
+
+  const handleLanguagesSingle = (id: number) => {
+    changeFiltersHandler('languages_id', id);
+  };
+
+  const handleLanguagesMultiple = (id: number[]) => {
+    changeFiltersHandler('languages_id', id);
   };
 
   const goToJobCategoryScreen = () => {
@@ -200,11 +252,58 @@ const FilterScreen: React.FC = () => {
     });
   };
 
-  const searchButton = () => { };
+  const testLeftTextView = (id: number, name: string) => {
+    return(
+      <>
+        <View style={{height: 60}}>
+          <Typography size={20}>{name}</Typography>
+        </View>
+      </>
+    )
+  };
+
+  const goToSelectLanguagesSingle = () => {
+    router.push({
+      stack: 'CandidatesStack',
+      screen: 'FilterScreen',
+      params: {
+        subView: 'ItemSelectorScreen',
+        mode: 'single',
+        list: languages,
+        callback: handleLanguagesSingle,
+        labels: {
+          searchLabel: 'Znajdź język',
+          itemsLabel: 'Popularne języki',
+        },
+        headerProps: {title: 'Wybór języków'},
+      },
+    });
+  };
+
+  const goToSelectLanguagesMultiple = () => {
+    router.push({
+      stack: 'CandidatesStack',
+      screen: 'FilterScreen',
+      params: {
+        subView: 'ItemSelectorScreen',
+        mode: 'multiple',
+        list: languages,
+        callback: handleLanguagesMultiple,
+        labels: {
+          searchLabel: 'Znajdź język',
+          itemsLabel: 'Popularne języki',
+        },
+        headerProps: {title: 'Wybór języków'},
+        render: testLeftTextView
+      },
+    });
+  };
+
+  const searchButton = () => {};
 
   return (
     <ScreenHeaderProvider>
-      <View style={{ flex: 1, backgroundColor: Colors.Basic100 }}>
+      <View style={{flex: 1, backgroundColor: Colors.Basic100}}>
         <ScrollView style={styles.ScrollView}>
           <Typography style={styles.Title} size={18} weight="Bold">
             Sortuj po
@@ -213,8 +312,8 @@ const FilterScreen: React.FC = () => {
             horizontal
             disableWindowScroll
             showsHorizontalScrollIndicator={false}
-            style={{ marginBottom: 30 }}>
-            {sortingModes.map(({ id, name }, i) => (
+            style={{marginBottom: 30}}>
+            {sortingModes.map(({id, name}, i) => (
               <TouchableOpacity
                 style={[
                   styles.HorizontalButton,
@@ -250,7 +349,7 @@ const FilterScreen: React.FC = () => {
               disableWindowScroll
               showsHorizontalScrollIndicator={false}
               style={styles.SelectedItems}>
-              {selectedPositions?.map(({ id, name }) => (
+              {selectedPositions?.map(({id, name}) => (
                 <TouchableOpacity
                   onPress={() => changeFiltersHandler('positions_id', id)}
                   key={id}
@@ -272,7 +371,7 @@ const FilterScreen: React.FC = () => {
           </Button>
           {filters.locations_id.length > 0 && (
             <View style={styles.SelectedItems}>
-              {filters.locations_id?.map(({ locality }) => (
+              {filters.locations_id?.map(({locality}) => (
                 <TouchableOpacity
                   onPress={() => changeFiltersHandler('locations_id', null)}
                   style={styles.SelectedItem}>
@@ -283,17 +382,17 @@ const FilterScreen: React.FC = () => {
             </View>
           )}
           <Separator />
-          <View style={{ paddingHorizontal: 19 }}>
-            <Typography size={16} weight="SemiBold" style={{ paddingTop: 19 }}>
+          <View style={{paddingHorizontal: 19}}>
+            <Typography size={16} weight="SemiBold" style={{paddingTop: 19}}>
               Odległość od wybranej lokalizacji: +
               {filters.distance === 1 ? 0 : filters.distance} km
             </Typography>
             <Slider
               value={filters.distance}
-              onValueChange={(value) =>
+              onValueChange={value =>
                 changeFiltersHandler('distance', !isNaN(value) ? value : 0)
               }
-              style={{ height: 60 }}
+              style={{height: 60}}
               minimumValue={1}
               maximumValue={100}
               step={5}
@@ -309,8 +408,8 @@ const FilterScreen: React.FC = () => {
               horizontal
               disableWindowScroll
               showsHorizontalScrollIndicator={false}
-              style={{ marginBottom: 30 }}>
-              {availability.map(({ id, name }, i) => (
+              style={{marginBottom: 30}}>
+              {availability.map(({id, name}, i) => (
                 <TouchableOpacity
                   key={id}
                   style={[
@@ -336,8 +435,8 @@ const FilterScreen: React.FC = () => {
               horizontal
               disableWindowScroll
               showsHorizontalScrollIndicator={false}
-              style={{ marginBottom: 30 }}>
-              {workModes.map(({ id, name }, i) => (
+              style={{marginBottom: 30}}>
+              {workModes.map(({id, name}, i) => (
                 <TouchableOpacity
                   key={id}
                   style={[
@@ -363,8 +462,8 @@ const FilterScreen: React.FC = () => {
               horizontal
               disableWindowScroll
               showsHorizontalScrollIndicator={false}
-              style={{ marginBottom: 30 }}>
-              {contracts.map(({ id, name }, i) => (
+              style={{marginBottom: 30}}>
+              {contracts.map(({id, name}, i) => (
                 <TouchableOpacity
                   key={id}
                   style={[
@@ -383,9 +482,64 @@ const FilterScreen: React.FC = () => {
               ))}
             </ScrollView>
           </Accordion>
-          <Button arrowRight variant="text" borderTop borderBottom>
-            <Typography size={16}>Znajomość języków</Typography>
+
+
+          <Button
+            arrowRight
+            variant="text"
+            borderTop
+            onPress={() => goToSelectLanguagesSingle()}>
+            <Typography size={16} weight="SemiBold">
+              Znajomość języków - single
+            </Typography>
           </Button>
+          {filters.languages_id.length > 0 && (
+            <ScrollView
+              horizontal
+              disableWindowScroll
+              showsHorizontalScrollIndicator={false}
+              style={styles.SelectedItems}>
+              {selectedLanguages?.map(({id, name}) => (
+                <TouchableOpacity
+                  onPress={() => changeFiltersHandler('languages_id', id)}
+                  key={id}
+                  style={styles.SelectedItem}>
+                  <Typography size={14}>{name}</Typography>
+                  <SvgIcon icon="closeCircle" fill={Colors.Basic200} />
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          )}
+
+          <Button
+            arrowRight
+            variant="text"
+            borderTop
+            onPress={() => goToSelectLanguagesMultiple()}>
+            <Typography size={16} weight="SemiBold">
+              Znajomość języków - multiple
+            </Typography>
+          </Button>
+          {filters.languages_id.length > 0 && (
+            <ScrollView
+              horizontal
+              disableWindowScroll
+              showsHorizontalScrollIndicator={false}
+              style={styles.SelectedItems}>
+              {selectedLanguages?.map(({id, name}) => (
+                <TouchableOpacity
+                  onPress={() => changeFiltersHandler('languages_id', id)}
+                  key={id}
+                  style={styles.SelectedItem}>
+                  <Typography size={14}>{name}</Typography>
+                  <SvgIcon icon="closeCircle" fill={Colors.Basic200} />
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          )}
+
+
+
           <View style={styles.CheckBoxWrapper}>
             <CheckBox
               checked={filters.only_with_cv}
