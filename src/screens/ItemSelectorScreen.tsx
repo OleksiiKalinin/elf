@@ -1,39 +1,34 @@
-import React, {ReactElement, useEffect, useState} from 'react';
-import {StyleSheet, View,} from 'react-native';
+import React, { Fragment, useEffect, useState } from 'react';
+import { StyleSheet, View, } from 'react-native';
 import Colors from '../colors/Colors';
 import ScreenHeaderProvider from '../components/organismes/ScreenHeaderProvider';
-import {ScrollView} from '../components/molecules/ScrollView';
+import { ScrollView } from '../components/molecules/ScrollView';
 import TextField from '../components/molecules/TextField';
 import SvgIcon from '../components/atoms/SvgIcon';
 import Typography from '../components/atoms/Typography';
-import {Separator} from 'tamagui';
+import { Separator } from 'tamagui';
 import useRouter from '../hooks/useRouter';
 import Button from '../components/molecules/Button';
 import CheckBox from '../components/atoms/CheckBox';
 
 export type ItemSelectorScreenProps =
-  | {
-      mode: 'single';
-      list: {id: number; name: string; icon?: string}[];
-      callback: (id: number) => void;
-      labels: {
-        searchLabel: string;
-        itemsLabel: string;
-      };
-      headerProps?: Omit<React.ComponentProps<typeof ScreenHeaderProvider>, 'children'>;
-      render?: (id: number, name: string, icon?: string) => JSX.Element;
-    }
-  | {
-      mode: 'multiple';
-      list: {id: number; name: string; icon?: string}[];
-      callback: (id: number[]) => void;
-      labels: {
-        searchLabel: string;
-        itemsLabel: string;
-      };
-      headerProps?: Omit<React.ComponentProps<typeof ScreenHeaderProvider>, 'children'>;
-      render?: (id: number, name: string, icon?: string) => JSX.Element;
+  ({
+    mode: 'single';
+    callback: (id: number) => void,
+  } | {
+    mode: 'multiple';
+    callback: (id: number[]) => void,
+  }) & {
+    list: { id: number; name: string; icon?: string }[],
+    labels: {
+      searchLabel: string,
+      itemsLabel: string,
     };
+    headerProps?: Omit<React.ComponentProps<typeof ScreenHeaderProvider>, 'children'>,
+    render?: (id: number, name: string, i: number, icon?: string, initialSelected?: number[]) => JSX.Element,
+    initialSelected?: number[],
+    subViewMode?: boolean,
+  };
 
 const ItemSelectorScreen: React.FC<ItemSelectorScreenProps> = ({
   mode,
@@ -41,17 +36,21 @@ const ItemSelectorScreen: React.FC<ItemSelectorScreenProps> = ({
   callback,
   labels,
   headerProps,
-  render
+  render,
+  subViewMode = true,
+  initialSelected
 }) => {
   const [search, setSearch] = useState<string>('');
-  const [selectedItems, setSelectedItems] = useState<number[]>([]);
-  const {backToRemoveParams} = useRouter();
+  const [selectedItems, setSelectedItems] = useState<number[]>(initialSelected ? mode === 'multiple' ? initialSelected : [] : []);
+  const { backToRemoveParams } = useRouter();
 
   useEffect(() => {
     if (mode === 'single' && selectedItems.length > 0) {
       callback(selectedItems[0]);
-      backToRemoveParams();
-    }
+      if (subViewMode) {
+        backToRemoveParams();
+      };
+    };
   }, [selectedItems]);
 
   const handleSelectedItems = (id: number) => {
@@ -61,15 +60,16 @@ const ItemSelectorScreen: React.FC<ItemSelectorScreenProps> = ({
     } else {
       mySet.add(id);
     }
-
     setSelectedItems([...mySet]);
   };
 
-  const handleConfirm = () => {
+  const handleConfirmMultiple = () => {
     if (mode === 'multiple' && selectedItems) {
       callback(selectedItems);
-      backToRemoveParams();
-    }
+      if (subViewMode) {
+        backToRemoveParams();
+      };
+    };
   };
 
   const content = (
@@ -91,7 +91,7 @@ const ItemSelectorScreen: React.FC<ItemSelectorScreenProps> = ({
                   <SvgIcon
                     icon="crossBig"
                     fill={Colors.Basic500}
-                    style={{marginRight: -15}}
+                    style={{ marginRight: -15 }}
                   />
                 }
                 onPress={() => setSearch('')}
@@ -103,40 +103,64 @@ const ItemSelectorScreen: React.FC<ItemSelectorScreenProps> = ({
       <Typography color={Colors.Basic600} style={styles.ItemsLabel}>
         {labels.itemsLabel}
       </Typography>
-      <ScrollView style={{flex: 1}}>
-        <View style={styles.ListContainer}>
-          {list
-            .filter(({name}) =>
-              name.toLowerCase().includes(search.toLowerCase()),
-            )
-            .map(({id, name, icon}, i) => (
-              <>
-                {i === 0 && <Separator />}
-                <CheckBox
-                  key={id}
-                  checked={selectedItems.includes(id)}
-                  onCheckedChange={() => handleSelectedItems(id)}
-                  leftTextView={
-                    render ? 
-                      render(id, name, icon)
-                    //  <>{React.cloneElement(render, {name: name})}</>
-                    :
+      <ScrollView style={{ flex: 1 }}>
+        {list
+          .filter(({ name }) =>
+            name.toLowerCase().includes(search.toLowerCase()),
+          )
+          .map(({ id, name, icon }, i) => (
+            mode === 'single' ?
 
-                    <Typography style={styles.CheckBoxText}>{name}</Typography>
-                  }
-                  style={styles.CheckBox}
-                  hideCheckBox={mode === 'single'}
-                />
+              render ?
+                <Fragment key={id}>
+                  {render(id, name, i, icon, initialSelected)}
+                </Fragment>
+
+                :
+
+                <Button
+                  key={id}
+                  arrowRight
+                  borderTop={i === 0}
+                  borderBottom
+                  variant='text'
+                  style={{ paddingVertical: 19 }}
+                  onPress={() => handleSelectedItems(id)}
+                // disabled={initialSelected ? id === initialSelected[0] : false}
+                >
+                  <Typography size={16}>{name}</Typography>
+                </Button>
+
+              :
+
+              <Fragment key={id}>
+                {i === 0 && <Separator />}
+                <View style={{ paddingHorizontal: 19 }}>
+                  <CheckBox
+
+                    checked={selectedItems.includes(id)}
+                    onCheckedChange={() => handleSelectedItems(id)}
+                    leftTextView={
+                      render ?
+                        render(id, name, i, icon)
+
+                        :
+
+                        <Typography style={styles.CheckBoxText} size={16}>{name}</Typography>
+                    }
+                    style={styles.CheckBox}
+                  />
+                </View>
                 <Separator />
-              </>
-            ))}
-        </View>
+              </Fragment>
+          ))}
       </ScrollView>
       {mode === 'multiple' && (
         <Button
           stickyBottom
-          onPress={handleConfirm}
-          disabled={selectedItems.length === 0}>
+          onPress={handleConfirmMultiple}
+          disabled={selectedItems.length === 0}
+        >
           Potwierdź
         </Button>
       )}
@@ -145,7 +169,6 @@ const ItemSelectorScreen: React.FC<ItemSelectorScreenProps> = ({
 
   return (
     <>
-      {' '}
       {headerProps ? (
         <ScreenHeaderProvider {...headerProps}>{content}</ScreenHeaderProvider>
       ) : (
@@ -159,9 +182,6 @@ const styles = StyleSheet.create({
   Wrapper: {
     backgroundColor: Colors.Basic100,
     flex: 1,
-  },
-  ListContainer: {
-    paddingHorizontal: 19,
   },
   Textfield: {
     marginVertical: 16,

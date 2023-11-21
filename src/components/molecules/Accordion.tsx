@@ -8,10 +8,11 @@ import { isString } from 'lodash';
 type AccordionProps = React.ComponentProps<typeof List.Accordion>;
 
 const Accordion: React.FC<AccordionProps> = ({ title, children, style, ...props }) => {
+
   return (
     <List.Accordion
       title={isString(title) ? <Typography variant='h5'>{title}</Typography> : title}
-      style={[{ backgroundColor: Colors.Basic100, height: 58, paddingRight: 19 }, style]}
+      style={[{ backgroundColor: Colors.Basic100, height: 58, paddingRight: 19, paddingLeft: 2 }, style]}
       right={({ isExpanded }) => (
         <SvgIcon
           icon="arrowRightSmall"

@@ -1,12 +1,12 @@
-import React, {useEffect, useMemo, useState} from 'react';
-import {StyleSheet, View, TouchableOpacity} from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import Colors from '../../colors/Colors';
-import {useTypedSelector} from '../../hooks/useTypedSelector';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
-import {ScrollView} from '../../components/molecules/ScrollView';
+import { ScrollView } from '../../components/molecules/ScrollView';
 import Typography from '../../components/atoms/Typography';
 import Button from '../../components/molecules/Button';
-import {Separator} from 'tamagui';
+import { Separator } from 'tamagui';
 import useRouter from '../../hooks/useRouter';
 import {
   AddressType,
@@ -19,10 +19,10 @@ import {
 } from '../../store/reducers/types';
 import SvgIcon from '../../components/atoms/SvgIcon';
 import CheckBox from '../../components/atoms/CheckBox';
-import {isArray, isBoolean, isNaN, isNumber, isString} from 'lodash';
+import { isArray, isBoolean, isNaN, isNumber, isString } from 'lodash';
 import Accordion from '../../components/molecules/Accordion';
 import Slider from '@react-native-community/slider';
-import {Language} from 'react-native-google-places-autocomplete';
+import { useActions } from '../../hooks/useActions';
 
 const sortingModes: JobSortingModeType[] = [
   {
@@ -152,10 +152,19 @@ const initFilters: CandidatesFiltersType = {
 };
 
 const FilterScreen: React.FC = () => {
+  const { jobIndustries, userCompany, candidatesFilters } = useTypedSelector(
+    state => state.general,
+  );
   const [filters, setFilters] = useState<CandidatesFiltersType>(initFilters);
   const router = useRouter();
-  const {jobIndustries, userCompany} = useTypedSelector(state => state.general);
+  const { setCandidatesFilters } = useActions();
   const userIndustry = 2;
+
+  useEffect(() => {
+    if (candidatesFilters) {
+      setFilters(candidatesFilters);
+    };
+  }, [candidatesFilters]);
 
   const selectedPositions = useMemo(() => {
     return jobIndustries
@@ -211,7 +220,7 @@ const FilterScreen: React.FC = () => {
     }
   };
 
-  const handleJobPositions = (industryId: number, positionId: number) => {
+  const handleJobPositions = (industryId: number, positionId: number[]) => {
     changeFiltersHandler('positions_id', positionId);
   };
 
@@ -219,11 +228,7 @@ const FilterScreen: React.FC = () => {
     changeFiltersHandler('locations_id', location);
   };
 
-  const handleLanguagesSingle = (id: number) => {
-    changeFiltersHandler('languages_id', id);
-  };
-
-  const handleLanguagesMultiple = (id: number[]) => {
+  const handleLanguages = (id: number[]) => {
     changeFiltersHandler('languages_id', id);
   };
 
@@ -233,9 +238,10 @@ const FilterScreen: React.FC = () => {
       screen: 'FilterScreen',
       params: {
         subView: 'JobCategoryScreen',
-        mode: 'industryAndPosition',
+        mode: 'multiplePosition',
         callback: handleJobPositions,
         initialIndustry: userIndustry,
+        initialPosition: filters.positions_id
       },
     });
   };
@@ -252,34 +258,6 @@ const FilterScreen: React.FC = () => {
     });
   };
 
-  const testLeftTextView = (id: number, name: string) => {
-    return(
-      <>
-        <View style={{height: 60}}>
-          <Typography size={20}>{name}</Typography>
-        </View>
-      </>
-    )
-  };
-
-  const goToSelectLanguagesSingle = () => {
-    router.push({
-      stack: 'CandidatesStack',
-      screen: 'FilterScreen',
-      params: {
-        subView: 'ItemSelectorScreen',
-        mode: 'single',
-        list: languages,
-        callback: handleLanguagesSingle,
-        labels: {
-          searchLabel: 'Znajdź język',
-          itemsLabel: 'Popularne języki',
-        },
-        headerProps: {title: 'Wybór języków'},
-      },
-    });
-  };
-
   const goToSelectLanguagesMultiple = () => {
     router.push({
       stack: 'CandidatesStack',
@@ -288,22 +266,29 @@ const FilterScreen: React.FC = () => {
         subView: 'ItemSelectorScreen',
         mode: 'multiple',
         list: languages,
-        callback: handleLanguagesMultiple,
+        callback: handleLanguages,
         labels: {
           searchLabel: 'Znajdź język',
           itemsLabel: 'Popularne języki',
         },
-        headerProps: {title: 'Wybór języków'},
-        render: testLeftTextView
+        headerProps: { title: 'Wybór języków' },
+        initialSelected: filters.languages_id,
       },
     });
   };
 
-  const searchButton = () => {};
+  const searchButton = () => {
+    setCandidatesFilters(filters);
+    router.push({
+      stack: 'MenuStack',
+      screen: 'MainScreen',
+      params: undefined,
+    });
+  };
 
   return (
     <ScreenHeaderProvider>
-      <View style={{flex: 1, backgroundColor: Colors.Basic100}}>
+      <View style={{ flex: 1, backgroundColor: Colors.Basic100 }}>
         <ScrollView style={styles.ScrollView}>
           <Typography style={styles.Title} size={18} weight="Bold">
             Sortuj po
@@ -312,16 +297,14 @@ const FilterScreen: React.FC = () => {
             horizontal
             disableWindowScroll
             showsHorizontalScrollIndicator={false}
-            style={{marginBottom: 30}}>
-            {sortingModes.map(({id, name}, i) => (
+            style={{ marginBottom: 30 }}
+          >
+            {sortingModes.map(({ id, name }, i) => (
               <TouchableOpacity
                 style={[
                   styles.HorizontalButton,
                   {
-                    backgroundColor:
-                      filters.sorting_id === id
-                        ? Colors.Basic500
-                        : Colors.Basic300,
+                    backgroundColor: filters.sorting_id === id ? Colors.Basic500 : Colors.Basic300,
                     marginLeft: i === 0 ? 19 : 0,
                   },
                 ]}
@@ -348,14 +331,15 @@ const FilterScreen: React.FC = () => {
               horizontal
               disableWindowScroll
               showsHorizontalScrollIndicator={false}
-              style={styles.SelectedItems}>
-              {selectedPositions?.map(({id, name}) => (
+              style={styles.SelectedItems}
+            >
+              {selectedPositions?.map(({ id, name }) => (
                 <TouchableOpacity
                   onPress={() => changeFiltersHandler('positions_id', id)}
                   key={id}
                   style={styles.SelectedItem}>
                   <Typography size={14}>{name}</Typography>
-                  <SvgIcon icon="closeCircle" fill={Colors.Basic200} />
+                  <SvgIcon icon="closeCircleAlt" fill={Colors.Basic200} />
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -371,19 +355,19 @@ const FilterScreen: React.FC = () => {
           </Button>
           {filters.locations_id.length > 0 && (
             <View style={styles.SelectedItems}>
-              {filters.locations_id?.map(({locality}) => (
+              {filters.locations_id?.map(({ locality }) => (
                 <TouchableOpacity
                   onPress={() => changeFiltersHandler('locations_id', null)}
                   style={styles.SelectedItem}>
                   <Typography size={14}>{locality}</Typography>
-                  <SvgIcon icon="closeCircle" fill={Colors.Basic200} />
+                  <SvgIcon icon="closeCircleAlt" fill={Colors.Basic200} />
                 </TouchableOpacity>
               ))}
             </View>
           )}
           <Separator />
-          <View style={{paddingHorizontal: 19}}>
-            <Typography size={16} weight="SemiBold" style={{paddingTop: 19}}>
+          <View style={{ paddingHorizontal: 19 }}>
+            <Typography size={16} weight="SemiBold" style={{ paddingTop: 19 }}>
               Odległość od wybranej lokalizacji: +
               {filters.distance === 1 ? 0 : filters.distance} km
             </Typography>
@@ -392,7 +376,7 @@ const FilterScreen: React.FC = () => {
               onValueChange={value =>
                 changeFiltersHandler('distance', !isNaN(value) ? value : 0)
               }
-              style={{height: 60}}
+              style={{ height: 60 }}
               minimumValue={1}
               maximumValue={100}
               step={5}
@@ -402,22 +386,20 @@ const FilterScreen: React.FC = () => {
             />
           </View>
           <Separator />
-
-          <Accordion title="Dostępność">
+          <Accordion title='Dostępność'>
             <ScrollView
               horizontal
               disableWindowScroll
               showsHorizontalScrollIndicator={false}
-              style={{marginBottom: 30}}>
-              {availability.map(({id, name}, i) => (
+              style={{ paddingBottom: 8 }}
+            >
+              {availability.map(({ id, name }, i) => (
                 <TouchableOpacity
                   key={id}
                   style={[
                     styles.HorizontalButton,
                     {
-                      backgroundColor: filters.availability_id.includes(id)
-                        ? Colors.Basic500
-                        : Colors.Basic300,
+                      backgroundColor: filters.availability_id.includes(id) ? Colors.Basic500 : Colors.Basic300,
                       marginLeft: i === 0 ? 19 : 0,
                     },
                   ]}
@@ -428,23 +410,21 @@ const FilterScreen: React.FC = () => {
               ))}
             </ScrollView>
           </Accordion>
-
           <Separator />
           <Accordion title="Tryb pracy">
             <ScrollView
               horizontal
               disableWindowScroll
               showsHorizontalScrollIndicator={false}
-              style={{marginBottom: 30}}>
-              {workModes.map(({id, name}, i) => (
+              style={{ paddingBottom: 8 }}
+            >
+              {workModes.map(({ id, name }, i) => (
                 <TouchableOpacity
                   key={id}
                   style={[
                     styles.HorizontalButton,
                     {
-                      backgroundColor: filters.workModes_id.includes(id)
-                        ? Colors.Basic500
-                        : Colors.Basic300,
+                      backgroundColor: filters.workModes_id.includes(id) ? Colors.Basic500 : Colors.Basic300,
                       marginLeft: i === 0 ? 19 : 0,
                     },
                   ]}
@@ -456,14 +436,14 @@ const FilterScreen: React.FC = () => {
             </ScrollView>
           </Accordion>
           <Separator />
-
-          <Accordion title="Rodzaj umowy">
+          <Accordion title='Rodzaj umowy'>
             <ScrollView
               horizontal
               disableWindowScroll
               showsHorizontalScrollIndicator={false}
-              style={{marginBottom: 30}}>
-              {contracts.map(({id, name}, i) => (
+              style={{ paddingBottom: 8 }}
+            >
+              {contracts.map(({ id, name }, i) => (
                 <TouchableOpacity
                   key={id}
                   style={[
@@ -482,15 +462,14 @@ const FilterScreen: React.FC = () => {
               ))}
             </ScrollView>
           </Accordion>
-
-
           <Button
             arrowRight
             variant="text"
             borderTop
-            onPress={() => goToSelectLanguagesSingle()}>
+            onPress={() => goToSelectLanguagesMultiple()}
+          >
             <Typography size={16} weight="SemiBold">
-              Znajomość języków - single
+              Znajomość języków
             </Typography>
           </Button>
           {filters.languages_id.length > 0 && (
@@ -498,48 +477,20 @@ const FilterScreen: React.FC = () => {
               horizontal
               disableWindowScroll
               showsHorizontalScrollIndicator={false}
-              style={styles.SelectedItems}>
-              {selectedLanguages?.map(({id, name}) => (
+              style={styles.SelectedItems}
+            >
+              {selectedLanguages?.map(({ id, name }) => (
                 <TouchableOpacity
                   onPress={() => changeFiltersHandler('languages_id', id)}
                   key={id}
                   style={styles.SelectedItem}>
                   <Typography size={14}>{name}</Typography>
-                  <SvgIcon icon="closeCircle" fill={Colors.Basic200} />
+                  <SvgIcon icon="closeCircleAlt" />
                 </TouchableOpacity>
               ))}
             </ScrollView>
           )}
-
-          <Button
-            arrowRight
-            variant="text"
-            borderTop
-            onPress={() => goToSelectLanguagesMultiple()}>
-            <Typography size={16} weight="SemiBold">
-              Znajomość języków - multiple
-            </Typography>
-          </Button>
-          {filters.languages_id.length > 0 && (
-            <ScrollView
-              horizontal
-              disableWindowScroll
-              showsHorizontalScrollIndicator={false}
-              style={styles.SelectedItems}>
-              {selectedLanguages?.map(({id, name}) => (
-                <TouchableOpacity
-                  onPress={() => changeFiltersHandler('languages_id', id)}
-                  key={id}
-                  style={styles.SelectedItem}>
-                  <Typography size={14}>{name}</Typography>
-                  <SvgIcon icon="closeCircle" fill={Colors.Basic200} />
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          )}
-
-
-
+          <Separator />
           <View style={styles.CheckBoxWrapper}>
             <CheckBox
               checked={filters.only_with_cv}
@@ -575,7 +526,7 @@ const styles = StyleSheet.create({
   },
   SelectedItems: {
     paddingHorizontal: 19,
-    marginTop: 20,
+    marginTop: 10,
     marginBottom: 7,
   },
   HorizontalButton: {
@@ -590,10 +541,10 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: Colors.Basic300,
     paddingHorizontal: 10,
-    paddingVertical: 8,
     flexDirection: 'row',
     gap: 10,
     alignItems: 'center',
+    height: 30,
   },
   CheckBoxWrapper: {
     paddingHorizontal: 19,

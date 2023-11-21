@@ -31,6 +31,7 @@ const initialState: generalReducerState = {
     userInvoices: [],
     windowSizes: Dimensions.get('window'),
     userQuestions: [],
+    candidatesFilters: null,
 }
 
 export const generalReducer = (state = initialState, action: generalReducerAction): generalReducerState => {
@@ -76,6 +77,8 @@ export const generalReducer = (state = initialState, action: generalReducerActio
             return { ...state, swipeablePanelProps: action.payload };
         case generalActionTypes.SET_USER_QUESTIONS:
             return { ...state, userQuestions: action.payload };
+        case generalActionTypes.SET_CANDIDATES_FILTERS:
+            return { ...state, candidatesFilters: action.payload };
         case generalActionTypes.LOG_OUT:
             AsyncStorage.multiRemove(['token', 'refresh_token']);
             googleSignOut();

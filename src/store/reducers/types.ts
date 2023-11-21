@@ -26,6 +26,7 @@ export interface generalReducerState {
     notesData: NoteDataType[],
     userInvoices: InvoiceType[],
     userQuestions: UserQuestionsType[];
+    candidatesFilters: CandidatesFiltersType | null;
 }
 
 export type WindowSizesType = ScaledSize;
