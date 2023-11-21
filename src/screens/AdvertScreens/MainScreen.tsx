@@ -51,7 +51,7 @@ const MainScreen: React.FC = () => {
     setLoading(false);
   }
 
-  // console.log(Object.keys(userCompany));
+  console.log(userAdverts);
 
 
   useEffect(() => {

@@ -311,7 +311,7 @@ const EventScreen: React.FC = () => {
             </Typography>
             {selectedCandidate && <TouchableOpacity
               style={{ marginRight: 18 }}
-              onPress={goToChooseAdvertScreen}
+              onPress={goToChooseCandidateScreen}
             >
               <Typography style={{ textDecorationLine: 'underline' }} color={Colors.Blue500}>
                 Zmień wybór
@@ -342,8 +342,8 @@ const EventScreen: React.FC = () => {
             name='eventType' ml={18} mt={10} mb={15}
             value={eventType} onValueChange={value => setEventType(value as 'meeting' | 'call')}
           >
-            <RadioGroup.Item value="call" my={1}>Połaczenie telefoniczne</RadioGroup.Item>
-            <RadioGroup.Item value="meeting" my={1}>Spotkanie pod adresem</RadioGroup.Item>
+            <RadioGroup.Item value="call" my={1} label='Połaczenie telefoniczne' />
+            <RadioGroup.Item value="meeting" my={1} label='Spotkanie pod adresem' />
           </RadioGroup>
         </View>
         {eventType === 'meeting' && <>

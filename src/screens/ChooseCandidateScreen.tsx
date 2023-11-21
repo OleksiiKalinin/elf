@@ -31,8 +31,8 @@ const ChooseCandidateScreen: React.FC<ChooseCandidateScreenProps> = ({callback, 
   useEffect(() => {
     (async () => {
       if (candidatesWithRating.length) {
-        // const res = await dispatch(advertsServices.getAdvertCandidates(token, candidatesWithRating.map(e => e.candidate_id)));
-        // setCandidates(res as unknown as CandidateDataType[]);
+        const res = await dispatch(advertsServices.getAdvertCandidates(token, candidatesWithRating.map(e => e.candidate_id)));
+        setCandidates(res as unknown as CandidateDataType[]);
       }
       setLoading(false);
     })();
