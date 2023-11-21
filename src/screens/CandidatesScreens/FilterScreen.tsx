@@ -6,7 +6,7 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import { ScrollView } from '../../components/molecules/ScrollView';
 import Typography from '../../components/atoms/Typography';
 import Button from '../../components/molecules/Button';
-import { Separator } from 'tamagui';
+import { Separator, XStack } from 'tamagui';
 import useRouter from '../../hooks/useRouter';
 import {
   AddressType,
@@ -20,7 +20,7 @@ import SvgIcon from '../../components/atoms/SvgIcon';
 import CheckBox from '../../components/atoms/CheckBox';
 import { isArray, isBoolean, isNaN, isNumber, isString } from 'lodash';
 import Accordion from '../../components/molecules/Accordion';
-import Slider from '@react-native-community/slider';
+import Slider from '../../components/atoms/Slider';
 
 const sortingModes: JobSortingModeType[] = [
   {
@@ -110,7 +110,7 @@ const initFilters: CandidatesFiltersType = {
   sorting_id: 1,
   positions_id: [],
   locations_id: [],
-  distance: 30,
+  distance: 0,
   availability_id: [],
   workModes_id: [],
   contracts_id: [],
@@ -196,6 +196,7 @@ const FilterScreen: React.FC = () => {
         subView: 'GoogleMapScreen',
         callback: addLocation,
         initialAddress: null,
+        optionsType: 'geocode'
       },
     });
   };
@@ -288,19 +289,13 @@ const FilterScreen: React.FC = () => {
               Odległość od wybranej lokalizacji: +
               {filters.distance === 1 ? 0 : filters.distance} km
             </Typography>
-            <Slider
-              value={filters.distance}
-              onValueChange={(value) =>
-                changeFiltersHandler('distance', !isNaN(value) ? value : 0)
-              }
-              style={{ height: 60 }}
-              minimumValue={1}
-              maximumValue={100}
-              step={5}
-              minimumTrackTintColor={Colors.Basic900}
-              maximumTrackTintColor={Colors.Basic300}
-              thumbTintColor={Colors.Basic900}
-            />
+            <View style={{ marginVertical: 10 }}>
+              <Slider
+                min={0} max={100} step={5}
+                value={[filters.distance]}
+                onValueChange={([value]) => changeFiltersHandler('distance', !isNaN(value) ? value : 0)}
+              />
+            </View>
           </View>
           <Separator />
 

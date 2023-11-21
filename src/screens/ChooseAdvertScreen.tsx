@@ -12,9 +12,9 @@ export type ChooseAdvertScreenProps = {
   callback: (advert: UserAdvertType) => void;
 };
 
-const ChooseAdvertScreen: FC<ChooseAdvertScreenProps> = ({callback}) => {
+const ChooseAdvertScreen: FC<ChooseAdvertScreenProps> = ({ callback }) => {
   const { userAdverts } = useTypedSelector(state => state.general);
-  const {backToRemoveParams} = useRouter();
+  const { backToRemoveParams } = useRouter();
 
   return (
     <ScreenHeaderProvider title='Wybierz ogłoszenie'>

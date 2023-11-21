@@ -9,6 +9,10 @@
     scrollbar-width: thin;
 }
 
+input {
+    outline: none;
+}
+
 a {
     text-decoration: none;
 }

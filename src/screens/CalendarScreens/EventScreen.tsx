@@ -151,18 +151,6 @@ const EventScreen: React.FC = () => {
     router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'ChooseCandidateScreen', callback: setSelectedCandidate, candidates: selectedAdvert?.candidate_data || [] } });
   };
 
-  // Test
-  const goToJobCategoryScreenMode1 = () => {
-    router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'JobCategoryScreen', mode: 'industry', callback: TestJobCategoryDataMode1 } });
-  };
-  // Test
-  const goToJobCategoryScreenMode2 = () => {
-    router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'JobCategoryScreen', mode: 'industryAndPosition', callback: TestJobCategoryDataMode2 } });
-  };
-  const goToJobCategoryScreenMode3 = () => {
-    router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'JobCategoryScreen', mode: 'industryAndPosition', callback: TestJobCategoryDataMode2, initialIndustry: 2 } });
-  };
-
   return (
     <ScreenHeaderProvider>
       <ScrollView style={styles.Wrapper}>
@@ -243,32 +231,32 @@ const EventScreen: React.FC = () => {
         <View style={{ marginBottom: showTimepicker || showCalendar ? 25 : 0 }}>
           {showTimepicker && <View>
             {/* <DatePicker
-              date={showTimepicker === 'start' ? startTime : endTime}
-              onDateChange={date => showTimepicker === 'start' ? setStartTime(date) : setEndTime(date)}
-              fadeToColor='none'
-              mode="time"
-              theme='light'
-              dividerHeight={4}
-              is24hourSource="locale"
-              locale="pl"
-              minuteInterval={5}
-              style={{ width: Dimensions.get('screen').width }}
-            /> */}
+            date={showTimepicker === 'start' ? startTime : endTime}
+            onDateChange={date => showTimepicker === 'start' ? setStartTime(date) : setEndTime(date)}
+            fadeToColor='none'
+            mode="time"
+            theme='light'
+            dividerHeight={4}
+            is24hourSource="locale"
+            locale="pl"
+            minuteInterval={5}
+            style={{ width: Dimensions.get('screen').width }}
+          /> */}
           </View>}
           {!isFirstLoad.current && <View>
             {/* there was a problem with rerendering - the only way below */}
             {/* <Calendar
-              dateInit={startDate}
-              isVisible={showCalendar === 'start'}
-              onDateChanged={setStartDate}
-              renderOnly='month' backgroundColor={Colors.Basic100}
-            />
-            <Calendar
-              dateInit={endDate}
-              isVisible={showCalendar === 'end'}
-              onDateChanged={setEndDate}
-              renderOnly='month' backgroundColor={Colors.Basic100}
-            /> */}
+            dateInit={startDate}
+            isVisible={showCalendar === 'start'}
+            onDateChanged={setStartDate}
+            renderOnly='month' backgroundColor={Colors.Basic100}
+          />
+          <Calendar
+            dateInit={endDate}
+            isVisible={showCalendar === 'end'}
+            onDateChanged={setEndDate}
+            renderOnly='month' backgroundColor={Colors.Basic100}
+          /> */}
           </View>}
         </View>
         <Separator />
@@ -346,44 +334,25 @@ const EventScreen: React.FC = () => {
           </Typography>
           <View style={{ marginBottom: 30 }}>
             {/* <SmallMap
-              place={location?.formattedAddress}
-              latitude={location?.position?.lat}
-              longitude={location?.position?.lng}
-              onPress={() => router.push({stack: 'CalendarStack', screen: 'EventScreen', params: {
-                subView: 'GoogleMap',
-                callback: (address) => setLocation(address),
-                initialAddress: location
-              }})}
-            /> */}
+            place={location?.formattedAddress}
+            latitude={location?.position?.lat}
+            longitude={location?.position?.lng}
+            onPress={() => router.push({stack: 'CalendarStack', screen: 'EventScreen', params: {
+              subView: 'GoogleMap',
+              callback: (address) => setLocation(address),
+              initialAddress: location
+            }})}
+          /> */}
           </View>
         </>}
       </ScrollView>
       <Button
         // disabled={!token || loading} 
         // withLoading={!!token} 
+        stickyBottom
         onPress={addEventHandler}
       >
         Zaplanuj
-      </Button>
-
-      {/* Test */}
-      <Button
-        onPress={goToJobCategoryScreenMode1}
-        style={{ marginTop: 30 }}
-      >
-        Job category - mode 1
-      </Button>
-      <Button
-        onPress={goToJobCategoryScreenMode2}
-        style={{ marginTop: 30 }}
-      >
-        Job category - mode 2
-      </Button>
-      <Button
-        onPress={goToJobCategoryScreenMode3}
-        style={{ marginTop: 30 }}
-      >
-        Job category - mode 2 (initial industry)
       </Button>
     </ScreenHeaderProvider>
   );

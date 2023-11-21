@@ -2,14 +2,14 @@ import { useNavigation } from '@react-navigation/native';
 import React, { ComponentProps, FC, HTMLFactory, useCallback, useEffect, useRef, useState } from 'react';
 import { Dimensions, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import geocoder from 'react-native-geocoder-reborn';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { AutocompleteRequestType, GooglePlacesAutocomplete as NativeAutocomplete } from 'react-native-google-places-autocomplete';
 import MapView, { MapMarker, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { AddressType } from '../store/reducers/types';
 import SvgIcon from '../components/atoms/SvgIcon';
 import Colors from '../colors/Colors';
 import Button from '../components/molecules/Button';
 import { useTypedSelector } from '../hooks/useTypedSelector';
-import Autocomplete from "react-google-autocomplete";
+import WebAutocomplete from "react-google-autocomplete";
 import useRouter from '../hooks/useRouter';
 
 const Map = MapView as unknown as FC<ComponentProps<typeof MapView> & { options: any }> & { Marker: typeof MapMarker };
@@ -20,12 +20,33 @@ if (Platform.OS === 'android' || Platform.OS === 'ios') {
 const markerIcon: any = 'https://drive.google.com/uc?id=18XoaiN-bJE9zslCbZNk6xpRCVLdikwGr&export=download';
 
 export type GoogleMapScreenProps = {
-    callback: (address: AddressType) => void,
+    callback: (address: AddressType) => void, 
     initialAddress: AddressType | null,
-    hideControls?: boolean
+    hideControls?: boolean,
+    /** 
+     * https://developers.google.com/maps/documentation/places/web-service/supported_types#table3
+     *  
+     * The supported types are:
+     * - geocode - instructs the Place Autocomplete service to return only geocoding results, rather than business results. Generally, you use this request to disambiguate results where the location specified may be indeterminate.
+     * - address - instructs the Place Autocomplete service to return only geocoding results with a precise address. Generally, you use this request when you know the user will be looking for a fully specified address.
+     * - establishment - instructs the Place Autocomplete service to return only business results.
+     * - (regions) - type collection instructs the Places service to return any result matching the following types:
+     *    - locality
+     *    - sublocality
+     *    - postal_code
+     *    - country
+     *    - administrative_area_level_1 (województwo???)
+     *    - administrative_area_level_2
+     * - (cities) - type collection instructs the Places service to return results that match types:
+     *    - locality
+     *    - administrative_area_level_3 (dzielnica)
+     * 
+     * @default geocode
+     * */
+    optionsType?: AutocompleteRequestType
 }
 
-const GoogleMapScreen: FC<GoogleMapScreenProps> = ({ callback, initialAddress, hideControls = false }) => {
+const GoogleMapScreen: FC<GoogleMapScreenProps> = ({ callback, initialAddress, hideControls = false, optionsType = 'geocode' }) => {
     const [location, setLocation] = useState(initialAddress);
     const [webInputValue, setWebInputValue] = useState<string>(location?.formattedAddress || '');
     const NativeInputRef = useRef<any>(null);
@@ -52,7 +73,7 @@ const GoogleMapScreen: FC<GoogleMapScreenProps> = ({ callback, initialAddress, h
     return (
         <View style={{ backgroundColor: Colors.Basic100, flex: 1, position: 'relative' }}>
             <View style={styles.InputWrapper}>
-                {(Platform.OS === 'ios' || Platform.OS === 'android') && <GooglePlacesAutocomplete
+                {(Platform.OS === 'ios' || Platform.OS === 'android') && <NativeAutocomplete
                     ref={NativeInputRef}
                     placeholder="Wpisz lokalizację"
                     onPress={(data) => {
@@ -78,6 +99,7 @@ const GoogleMapScreen: FC<GoogleMapScreenProps> = ({ callback, initialAddress, h
                         key: 'AIzaSyBLA1spwwoOjY2rOvMliOBc2C87k6ZOJ_s',
                         language: 'pl',
                         components: 'country:pl',
+                        type: optionsType
                     }}
                     enablePoweredByContainer={false}
                     // currentLocation={true}
@@ -91,34 +113,37 @@ const GoogleMapScreen: FC<GoogleMapScreenProps> = ({ callback, initialAddress, h
                         description: styles.InputNativeDesc,
                     }}
                 />}
-                {Platform.OS === 'web' && <View style={{ flexDirection: 'row', width: '100%', height: 42 }}>
-                    <BackButton />
-                    <Autocomplete
-                        ref={WebInputRef}
-                        style={styles.InputWeb}
-                        onPlaceSelected={(place) => {
-                            geocoder.geocodeAddress(place.formatted_address)
-                                .then(res => setLocation(res[0] as unknown as AddressType))
-                                .catch(err => console.log(err));
-                        }}
-                        defaultValue={webInputValue}
-                        options={{
-                            types: ['address'],
-                            componentRestrictions: { country: 'pl' }
-                        }}
-                        onChange={(e) => setWebInputValue((e.target as any).value || '')}
-                    />
-                    <TouchableOpacity
-                        style={styles.ClearButton}
-                        onPress={!!webInputValue ? () => {
-                            if (WebInputRef.current) WebInputRef.current.value = '';
-                            setWebInputValue('');
-                            setLocation(null);
-                        } : undefined}
-                    >
-                        <SvgIcon icon={!!webInputValue ? "crossBig" : 'search'} />
-                    </TouchableOpacity>
-                </View>}
+                {Platform.OS === 'web' && (
+                    <View style={{ flexDirection: 'row', width: '100%', height: 42 }}>
+                        <BackButton />
+                        <WebAutocomplete
+                            ref={WebInputRef}
+                            style={styles.InputWeb}
+                            onPlaceSelected={(place) => {
+                                geocoder.geocodeAddress(place.formatted_address)
+                                    .then(res => setLocation(res[0] as unknown as AddressType))
+                                    .catch(err => console.log(err));
+                            }}
+                            defaultValue={webInputValue}
+                            options={{
+                                types: [optionsType],
+                                // types: ['address'],
+                                componentRestrictions: { country: 'pl' }
+                            }}
+                            onChange={(e) => setWebInputValue((e.target as any).value || '')}
+                        />
+                        <TouchableOpacity
+                            style={styles.ClearButton}
+                            onPress={!!webInputValue ? () => {
+                                if (WebInputRef.current) WebInputRef.current.value = '';
+                                setWebInputValue('');
+                                setLocation(null);
+                            } : undefined}
+                        >
+                            <SvgIcon icon={!!webInputValue ? "crossBig" : 'search'} />
+                        </TouchableOpacity>
+                    </View>
+                )}
             </View>
             <Map
                 style={[styles.Map]}
@@ -221,7 +246,7 @@ const styles = StyleSheet.create({
         border: 0,
         fontSize: 16,
         fontWeight: '600',
-        paddingLeft: 15
+        paddingLeft: 15,
     },
     Map: {
         paddingTop: 42,
