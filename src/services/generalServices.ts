@@ -61,6 +61,7 @@ const getAppData = (token: string | null) => async (dispatch: Dispatch<any>) => 
             marksData: appData.data?.notes_candidate_scoring || [],
             notesData: appData.data?.notes_flags1 || [],
             userQuestions: [],
+            candidatesFilters: null,
         }));
         isOk = true;
     }).catch(error => {

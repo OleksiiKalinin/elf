@@ -128,6 +128,7 @@ import CoinsIcon from "../../assets/icons/CoinsIcon";
 import RefreshIcon from "../../assets/icons/RefreshIcon";
 import EventsHistoryIcon from "../../assets/icons/EventsHistoryIcon";
 import DoneCircleIcon from "../../assets/icons/DoneCircleIcon";
+import CloseCircleAltIcon from "../../assets/icons/CloseCircleAltIcon";
 
 export const icons = [
     {
@@ -166,6 +167,9 @@ export const icons = [
     }, {
         name: 'closeCircle',
         value: <CloseCircleIcon />
+    }, {
+        name: 'closeCircleAlt',
+        value: <CloseCircleAltIcon />
     }, {
         name: 'closeX',
         value: <CloseXIcon />
