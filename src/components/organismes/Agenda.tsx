@@ -4,59 +4,90 @@ import { Agenda as Agnd, LocaleConfig } from '../modified_modules/react-native-c
 import Colors from '../../colors/Colors';
 import SvgIcon from '../atoms/SvgIcon';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import { UserEventType } from '../../store/reducers/types';
+import { JobPositionType, UserEventType } from '../../store/reducers/types';
+import { AgendaEntry, DateData } from '../modified_modules/react-native-calendars/src/types';
+import { useActions } from '../../hooks/useActions';
+import Lodash from "lodash";
+import Typography from '../atoms/Typography';
 
-
-function timeToString(time: number) {
-    const date = new Date(time);
-    return date.toISOString().split('T')[0];
+type ScheduleType = {
+    [k: string]: ItemType[]
 }
+
+type ItemType = {
+    id: number,
+    address: string,
+    timeStart: string,
+    timeEnd: string,
+    isPhoneCall: string,
+    firstName: string,
+    lastName: string,
+    jobPosition: string,
+} & AgendaEntry;
 
 const Agenda: React.FC<{ getCurrentDate: (s: string) => void, events: UserEventType[] }> = ({ getCurrentDate, events }) => {
     const [date] = useState<string>(new Date().toISOString().replace(/T.*$/, ''));
-    const [items, setitems] = useState<any>({})
     const [isOpened, setIsOpened] = useState<boolean>(false);
-    const [loaded, setloaded] = useState<boolean>(false);
     const calendarLocale = LocaleConfig.locales['pl'];
+    const [loading, setLoading] = useState<boolean>(true);
+    const [items, setItems] = React.useState<ScheduleType>({});
+    const { jobIndustries } = useTypedSelector(s => s.general);
+    const [jobPositions, setJobPositions] = useState<JobPositionType[]>([]);
+    const { setSwipeablePanelProps } = useActions();
 
     useEffect(() => {
         const [year, month] = date.split('-');
         getCurrentDate && getCurrentDate(`${calendarLocale.monthNames?.[Number(month) - 1]} ${Number(year)}`);
     }, []);
 
+    // useEffect(() => {
+    //     setloaded(true);
+    // }, [])
+
     useEffect(() => {
-        setloaded(true);
-    }, [])
+        setJobPositions(jobIndustries.reduce<JobPositionType[]>((prev, curr) => [...prev, ...curr.job_positions], []));
+    }, [jobIndustries]);
 
-    const loadItems = (day: any) => {
-        setTimeout(() => {
-            for (let i = -15; i < 85; i++) {
-                const time = day.timestamp + i * 24 * 60 * 60 * 1000;
-                const strTime = timeToString(time);
-
-                if (!items[strTime]) {
-                    items[strTime] = [];
-
-                    const numItems = Math.floor(Math.random() * 5);
-                    for (let j = 0; j < numItems; j++) {
-                        items[strTime].push({
-                            name: 'Item for ' + strTime + ' #' + j,
-                            height: Math.max(50, Math.floor(Math.random() * 150)),
-                            day: strTime
-                        });
-                    }
+    useEffect(() => {
+        !!jobPositions.length && setItems((prev: any) => ({
+            ...prev,
+            ...events.reduce<{ [k: string]: any[] }>((prev, curr) => {
+                const currDay = curr.start_time.split('T')[0];
+                const timeStart = new Date(curr.start_time);
+                const timeEnd = new Date(curr.end_time);
+                const [startHours, startMinutes] = [timeStart.getHours(), timeStart.getMinutes()];
+                const [endHours, endMinutes] = [timeEnd.getHours(), timeEnd.getMinutes()];
+                const streetName = curr.location?.streetName || '';
+                const streetNumber = curr.location?.streetNumber || '';
+                const city = curr.location?.subAdminArea || '';
+                return {
+                    ...prev,
+                    [currDay]: [...(prev[currDay] ? prev[currDay] : []), {
+                        id: curr.id,
+                        address: `${streetName}${streetName && streetNumber ? ' ' : ''}${streetNumber}${(streetName || streetNumber) && city ? ', ' : ''}${city}`,
+                        timeStart: `${startHours > 9 ? startHours : `0${startHours}`}:${startMinutes > 9 ? startMinutes : `0${startMinutes}`}`,
+                        timeEnd: `${endHours > 9 ? endHours : `0${endHours}`}:${endMinutes > 9 ? endMinutes : `0${endMinutes}`}`,
+                        isPhoneCall: curr.is_phone,
+                        firstName: curr.candidate_first_name,
+                        lastName: curr.candidate_second_name,
+                        jobPosition: jobPositions.find(e => e.id === curr.job_position)?.name,
+                        sortBy: timeStart.getTime()
+                    }].sort((a, b) => a.sortBy - b.sortBy)
                 }
-            }
+            }, {})
+        }))
+    }, [events, jobPositions]);
 
-            const newItems: any = {};
-            Object.keys(items).forEach(key => {
-                newItems[key] = items[key];
-            });
-            setitems(newItems)
-        }, 1000);
-    };
+    const loadItems = ({ timestamp }: DateData) => {
+        const newItems = Lodash.clone(items);
+        for (let i = -15; i < 85; i++) {
+            const startDay = new Date(timestamp + i * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+            if (!newItems[startDay]) newItems[startDay] = [];
+        }
+        setItems(newItems);
+    }
 
-    return loaded && (
+    return (
         <Agnd
             items={items}
             loadItemsForMonth={loadItems}
@@ -70,7 +101,7 @@ const Agenda: React.FC<{ getCurrentDate: (s: string) => void, events: UserEventT
             pastScrollRange={6}
             futureScrollRange={12}
             renderItem={(item, firstItemInDay) => {
-                // const { timeStart, timeEnd, isPhoneCall, address, firstName, lastName, jobPosition, id } = item as ItemType;
+                const { timeStart, timeEnd, isPhoneCall, address, firstName, lastName, jobPosition, id } = item as ItemType;
                 return (
                     <TouchableOpacity
                         // onPress={() => options(id)} 
@@ -85,28 +116,23 @@ const Agenda: React.FC<{ getCurrentDate: (s: string) => void, events: UserEventT
                         }}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <View style={{ height: '100%', flex: 1 }}>
-                                {/* <Typography variant='h5'>{timeStart} - {timeEnd}</Typography>
+                                <Typography variant='h5'>{timeStart} - {timeEnd}</Typography>
                       <Typography numberOfLines={1} variant='h5' weight='SemiBold'>{firstName} {lastName}</Typography>
                       <Typography numberOfLines={1} variant='h5' weight='SemiBold' color={Colors.Basic700} style={{ marginTop: 'auto' }}>{jobPosition}</Typography>
-                      <Typography numberOfLines={1}>{isPhoneCall ? 'Połączenie' : address}</Typography> */}
-                                <Text>{`{timeStart} - {timeEnd}`}</Text>
-                                <Text numberOfLines={1}>{`{firstName} {lastName}`}</Text>
-                                <Text numberOfLines={1} style={{ marginTop: 'auto' }}>{`{jobPosition}`}</Text>
-                                <Text numberOfLines={1}>{`{isPhoneCall ? 'Połączenie' : address}`}</Text>
+                      <Typography numberOfLines={1}>{isPhoneCall ? 'Połączenie' : address}</Typography>
                             </View>
                             <View style={{ alignItems: 'center', height: '100%' }}>
                                 <View style={{ width: 45, height: 45, borderRadius: 45, overflow: 'hidden', backgroundColor: Colors.Basic400, justifyContent: 'center', alignItems: 'center' }}>
-                                    {/* <Typography size={20} color={Colors.Basic600}>{firstName[0]?.toUpperCase() || ''}{lastName[0]?.toUpperCase() || ''}</Typography> */}
+                                    <Typography size={20} color={Colors.Basic600}>{firstName[0]?.toUpperCase() || ''}{lastName[0]?.toUpperCase() || ''}</Typography>
                                 </View>
                                 <View style={{ paddingTop: 15, justifyContent: 'center', alignItems: 'center' }}>
-                                    {/* <SvgIcon icon={isPhoneCall ? 'phoneCall1' : 'meeting'} style={{ transform: [{ scale: 1.3 }] }} /> */}
+                                    <SvgIcon icon={isPhoneCall ? 'phoneCall1' : 'meeting'} style={{ transform: [{ scale: 1.3 }] }} />
                                 </View>
                             </View>
                         </View>
                     </TouchableOpacity>
                 )
             }}
-            calendarInitialOffset={130}
             renderEmptyDate={() => <View style={{ paddingTop: 45, paddingRight: 14 }}>
                 <View style={{ height: 2, backgroundColor: Colors.Basic400 }} />
             </View>}

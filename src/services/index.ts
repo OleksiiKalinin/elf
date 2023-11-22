@@ -2,6 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import generalActions from '../store/actionCreators/general/actions';
 import { Dispatch } from 'react';
+import { Platform } from 'react-native';
 
 export const pythonAdmin = {
     client_id: 'e6nB1kx-rcAEqvMiIsyazg',
@@ -12,7 +13,10 @@ export const baseURL = 'http://ec2-13-53-212-186.eu-north-1.compute.amazonaws.co
 
 const instance = axios.create({
     baseURL,
-    headers: { 'Content-Type': 'application/json' }
+    headers: {
+        'Content-Type': 'application/json',
+        // 'Platform-Type': Platform.OS,
+    }
 });
 
 export const errorHandler = async (error: any, dispatch: Dispatch<any>) => {

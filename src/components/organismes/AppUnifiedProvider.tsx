@@ -15,6 +15,7 @@ import companyServices from '../../services/companyServices';
 import { pl, registerTranslation as datePickerLocaleConfig } from '../modified_modules/react-native-paper-dates';
 import { GoogleSigninProvider, googleSignOut } from './GoogleSignin';
 import { ConfigureParams } from '@react-native-google-signin/google-signin';
+import LoadingScreen from '../atoms/LoadingScreen';
 
 calendarLocaleConfig();
 geocoder.fallbackToGoogle('AIzaSyBLA1spwwoOjY2rOvMliOBc2C87k6ZOJ_s');
@@ -32,7 +33,7 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const appDataLoaded = useRef<boolean>(false);
   const prevToken = useRef<string | null>('default');
   const dispatch = useTypedDispatch();
-  const { token, userCompany } = useTypedSelector(state => state.general);
+  const { token, userCompany, appLoading } = useTypedSelector(state => state.general);
   const { setToken, setUserCompany } = useActions();
   // ssr huck
   const [ssrWindowSizes, setSsrWindowSizes] = useState<any>(Platform.OS === 'web' ? {} : Dimensions.get('window'));
@@ -47,27 +48,23 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, [ssrWindowSizes]);
 
   useEffect(() => {
-    googleSignOut();
-    (async () => {
-      console.log('token: ', token);
-      if (!appDataLoaded.current || (token && !prevToken.current)) {
-        const [
-          [, token],
-          [, refresh_token],
-        ] = await AsyncStorage.multiGet([
-          'token',
-          'refresh_token',
-        ]);
-
-        const isOk = await dispatch(generalServices.getAppData(token));
-        if (!!isOk) {
-          appDataLoaded.current = true;
-          setToken({ refresh_token, token });
-        }
-      }
-      prevToken.current = token;
-    })();
+    console.log('token:', token);
   }, [token]);
+
+  useEffect(() => {
+    (async () => {
+      const [
+        [, token],
+        [, refresh_token],
+      ] = await AsyncStorage.multiGet([
+        'token',
+        'refresh_token',
+      ]);
+
+      await setToken({ refresh_token, token });
+      await dispatch(generalServices.getAppData(token));
+    })();
+  }, []);
 
   useEffect(() => {
     if (userCompany?.id && token) {
@@ -117,6 +114,7 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
           ...MD3LightTheme,
           fonts: configureFonts({ config: { fontFamily: 'RedHatDisplay-Regular' } }),
         }}>
+          {appLoading && <LoadingScreen />}
           {children}
         </PaperProvider>
       </MenuProvider >

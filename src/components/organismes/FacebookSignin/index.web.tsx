@@ -15,7 +15,11 @@ const FacebookSigninButton = ({ onSuccess, render }: FacebookSigninButtonProps) 
     />;
 };
 
-const facebookSignOut = windowExists() ? (window as any).FB?.logout?.() : () => { };
+let facebookSignOut = () => { };
+
+if (windowExists() && !!(window as any).FB?.logout) {
+    facebookSignOut = (window as any).FB.logout;
+}
 
 export {
     FacebookSigninButton,

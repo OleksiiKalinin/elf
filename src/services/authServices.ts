@@ -5,6 +5,7 @@ import { RegistDataType } from '../screens/AuthScreens/RegistrationScreen';
 import generalActions from '../store/actionCreators/general/actions';
 import { LoginDataType } from '../screens/AuthScreens/LoginScreen';
 import { getTokens, hasPlayServices, signIn } from '../components/organismes/GoogleSignin';
+import generalServices from './generalServices';
 
 const registrate = (formData: RegistDataType) => async (dispatch: Dispatch<any>) => {
     try {
@@ -15,8 +16,8 @@ const registrate = (formData: RegistDataType) => async (dispatch: Dispatch<any>)
         if (res.data) {
             const { access_token, refresh_token } = res.data as { access_token: string | null, refresh_token: string | null };
             await axios.post('/employer/create_user/', {}, { headers: { Authorization: `Bearer ${access_token}` } });
-            dispatch(generalActions.setToken({ token: access_token, refresh_token }));
-            dispatch(generalActions.setAppLoading(false));
+            await dispatch(generalActions.setToken({ token: access_token, refresh_token }));
+            await dispatch(generalServices.getAppData(access_token));
         } else {
             throw Error('error');
         }
@@ -34,8 +35,8 @@ const login = (formData: LoginDataType) => async (dispatch: Dispatch<any>) => {
         });
         if (res.data) {
             const { access_token, refresh_token } = res.data as { access_token: string | null, refresh_token: string | null };
-            dispatch(generalActions.setToken({ token: access_token, refresh_token }));
-            dispatch(generalActions.setAppLoading(false));
+            await dispatch(generalActions.setToken({ token: access_token, refresh_token }));
+            await dispatch(generalServices.getAppData(access_token));
         } else {
             throw Error('error');
         }
@@ -92,7 +93,7 @@ const googleSignin = (initialToken?: string) => async (dispatch: Dispatch<any>) 
             const { access_token, refresh_token } = data as { access_token: string | null, refresh_token: string | null };
             await axios.post('/employer/create_user/', {}, { headers: { Authorization: `Bearer ${access_token}` } }).catch(() => { });
             await dispatch(generalActions.setToken({ token: access_token, refresh_token }));
-            await dispatch(generalActions.setAppLoading(false));
+            await dispatch(generalServices.getAppData(access_token));
         } else {
             throw new Error('no token');
         }
@@ -111,18 +112,18 @@ const googleSignin = (initialToken?: string) => async (dispatch: Dispatch<any>) 
 };
 
 const facebookSignin = (accessToken: string | null) => async (dispatch: Dispatch<any>) => {
-    dispatch(generalActions.setAppLoading(true));
+    // dispatch(generalActions.setAppLoading(true));
     try {
         if (accessToken) {
             console.log(accessToken);
             // error status 400
             // "error": "access_denied",
             // "error_description": "Authentication process canceled"
-            
+
             // const res = await axios.post(`/api-auth/convert-token/`, { ...pythonAdmin, grant_type: 'convert_token', token: accessToken, backend: 'facebook' });
             // const { access_token, refresh_token } = res.data as { access_token: string | null, refresh_token: string | null };
             // dispatch(generalActions.setToken({ token: access_token, refresh_token }));
-            dispatch(generalActions.setAppLoading(false));
+            // await dispatch(generalServices.getAppData(access_token));
         } else {
             throw new Error('no token');
         }

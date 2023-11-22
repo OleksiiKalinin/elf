@@ -96,7 +96,7 @@ type ScreenHeaderProviderProps = {
   }[];
   otherActions?: ReactNode,
   transparent?: boolean;
-  staticContentHeight?: boolean;
+  staticContentHeightOnWeb?: boolean;
   callback?: () => void;
   backgroundColor?: ColorValue
 };
@@ -111,7 +111,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   actions = null,
   otherActions = null,
   transparent = false,
-  staticContentHeight = false,
+  staticContentHeightOnWeb = false,
   alterTitle = null,
   callback,
   backgroundColor,
@@ -121,15 +121,17 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   const [stack, screen] = currentScreen.split('-');
   // @ts-ignore
   const currentTitle: string = screensTitles[stack][screen] || '';
+  const HeaderSpace = transparent ? 0 : SCREEN_HEADER_HEIGHT;
+  const BottomSpace = isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0;
+  const StaticHeightForWeb = windowSizes.height - HeaderSpace - BottomSpace;
 
   return (
     <View style={{
-      flex: 1,
-      minHeight: Platform.select({
-        web: windowSizes.height - (isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0),
-      }),
+      flex: Platform.select({ native: 1 }),
+      minHeight: Platform.select({ web: windowSizes.height - BottomSpace }),
       alignItems: 'center',
-      backgroundColor: Colors.Basic200,
+      backgroundColor: 'rgb(249, 249, 249)',
+      // backgroundColor: Colors.Basic200,
     }}>
       <View style={{ maxWidth: 768, width: '100%', flex: 1 }}>
         <View style={[styles.Header]}>
@@ -182,12 +184,15 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
           )}
         </View>
         <View style={[{
-          height: Platform.select({ web: staticContentHeight ? windowSizes.height - (transparent ? 0 : SCREEN_HEADER_HEIGHT) - (isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0) : '100%' }),
+          height: Platform.select({ web: staticContentHeightOnWeb ? StaticHeightForWeb : '100%' }),
+          paddingTop: Platform.select({ web: staticContentHeightOnWeb ? undefined : HeaderSpace, native: HeaderSpace }),
+          marginTop: Platform.select({ web: staticContentHeightOnWeb ? HeaderSpace : undefined }),
           flex: Platform.select({ native: 1 }),
-          marginTop: transparent ? 0 : SCREEN_HEADER_HEIGHT,
           backgroundColor
         }]}>
-          {children}
+          <View style={{ width: '100%', height: '100%' }}>
+            {children}
+          </View>
         </View>
       </View>
     </View>

@@ -314,7 +314,7 @@ const MainScreen: React.FC = ({ }) => {
               {buttons.map(({ backgroundColor, badge, icon, missedEvents, title, ...clickProps }, index) => (
                 <Fragment key={index}>
                   {isMainMenuFlatList ?
-                    <TouchableOpacity activeOpacity={0.5} style={styles.FlatButton} {...clickProps}>
+                    <TouchableOpacity activeOpacity={0.8} style={styles.FlatButton} {...clickProps}>
                       <View style={{ height: '100%', paddingVertical: 10, paddingRight: 15, paddingLeft: 5 }}>
                         <View style={[styles.FlatIconBG, { backgroundColor }]}>
                           <SvgIcon icon={icon} />
@@ -334,7 +334,7 @@ const MainScreen: React.FC = ({ }) => {
                     </TouchableOpacity>
                     :
                     <View style={styles.GridButtonWrapper}>
-                      <TouchableOpacity activeOpacity={0.5} style={[styles.GridButton]} {...clickProps}>
+                      <TouchableOpacity activeOpacity={0.8} style={[styles.GridButton]} {...clickProps}>
                         <View style={[styles.GridIconBG, { backgroundColor }]}>
                           <SvgIcon icon={icon} />
                         </View>

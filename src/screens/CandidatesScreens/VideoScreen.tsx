@@ -198,7 +198,7 @@ const VideoScreen: React.FC = () => {
   // };
 
   return open && (
-    <ScreenHeaderProvider transparent staticContentHeight>
+    <ScreenHeaderProvider transparent staticContentHeightOnWeb>
       <TouchableHighlight onPress={() => setPaused(prev => !prev)} style={{ flex: 1 }}>
         <View style={{ flex: 1, justifyContent: "center", backgroundColor: Colors.Basic900, position: 'relative' }}>
           {/* {!!candidateData.video && <Video

@@ -54,9 +54,9 @@ const MainScreen: React.FC = () => {
   console.log(userAdverts);
 
 
-  useEffect(() => {
-    getUserAdverts();
-  }, [userCompany, token]);
+  // useEffect(() => {
+  //   getUserAdverts();
+  // }, [userCompany, token]);
 
   const changeSectionHandler = (sectionIndex: number, withScroll: boolean = true) => {
     setTabbarIndex(sectionIndex);

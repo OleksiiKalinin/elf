@@ -119,14 +119,14 @@ const RootNavigator: React.FC = () => {
   const { setCurrentScreen, setIsTabbarVisible } = useActions();
   const tempKeyboardAccess = useRef<boolean>(false);
 
-/*     useEffect(() => {
-      if (!appLoading) {
-        setTimeout(() => {
-          SplashScreen.hide();
-        }, 100);
-      }
-    }, [appLoading]); */
-  
+  /*     useEffect(() => {
+        if (!appLoading) {
+          setTimeout(() => {
+            SplashScreen.hide();
+          }, 100);
+        }
+      }, [appLoading]); */
+
 
   useEffect(() => {
     if (tempKeyboardAccess.current || isTabbarVisible) {
@@ -155,10 +155,7 @@ const RootNavigator: React.FC = () => {
     setCurrentScreen(stack + '-' + screen);
   }
 
-  return (<>
-    {/* {appLoading && <View style={styles.Loading}>
-      <Spinner color={Colors.Basic900} size='lg' />
-    </View>} */}
+  return (
     <RootStack.Navigator
       backBehavior='history' initialRouteName="MenuStack" screenOptions={{ headerShown: false }}
       tabBar={({ state }) => <BottomTabs routes={state.routes.map(({ name }) => name)} />}
@@ -167,21 +164,10 @@ const RootNavigator: React.FC = () => {
         <RootStack.Screen key={screen.name} {...screen} listeners={({ route, navigation }) => ({ state: () => setCurrentScreenHandler(route), blur: () => navigation.setParams({ screen: undefined, params: undefined }) })} />
       )}
     </RootStack.Navigator>
-  </>);
+  );
 };
 
 const styles = StyleSheet.create({
-  Loading: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    backgroundColor: Colors.White,
-    opacity: .6,
-    zIndex: 2
-  }
 });
 
 export default RootNavigator;

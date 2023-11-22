@@ -1,19 +1,22 @@
 import axios, { errorHandler } from "./index";
 import { Dispatch } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-// import { LoginManager } from "react-native-fbsdk-next";
 import generalActions from "../store/actionCreators/general/actions";
 import { convertToFrontEndAddress } from "../hooks/convertAddress";
-import { AppDispatch } from "../store";
 import { googleSignOut } from "../components/organismes/GoogleSignin";
+import { facebookSignOut } from "../components/organismes/FacebookSignin";
+import { rootState } from "../store";
+import advertsServices from "./advertsServices";
 
-const getAppData = (token: string | null) => async (dispatch: Dispatch<any>) => {
+const getAppData = (token: string | null) => async (dispatch: Dispatch<any>, getState: () => rootState) => {
+    const { } = getState().general;
+
     let isOk = false;
     dispatch(generalActions.setAppLoading(true));
 
     const [
-        [k4, profileHelpScreenDisplayed],
-        [k5, isMainMenuFlatList],
+        [, profileHelpScreenDisplayed],
+        [, isMainMenuFlatList],
     ] = await AsyncStorage.multiGet([
         'profileHelpScreenDisplayed',
         'isMainMenuFlatList',
@@ -39,7 +42,11 @@ const getAppData = (token: string | null) => async (dispatch: Dispatch<any>) => 
 
         if (!token) {
             googleSignOut();
-            // LoginManager.logOut();
+            facebookSignOut();
+        }
+
+        if (userCompanyData?.data[0]?.id) {
+            await dispatch(advertsServices.getUserAdverts(token, userCompanyData?.data[0].id));
         }
 
         dispatch(generalActions.setAppData({
@@ -62,6 +69,7 @@ const getAppData = (token: string | null) => async (dispatch: Dispatch<any>) => 
             notesData: appData.data?.notes_flags1 || [],
             userQuestions: [],
             candidatesFilters: null,
+            appLoading: false,
         }));
         isOk = true;
     }).catch(error => {

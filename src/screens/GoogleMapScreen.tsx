@@ -24,8 +24,6 @@ export type GoogleMapScreenProps = {
     initialAddress: AddressType | null,
     hideControls?: boolean,
     /** 
-     * https://developers.google.com/maps/documentation/places/web-service/supported_types#table3
-     *  
      * The supported types are:
      * - geocode - instructs the Place Autocomplete service to return only geocoding results, rather than business results. Generally, you use this request to disambiguate results where the location specified may be indeterminate.
      * - address - instructs the Place Autocomplete service to return only geocoding results with a precise address. Generally, you use this request when you know the user will be looking for a fully specified address.
@@ -42,6 +40,7 @@ export type GoogleMapScreenProps = {
      *    - administrative_area_level_3 (dzielnica)
      * 
      * @default geocode
+     * @see https://developers.google.com/maps/documentation/places/web-service/supported_types#table3
      * */
     optionsType?: AutocompleteRequestType
 }

@@ -38,6 +38,7 @@ const MainScreen: React.FC = () => {
       const city = event.location?.subAdminArea || '';
       setSwipeablePanelProps({
         backgroundColor: Colors.Basic100,
+        defaultCloseAction: 'props-null',
         title: `Masz spotkanie za ${minutes ? Math.floor(minutes / 1000 / 60) : '10'} minut!`,
         children: (<View style={{
           flex: 1,
@@ -100,7 +101,7 @@ const MainScreen: React.FC = () => {
   }, [userEvents]);
 
   return (<>
-    <ScreenHeaderProvider staticContentHeight mode="mainTitle" title={monthTitle}>
+    <ScreenHeaderProvider staticContentHeightOnWeb mode="mainTitle" title={monthTitle}>
       <Agenda getCurrentDate={setMonthTitle} events={userEvents} />
     </ScreenHeaderProvider>
     <CornerCircleButton {...useLink({ href: {stack: 'CalendarStack', screen: 'EventScreen', params: undefined} })} />

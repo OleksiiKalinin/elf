@@ -113,6 +113,7 @@ export type AppDataType = {
     notesData: NoteDataType[],
     userQuestions: UserQuestionsType[],
     candidatesFilters: CandidatesFiltersType | null,
+    appLoading: boolean,
 };
 
 export type generalReducerAction = 

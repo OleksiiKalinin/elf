@@ -102,24 +102,21 @@ const EventScreen: React.FC = () => {
   const addEventHandler = async () => {
     if (selectedCandidate && selectedAdvert) {
       setLoading(true);
-      // await dispatch(calendarServices.createUserEvent({
-      //   is_phone: eventType === 'call',
-      //   location,
-      //   candidate_id: selectedCandidate?.id,
-      //   candidate_first_name: selectedCandidate?.first_name,
-      //   candidate_second_name: selectedCandidate?.last_name,
-      //   company_name: userCompany?.short_name as string,
-      //   start_time: startDate + 'T' + startTime.toISOString().split('T')[1],
-      //   end_time: endDate + 'T' + endTime.toISOString().split('T')[1],
-      //   job_offer: selectedAdvert?.id as number,
-      //   job_position: selectedAdvert?.job_position_id as number,
-      // }, token, userEvents));
-      // navigation.goBack();
+      await dispatch(calendarServices.createUserEvent({
+        is_phone: eventType === 'call',
+        location,
+        candidate_id: selectedCandidate?.id,
+        candidate_first_name: selectedCandidate?.first_name,
+        candidate_second_name: selectedCandidate?.last_name,
+        company_name: userCompany?.short_name as string,
+        start_time: startDate + 'T' + startTime.toISOString().split('T')[1],
+        end_time: endDate + 'T' + endTime.toISOString().split('T')[1],
+        job_offer: selectedAdvert?.id as number,
+        job_position: selectedAdvert?.job_position_id as number,
+      }, token, userEvents));
     }
 
-    // router.replace({stack: 'CalendarStack'})
-    // or
-    // router.back()
+    router.replace({stack: 'CalendarStack'})
 
 
     // setSwipeablePanelProps({
@@ -127,7 +124,7 @@ const EventScreen: React.FC = () => {
     //   buttons: [
     //     {
     //       children: 'Dodaj spotkanie',
-    //       icon: 'meeting',
+    //       icon: <SvgIcon icon='meeting' />,
     //       onPress: () => toggleSplashscreen(true),
     //     },
     //   ],

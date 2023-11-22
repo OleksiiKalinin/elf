@@ -5,6 +5,7 @@ import { generalActionTypes } from "../actions";
 import { generalReducerState } from "./types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { googleSignOut } from "../../components/organismes/GoogleSignin";
+import { facebookSignOut } from "../../components/organismes/FacebookSignin";
 
 const initialState: generalReducerState = {
     isTabbarVisible: true,
@@ -82,8 +83,8 @@ export const generalReducer = (state = initialState, action: generalReducerActio
         case generalActionTypes.LOG_OUT:
             AsyncStorage.multiRemove(['token', 'refresh_token']);
             googleSignOut();
-            
-            // LoginManager.logOut();
+            facebookSignOut();
+
             return {
                 ...initialState,
                 token: null,
