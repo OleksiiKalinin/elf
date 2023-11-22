@@ -131,40 +131,12 @@ const EventScreen: React.FC = () => {
     // })
   }
 
-  // Test
-  const TestJobCategoryDataMode1 = (industryId: number) => {
-    console.log(`Kategoria: ${industryId}`);
-  };
-
-  const TestJobCategoryDataMode2 = (industryId: number, positionId: number) => {
-    console.log(`Kategoria: ${industryId}, Stanowisko: ${positionId}`);
-  };
-
-  const TestJobCategoryDataMode3 = (industryId: number, positionId: number[]) => {
-    console.log(`Kategoria: ${industryId}, Stanowisko: ${positionId}`);
-  };
-
   const goToChooseAdvertScreen = () => {
     router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'ChooseAdvertScreen', callback: setSelectedAdvert } });
   }
 
   const goToChooseCandidateScreen = () => {
     router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'ChooseCandidateScreen', callback: setSelectedCandidate, candidates: selectedAdvert?.candidate_data || [] } });
-  };
-
-  // Test
-  const goToJobCategoryScreenMode1 = () => {
-    router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'JobCategoryScreen', mode: 'industry', callback: TestJobCategoryDataMode1 } });
-  };
-  // Test
-  const goToJobCategoryScreenMode2 = () => {
-    router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'JobCategoryScreen', mode: 'singlePosition', callback: TestJobCategoryDataMode2, initialPosition: [21] } });
-  };
-  const goToJobCategoryScreenMode3 = () => {
-    router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'JobCategoryScreen', mode: 'multiplePosition', callback: TestJobCategoryDataMode3 } });
-  };
-  const goToJobCategoryScreenMode4 = () => {
-    router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'JobCategoryScreen', mode: 'singlePosition', callback: TestJobCategoryDataMode2, initialIndustry: 2 } });
   };
 
   return (
@@ -369,32 +341,6 @@ const EventScreen: React.FC = () => {
         onPress={addEventHandler}
       >
         Zaplanuj
-      </Button>
-
-      {/* Test */}
-      <Button
-        onPress={goToJobCategoryScreenMode1}
-        style={{ marginTop: 30 }}
-      >
-        Job category - mode 1
-      </Button>
-      <Button
-        onPress={goToJobCategoryScreenMode2}
-        style={{ marginTop: 30 }}
-      >
-        Job category - mode 2 (single)
-      </Button>
-      <Button
-        onPress={goToJobCategoryScreenMode3}
-        style={{ marginTop: 30 }}
-      >
-        Job category - mode 2 (multiple)
-      </Button>
-      <Button
-        onPress={goToJobCategoryScreenMode4}
-        style={{ marginTop: 30 }}
-      >
-        Job category - mode 2 (initial id)
       </Button>
     </ScreenHeaderProvider>
   );

@@ -6,7 +6,7 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import { ScrollView } from '../../components/molecules/ScrollView';
 import Typography from '../../components/atoms/Typography';
 import Button from '../../components/molecules/Button';
-import { Separator, XStack } from 'tamagui';
+import { Separator } from 'tamagui';
 import useRouter from '../../hooks/useRouter';
 import {
   AddressType,
@@ -355,7 +355,12 @@ const FilterScreen: React.FC = () => {
             </Typography>
           </Button>
           {filters.locations_id.length > 0 && (
-            <View style={styles.SelectedItems}>
+            <ScrollView
+              horizontal
+              disableWindowScroll
+              showsHorizontalScrollIndicator={false}
+              style={styles.SelectedItems}
+            >
               {filters.locations_id?.map(({ locality }) => (
                 <TouchableOpacity
                   onPress={() => changeFiltersHandler('locations_id', null)}
@@ -364,7 +369,7 @@ const FilterScreen: React.FC = () => {
                   <SvgIcon icon="closeCircleAlt" fill={Colors.Basic200} />
                 </TouchableOpacity>
               ))}
-            </View>
+            </ScrollView>
           )}
           <Separator />
           <View style={{ paddingHorizontal: 19 }}>
@@ -381,7 +386,10 @@ const FilterScreen: React.FC = () => {
             </View>
           </View>
           <Separator />
-          <Accordion title='Dostępność'>
+          <Accordion
+            title='Dostępność'
+            initialExpanded={filters.availability_id.length > 0}
+          >
             <ScrollView
               horizontal
               disableWindowScroll
@@ -406,7 +414,10 @@ const FilterScreen: React.FC = () => {
             </ScrollView>
           </Accordion>
           <Separator />
-          <Accordion title="Tryb pracy">
+          <Accordion
+            title="Tryb pracy"
+            initialExpanded={filters.workModes_id.length > 0}
+          >
             <ScrollView
               horizontal
               disableWindowScroll
@@ -431,7 +442,10 @@ const FilterScreen: React.FC = () => {
             </ScrollView>
           </Accordion>
           <Separator />
-          <Accordion title='Rodzaj umowy'>
+          <Accordion
+            title='Rodzaj umowy'
+            initialExpanded={filters.contracts_id.length > 0}
+          >
             <ScrollView
               horizontal
               disableWindowScroll
@@ -500,10 +514,9 @@ const FilterScreen: React.FC = () => {
               style={styles.CheckBox}
             />
           </View>
-          <Separator />
+          <Separator style={{ marginBottom: 15 }} />
         </ScrollView>
       </View>
-
       <Button stickyBottom onPress={() => searchButton()}>
         Szukaj
       </Button>
@@ -540,6 +553,7 @@ const styles = StyleSheet.create({
     gap: 10,
     alignItems: 'center',
     height: 30,
+    width: 'auto',
   },
   CheckBoxWrapper: {
     paddingHorizontal: 19,

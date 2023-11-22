@@ -70,11 +70,21 @@ const MainScreen: React.FC = ({ }) => {
         sectionTitle: 'Aktualności',
         buttons: [
           {
-            title: 'Kandydaci - filtry',
+            title: 'Image test',
+            backgroundColor: Colors.Sea300,
+            icon: 'pencil',
+            ...useLink({
+              href: { stack: 'MenuStack', screen: 'ImageScreen', params: undefined }
+            }),
+            missedEvents: 10,
+            badge: 'Nowe',
+          },
+          {
+            title: 'Test Screen',
             backgroundColor: Colors.Sea300,
             icon: 'search',
             ...useLink({
-              href: { stack: 'CandidatesStack', screen: 'FilterScreen', params: undefined }
+              href: { stack: 'MenuStack', screen: 'TestScreen', params: undefined }
             }),
             missedEvents: 10,
             badge: 'Nowe',

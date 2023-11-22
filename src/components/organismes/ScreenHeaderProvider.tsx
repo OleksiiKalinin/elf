@@ -81,6 +81,8 @@ export const screensTitles: ScreensTitlesType = {
     QuestionEditorScreen: 'Lista pytań do kandydata',
     QuestionsListScreen: 'Listy pytań',
     QuestionsScreen: '',
+    TestScreen: 'Test screen',
+    ImageScreen: 'Image screen',
   },
 };
 

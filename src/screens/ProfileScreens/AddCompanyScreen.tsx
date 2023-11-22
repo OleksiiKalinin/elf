@@ -255,7 +255,7 @@ const AddCompanyScreen: React.FC = () => {
     //     },
     //     certificates: {
     //       callback: (images: MediaType[]) => setCompanyCertificates(prev => setUniqueImages(prev)(images)),
-    //       options: { multiple: true }
+    //       options: { multiple: true }f
     //     },
     //     photos: {
     //       callback: (images: MediaType[]) => setCompanyPhotos(prev => setUniqueImages(prev)(images)),

@@ -4,13 +4,25 @@ import Colors from '../../colors/Colors';
 import SvgIcon from '../atoms/SvgIcon';
 import { Platform } from 'react-native';
 import { isString } from 'lodash';
+import { useEffect, useState } from 'react';
 
-type AccordionProps = React.ComponentProps<typeof List.Accordion>;
+type AccordionProps = {
+  initialExpanded?: boolean,
+} & React.ComponentProps<typeof List.Accordion>;
 
-const Accordion: React.FC<AccordionProps> = ({ title, children, style, ...props }) => {
+const Accordion: React.FC<AccordionProps> = ({ initialExpanded, title, children, style, ...props }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  useEffect(()=> {
+    if(initialExpanded){
+      setExpanded(initialExpanded);
+    };
+  },[initialExpanded]);
 
   return (
     <List.Accordion
+      onPress={()=> setExpanded(prev=> !prev)}
+      expanded={expanded}
       title={isString(title) ? <Typography variant='h5'>{title}</Typography> : title}
       style={[{ backgroundColor: Colors.Basic100, height: 58, paddingRight: 19, paddingLeft: 2 }, style]}
       right={({ isExpanded }) => (
