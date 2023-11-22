@@ -9,6 +9,11 @@ import QuestionEditorScreen from '../screens/MenuScreens/QuestionEditorScreen';
 import { PathConfigMap } from '@react-navigation/native';
 import QuestionsListScreen from '../screens/MenuScreens/QuestionsListScreen';
 import QuestionsScreen from '../screens/MenuScreens/QuestionsScreen';
+import TestScreen from '../screens/MenuScreens/TestScreen';
+import ImageScreen from '../screens/MenuScreens/ImageScreen';
+import { ImagePickerScreenProps } from '../screens/ImagePickerScreen';
+
+type SubView<T extends keyof MenuStackParamList['extended']> = { subView: T } & MenuStackParamList['extended'][T]
 
 export type MenuStackParamList = {
   default: {
@@ -23,9 +28,15 @@ export type MenuStackParamList = {
     QuestionEditorScreen: { id: string } | undefined,
     QuestionsListScreen: {newlist: string} | undefined,
     QuestionsScreen: { id: string, subView?: 'options' },
+    TestScreen: undefined,
+    ImageScreen:
+    | undefined
+    | SubView<'ImagePickerScreen'>
+    ,
   },
   extended: {
-  }
+    ImagePickerScreen: ImagePickerScreenProps,
+  };
 };
 
 export const MenuStackLinking: PathConfigMap<MenuStackParamList['default']> = {
@@ -37,6 +48,8 @@ export const MenuStackLinking: PathConfigMap<MenuStackParamList['default']> = {
   QuestionEditorScreen: 'QuestionEditorScreen',
   QuestionsListScreen: 'QuestionsListScreen',
   QuestionsScreen: 'QuestionsScreen',
+  TestScreen: 'TestScreen',
+  ImageScreen: 'ImageScreen',
 }
 
 const MenuStack = createNativeStackNavigator<MenuStackParamList['default']>();
@@ -52,6 +65,8 @@ const MenuNavigator: React.FC = () => {
       <MenuStack.Screen name="QuestionEditorScreen" component={QuestionEditorScreen} />
       <MenuStack.Screen name="QuestionsListScreen" component={QuestionsListScreen} />
       <MenuStack.Screen name="QuestionsScreen" component={QuestionsScreen} />
+      <MenuStack.Screen name="TestScreen" component={TestScreen} />
+      <MenuStack.Screen name="ImageScreen" component={ImageScreen} />
     </MenuStack.Navigator>
   );
 };
