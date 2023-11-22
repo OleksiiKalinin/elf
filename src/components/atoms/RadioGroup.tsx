@@ -1,45 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import { ComponentProps, FC } from 'react';
 import { Label, RadioGroup as TamaRadioGroup, XStack } from 'tamagui';
 import Typography from './Typography';
 import Colors from '../../colors/Colors';
 
-/** example:
- * 
-        <RadioGroup value={value} onValueChange={setValue}>
-            <RadioGroup.Item value="2" label="Second value" containerProps={{flexDirection: 'row-reverse'}} />
-            <RadioGroup.Item value="3" label="Third value" />
-            <RadioGroup.Item value="4" label="Fourth value" />
-        </RadioGroup>
- */
-
-const RadioGroup:
-    React.FC<React.ComponentProps<typeof TamaRadioGroup>>
-    &
-    {
-        Item: React.FC<
-            React.ComponentProps<typeof TamaRadioGroup.Item>
-            &
-            {
-                label?: string,
-                hideSpace?: boolean,
-                spaceProps?: React.ComponentProps<typeof XStack>
-                containerProps?: React.ComponentProps<typeof XStack>
-            }
-        >
-    } = (props) => {
-        return <TamaRadioGroup {...props} />;
-    };
-// } = ({value: v, ...props}) => {
-//     const [value, setValue] = useState<string | undefined>(v);
-
-//     useEffect(() => {
-//         setValue(v);
-//     }, [v]);
-
-//     return <TamaRadioGroup value={value} onValueChange={setValue} {...props} />;
-// };
-
-RadioGroup.Item = ({ label, hideSpace = false, spaceProps, containerProps, ...props }) => {
+const Item: FC<ComponentProps<typeof TamaRadioGroup.Item> & {
+    label?: string,
+    hideSpace?: boolean,
+    spaceProps?: React.ComponentProps<typeof XStack>
+    containerProps?: React.ComponentProps<typeof XStack>
+}> = ({ label, hideSpace = false, spaceProps, containerProps, ...props }) => {
     const id = `radiogroup-${props.value}`
 
     return (
@@ -59,6 +28,12 @@ RadioGroup.Item = ({ label, hideSpace = false, spaceProps, containerProps, ...pr
             </Label>}
         </XStack>
     )
-}
+};
+
+const RadioGroup: FC<ComponentProps<typeof TamaRadioGroup>> & { Item: typeof Item } = (props) => {
+    return <TamaRadioGroup {...props} />;
+};
+
+RadioGroup.Item = Item;
 
 export default RadioGroup;
