@@ -126,7 +126,9 @@ const SwipeablePanel: React.FC = () => {
 				open={mode === 'options' && !!swipeablePanelProps && !!height}
 				onOpenChange={() => close()}
 				snapPoints={[Math.min(height, 100)]}
-				dismissOnSnapToBottom
+				dismissOnSnapToBottom={false}
+				dismissOnOverlayPress={false}
+				disableDrag
 			>
 				{!hideBar && <Sheet.Handle h={4} bg={Colors.White} opacity={1} mx='45%' my={8} />}
 				{mode === 'options' && !!swipeablePanelProps && !!height && <Sheet.Overlay />}

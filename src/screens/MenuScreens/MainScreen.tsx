@@ -317,7 +317,7 @@ const MainScreen: React.FC = ({ }) => {
           style={{ backgroundColor: Colors.Basic100, flex: 1 }}
         >
           {sectionButtons.map(({ buttons, sectionTitle }, i) => (
-            <View style={[styles[isMainMenuFlatList ? 'FlatSectionWrapper' : 'GridSectionWrapper'], i !== 0 && { paddingTop: 15 }, i + 1 === sectionButtons.length && { paddingBottom: 25 }]}>
+            <View key={i} style={[styles[isMainMenuFlatList ? 'FlatSectionWrapper' : 'GridSectionWrapper'], i !== 0 && { paddingTop: 15 }, i + 1 === sectionButtons.length && { paddingBottom: 25 }]}>
               <Typography weight='Bold' size={20} style={{ width: '88%', marginLeft: isMainMenuFlatList ? 0 : 20, marginBottom: isMainMenuFlatList ? 5 : 0 }}>
                 {sectionTitle}
               </Typography>

@@ -25,6 +25,9 @@ import { ScrollView } from '../../components/molecules/ScrollView';
 import { Separator } from 'tamagui';
 import { createParam } from 'solito';
 import useRouter from '../../hooks/useRouter';
+import { DatePickerModal } from '../../components/modified_modules/react-native-paper-dates/Date/DatePickerModal';
+import { TimePickerModal } from '../../components/modified_modules/react-native-paper-dates/Time/TimePickerModal';
+import MapPreview from '../../components/molecules/MapPreview';
 // import CandidateCard from '../../components/organisms/CandidateCard/CandidateCard';
 
 const normalizeTimeForPicker = (mode: 'start' | 'end'): Date => {
@@ -51,10 +54,11 @@ const { useParam } = createParam<NonNullable<CalendarStackParamList['default']['
 const EventScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const router = useRouter();
+  const { token, userCompany, userEvents } = useTypedSelector(state => state.general);
   const [loading, setLoading] = useState<boolean>(false);
   const [eventType, setEventType] = useState<'meeting' | 'call'>('call');
-  const [startDate, setStartDate] = useState<string>(new Date().toISOString().replace(/T.*$/, ''));
-  const [endDate, setEndDate] = useState<string>(new Date().toISOString().replace(/T.*$/, ''));
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [endDate, setEndDate] = useState<Date>(new Date());
   const [showTimepicker, setShowTimepicker] = useState<'start' | 'end' | false>(false);
   const [showCalendar, setShowCalendar] = useState<'start' | 'end' | false>(false);
   const [startTime, setStartTime] = useState<Date>(normalizeTimeForPicker('start'));
@@ -65,19 +69,7 @@ const EventScreen: React.FC = () => {
   const [selectedCandidate, setSelectedCandidate] = useState<CandidateDataType | null>(null);
   const [location, setLocation] = useState<AddressType | null>(null);
 
-  const { token, userCompany, userEvents } = useTypedSelector(state => state.general);
-
-  // const [selectedPersonsExtra, setSelectedPersonsExtra] = useState([]);
-  // const [splashscreen, toggleSplashscreen] = useState<boolean>(false);
-  // const [selectedPersons, setSelectedPersons] = useState([]);
-  // const [selectedJobCategory, setSelectedJobCategory] = useState<number>(0);
-  // const [personRemove, personRemoveToggle] = useState(false);
   const { setSwipeablePanelProps } = useActions();
-  const isFirstLoad = useRef(true);
-
-  useEffect(() => {
-    isFirstLoad.current = false;
-  }, []);
 
   // useEffect(() => {
   //   if (!isFocused && route.params?.isMainMenuSender) {
@@ -96,12 +88,13 @@ const EventScreen: React.FC = () => {
   }, [startTime, endTime]);
 
   useEffect(() => {
-    if (new Date(startDate).getTime() > new Date(endDate).getTime()) setEndDate(startDate);
+    if (startDate.getTime() > new Date(endDate).getTime()) setEndDate(startDate);
   }, [startDate, endDate]);
 
   const addEventHandler = async () => {
     if (selectedCandidate && selectedAdvert) {
       setLoading(true);
+
       await dispatch(calendarServices.createUserEvent({
         is_phone: eventType === 'call',
         location,
@@ -109,26 +102,27 @@ const EventScreen: React.FC = () => {
         candidate_first_name: selectedCandidate?.first_name,
         candidate_second_name: selectedCandidate?.last_name,
         company_name: userCompany?.short_name as string,
-        start_time: startDate + 'T' + startTime.toISOString().split('T')[1],
-        end_time: endDate + 'T' + endTime.toISOString().split('T')[1],
+        start_time: new Date(startDate.toISOString().split('T')[0] + 'T' + startTime.toISOString().split('T')[1]).toISOString(),
+        end_time: new Date(endDate.toISOString().split('T')[0] + 'T' + endTime.toISOString().split('T')[1]).toISOString(),
         job_offer: selectedAdvert?.id as number,
         job_position: selectedAdvert?.job_position_id as number,
       }, token, userEvents));
+
+      setLoading(false);
+
+      setSwipeablePanelProps({
+        title: 'Wydarzenie zostało stworzone!',
+        defaultCloseAction: 'none',
+        buttons: [
+          {
+            children: 'OK',
+            closeAction: 'props-null',
+            icon: <SvgIcon icon='check' />,
+            onPress: () => router.replace({ stack: 'CalendarStack' }),
+          },
+        ],
+      })
     }
-
-    router.replace({stack: 'CalendarStack'})
-
-
-    // setSwipeablePanelProps({
-    //   title: 'Czy chcesz dodać to wydarzenie do Twojego kalendarza?',
-    //   buttons: [
-    //     {
-    //       children: 'Dodaj spotkanie',
-    //       icon: <SvgIcon icon='meeting' />,
-    //       onPress: () => toggleSplashscreen(true),
-    //     },
-    //   ],
-    // })
   }
 
   const goToChooseAdvertScreen = () => {
@@ -140,8 +134,8 @@ const EventScreen: React.FC = () => {
   };
 
   return (
-    <ScreenHeaderProvider>
-      <ScrollView style={styles.Wrapper}>
+    <ScreenHeaderProvider backgroundColor={Colors.Basic100}>
+      <ScrollView>
         <Typography weight="Bold" variant='h5' style={styles.Title}>
           Data i godzina*
         </Typography>
@@ -149,34 +143,26 @@ const EventScreen: React.FC = () => {
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <View>
               <Button
-                style={{ paddingHorizontal: 6, paddingVertical: 5 }}
+                my={5}
                 contentWeight='SemiBold'
                 contentVariant='h5'
                 variant="secondary"
-                onPress={() => {
-                  setShowCalendar(prev => prev === 'start' ? false : 'start');
-                  setShowTimepicker(false);
-                }}
+                onPress={() => setShowCalendar('start')}
                 borderRadius={4}
-              // containerStyles={{ borderRadius: 4, overflow: 'hidden', marginVertical: 5, }}
               >
-                {startDate}
+                {startDate.toLocaleDateString()}
               </Button>
               <Button
-                style={{ paddingHorizontal: 6, paddingVertical: 5 }}
+                my={5}
                 contentWeight='SemiBold'
                 contentVariant='h5'
                 variant="secondary"
-                onPress={() => {
-                  setShowTimepicker(prev => prev === 'start' ? false : 'start');
-                  setShowCalendar(false);
-                }}
+                onPress={() => setShowTimepicker('start')}
                 borderRadius={4}
-              // containerStyles={{ borderRadius: 4, overflow: 'hidden', marginVertical: 5, }}
               >
-                {(displayStartHours < 10 ? `0${displayStartHours}` : displayStartHours)}
+                {`${displayStartHours < 10 ? '0' : ''}${displayStartHours}`}
                 {':'}
-                {(displayStartMinutes < 10 ? `0${displayStartMinutes}` : displayStartMinutes)}
+                {`${displayStartMinutes < 10 ? '0' : ''}${displayStartMinutes}`}
               </Button>
             </View>
             <View style={{ justifyContent: 'center' }}>
@@ -184,69 +170,54 @@ const EventScreen: React.FC = () => {
             </View>
             <View>
               <Button
-                style={{ paddingHorizontal: 6, paddingVertical: 5 }}
+                my={5}
                 contentWeight='SemiBold'
                 contentVariant='h5'
                 variant="secondary"
-                onPress={() => {
-                  setShowCalendar(prev => prev === 'end' ? false : 'end');
-                  setShowTimepicker(false);
-                }}
+                onPress={() => setShowCalendar('end')}
                 borderRadius={4}
-              // containerStyles={{ borderRadius: 4, overflow: 'hidden', marginVertical: 5, }}
               >
-                {endDate}
+                {endDate.toLocaleDateString()}
               </Button>
               <Button
-                style={{ paddingHorizontal: 6, paddingVertical: 5 }}
+                my={5}
                 contentWeight='SemiBold'
                 contentVariant='h5'
                 variant="secondary"
-                onPress={() => {
-                  setShowTimepicker(prev => prev === 'end' ? false : 'end');
-                  setShowCalendar(false);
-                }}
+                onPress={() => setShowTimepicker('end')}
                 borderRadius={4}
-              // containerStyles={{ borderRadius: 4, overflow: 'hidden', marginVertical: 5, }}
               >
-                {(displayEndHours < 10 ? `0${displayEndHours}` : displayEndHours)}
+                {`${displayEndHours < 10 ? '0' : ''}${displayEndHours}`}
                 {':'}
-                {(displayEndMinutes < 10 ? `0${displayEndMinutes}` : displayEndMinutes)}
+                {`${displayEndMinutes < 10 ? '0' : ''}${displayEndMinutes}`}
               </Button>
             </View>
           </View>
         </View>
-        <View style={{ marginBottom: showTimepicker || showCalendar ? 25 : 0 }}>
-          {showTimepicker && <View>
-            {/* <DatePicker
-            date={showTimepicker === 'start' ? startTime : endTime}
-            onDateChange={date => showTimepicker === 'start' ? setStartTime(date) : setEndTime(date)}
-            fadeToColor='none'
-            mode="time"
-            theme='light'
-            dividerHeight={4}
-            is24hourSource="locale"
-            locale="pl"
-            minuteInterval={5}
-            style={{ width: Dimensions.get('screen').width }}
-          /> */}
-          </View>}
-          {!isFirstLoad.current && <View>
-            {/* there was a problem with rerendering - the only way below */}
-            {/* <Calendar
-            dateInit={startDate}
-            isVisible={showCalendar === 'start'}
-            onDateChanged={setStartDate}
-            renderOnly='month' backgroundColor={Colors.Basic100}
-          />
-          <Calendar
-            dateInit={endDate}
-            isVisible={showCalendar === 'end'}
-            onDateChanged={setEndDate}
-            renderOnly='month' backgroundColor={Colors.Basic100}
-          /> */}
-          </View>}
-        </View>
+        <DatePickerModal
+          mode="single"
+          visible={!!showCalendar}
+          onDismiss={() => setShowCalendar(false)}
+          date={showCalendar === 'start' ? startDate : endDate}
+          onConfirm={({ date }) => {
+            if (date) {
+              showCalendar === 'start' ? setStartDate(date) : setEndDate(date);
+            }
+            setShowCalendar(false);
+          }}
+        />
+        <TimePickerModal
+          visible={!!showTimepicker}
+          onDismiss={() => setShowTimepicker(false)}
+          onConfirm={({ hours, minutes }) => {
+            const time = new Date(`${new Date().toISOString().split('T')[0]}T${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:00`);
+
+            showTimepicker === 'start' ? setStartTime(time) : setEndTime(time);
+            setShowTimepicker(false);
+          }}
+          hours={showTimepicker === 'start' ? displayStartHours : displayEndHours}
+          minutes={showTimepicker === 'start' ? displayStartMinutes : displayEndMinutes}
+        />
         <Separator />
         <View style={{ marginVertical: 24 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}>
@@ -321,22 +292,25 @@ const EventScreen: React.FC = () => {
             Lokalizacja*
           </Typography>
           <View style={{ marginBottom: 30 }}>
-            {/* <SmallMap
-            place={location?.formattedAddress}
-            latitude={location?.position?.lat}
-            longitude={location?.position?.lng}
-            onPress={() => router.push({stack: 'CalendarStack', screen: 'EventScreen', params: {
-              subView: 'GoogleMap',
-              callback: (address) => setLocation(address),
-              initialAddress: location
-            }})}
-          /> */}
+            <MapPreview
+              place={location?.formattedAddress}
+              latitude={location?.position?.lat}
+              longitude={location?.position?.lng}
+              onPress={() => router.push({
+                stack: 'CalendarStack', screen: 'EventScreen', params: {
+                  subView: 'GoogleMapScreen',
+                  callback: (address) => setLocation(address),
+                  initialAddress: location,
+                  optionsType: 'address'
+                }
+              })}
+            />
           </View>
         </>}
       </ScrollView>
       <Button
-        // disabled={!token || loading} 
-        // withLoading={!!token} 
+        disabled={loading || !(selectedCandidate && selectedAdvert)}
+        withLoading={loading}
         stickyBottom
         onPress={addEventHandler}
       >
@@ -347,9 +321,6 @@ const EventScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  Wrapper: {
-    backgroundColor: Colors.Basic100,
-  },
   Title: {
     color: Colors.Basic600,
     marginLeft: 18,

@@ -6,8 +6,8 @@ const BlurBackground: FC<BlurBackgroundProps> = ({ blurAmount = 4 }) => {
 	return (
 		<View style={[{
 			//@ts-ignore
-			'-webkit-backdrop-filter': 'blur(4px)',
-			'backdrop-filter': `blur(${blurAmount}px)`,
+			WebkitBackdropFilter: `blur(${blurAmount}px)`,
+			backdropFilter: `blur(${blurAmount}px)`,
 			background: 'rgba(255, 255, 255, 0.1)',
 			filter: 'blur(0)',
 			zIndex: 1,

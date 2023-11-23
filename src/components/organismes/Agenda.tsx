@@ -117,9 +117,9 @@ const Agenda: React.FC<{ getCurrentDate: (s: string) => void, events: UserEventT
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <View style={{ height: '100%', flex: 1 }}>
                                 <Typography variant='h5'>{timeStart} - {timeEnd}</Typography>
-                      <Typography numberOfLines={1} variant='h5' weight='SemiBold'>{firstName} {lastName}</Typography>
-                      <Typography numberOfLines={1} variant='h5' weight='SemiBold' color={Colors.Basic700} style={{ marginTop: 'auto' }}>{jobPosition}</Typography>
-                      <Typography numberOfLines={1}>{isPhoneCall ? 'Połączenie' : address}</Typography>
+                                <Typography variant='h5' weight='SemiBold'>{firstName} {lastName}</Typography>
+                                <Typography variant='h5' weight='SemiBold' color={Colors.Basic700} style={{ marginTop: 'auto' }}>{jobPosition}</Typography>
+                                <Typography>{isPhoneCall ? 'Połączenie' : address}</Typography>
                             </View>
                             <View style={{ alignItems: 'center', height: '100%' }}>
                                 <View style={{ width: 45, height: 45, borderRadius: 45, overflow: 'hidden', backgroundColor: Colors.Basic400, justifyContent: 'center', alignItems: 'center' }}>

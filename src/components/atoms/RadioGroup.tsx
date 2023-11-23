@@ -17,12 +17,13 @@ const Item: FC<ComponentProps<typeof TamaRadioGroup.Item> & {
                 borderWidth={2} borderColor={Colors.Basic600}
                 hoverStyle={{ borderColor: Colors.Basic900 }}
                 focusStyle={{ borderColor: Colors.Basic900 }}
+                cursor='pointer'
                 {...props}
             >
                 <TamaRadioGroup.Indicator backgroundColor={Colors.Basic900} height='70%' width='70%' />
             </TamaRadioGroup.Item>
 
-            {!!label && <Label htmlFor={id} flex={1} flexDirection={containerProps?.flexDirection}>
+            {!!label && <Label htmlFor={id} flex={1} cursor='pointer' flexDirection={containerProps?.flexDirection}>
                 {!hideSpace && <XStack width={10} {...spaceProps} />}
                 <Typography style={{ width: '100%' }}>{label}</Typography>
             </Label>}

@@ -10,61 +10,61 @@ import { Dialog, Separator } from 'tamagui';
 import useRouter from '../hooks/useRouter';
 import Button from '../components/molecules/Button';
 import CheckBox from '../components/atoms/CheckBox';
-import RNFS, { ReadDirItem } from 'react-native-fs';
+// import RNFS, { ReadDirItem } from 'react-native-fs';
 import { PermissionsAndroid } from "react-native";
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export type ImagePickerScreenProps ={
-  callback: (images: ReadDirItem[]) => void,
-  initialSelected?: ReadDirItem[],
+  // callback: (images: ReadDirItem[]) => void,
+  // initialSelected?: ReadDirItem[],
 };
 
 const ImagePickerScreen: React.FC<ImagePickerScreenProps> = () => {
-  const [images, setImages] = useState<ReadDirItem[]>([]);
-  const [selectedImages, setSelectedImages] = useState<ReadDirItem[]>([]);
-  const [previewMode, setPreviewMode] = useState(false);
-  const [previewImage, setPreviewImage] = useState<ReadDirItem>();
+  // const [images, setImages] = useState<ReadDirItem[]>([]);
+  // const [selectedImages, setSelectedImages] = useState<ReadDirItem[]>([]);
+  // const [previewMode, setPreviewMode] = useState(false);
+  // const [previewImage, setPreviewImage] = useState<ReadDirItem>();
 
   const itemSize = Math.round(Dimensions.get('window').width) / 4;
 
-  useEffect(()=> {
-    const getImages = async () => {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-          {
-            title: "Permission title",
-            message:
-              "Permission message",
-            buttonNeutral: "Ask Me Later",
-            buttonNegative: "Cancel",
-            buttonPositive: "OK",
-          }
-        );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          const picturesDir = RNFS.PicturesDirectoryPath;
-          const files = await RNFS.readDir(picturesDir);
+  // useEffect(()=> {
+  //   const getImages = async () => {
+  //     try {
+  //       const granted = await PermissionsAndroid.request(
+  //         PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+  //         {
+  //           title: "Permission title",
+  //           message:
+  //             "Permission message",
+  //           buttonNeutral: "Ask Me Later",
+  //           buttonNegative: "Cancel",
+  //           buttonPositive: "OK",
+  //         }
+  //       );
+  //       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+  //         const picturesDir = RNFS.PicturesDirectoryPath;
+  //         const files = await RNFS.readDir(picturesDir);
   
-          const imageFiles = files.filter(file => file.isFile() && /\.(jpg|jpeg|png)$/i.test(file.name));
+  //         const imageFiles = files.filter(file => file.isFile() && /\.(jpg|jpeg|png)$/i.test(file.name));
   
-          console.log('PicturesDir:', picturesDir);
-          console.log('Images:', imageFiles);
-          setImages(imageFiles);
-        } else {
-          console.log("EXTERNAL_STORAGE permission denied");
-        }
-      } catch (err) {
-        console.warn(err);
-      }
-    }
+  //         console.log('PicturesDir:', picturesDir);
+  //         console.log('Images:', imageFiles);
+  //         setImages(imageFiles);
+  //       } else {
+  //         console.log("EXTERNAL_STORAGE permission denied");
+  //       }
+  //     } catch (err) {
+  //       console.warn(err);
+  //     }
+  //   }
 
-    getImages();
-  },[])
+  //   getImages();
+  // },[])
 
-  const handlePressItem = (item: ReadDirItem) =>{
-    setPreviewMode(true);
-    setPreviewImage(item);
-  };
+  // const handlePressItem = (item: ReadDirItem) =>{
+    // setPreviewMode(true);
+    // setPreviewImage(item);
+  // };
 
   const handleConfirm = () =>{
 
@@ -72,7 +72,7 @@ const ImagePickerScreen: React.FC<ImagePickerScreenProps> = () => {
 
   const imageItem = useCallback(({item}: any) => (
     <TouchableOpacity
-      onPress={()=> handlePressItem(item)}
+      // onPress={()=> handlePressItem(item)}
       activeOpacity={.9}
     >
       <Image 
@@ -84,7 +84,7 @@ const ImagePickerScreen: React.FC<ImagePickerScreenProps> = () => {
 
   return (
     <ScreenHeaderProvider title='Wybierz zdjęcia' backgroundColor={Colors.Basic100}>
-      {!previewMode ?
+      {/* {!previewMode ?
         <FlatList
           data={images}
           numColumns={4}
@@ -109,7 +109,7 @@ const ImagePickerScreen: React.FC<ImagePickerScreenProps> = () => {
         >
           Zatwierdź
         </Button>
-      }
+      } */}
 
       {/* <Dialog
           open={previewMode}

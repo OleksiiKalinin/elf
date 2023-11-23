@@ -43,13 +43,20 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes }) => {
     const { setIsTabbarVisible } = useActions();
 
     const badgeNumbers: { [k in keyof RootStackParamList]: number } = {
-        MenuStack: 90,
-        CandidatesStack: 1,
-        CalendarStack: 5,
-        AdvertStack: 80,
-        MessengerStack: 11,
+        MenuStack: 0,
+        CandidatesStack: 0,
+        CalendarStack: 0,
+        AdvertStack: 0,
+        MessengerStack: 0,
         ProfileStack: 0,
         AuthStack: 0,
+        // MenuStack: 90,
+        // CandidatesStack: 1,
+        // CalendarStack: 5,
+        // AdvertStack: 80,
+        // MessengerStack: 11,
+        // ProfileStack: 0,
+        // AuthStack: 0,
     }
 
     useEffect(() => {

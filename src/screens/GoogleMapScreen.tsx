@@ -154,6 +154,7 @@ const GoogleMapScreen: FC<GoogleMapScreenProps> = ({ callback, initialAddress, h
                     longitudeDelta: location?.position ? 0.02 : 2.2,
                 }}
                 options={{ gestureHandling: "greedy" }}
+                // onPress={(e) => console.log(e?.latLng)}
             >
                 {!!location?.position?.lat && !!location?.position?.lng &&
                     <Map.Marker

@@ -27,6 +27,7 @@ import {
 import { getTranslation } from '../translations/utils'
 import Button from '../../../molecules/Button'
 import SvgIcon from '../../../atoms/SvgIcon'
+import ScrollLock from '../../../atoms/ScrollLock'
 
 const supportedOrientations: (
   | 'portrait'
@@ -127,113 +128,115 @@ export function TimePickerModal({
     [setFocused, setLocalHours, setLocalMinutes]
   )
   return (
-    <Modal
-      animationType={animationType}
-      transparent={true}
-      visible={visible}
-      onRequestClose={onDismiss}
-      presentationStyle="overFullScreen"
-      supportedOrientations={supportedOrientations}
-      statusBarTranslucent={true}
-    >
-      <>
-        <TouchableWithoutFeedback onPress={onDismiss}>
-          <View
-            style={[
-              StyleSheet.absoluteFill,
-              styles.modalBackground,
-              { backgroundColor: theme.colors?.backdrop },
-            ]}
-          />
-        </TouchableWithoutFeedback>
-        <View
-          style={[StyleSheet.absoluteFill, styles.modalRoot]}
-          pointerEvents="box-none"
-        >
-          <KeyboardAvoidingView
-            style={styles.keyboardView}
-            behavior={'padding'}
-          >
-            <Animated.View
+    <ScrollLock enabled={visible} removeScrollBar={false}>
+      <Modal
+        animationType={animationType}
+        transparent={true}
+        visible={visible}
+        onRequestClose={onDismiss}
+        presentationStyle="overFullScreen"
+        supportedOrientations={supportedOrientations}
+        statusBarTranslucent={true}
+      >
+        <>
+          <TouchableWithoutFeedback onPress={onDismiss}>
+            <View
               style={[
-                styles.modalContent,
-                {
-                  backgroundColor:
-                    theme.dark && theme.isV3
-                      ? theme.colors.elevation.level3
-                      : theme.isV3
-                        ? theme.colors.surface
-                        : theme.dark
-                          ? overlay(10, theme.colors.surface)
-                          : theme.colors.surface,
-                  borderRadius: theme.isV3
-                    ? theme.roundness * 0
-                    // ? theme.roundness * 6
-                    : theme.roundness,
-                },
+                StyleSheet.absoluteFill,
+                styles.modalBackground,
+                { backgroundColor: theme.colors?.backdrop },
               ]}
+            />
+          </TouchableWithoutFeedback>
+          <View
+            style={[StyleSheet.absoluteFill, styles.modalRoot]}
+            pointerEvents="box-none"
+          >
+            <KeyboardAvoidingView
+              style={styles.keyboardView}
+              behavior={'padding'}
             >
-              <View style={styles.labelContainer}>
-                <Text
-                  maxFontSizeMultiplier={1.5}
-                  style={[
-                    styles.label,
-                    {
-                      ...textFont,
-                      color: theme?.isV3
-                        ? theme.colors.onSurfaceVariant
-                        : (theme as any as MD2Theme).colors.text,
-                    },
-                  ]}
-                >
-                  {uppercase ? labelText.toUpperCase() : labelText}
-                </Text>
-              </View>
-              <View style={styles.timePickerContainer}>
-                <TimePicker
-                  locale={locale}
-                  inputType={inputType}
-                  use24HourClock={use24HourClock}
-                  inputFontSize={inputFontSize}
-                  focused={focused}
-                  hours={localHours}
-                  minutes={localMinutes}
-                  onChange={onChange}
-                  onFocusInput={onFocusInput}
-                />
-              </View>
-              <View style={styles.bottom}>
-                <Button
-                  circular
-                  variant='text'
-                  icon={<SvgIcon icon={inputType === 'keyboard' ? 'bag' : 'calculator'} />}
-                  onPress={() => setInputType(reverseInputTypes[inputType])}
-                  style={styles.inputTypeToggle}
-                  accessibilityLabel="toggle keyboard"
-                />
-                <View style={styles.fill} />
-                <Button
-                  onPress={onDismiss}
-                  variant='text'
-                  // contentWeight='semi'
-                  width='auto'
-                >
-                  {cancelLabel || getTranslation(locale, 'cancelTimeModal')}
-                </Button>
-                <Button
-                  variant='text'
-                  // contentWeight='semi'
-                  width='auto'
-                  onPress={() => onConfirm({ hours: localHours, minutes: localMinutes })}
-                >
-                  {confirmLabel || getTranslation(locale, 'confirmTimeModal')}
-                </Button>
-              </View>
-            </Animated.View>
-          </KeyboardAvoidingView>
-        </View>
-      </>
-    </Modal>
+              <Animated.View
+                style={[
+                  styles.modalContent,
+                  {
+                    backgroundColor:
+                      theme.dark && theme.isV3
+                        ? theme.colors.elevation.level3
+                        : theme.isV3
+                          ? theme.colors.surface
+                          : theme.dark
+                            ? overlay(10, theme.colors.surface)
+                            : theme.colors.surface,
+                    borderRadius: theme.isV3
+                      ? theme.roundness * 0
+                      // ? theme.roundness * 6
+                      : theme.roundness,
+                  },
+                ]}
+              >
+                <View style={styles.labelContainer}>
+                  <Text
+                    maxFontSizeMultiplier={1.5}
+                    style={[
+                      styles.label,
+                      {
+                        ...textFont,
+                        color: theme?.isV3
+                          ? theme.colors.onSurfaceVariant
+                          : (theme as any as MD2Theme).colors.text,
+                      },
+                    ]}
+                  >
+                    {uppercase ? labelText.toUpperCase() : labelText}
+                  </Text>
+                </View>
+                <View style={styles.timePickerContainer}>
+                  <TimePicker
+                    locale={locale}
+                    inputType={inputType}
+                    use24HourClock={use24HourClock}
+                    inputFontSize={inputFontSize}
+                    focused={focused}
+                    hours={localHours}
+                    minutes={localMinutes}
+                    onChange={onChange}
+                    onFocusInput={onFocusInput}
+                  />
+                </View>
+                <View style={styles.bottom}>
+                  <Button
+                    circular
+                    variant='text'
+                    icon={<SvgIcon icon={inputType === 'keyboard' ? 'bag' : 'calculator'} />}
+                    onPress={() => setInputType(reverseInputTypes[inputType])}
+                    style={styles.inputTypeToggle}
+                    accessibilityLabel="toggle keyboard"
+                  />
+                  <View style={styles.fill} />
+                  <Button
+                    onPress={onDismiss}
+                    variant='text'
+                    // contentWeight='semi'
+                    width='auto'
+                  >
+                    {cancelLabel || getTranslation(locale, 'cancelTimeModal')}
+                  </Button>
+                  <Button
+                    variant='text'
+                    // contentWeight='semi'
+                    width='auto'
+                    onPress={() => onConfirm({ hours: localHours, minutes: localMinutes })}
+                  >
+                    {confirmLabel || getTranslation(locale, 'confirmTimeModal')}
+                  </Button>
+                </View>
+              </Animated.View>
+            </KeyboardAvoidingView>
+          </View>
+        </>
+      </Modal>
+    </ScrollLock>
   )
 }
 

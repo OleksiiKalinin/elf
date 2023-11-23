@@ -16,6 +16,7 @@ import DatePickerModalContent, {
 } from './DatePickerModalContent'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useHeaderBackgroundColor } from '../utils'
+import ScrollLock from '../../../atoms/ScrollLock'
 
 interface DatePickerModalProps {
   visible: boolean
@@ -24,23 +25,23 @@ interface DatePickerModalProps {
   disableStatusBarPadding?: boolean
   inputEnabled?: boolean
   presentationStyle?:
-    | 'fullScreen'
-    | 'pageSheet'
-    | 'formSheet'
-    | 'overFullScreen'
+  | 'fullScreen'
+  | 'pageSheet'
+  | 'formSheet'
+  | 'overFullScreen'
 }
 
 export interface DatePickerModalSingleProps
   extends DatePickerModalContentSingleProps,
-    DatePickerModalProps {}
+  DatePickerModalProps { }
 
 export interface DatePickerModalMultiProps
   extends DatePickerModalContentMultiProps,
-    DatePickerModalProps {}
+  DatePickerModalProps { }
 
 export interface DatePickerModalRangeProps
   extends DatePickerModalContentRangeProps,
-    DatePickerModalProps {}
+  DatePickerModalProps { }
 
 export function DatePickerModal(
   props:
@@ -71,66 +72,68 @@ export function DatePickerModal(
   const insets = useSafeAreaInsets()
 
   return (
-    <View style={[StyleSheet.absoluteFill]} pointerEvents="box-none">
-      <Modal
-        animationType={animationTypeCalculated}
-        transparent={isTransparent}
-        visible={visible}
-        onRequestClose={rest.onDismiss}
-        presentationStyle={presentationStyle || 'overFullScreen'}
-        supportedOrientations={supportedOrientations}
-        //@ts-ignore
-        statusBarTranslucent={true}
-      >
-        <>
-          <TouchableWithoutFeedback onPress={rest.onDismiss}>
-            <View
-              style={[
-                StyleSheet.absoluteFill,
-                styles.modalBackground,
-                { backgroundColor: theme.colors.backdrop },
-              ]}
-            />
-          </TouchableWithoutFeedback>
-          <View
-            style={[StyleSheet.absoluteFill, styles.modalRoot]}
-            pointerEvents="box-none"
-          >
-            <View
-              style={[
-                styles.modalContent,
-                { backgroundColor: theme.colors.surface },
-                dimensions.width > 650 ? styles.modalContentBig : null,
-              ]}
-            >
-              {disableStatusBarPadding ? null : (
-                <View
-                  style={[
-                    {
-                      height: Platform.select({
-                        ios: StatusBar.currentHeight,
-                        android: StatusBar.currentHeight,
-                        web: insets.top,
-                      }),
-                      backgroundColor: Platform.select({
-                        ios: theme.colors.primary,
-                        android: theme.colors.primary,
-                        web: headerBackgroundColor,
-                      }),
-                    },
-                  ]}
-                />
-              )}
-              <DatePickerModalContent
-                {...rest}
-                inputEnabled={inputEnabled}
-                disableSafeTop={disableStatusBar}
+    <ScrollLock enabled={visible} removeScrollBar={false}>
+      <View style={[StyleSheet.absoluteFill]} pointerEvents="box-none">
+        <Modal
+          animationType={animationTypeCalculated}
+          transparent={isTransparent}
+          visible={visible}
+          onRequestClose={rest.onDismiss}
+          presentationStyle={presentationStyle || 'overFullScreen'}
+          supportedOrientations={supportedOrientations}
+          //@ts-ignore
+          statusBarTranslucent={true}
+        >
+          <>
+            <TouchableWithoutFeedback onPress={rest.onDismiss}>
+              <View
+                style={[
+                  StyleSheet.absoluteFill,
+                  styles.modalBackground,
+                  { backgroundColor: theme.colors.backdrop },
+                ]}
               />
+            </TouchableWithoutFeedback>
+            <View
+              style={[StyleSheet.absoluteFill, styles.modalRoot]}
+              pointerEvents="box-none"
+            >
+              <View
+                style={[
+                  styles.modalContent,
+                  { backgroundColor: theme.colors.surface },
+                  dimensions.width > 650 ? styles.modalContentBig : null,
+                ]}
+              >
+                {disableStatusBarPadding ? null : (
+                  <View
+                    style={[
+                      {
+                        height: Platform.select({
+                          ios: StatusBar.currentHeight,
+                          android: StatusBar.currentHeight,
+                          web: insets.top,
+                        }),
+                        backgroundColor: Platform.select({
+                          ios: theme.colors.primary,
+                          android: theme.colors.primary,
+                          web: headerBackgroundColor,
+                        }),
+                      },
+                    ]}
+                  />
+                )}
+                <DatePickerModalContent
+                  {...rest}
+                  inputEnabled={inputEnabled}
+                  disableSafeTop={disableStatusBar}
+                />
+              </View>
             </View>
-          </View>
-        </>
-      </Modal>
-    </View>
+          </>
+        </Modal>
+      </View>
+    </ScrollLock>
   )
 }
 
