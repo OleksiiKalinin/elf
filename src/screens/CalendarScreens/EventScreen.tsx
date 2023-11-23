@@ -134,7 +134,7 @@ const EventScreen: React.FC = () => {
   };
 
   return (
-    <ScreenHeaderProvider backgroundColor={Colors.Basic100}>
+    <ScreenHeaderProvider backgroundContent={Colors.Basic100}>
       <ScrollView>
         <Typography weight="Bold" variant='h5' style={styles.Title}>
           Data i godzina*

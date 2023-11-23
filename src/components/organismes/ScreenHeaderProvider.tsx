@@ -100,7 +100,9 @@ type ScreenHeaderProviderProps = {
   transparent?: boolean;
   staticContentHeightOnWeb?: boolean;
   callback?: () => void;
-  backgroundColor?: ColorValue
+  headerItemsColor?: ColorValue,
+  backgroundHeader?: ColorValue,
+  backgroundContent?: ColorValue,
 };
 
 export const SCREEN_HEADER_HEIGHT = 50;
@@ -116,7 +118,9 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   staticContentHeightOnWeb = false,
   alterTitle = null,
   callback,
-  backgroundColor,
+  headerItemsColor = Colors.Basic900,
+  backgroundHeader,
+  backgroundContent,
 }) => {
   const { backToRemoveParams, back } = useRouter();
   const { currentScreen, windowSizes, swipeablePanelProps, isTabbarVisible } = useTypedSelector(s => s.general);
@@ -136,7 +140,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
       // backgroundColor: Colors.Basic200,
     }}>
       <View style={{ maxWidth: 768, width: '100%', flex: 1 }}>
-        <View style={[styles.Header]}>
+        <View style={[styles.Header, {backgroundColor: transparent && backgroundHeader ? backgroundHeader : transparent ? 'transparent' : Colors.White}]}>
           {mode === 'backAction' && (
             <View style={{ flex: 1, height: '100%', alignItems: 'flex-start', flexDirection: 'row' }}>
               <Button
@@ -145,10 +149,10 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
                 alignItems='center'
                 width={50}
                 height='100%'
-                icon={<SvgIcon icon='arrowLeft' />}
+                icon={<SvgIcon icon='arrowLeft' fill={headerItemsColor}/>}
                 onPress={callback ? callback : (!!swipeablePanelProps ? backToRemoveParams : back)}
               />
-              <Typography variant="h4" weight="Bold" style={{ alignSelf: 'center' }}>
+              <Typography variant="h4" weight="Bold" style={{ alignSelf: 'center', color: headerItemsColor }}>
                 {title || currentTitle}
               </Typography>
             </View>
@@ -176,7 +180,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
                     <Button
                       circular
                       backgroundColor='transparent'
-                      icon={(typeof icon === 'string' ? <SvgIcon icon={icon as IconTypes} /> : (typeof icon === 'object' ? icon : undefined)) as any}
+                      icon={(typeof icon === 'string' ? <SvgIcon fill={backgroundContent} icon={icon as IconTypes} /> : (typeof icon === 'object' ? icon : undefined)) as any}
                       onPress={onPress}
                     />
                   </View>))}
@@ -190,7 +194,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
           paddingTop: Platform.select({ web: staticContentHeightOnWeb ? undefined : HeaderSpace, native: HeaderSpace }),
           marginTop: Platform.select({ web: staticContentHeightOnWeb ? HeaderSpace : undefined }),
           flex: Platform.select({ native: 1 }),
-          backgroundColor
+          backgroundColor: backgroundContent
         }]}>
           <View style={{ width: '100%', height: '100%' }}>
             {children}
@@ -213,7 +217,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     zIndex: 1,
-    backgroundColor: Colors.White,
     maxWidth: 768,
   },
   ButtonBack: {
