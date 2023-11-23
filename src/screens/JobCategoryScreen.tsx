@@ -154,7 +154,7 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({
       mode="backAction"
       title={industryId ? 'Stanowiska' : 'Kategorie'}
       callback={initialIndustry ? backToFilterScreen : industryId ? backToIndustry : undefined}
-      backgroundColor={Colors.Basic100}
+      backgroundContent={Colors.Basic100}
     >
       <View style={{ backgroundColor: Colors.Basic100, flex: 1 }}>
         {industryId === null || mode === 'industry' ? (
