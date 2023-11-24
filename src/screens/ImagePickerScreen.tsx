@@ -14,11 +14,12 @@ import { useTypedSelector } from '../hooks/useTypedSelector';
 export type ImagePickerScreenProps = {
   callback: (images: ReadDirItem[]) => void,
   initialSelected?: ReadDirItem[],
+  selectionLimit?: number,
 };
 
-const ImagePickerScreen: React.FC<ImagePickerScreenProps> = ({ callback, initialSelected }) => {
+const ImagePickerScreen: React.FC<ImagePickerScreenProps> = ({ callback, initialSelected, selectionLimit = 10 }) => {
   const [images, setImages] = useState<ReadDirItem[]>([]);
-  const [selectedImages, setSelectedImages] = useState<ReadDirItem[]>([]);
+  const [selectedImages, setSelectedImages] = useState<ReadDirItem[]>(initialSelected || []);
   const [previewMode, setPreviewMode] = useState(false);
   const [previewImage, setPreviewImage] = useState<ReadDirItem>();
   const { windowSizes } = useTypedSelector(state => state.general);
@@ -31,14 +32,14 @@ const ImagePickerScreen: React.FC<ImagePickerScreenProps> = ({ callback, initial
       try {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-          // {
-          //   title: "Permission title",
-          //   message:
-          //     "Permission message",
-          //   buttonNeutral: "Ask Me Later",
-          //   buttonNegative: "Cancel",
-          //   buttonPositive: "OK",
-          // }
+          {
+            title: "Permission title",
+            message:
+              "Permission message",
+            buttonNeutral: "Ask Me Later",
+            buttonNegative: "Cancel",
+            buttonPositive: "OK",
+          }
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           const directories = [RNFS.PicturesDirectoryPath, RNFS.DownloadDirectoryPath,];
@@ -51,24 +52,29 @@ const ImagePickerScreen: React.FC<ImagePickerScreenProps> = ({ callback, initial
             allImages = [...allImages, ...imageFiles];
           };
 
-          setImages(allImages);
+          if (initialSelected) {
+            const filteredImages = allImages.filter(image => !initialSelected.some(selected => selected.name === image.name));
+            setImages([...initialSelected, ...filteredImages]);
+          } else {
+            setImages(allImages);
+          };
         } else {
           console.log("EXTERNAL_STORAGE permission denied");
-        }
+        };
       } catch (err) {
         console.warn(err);
-      }
-    }
+      };
+    };
 
     getImages();
-  }, [])
+  }, [initialSelected])
 
   const handlePressItem = (image: ReadDirItem) => {
     const isSelected = selectedImages.some(item => item.path === image.path);
 
     if (isSelected) {
       setSelectedImages(prevSelected => prevSelected.filter(item => item.path !== image.path));
-    } else {
+    } else if (!isSelected && selectedImages.length < selectionLimit) {
       setSelectedImages(prevSelected => [...prevSelected, image]);
     };
   };
@@ -87,17 +93,14 @@ const ImagePickerScreen: React.FC<ImagePickerScreenProps> = ({ callback, initial
     setPreviewMode(false);
   };
 
-  const ImageCustom = ({ item }: any) => {
+  const PreviewImage = ({ item }: { item: ReadDirItem }) => {
     const [ratio, setRatio] = useState(0);
-    const uri = 'file://' + item.path
+    const uri = 'file://' + item.path;
 
     Image.getSize(
       uri,
       (width, height) => {
         setRatio(width / height);
-      },
-      error => {
-        console.log('error:', error);
       },
     );
     return (
@@ -108,7 +111,7 @@ const ImagePickerScreen: React.FC<ImagePickerScreenProps> = ({ callback, initial
     );
   };
 
-  const imageItem = ({ item }: any) => {
+  const ImageItem = useCallback(({ item }: { item: ReadDirItem }) => {
     const selectedIndex = selectedImages.findIndex((element) => element.path === item.path);
     const selected = selectedIndex !== -1;
 
@@ -116,48 +119,31 @@ const ImagePickerScreen: React.FC<ImagePickerScreenProps> = ({ callback, initial
       <TouchableOpacity
         onPress={() => handlePressItem(item)}
         onLongPress={() => handleLongPressItem(item)}
-        activeOpacity={.9}
-        style={{
-          position: 'relative',
-        }}
+        activeOpacity={0.9}
+        style={{ position: 'relative' }}
       >
         <Image
           source={{ uri: 'file://' + item.path }}
           style={{
             width: itemSize,
             height: itemSize,
-            opacity: selected ? .7 : 1
+            opacity: selected ? 0.7 : 1,
           }}
         />
-        {selected &&
-          <View
-            style={{
-              height: 36,
-              width: 36,
-              backgroundColor: Colors.Basic700,
-              borderRadius: 50,
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-18, -18)',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
+        {selected && (
+          <View style={styles.SelectedImage}>
             <Typography
               size={16}
               weight='Bold'
-              style={{
-                color: Colors.White
-              }}
+              style={{ color: Colors.White }}
             >
               {selectedIndex + 1}
             </Typography>
           </View>
-        }
+        )}
       </TouchableOpacity>
-    )
-  }
+    );
+  }, [selectedImages, itemSize]);
 
   return (
     <ScreenHeaderProvider title='Wybierz zdjęcia'>
@@ -165,7 +151,7 @@ const ImagePickerScreen: React.FC<ImagePickerScreenProps> = ({ callback, initial
         data={images}
         numColumns={4}
         keyExtractor={(item) => item.path}
-        renderItem={imageItem}
+        renderItem={ImageItem}
       />
       <Button
         stickyBottom
@@ -187,16 +173,10 @@ const ImagePickerScreen: React.FC<ImagePickerScreenProps> = ({ callback, initial
           transparent
           title=' '
         >
-          <View style={{ height: '100%', width: '100%', backgroundColor: Colors.Basic900, justifyContent: 'center' }}>
-            <Image
-              source={{ uri: 'file://' + previewImage?.path }}
-              style={{
-                width: '100%',
-                height: undefined,
-                aspectRatio: Math.round(windowSizes.width) / Math.round(windowSizes.height),
-              }}
-            />
-            <ImageCustom item={previewImage} />
+          <View style={styles.Preview}>
+            {previewImage &&
+              <PreviewImage item={previewImage} />
+            }
           </View>
         </ScreenHeaderProvider>
       </Modal>
@@ -208,6 +188,24 @@ const styles = StyleSheet.create({
   Wrapper: {
     backgroundColor: Colors.Basic100,
     flex: 1,
+  },
+  SelectedImage: {
+    height: 36,
+    width: 36,
+    backgroundColor: Colors.Basic700,
+    borderRadius: 50,
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-18, -18)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  Preview: {
+    height: '100%',
+    width: '100%',
+    backgroundColor: Colors.Basic900,
+    justifyContent: 'center',
   },
 });
 
