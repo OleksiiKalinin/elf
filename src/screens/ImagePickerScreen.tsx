@@ -17,7 +17,7 @@ export type ImagePickerScreenProps = {
   selectionLimit?: number,
 };
 
-const ImagePickerScreen: React.FC<ImagePickerScreenProps> = ({ callback, initialSelected, selectionLimit = 10 }) => {
+const ImagePickerScreen: React.FC<ImagePickerScreenProps> = ({ callback, initialSelected, selectionLimit = 20 }) => {
   const [images, setImages] = useState<ReadDirItem[]>([]);
   const [selectedImages, setSelectedImages] = useState<ReadDirItem[]>(initialSelected || []);
   const [previewMode, setPreviewMode] = useState(false);
@@ -86,7 +86,7 @@ const ImagePickerScreen: React.FC<ImagePickerScreenProps> = ({ callback, initial
 
   const handleConfirm = () => {
     callback(selectedImages);
-    backToRemoveParams();
+/*     backToRemoveParams(); */
   };
 
   const closePreview = () => {
