@@ -93,7 +93,7 @@ const Carousel: FC<
                             <View style={{ flex: 1, backgroundColor: Colors.Basic900 }}>
                                 <TransformWrapper
                                     // disablePadding
-                                    maxPositionX={-100}
+                                    // maxPositionX={-100}
                                     onTransformed={(ref, state) => {
                                         if (ref.instance.bounds) {
                                             const { maxPositionX, minPositionX } = ref.instance.bounds
