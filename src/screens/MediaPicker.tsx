@@ -1,34 +1,38 @@
-import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View, Image, FlatList, Modal } from 'react-native';
 import Colors from '../colors/Colors';
 import ScreenHeaderProvider from '../components/organismes/ScreenHeaderProvider';
 import Typography from '../components/atoms/Typography';
-import { Dialog, Separator } from 'tamagui';
-import useRouter from '../hooks/useRouter';
 import Button from '../components/molecules/Button';
 import RNFS, { ReadDirItem } from 'react-native-fs';
 import { PermissionsAndroid } from "react-native";
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useTypedSelector } from '../hooks/useTypedSelector';
+import { MediaFileType } from '../components/organismes/MediaSelector';
 
-export type ImagePickerScreenProps = {
-  callback: (images: ReadDirItem[]) => void,
-  initialSelected?: ReadDirItem[],
+export type MediaPickerProps = {
+  type: 'image' | 'video',
+  callback: (images: MediaFileType[]) => void,
+  initialSelected?: MediaFileType[],
   selectionLimit?: number,
 };
 
-const ImagePickerScreen: React.FC<ImagePickerScreenProps> = ({ callback, initialSelected, selectionLimit = 20 }) => {
+const MediaPicker: React.FC<MediaPickerProps> = ({ 
+  callback, 
+  initialSelected, 
+  selectionLimit = 20, 
+  type,
+}) => {
   const [images, setImages] = useState<ReadDirItem[]>([]);
-  const [selectedImages, setSelectedImages] = useState<ReadDirItem[]>(initialSelected || []);
+  const [selectedFiles, setSelectedFiles] = useState<ReadDirItem[]>(initialSelected as any || []);
   const [previewMode, setPreviewMode] = useState(false);
   const [previewImage, setPreviewImage] = useState<ReadDirItem>();
   const { windowSizes } = useTypedSelector(state => state.general);
-  const { backToRemoveParams } = useRouter();
 
   const itemSize = Math.round(windowSizes.width) / 4;
 
   useEffect(() => {
-    const getImages = async () => {
+    const getFiles = async () => {
       try {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
@@ -44,19 +48,22 @@ const ImagePickerScreen: React.FC<ImagePickerScreenProps> = ({ callback, initial
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           const directories = [RNFS.PicturesDirectoryPath, RNFS.DownloadDirectoryPath,];
 
-          let allImages: ReadDirItem[] = [];
+          let allFiles: ReadDirItem[] = [];
+          const imageExtensions = /\.(jpg|jpeg|png)$/i;
+          const videoExtensions = /\.(mp4|mov|mkv)$/i;
 
           for (const directory of directories) {
             const files = await RNFS.readDir(directory);
-            const imageFiles = files.filter(file => file.isFile() && /\.(jpg|jpeg|png)$/i.test(file.name));
-            allImages = [...allImages, ...imageFiles];
+            let filteredFiles;
+            filteredFiles = files.filter(file => file.isFile() && (type === 'image' ? imageExtensions.test(file.name) : videoExtensions.test(file.name)));
+            allFiles = [...allFiles, ...filteredFiles];
           };
 
           if (initialSelected) {
-            const filteredImages = allImages.filter(image => !initialSelected.some(selected => selected.name === image.name));
-            setImages([...initialSelected, ...filteredImages]);
+            const filteredImages = allFiles.filter(file => !initialSelected.some(selected => selected.beforePath === file.path));
+            setImages([...initialSelected, ...filteredImages] as any);
           } else {
-            setImages(allImages);
+            setImages(allFiles);
           };
         } else {
           console.log("EXTERNAL_STORAGE permission denied");
@@ -66,16 +73,16 @@ const ImagePickerScreen: React.FC<ImagePickerScreenProps> = ({ callback, initial
       };
     };
 
-    getImages();
+    getFiles();
   }, [initialSelected])
 
   const handlePressItem = (image: ReadDirItem) => {
-    const isSelected = selectedImages.some(item => item.path === image.path);
+    const isSelected = selectedFiles.some(item => item.path === image.path);
 
     if (isSelected) {
-      setSelectedImages(prevSelected => prevSelected.filter(item => item.path !== image.path));
-    } else if (!isSelected && selectedImages.length < selectionLimit) {
-      setSelectedImages(prevSelected => [...prevSelected, image]);
+      setSelectedFiles(prevSelected => prevSelected.filter(item => item.path !== image.path));
+    } else if (!isSelected && selectedFiles.length < selectionLimit) {
+      setSelectedFiles(prevSelected => [...prevSelected, image]);
     };
   };
 
@@ -85,8 +92,7 @@ const ImagePickerScreen: React.FC<ImagePickerScreenProps> = ({ callback, initial
   };
 
   const handleConfirm = () => {
-    callback(selectedImages);
-/*     backToRemoveParams(); */
+    callback(selectedFiles as any);
   };
 
   const closePreview = () => {
@@ -112,7 +118,7 @@ const ImagePickerScreen: React.FC<ImagePickerScreenProps> = ({ callback, initial
   };
 
   const ImageItem = useCallback(({ item }: { item: ReadDirItem }) => {
-    const selectedIndex = selectedImages.findIndex((element) => element.path === item.path);
+    const selectedIndex = selectedFiles.findIndex((element) => element.path === item.path);
     const selected = selectedIndex !== -1;
 
     return (
@@ -143,7 +149,7 @@ const ImagePickerScreen: React.FC<ImagePickerScreenProps> = ({ callback, initial
         )}
       </TouchableOpacity>
     );
-  }, [selectedImages, itemSize]);
+  }, [selectedFiles, itemSize]);
 
   return (
     <ScreenHeaderProvider title='Wybierz zdjęcia'>
@@ -156,7 +162,7 @@ const ImagePickerScreen: React.FC<ImagePickerScreenProps> = ({ callback, initial
       <Button
         stickyBottom
         onPress={() => handleConfirm()}
-        disabled={selectedImages.length === 0}
+        disabled={selectedFiles.length === 0}
       >
         Zatwierdź
       </Button>
@@ -209,4 +215,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ImagePickerScreen;
+export default MediaPicker;

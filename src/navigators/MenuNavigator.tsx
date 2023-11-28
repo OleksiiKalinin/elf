@@ -11,8 +11,6 @@ import QuestionsListScreen from '../screens/MenuScreens/QuestionsListScreen';
 import QuestionsScreen from '../screens/MenuScreens/QuestionsScreen';
 import TestScreen from '../screens/MenuScreens/TestScreen';
 import ImageScreen from '../screens/MenuScreens/ImageScreen';
-import { ImagePickerScreenProps } from '../screens/ImagePickerScreen';
-
 type SubView<T extends keyof MenuStackParamList['extended']> = { subView: T } & MenuStackParamList['extended'][T]
 
 export type MenuStackParamList = {
@@ -31,11 +29,9 @@ export type MenuStackParamList = {
     TestScreen: undefined,
     ImageScreen:
     | undefined
-    | SubView<'ImagePickerScreen'>
     ,
   },
   extended: {
-    ImagePickerScreen: ImagePickerScreenProps,
   };
 };
 

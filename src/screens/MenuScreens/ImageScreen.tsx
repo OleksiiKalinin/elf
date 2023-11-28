@@ -12,7 +12,7 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { InitialPropsFromParams } from '../../hooks/types';
 import useRouter from '../../hooks/useRouter';
 import { ReadDirItem } from 'react-native-fs';
-import MediaSelector from '../../components/organismes/MediaSelector';
+import MediaSelector, { MediaFileType } from '../../components/organismes/MediaSelector';
 
 
 type Params = NonNullable<MenuStackParamList['default']['ImageScreen']>;
@@ -22,7 +22,7 @@ const { useParam } = createParam<Params>();
 const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
   const router = useRouter();
 
-  const [images, setImages] = useState<ReadDirItem[]>([]);
+  const [images, setImages] = useState<MediaFileType[]>([]);
 
   // const handleImages = (images: ReadDirItem[]) => {
   //   setImages(images);
@@ -41,16 +41,8 @@ const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
     });
   }; */
 
-  const callbackMultiple = (images: any[]) =>{
-    // console.log('Screen:', images)
-    setImages(images);
-  };
-
-  const callbackSingle = (image: any) =>{
-    const array = [];
-    array.push(image);
-    // console.log('Screen:', image)
-    setImages(array as any);
+  const callback = (image: MediaFileType[]) =>{
+    setImages(image);
   };
 
   return (
@@ -58,7 +50,6 @@ const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
       {/* <Button onPress={() => goToImagePickerScreen()}>
         Dodaj zdjęcia
       </Button> */}
-
       <View style={{gap: 20, flex: 1}}>
         <MediaSelector
           type='image'
@@ -67,18 +58,22 @@ const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
               Dodaj zdjęcie
             </Button>
           }
-          callback={callbackSingle}
+          callback={callback}
         />
 
         <MediaSelector
           type='image'
           crop
+          cropResolution={{
+            width: 500,
+            height: 500,
+          }}
           render={(onPress) =>
             <Button onPress={() => onPress()}>
               Dodaj zdjęcie - crop
             </Button>
           }
-          callback={callbackSingle}
+          callback={callback}
         />
 
         <MediaSelector
@@ -86,25 +81,37 @@ const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
           multiple
           render={(onPress) =>
             <Button onPress={() => onPress()}>
-              Dodaj zdjęcia
+              Dodaj zdjęcia - multiple
             </Button>
           }
-          callback={callbackMultiple}
-          selectionLimit={5}
+          callback={callback}
+          selectionLimit={20}
+          initialSelected={images}
         />
-        <View style={{flex: 1, backgroundColor: Colors.Basic200}}>
-          {images.map(item=> 
-            <Image
-              source={{ uri: 'file://' + item.path}}
-              style={{
-                width: 100,
-                height: 100,
-              }}
-            />  
-          )}
-        </View>
+
+        <MediaSelector
+          type='video'
+          render={(onPress) =>
+            <Button onPress={() => onPress()}>
+              Dodaj wideo
+            </Button>
+          }
+          callback={callback}
+        />
+        <ScrollView style={{flex: 1, backgroundColor: Colors.Basic200}}>
+          <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
+            {images.map(item=> 
+              <Image
+                source={{ uri: 'file://' + item.path}}
+                style={{
+                  width: 100,
+                  height: 100,
+                }}
+              />  
+            )}
+          </View>
+        </ScrollView>
       </View>
-      
     </ScreenHeaderProvider>
   );
 };
