@@ -10,7 +10,8 @@ const Demo4 = () => {
     return (
         <Carousel
             innerPagination
-            data={[im1, im2, im1, im2, im1, im2, im1, im2, im1, im2, im1, im2, im1, im2, im1, im2, im1, im2, im1, im2, im1, im2, im1, im2, im1, im2, im1, im2, im1, im2, im1, im2, im1, im2, im3]}
+            // data={[im1]}
+            data={[im1, im2, im3]}
             renderItem={({ index, item }) => (
                 <View style={{ flex: 1 }}>
                     <Image

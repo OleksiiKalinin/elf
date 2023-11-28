@@ -13,6 +13,7 @@ import {Snackbar} from 'react-native-paper';
 import SvgIcon from '../../components/atoms/SvgIcon';
 import {InitialPropsFromParams} from '../../hooks/types';
 import useRouter from '../../hooks/useRouter';
+import Demo4 from './demo4';
 
 type Params = NonNullable<MenuStackParamList['default']['TestScreen']>;
 
@@ -53,6 +54,7 @@ const TestScreen: React.FC<InitialPropsFromParams<Params>> = () => {
   return (
     <ScreenHeaderProvider mainTitlePosition="flex-start">
       <ScrollView style={styles.ScrollView}>
+        <Demo4 />
         <Button
           onPress={goToCandidatesFilters}
           style={{ marginTop: 30 }}
