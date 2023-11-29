@@ -22,7 +22,6 @@ type ButtonProps = {
   fullwidth?: boolean,
   borderTop?: boolean,
   borderBottom?: boolean,
-  children?: React.ReactNode,
   arrowRight?: boolean,
   stickyBottom?: boolean,
 } & React.ComponentProps<typeof TamaButton>;

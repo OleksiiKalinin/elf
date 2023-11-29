@@ -72,7 +72,7 @@ export function DatePickerModal(
   const insets = useSafeAreaInsets()
 
   return (
-    <ScrollLock enabled={visible} removeScrollBar={false}>
+    <ScrollLock enabled={visible}>
       <View style={[StyleSheet.absoluteFill]} pointerEvents="box-none">
         <Modal
           animationType={animationTypeCalculated}
