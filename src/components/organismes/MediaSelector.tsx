@@ -7,15 +7,15 @@ import { Image, Video } from 'react-native-compressor';
 import { stat } from 'react-native-fs';
 
 export type MediaFileType = {
-  name: string | undefined
-  path: string
-  size: number
-  mode?: number
-  ctime: number
-  mtime: number
-  originalFilepath?: string
-  isFile: () => boolean
-  isDirectory: () => boolean
+  name: string | undefined,
+  path: string,
+  size: number,
+  mode?: number,
+  ctime: number,
+  mtime: number,
+  originalFilepath?: string,
+  isFile: () => boolean,
+  isDirectory: () => boolean,
   beforePath?: string,
 }
 
@@ -28,8 +28,13 @@ export type MediaSelectorProps = ({
   cropResolution?: never,
   imageCompressionSettings?: {
     maxWidth?: number,
+    maxHeight?: number,
     quality?: number,
+    output?: 'jpg' | 'png',
+    disablePngTransparency?: boolean,
   },
+  videoCompressionSettings?: never,
+  compressionProgress?: never,
 } | {
   type: 'image',
   multiple?: false,
@@ -41,9 +46,12 @@ export type MediaSelectorProps = ({
     height: number,
   },
   imageCompressionSettings?: {
-    maxWidth?: never,
     quality?: number,
+    output?: 'jpg' | 'png',
+    disablePngTransparency?: boolean,
   },
+  videoCompressionSettings?: never,
+  compressionProgress?: never,
 } | {
   type: 'image',
   multiple?: false,
@@ -53,8 +61,13 @@ export type MediaSelectorProps = ({
   cropResolution?: never,
   imageCompressionSettings?: {
     maxWidth?: number,
+    maxHeight?: number,
     quality?: number,
+    output?: 'jpg' | 'png',
+    disablePngTransparency?: boolean,
   },
+  videoCompressionSettings?: never,
+  compressionProgress?: never,
 } | {
   type: 'video',
   multiple?: never,
@@ -63,6 +76,11 @@ export type MediaSelectorProps = ({
   initialSelected?: never,
   cropResolution?: never,
   imageCompressionSettings?: never,
+  videoCompressionSettings?:{
+    bitrate?: number,
+    maxSize?: number,
+  }
+  compressionProgress?: (progress: number) => void,
 }) & {
   callback: (images: MediaFileType[]) => void,
   render: (onPress: () => void) => JSX.Element;
@@ -72,14 +90,13 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
   type,
   multiple = false,
   selectionLimit,
-  callback,
   crop = false,
   initialSelected,
   cropResolution,
-  imageCompressionSettings = {
-    maxWidth: 500,
-    quality: 0.8,
-  },
+  imageCompressionSettings,
+  videoCompressionSettings,
+  compressionProgress,
+  callback,
   render,
 }) => {
   const [files, setFiles] = useState<any[]>();
@@ -121,51 +138,6 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
     handleCallback();
   }, [files]);
 
-  const compressor = async (file: any, type: 'image' | 'video') => {
-    if (!file.beforePath) {
-
-      let result;
-      const filePath = file.path.startsWith('file://') ? file.path : 'file://' + file.path
-
-      if (type === 'image') {
-        result = await Image.compress(
-          filePath,
-          {
-            compressionMethod: 'manual',
-            maxWidth: crop ? undefined : imageCompressionSettings?.maxWidth,
-            quality: imageCompressionSettings?.quality,
-          });
-      } else {
-        result = await Video.compress(
-          filePath,
-          {
-            compressionMethod: 'manual',
-          },
-          (progress) => {
-            console.log('Compression Progress: ', progress);
-          }
-        );
-      };
-
-      const statFile = await stat(file.path);
-      console.log('Before compression:', statFile);
-
-      const statResult = await stat(result);
-      console.log('After compression:', statResult);
-
-      const compressedFile: MediaFileType = { ...statResult, beforePath: statFile.path }
-
-      return compressedFile;
-    } else {
-      return file;
-    }
-  };
-
-  const handleFiles = (files: any[]) => {
-    setFiles(files);
-    setPickerActive(false);
-  };
-
   useEffect(() => {
     if (pickerActive) {
       setSwipeablePanelProps({
@@ -182,6 +154,53 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
       setSwipeablePanelProps(null);
     };
   }, [pickerActive])
+
+  const compressor = async (file: any, type: 'image' | 'video') => {
+    if (!file.beforePath) {
+
+      let result;
+      const filePath = file.path.startsWith('file://') ? file.path : 'file://' + file.path
+
+      if (type === 'image') {
+        result = await Image.compress(
+          filePath,
+          {
+            compressionMethod: imageCompressionSettings ? 'manual' : 'auto',
+            progressDivider: 10,
+            ...imageCompressionSettings
+          }
+        );
+      } else {
+        result = await Video.compress(
+          filePath,
+          {
+            compressionMethod: videoCompressionSettings ? 'manual' : 'auto',
+            ...videoCompressionSettings
+          },
+          (progress) => {
+            compressionProgress && compressionProgress(progress);
+          }
+        );
+      };
+
+      const statFile = await stat(file.path);
+      console.log('Before compression:', statFile);
+
+      const statResult = await stat(result);
+      console.log('After compression:', statResult);
+
+      const compressedFile: MediaFileType = { ...statResult, beforePath: statFile.path };
+
+      return compressedFile;
+    } else {
+      return file;
+    }
+  };
+
+  const handleFiles = (files: any[]) => {
+    setFiles(files);
+    setPickerActive(false);
+  };
 
   const handlePress = () => {
     if (!multiple) {

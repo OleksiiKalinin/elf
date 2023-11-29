@@ -23,33 +23,20 @@ const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
   const router = useRouter();
 
   const [images, setImages] = useState<MediaFileType[]>([]);
-
-  // const handleImages = (images: ReadDirItem[]) => {
-  //   setImages(images);
-  // };
-
-/*   const goToImagePickerScreen = () => {
-    router.push({
-      stack: 'MenuStack',
-      screen: 'ImageScreen',
-      params: {
-        subView: 'ImagePickerScreen',
-        callback: handleImages,
-        initialSelected: images,
-        selectionLimit: 5,
-      },
-    });
-  }; */
+  const [progress, setProgress] = useState(0);
+  const { windowSizes } = useTypedSelector(state => state.general);
 
   const callback = (image: MediaFileType[]) =>{
     setImages(image);
   };
 
+  const handleProgress = (progress: number) =>{
+    console.log(progress);
+    setProgress(progress);
+  };
+
   return (
     <ScreenHeaderProvider mainTitlePosition="flex-start">
-      {/* <Button onPress={() => goToImagePickerScreen()}>
-        Dodaj zdjęcia
-      </Button> */}
       <View style={{gap: 20, flex: 1}}>
         <MediaSelector
           type='image'
@@ -67,6 +54,9 @@ const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
           cropResolution={{
             width: 500,
             height: 500,
+          }}
+          imageCompressionSettings={{
+            quality: .7,
           }}
           render={(onPress) =>
             <Button onPress={() => onPress()}>
@@ -97,7 +87,11 @@ const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
             </Button>
           }
           callback={callback}
+          compressionProgress={handleProgress}
         />
+        <View style={{width: windowSizes.width * progress, height: 3, backgroundColor: 'green'}}>
+
+        </View>
         <ScrollView style={{flex: 1, backgroundColor: Colors.Basic200}}>
           <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
             {images.map(item=> 

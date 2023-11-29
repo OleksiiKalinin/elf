@@ -9,6 +9,7 @@ import { PermissionsAndroid } from "react-native";
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useTypedSelector } from '../hooks/useTypedSelector';
 import { MediaFileType } from '../components/organismes/MediaSelector';
+import Video from 'react-native-video';
 
 export type MediaPickerProps = {
   type: 'image' | 'video',
@@ -17,16 +18,16 @@ export type MediaPickerProps = {
   selectionLimit?: number,
 };
 
-const MediaPicker: React.FC<MediaPickerProps> = ({ 
-  callback, 
-  initialSelected, 
-  selectionLimit = 20, 
+const MediaPicker: React.FC<MediaPickerProps> = ({
+  callback,
+  initialSelected,
+  selectionLimit = 20,
   type,
 }) => {
   const [images, setImages] = useState<ReadDirItem[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<ReadDirItem[]>(initialSelected as any || []);
   const [previewMode, setPreviewMode] = useState(false);
-  const [previewImage, setPreviewImage] = useState<ReadDirItem>();
+  const [previewFile, setPreviewFile] = useState<ReadDirItem>();
   const { windowSizes } = useTypedSelector(state => state.general);
 
   const itemSize = Math.round(windowSizes.width) / 4;
@@ -35,18 +36,11 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
     const getFiles = async () => {
       try {
         const granted = await PermissionsAndroid.request(
+          // PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
           PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-          {
-            title: "Permission title",
-            message:
-              "Permission message",
-            buttonNeutral: "Ask Me Later",
-            buttonNegative: "Cancel",
-            buttonPositive: "OK",
-          }
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          const directories = [RNFS.PicturesDirectoryPath, RNFS.DownloadDirectoryPath,];
+          const directories = [/* RNFS.ExternalStorageDirectoryPath + '/DCIM/Camera',  */RNFS.DownloadDirectoryPath, RNFS.PicturesDirectoryPath];
 
           let allFiles: ReadDirItem[] = [];
           const imageExtensions = /\.(jpg|jpeg|png)$/i;
@@ -54,16 +48,22 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
 
           for (const directory of directories) {
             const files = await RNFS.readDir(directory);
-            let filteredFiles;
-            filteredFiles = files.filter(file => file.isFile() && (type === 'image' ? imageExtensions.test(file.name) : videoExtensions.test(file.name)));
+            const filteredFiles = files.filter(file => file.isFile() && (type === 'image' ? imageExtensions.test(file.name) : videoExtensions.test(file.name)));
             allFiles = [...allFiles, ...filteredFiles];
           };
 
+          const sortedFiles = allFiles.sort((a, b) => {
+            if (a.mtime && b.mtime) {
+              return b.mtime.getTime() - a.mtime.getTime();
+            }
+            return a.mtime ? -1 : 1;
+          });
+
           if (initialSelected) {
-            const filteredImages = allFiles.filter(file => !initialSelected.some(selected => selected.beforePath === file.path));
+            const filteredImages = sortedFiles.filter(file => !initialSelected.some(selected => selected.beforePath === file.path));
             setImages([...initialSelected, ...filteredImages] as any);
           } else {
-            setImages(allFiles);
+            setImages(sortedFiles);
           };
         } else {
           console.log("EXTERNAL_STORAGE permission denied");
@@ -77,18 +77,21 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
   }, [initialSelected])
 
   const handlePressItem = (image: ReadDirItem) => {
-    const isSelected = selectedFiles.some(item => item.path === image.path);
-
-    if (isSelected) {
-      setSelectedFiles(prevSelected => prevSelected.filter(item => item.path !== image.path));
-    } else if (!isSelected && selectedFiles.length < selectionLimit) {
-      setSelectedFiles(prevSelected => [...prevSelected, image]);
+    if (selectionLimit > 1) {
+      const isSelected = selectedFiles.some(item => item.path === image.path);
+      if (isSelected) {
+        setSelectedFiles(prevSelected => prevSelected.filter(item => item.path !== image.path));
+      } else if (!isSelected && selectedFiles.length < selectionLimit) {
+        setSelectedFiles(prevSelected => [...prevSelected, image]);
+      };
+    } else {
+      callback([image] as any);
     };
   };
 
   const handleLongPressItem = (item: ReadDirItem) => {
     setPreviewMode(true);
-    setPreviewImage(item);
+    setPreviewFile(item);
   };
 
   const handleConfirm = () => {
@@ -113,6 +116,25 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
       <Image
         source={{ uri: uri }}
         style={{ width: '100%', height: undefined, aspectRatio: ratio }}
+      />
+    );
+  };
+
+  const PreviewVideo = ({ item }: { item: ReadDirItem }) => {
+    const [height, setHeight] = useState(0);
+    const uri = 'file://' + item.path;
+
+    return (
+      <Video
+        source={{ uri: uri }}
+        style={{ width: windowSizes.width, height: height }}
+        resizeMode='cover'
+        paused={false}
+        controls
+        onLoad={data => {
+          const { width, height } = data.naturalSize;
+          setHeight(height * (windowSizes.width / width));
+        }}
       />
     );
   };
@@ -152,27 +174,28 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
   }, [selectedFiles, itemSize]);
 
   return (
-    <ScreenHeaderProvider title='Wybierz zdjęcia'>
+    <ScreenHeaderProvider title={type === 'image' ? 'Wybierz zdjęcia' : 'Wybierz wideo'}>
       <FlatList
         data={images}
         numColumns={4}
         keyExtractor={(item) => item.path}
         renderItem={ImageItem}
       />
-      <Button
-        stickyBottom
-        onPress={() => handleConfirm()}
-        disabled={selectedFiles.length === 0}
-      >
-        Zatwierdź
-      </Button>
-
+      {selectionLimit > 1 &&
+        <Button
+          stickyBottom
+          onPress={() => handleConfirm()}
+          disabled={selectedFiles.length === 0}
+        >
+          Zatwierdź
+        </Button>
+      }
       <Modal
-        visible={previewMode && !!previewImage}
+        visible={previewMode && !!previewFile}
         onRequestClose={() => setPreviewMode(false)}
       >
         <ScreenHeaderProvider
-          backgroundContent={Colors.Basic900}
+          backgroundContent={'#000'}
           callback={closePreview}
           headerItemsColor={Colors.White}
           backgroundHeader={'rgba(0, 0, 0, 0.1)'}
@@ -180,8 +203,11 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
           title=' '
         >
           <View style={styles.Preview}>
-            {previewImage &&
-              <PreviewImage item={previewImage} />
+            {previewFile && type === 'image' &&
+              <PreviewImage item={previewFile} />
+            }
+            {previewFile && type === 'video' &&
+              <PreviewVideo item={previewFile} />
             }
           </View>
         </ScreenHeaderProvider>
@@ -203,7 +229,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: '50%',
     left: '50%',
-    transform: 'translate(-18, -18)',
+    transform: [{ translateX: -18 }, { translateY: -18 }],
     justifyContent: 'center',
     alignItems: 'center',
   },
