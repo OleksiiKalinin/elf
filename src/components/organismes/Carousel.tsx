@@ -29,7 +29,7 @@ const Carousel: FC<Props> = ({
     const [currIndex, setCurrIndex] = useState<number>(0);
     const [viewerIndex, setViewerIndex] = useState<number | undefined>(undefined);
     const scrolling = useRef<boolean>(false);
-    const pressedIn = useRef<boolean>(false);
+    const pressedIn = useRef<{ pageX: number, pageY: number } | null>(null);
     const ref = useRef<ICarouselInstance>(null);
 
     useEffect(() => {
@@ -42,19 +42,28 @@ const Carousel: FC<Props> = ({
 
     useEffect(() => {
         scrolling.current = false;
-        pressedIn.current = false;
+        pressedIn.current = null;
     }, [viewerIndex]);
 
     return (
         <View onLayout={onLayout} style={{ position: 'relative' }}>
             <TouchableOpacity
                 activeOpacity={1}
-                {...(Platform.OS === 'web' ? {
-                    onPressIn: () => {
-                        pressedIn.current = true;
+                {...(Platform.OS !== 'web' ? {
+                    onPressIn: (e) => {
+                        console.log('onPressIn', e.nativeEvent);
+                        const { pageX, pageY } = e.nativeEvent;
+                        pressedIn.current = { pageX, pageY };
                     },
-                    onPressOut: () => {
+                    onPressOut: (e) => {
+                        const { pageX: pageOutX, pageY: pageOutY } = e.nativeEvent;
+                        console.log('onPressOut - in', pressedIn.current);
+                        console.log('onPressOut - out', { pageOutX, pageOutY });
                         if (pressedIn.current) {
+                            const {pageX, pageY} = pressedIn.current;
+                            // if (Math.abs(pageX - pageOutX) < 6 && Math.abs(pageY - pageOutY) < 6) {
+                            //     setViewerIndex(currIndex);
+                            // }
                             if (scrolling.current) {
                                 scrolling.current = false;
                             } else {
@@ -63,11 +72,17 @@ const Carousel: FC<Props> = ({
                         }
                     },
                 } : {
-                    onPress: () => { setViewerIndex(currIndex) },
+                    onPress: (e) => { 
+                        console.log('onPress', e.nativeEvent);
+                        setViewerIndex(currIndex)
+                     },
                 })}
             >
                 <RNCarousel
-                    onScrollBegin={() => scrolling.current = true}
+                    onScrollBegin={(e: any) => {
+                        console.log('onScrollBegin', e);
+                        scrolling.current = true
+                    }}
                     height={200}
                     width={itemWidth}
                     {...props as any}

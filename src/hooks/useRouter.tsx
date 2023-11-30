@@ -15,7 +15,6 @@ import ChooseAdvertScreen from "../screens/ChooseAdvertScreen";
 import ChooseCandidateScreen from "../screens/ChooseCandidateScreen";
 import JobCategoryScreen from "../screens/JobCategoryScreen";
 import ItemSelectorScreen from "../screens/ItemSelectorScreen";
-import ImagePickerScreen from "../screens/MediaPicker";
 
 export type SubViewType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? AllScreens<T, keyof RootStackParamList[T]['default']> : never;
 type AllScreens<T extends keyof RootStackParamList, K extends keyof RootStackParamList[T]['default'] = keyof RootStackParamList[T]['default']> = K extends K ? AllParams<RootStackParamList[T]['default'][K]> : never;

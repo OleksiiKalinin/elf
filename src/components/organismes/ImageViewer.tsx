@@ -72,7 +72,7 @@ const ImageViewer: FC<Props> = ({ close, visible, index = 0, data }) => {
                             width={windowSizes.width || 1}
                             enabled={carouselEnabled}
                             loop={false}
-                            defaultIndex={index}
+                            defaultIndex={currIndex}
                             renderItem={({ item }) => {
                                 return (
                                     <View style={{ flex: 1 }}>
@@ -85,7 +85,7 @@ const ImageViewer: FC<Props> = ({ close, visible, index = 0, data }) => {
                                                     const { maxPositionX, minPositionX, minPositionY } = ref.instance.bounds
                                                     const { positionX, positionY, scale } = state;
 
-                                                    snapCloseRequested.current = (positionY > 99 || positionY < minPositionY - 99) && (positionX <= 1 || positionX >= -1) && scale >= 1;
+                                                    snapCloseRequested.current = (positionY > 99 || positionY < minPositionY - 99) && (positionX >= -45 && positionX <= 45) && scale >= 1;
                                                     setColorTransparent(snapCloseRequested.current)
 
                                                     setCarouselEnabled((positionX > maxPositionX || positionX < minPositionX) && scale >= 1)
@@ -112,7 +112,7 @@ const ImageViewer: FC<Props> = ({ close, visible, index = 0, data }) => {
                             width: windowSizes.width,
                             height: windowSizes.height
                         }}
-                        index={index}
+                        index={currIndex}
                         enableSwipeDown
                         onMove={p => setColorTransparent(p?.positionY ? (p.positionY > 105) : false)}
                         swipeDownThreshold={100}
