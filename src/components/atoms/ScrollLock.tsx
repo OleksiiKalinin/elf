@@ -5,7 +5,7 @@ import { RemoveScroll } from 'react-remove-scroll';
 type ScrollLockProps = ComponentProps<typeof RemoveScroll>;
 
 const ScrollLock: FC<ScrollLockProps> = (props) => {
-  return Platform.OS === 'web' ? <RemoveScroll {...props} /> : props.children;
+  return Platform.OS === 'web' ? <RemoveScroll removeScrollBar={false} {...props} /> : props.children;
 };
 
 export default ScrollLock;

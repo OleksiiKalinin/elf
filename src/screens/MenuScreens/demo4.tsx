@@ -5,13 +5,13 @@ import { Platform, View } from 'react-native';
 import im1 from '../../assets/images/certificate.png';
 import im2 from '../../assets/images/certificate1.png';
 import im3 from '../../assets/images/certificate2.png';
+import im4 from '../../assets/images/portfolio1.png';
 
 const Demo4 = () => {
     return (
         <Carousel
             innerPagination
-            // data={[im1]}
-            data={[im1, im2, im3]}
+            data={[im4, im2, im1, im3]}
             renderItem={({ index, item }) => (
                 <View style={{ flex: 1 }}>
                     <Image

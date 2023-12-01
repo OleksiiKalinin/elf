@@ -128,7 +128,7 @@ export function TimePickerModal({
     [setFocused, setLocalHours, setLocalMinutes]
   )
   return (
-    <ScrollLock enabled={visible} removeScrollBar={false}>
+    <ScrollLock enabled={visible}>
       <Modal
         animationType={animationType}
         transparent={true}
