@@ -1,18 +1,54 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View, Image, FlatList, Modal } from 'react-native';
+import { StyleSheet, View, Image, FlatList, Modal, Platform } from 'react-native';
 import Colors from '../colors/Colors';
 import ScreenHeaderProvider from '../components/organismes/ScreenHeaderProvider';
 import Typography from '../components/atoms/Typography';
 import Button from '../components/molecules/Button';
-import RNFS, { ReadDirItem } from 'react-native-fs';
+import { stat } from 'react-native-fs';
 import { PermissionsAndroid } from "react-native";
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useTypedSelector } from '../hooks/useTypedSelector';
 import { MediaFileType } from '../components/organismes/MediaSelector';
 import Video from 'react-native-video';
+import { CameraRoll, SubTypes } from "@react-native-camera-roll/camera-roll";
 
-export type MediaPickerProps = {
-  type: 'image' | 'video',
+type PhotoIdentifier = {
+  node: {
+    id: string;
+    type: string;
+    subTypes?: SubTypes;
+    group_name: string[];
+    image: {
+      filename: string | null;
+      filepath: string | null;
+      extension: string | null;
+      uri: string;
+      height: number;
+      width: number;
+      fileSize: number | null;
+      playableDuration: number;
+      orientation: number | null;
+      beforePath?: string,
+    };
+    timestamp: number;
+    modificationTimestamp: number;
+    location: {
+      latitude?: number;
+      longitude?: number;
+      altitude?: number;
+      heading?: number;
+      speed?: number;
+    } | null;
+  };
+};
+
+export type MediaPickerProps = ({
+  type: 'image',
+  maxAllowedFileSize?: never,
+} | {
+  type: 'video',
+  maxAllowedFileSize: number,
+}) & {
   callback: (images: MediaFileType[]) => void,
   initialSelected?: MediaFileType[],
   selectionLimit?: number,
@@ -23,88 +59,159 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
   initialSelected,
   selectionLimit = 20,
   type,
+  maxAllowedFileSize,
 }) => {
-  const [images, setImages] = useState<ReadDirItem[]>([]);
-  const [selectedFiles, setSelectedFiles] = useState<ReadDirItem[]>(initialSelected as any || []);
+  const [images, setImages] = useState<PhotoIdentifier[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<PhotoIdentifier[]>([]);
   const [previewMode, setPreviewMode] = useState(false);
-  const [previewFile, setPreviewFile] = useState<ReadDirItem>();
+  const [previewFile, setPreviewFile] = useState<PhotoIdentifier>();
   const { windowSizes } = useTypedSelector(state => state.general);
 
   const itemSize = Math.round(windowSizes.width) / 4;
 
   useEffect(() => {
-    const getFiles = async () => {
-      try {
-        const granted = await PermissionsAndroid.request(
-          // PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
-          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-        );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          const directories = [/* RNFS.ExternalStorageDirectoryPath + '/DCIM/Camera',  */RNFS.DownloadDirectoryPath, RNFS.PicturesDirectoryPath];
+    console.log(Platform.Version)
 
-          let allFiles: ReadDirItem[] = [];
-          const imageExtensions = /\.(jpg|jpeg|png)$/i;
-          const videoExtensions = /\.(mp4|mov|mkv)$/i;
-
-          for (const directory of directories) {
-            const files = await RNFS.readDir(directory);
-            const filteredFiles = files.filter(file => file.isFile() && (type === 'image' ? imageExtensions.test(file.name) : videoExtensions.test(file.name)));
-            allFiles = [...allFiles, ...filteredFiles];
-          };
-
-          const sortedFiles = allFiles.sort((a, b) => {
-            if (a.mtime && b.mtime) {
-              return b.mtime.getTime() - a.mtime.getTime();
-            }
-            return a.mtime ? -1 : 1;
-          });
-
-          if (initialSelected) {
-            const filteredImages = sortedFiles.filter(file => !initialSelected.some(selected => selected.beforePath === file.path));
-            setImages([...initialSelected, ...filteredImages] as any);
-          } else {
-            setImages(sortedFiles);
-          };
+    async function hasAndroidPermission() {
+      const getCheckPermissionPromise = () => {
+        if (Platform.Version as number >= 33) {
+          return Promise.all([
+            PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES),
+            PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO),
+          ]).then(
+            ([hasReadMediaImagesPermission, hasReadMediaVideoPermission]) =>
+              hasReadMediaImagesPermission && hasReadMediaVideoPermission,
+          );
         } else {
-          console.log("EXTERNAL_STORAGE permission denied");
-        };
-      } catch (err) {
-        console.warn(err);
+          return PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
+        }
+      };
+
+      const hasPermission = await getCheckPermissionPromise();
+      if (hasPermission) {
+        return true;
+      }
+      const getRequestPermissionPromise = () => {
+        if (Platform.Version as number >= 33) {
+          return PermissionsAndroid.requestMultiple([
+            PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
+            PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO,
+          ]).then(
+            (statuses) =>
+              statuses[PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES] ===
+              PermissionsAndroid.RESULTS.GRANTED &&
+              statuses[PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO] ===
+              PermissionsAndroid.RESULTS.GRANTED,
+          );
+        } else {
+          return PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE).then((status) => status === PermissionsAndroid.RESULTS.GRANTED);
+        }
+      };
+
+      return await getRequestPermissionPromise();
+    }
+
+    const getFiles = async () => {
+      if (Platform.OS === "android" && !(await hasAndroidPermission())) {
+        return;
+      };
+
+      const images = await CameraRoll.getPhotos({ first: 100000, assetType: type === 'image' ? 'Photos' : 'Videos' });
+
+      if (initialSelected && initialSelected.length > 0) {
+        console.log('Jest initialSelected')
+        const transformTestFile = (item: MediaFileType): PhotoIdentifier => ({
+          node: {
+            id: '',
+            type: item.mime,
+            group_name: [],
+            image: {
+              filename: null,
+              filepath: null,
+              extension: null,
+              uri: item.path,
+              height: 0,
+              width: 0,
+              fileSize: null,
+              playableDuration: 0,
+              orientation: null,
+              beforePath: item.beforePath,
+            },
+            timestamp: 0,
+            modificationTimestamp: 0,
+            location: null,
+          },
+        });
+
+        const transformedArray: PhotoIdentifier[] = initialSelected.map(transformTestFile);
+
+        console.log(transformedArray);
+        const filteredImages = images.edges.filter(file => !transformedArray.some(selected => selected.node.image.beforePath === file.node.image.uri));
+
+        setImages([...transformedArray, ...filteredImages]);
+        setSelectedFiles(transformedArray);
+      } else {
+        console.log('Brak initialSelected')
+        setImages(images.edges);
       };
     };
 
     getFiles();
+
   }, [initialSelected])
 
-  const handlePressItem = (image: ReadDirItem) => {
+  const handlePressItem = async (image: PhotoIdentifier) => {
     if (selectionLimit > 1) {
-      const isSelected = selectedFiles.some(item => item.path === image.path);
+      const isSelected = selectedFiles.some(item => item.node.image.uri === image.node.image.uri);
       if (isSelected) {
-        setSelectedFiles(prevSelected => prevSelected.filter(item => item.path !== image.path));
+        setSelectedFiles(prevSelected => prevSelected.filter(item => item.node.image.uri !== image.node.image.uri));
       } else if (!isSelected && selectedFiles.length < selectionLimit) {
         setSelectedFiles(prevSelected => [...prevSelected, image]);
       };
     } else {
-      callback([image] as any);
+      const processCallback = () => {
+        callback([{
+          mime: image.node.type,
+          path: image.node.image.uri,
+          beforePath: image.node.image.beforePath,
+        }]);
+      };
+
+      if (type === 'video') {
+        const statFile = await stat(image.node.image.uri);
+        if (statFile.size > maxAllowedFileSize) {
+          console.log('Zbyt duży plik, maksymalny rozmiar to 100 MB');
+        } else {
+          processCallback();
+        }
+      } else {
+        processCallback();
+      };
     };
   };
 
-  const handleLongPressItem = (item: ReadDirItem) => {
+  const handleLongPressItem = (item: PhotoIdentifier) => {
     setPreviewMode(true);
     setPreviewFile(item);
   };
 
   const handleConfirm = () => {
-    callback(selectedFiles as any);
+    const transformedArray: MediaFileType[] = selectedFiles.map(item => ({
+      mime: item.node.type,
+      path: item.node.image.uri,
+      beforePath: item.node.image.beforePath
+    }));
+
+    callback(transformedArray);
   };
 
   const closePreview = () => {
     setPreviewMode(false);
   };
 
-  const PreviewImage = ({ item }: { item: ReadDirItem }) => {
+  const PreviewImage = ({ item }: { item: PhotoIdentifier }) => {
     const [ratio, setRatio] = useState(0);
-    const uri = 'file://' + item.path;
+    const uri = item.node.image.uri;
 
     Image.getSize(
       uri,
@@ -120,9 +227,9 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
     );
   };
 
-  const PreviewVideo = ({ item }: { item: ReadDirItem }) => {
+  const PreviewVideo = ({ item }: { item: PhotoIdentifier }) => {
     const [height, setHeight] = useState(0);
-    const uri = 'file://' + item.path;
+    const uri = item.node.image.uri;
 
     return (
       <Video
@@ -139,8 +246,8 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
     );
   };
 
-  const ImageItem = useCallback(({ item }: { item: ReadDirItem }) => {
-    const selectedIndex = selectedFiles.findIndex((element) => element.path === item.path);
+  const ImageItem = useCallback(({ item }: { item: PhotoIdentifier }) => {
+    const selectedIndex = selectedFiles.findIndex((element) => element.node.image.uri === item.node.image.uri);
     const selected = selectedIndex !== -1;
 
     return (
@@ -151,7 +258,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
         style={{ position: 'relative' }}
       >
         <Image
-          source={{ uri: 'file://' + item.path }}
+          source={{ uri: item.node.image.uri }}
           style={{
             width: itemSize,
             height: itemSize,
@@ -178,7 +285,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
       <FlatList
         data={images}
         numColumns={4}
-        keyExtractor={(item) => item.path}
+        keyExtractor={(item) => item.node.image.uri}
         renderItem={ImageItem}
       />
       {selectionLimit > 1 &&

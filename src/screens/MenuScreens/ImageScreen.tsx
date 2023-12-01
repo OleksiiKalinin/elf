@@ -28,6 +28,7 @@ const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
 
   const callback = (image: MediaFileType[]) =>{
     setImages(image);
+    console.log('Otrzymana tablica:', image);
   };
 
   const handleProgress = (progress: number) =>{
@@ -88,6 +89,8 @@ const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
           }
           callback={callback}
           compressionProgress={handleProgress}
+          maxAllowedFileSize={8388608}
+          minSizeToCompress={5000000}
         />
         <View style={{width: windowSizes.width * progress, height: 3, backgroundColor: 'green'}}>
 
@@ -96,7 +99,7 @@ const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
           <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
             {images.map(item=> 
               <Image
-                source={{ uri: 'file://' + item.path}}
+                source={{ uri: item.path}}
                 style={{
                   width: 100,
                   height: 100,
