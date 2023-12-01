@@ -1,17 +1,17 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View, Image, FlatList, Modal, Platform, BackHandler } from 'react-native';
-import Colors from '../colors/Colors';
-import ScreenHeaderProvider from '../components/organismes/ScreenHeaderProvider';
-import Typography from '../components/atoms/Typography';
-import Button from '../components/molecules/Button';
+import Colors from '../../../colors/Colors';
+import ScreenHeaderProvider from '../ScreenHeaderProvider';
+import Typography from '../../atoms/Typography';
+import Button from '../../molecules/Button';
 import { stat } from 'react-native-fs';
 import { PermissionsAndroid } from "react-native";
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useTypedSelector } from '../hooks/useTypedSelector';
-import { MediaFileType } from '../components/organismes/MediaSelector';
+import { useTypedSelector } from '../../../hooks/useTypedSelector';
 import Video from 'react-native-video';
 import { CameraRoll, SubTypes } from "@react-native-camera-roll/camera-roll";
-import ImageViewer from '../components/organismes/ImageViewer';
+import ImageViewer from '../ImageViewer';
+import { MediaFileType } from '.';
 
 type PhotoIdentifier = {
   node: {

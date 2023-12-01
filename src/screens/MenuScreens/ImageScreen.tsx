@@ -14,7 +14,6 @@ import useRouter from '../../hooks/useRouter';
 import { ReadDirItem } from 'react-native-fs';
 import MediaSelector, { MediaFileType } from '../../components/organismes/MediaSelector';
 
-
 type Params = NonNullable<MenuStackParamList['default']['ImageScreen']>;
 
 const { useParam } = createParam<Params>();
