@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Modal, StyleSheet, View } from 'react-native';
 import { useActions } from '../../hooks/useActions';
 import ImagePicker from 'react-native-image-crop-picker';
 import MediaPicker from '../../screens/MediaPicker';
 import { Image, Video } from 'react-native-compressor';
 import { stat } from 'react-native-fs';
+import Typography from '../atoms/Typography';
+import Button from '../molecules/Button';
+import Colors from '../../colors/Colors';
 
 export type MediaFileType = {
   mime: string,
@@ -105,6 +108,7 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
 }) => {
   const [files, setFiles] = useState<any[]>();
   const [pickerActive, setPickerActive] = useState(false);
+  const [sizeInfoModal, setSizeInfoModal] = useState(false);
   const { setSwipeablePanelProps } = useActions();
 
   useEffect(() => {
@@ -152,6 +156,7 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
             <MediaPicker
               type={'image'}
               callback={handleFiles}
+              onClose={() => setPickerActive(false)}
               selectionLimit={multiple ? (selectionLimit || undefined) : 1}
               initialSelected={initialSelected || undefined}
             />
@@ -161,6 +166,7 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
             <MediaPicker
               type={'video'}
               callback={handleFiles}
+              onClose={() => setPickerActive(false)}
               selectionLimit={multiple ? (selectionLimit || undefined) : 1}
               initialSelected={initialSelected || undefined}
               maxAllowedFileSize={maxAllowedFileSize}
@@ -173,7 +179,6 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
 
   const compressor = async (file: any, type: 'image' | 'video') => {
     if (file.beforePath) return file;
-    console.log(file);
 
     const filePath = file.path.startsWith('file://') ? file.path : 'file://' + file.path
     const statFile = await stat(file.path);
@@ -190,10 +195,8 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
       );
     } else {
       if (statFile.size < minSizeToCompress) {
-        console.log('bez kompresji')
         result = file.path;
       } else {
-        console.log('kompresja')
         result = await Video.compress(
           filePath,
           {
@@ -217,8 +220,6 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
       path: result,
       beforePath: statFile.path,
     };
-
-    console.log(compressedFile);
 
     return compressedFile;
   };
@@ -244,9 +245,8 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
               } else {
                 const statFile = await stat(result.path);
                 if (statFile.size > maxAllowedFileSize) {
-                  console.log('zbyt duży rozmiar')
+                  setSizeInfoModal(true);
                 } else {
-                  console.log('rozmiar ok')
                   return setFiles([result]);
                 };
               }
@@ -266,8 +266,48 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
   return (
     <View>
       {render(handlePress)}
+      {type === 'video' &&
+        <Modal
+          transparent={true}
+          visible={sizeInfoModal}
+          onRequestClose={() => setSizeInfoModal(false)}
+        >
+          <View style={styles.SizeModalContainer}>
+            <View style={styles.SizeModalContent}>
+              <Typography>
+                Zbyt duży rozmiar pliku. Maksymalny rozmiar wynosi: {Math.round(maxAllowedFileSize / (1024 * 1024) * 100) / 100} MB
+              </Typography>
+              <Button
+                style={{ height: 30 }}
+                variant='text'
+                onPress={() => setSizeInfoModal(false)}
+              >
+                Ok
+              </Button>
+            </View>
+          </View>
+        </Modal>
+      }
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  SizeModalContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
+  },
+  SizeModalContent: {
+    width: 300,
+    backgroundColor: Colors.White,
+    borderRadius: 4,
+    padding: 20,
+    justifyContent: 'space-between',
+    gap: 20,
+  },
+});
 
 export default MediaSelector;

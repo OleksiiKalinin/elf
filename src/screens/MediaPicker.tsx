@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View, Image, FlatList, Modal, Platform } from 'react-native';
+import { StyleSheet, View, Image, FlatList, Modal, Platform, BackHandler } from 'react-native';
 import Colors from '../colors/Colors';
 import ScreenHeaderProvider from '../components/organismes/ScreenHeaderProvider';
 import Typography from '../components/atoms/Typography';
@@ -11,6 +11,7 @@ import { useTypedSelector } from '../hooks/useTypedSelector';
 import { MediaFileType } from '../components/organismes/MediaSelector';
 import Video from 'react-native-video';
 import { CameraRoll, SubTypes } from "@react-native-camera-roll/camera-roll";
+import ImageViewer from '../components/organismes/ImageViewer';
 
 type PhotoIdentifier = {
   node: {
@@ -50,12 +51,14 @@ export type MediaPickerProps = ({
   maxAllowedFileSize: number,
 }) & {
   callback: (images: MediaFileType[]) => void,
+  onClose: () => void,
   initialSelected?: MediaFileType[],
   selectionLimit?: number,
 };
 
 const MediaPicker: React.FC<MediaPickerProps> = ({
   callback,
+  onClose,
   initialSelected,
   selectionLimit = 20,
   type,
@@ -65,13 +68,12 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
   const [selectedFiles, setSelectedFiles] = useState<PhotoIdentifier[]>([]);
   const [previewMode, setPreviewMode] = useState(false);
   const [previewFile, setPreviewFile] = useState<PhotoIdentifier>();
+  const [sizeInfoModal, setSizeInfoModal] = useState(false);
   const { windowSizes } = useTypedSelector(state => state.general);
 
   const itemSize = Math.round(windowSizes.width) / 4;
 
   useEffect(() => {
-    console.log(Platform.Version)
-
     async function hasAndroidPermission() {
       const getCheckPermissionPromise = () => {
         if (Platform.Version as number >= 33) {
@@ -109,7 +111,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
       };
 
       return await getRequestPermissionPromise();
-    }
+    };
 
     const getFiles = async () => {
       if (Platform.OS === "android" && !(await hasAndroidPermission())) {
@@ -119,7 +121,6 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
       const images = await CameraRoll.getPhotos({ first: 100000, assetType: type === 'image' ? 'Photos' : 'Videos' });
 
       if (initialSelected && initialSelected.length > 0) {
-        console.log('Jest initialSelected')
         const transformTestFile = (item: MediaFileType): PhotoIdentifier => ({
           node: {
             id: '',
@@ -145,20 +146,30 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
 
         const transformedArray: PhotoIdentifier[] = initialSelected.map(transformTestFile);
 
-        console.log(transformedArray);
         const filteredImages = images.edges.filter(file => !transformedArray.some(selected => selected.node.image.beforePath === file.node.image.uri));
 
         setImages([...transformedArray, ...filteredImages]);
         setSelectedFiles(transformedArray);
       } else {
-        console.log('Brak initialSelected')
         setImages(images.edges);
       };
     };
 
     getFiles();
+  }, [initialSelected]);
 
-  }, [initialSelected])
+  useEffect(() => {
+    if (!previewMode) {
+      const handler = BackHandler.addEventListener('hardwareBackPress', () => {
+        onClose();
+        return true;
+      });
+
+      return () => {
+        handler.remove();
+      };
+    }
+  }, [previewMode, images]);
 
   const handlePressItem = async (image: PhotoIdentifier) => {
     if (selectionLimit > 1) {
@@ -180,7 +191,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
       if (type === 'video') {
         const statFile = await stat(image.node.image.uri);
         if (statFile.size > maxAllowedFileSize) {
-          console.log('Zbyt duży plik, maksymalny rozmiar to 100 MB');
+          setSizeInfoModal(true);
         } else {
           processCallback();
         }
@@ -207,24 +218,6 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
 
   const closePreview = () => {
     setPreviewMode(false);
-  };
-
-  const PreviewImage = ({ item }: { item: PhotoIdentifier }) => {
-    const [ratio, setRatio] = useState(0);
-    const uri = item.node.image.uri;
-
-    Image.getSize(
-      uri,
-      (width, height) => {
-        setRatio(width / height);
-      },
-    );
-    return (
-      <Image
-        source={{ uri: uri }}
-        style={{ width: '100%', height: undefined, aspectRatio: ratio }}
-      />
-    );
   };
 
   const PreviewVideo = ({ item }: { item: PhotoIdentifier }) => {
@@ -281,7 +274,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
   }, [selectedFiles, itemSize]);
 
   return (
-    <ScreenHeaderProvider title={type === 'image' ? 'Wybierz zdjęcia' : 'Wybierz wideo'}>
+    <ScreenHeaderProvider title={type === 'image' ? 'Wybierz zdjęcia' : 'Wybierz wideo'} callback={onClose}>
       <FlatList
         data={images}
         numColumns={4}
@@ -297,28 +290,54 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
           Zatwierdź
         </Button>
       }
-      <Modal
+      <ImageViewer
+        close={() => setPreviewMode(false)}
         visible={previewMode && !!previewFile}
-        onRequestClose={() => setPreviewMode(false)}
-      >
-        <ScreenHeaderProvider
-          backgroundContent={'#000'}
-          callback={closePreview}
-          headerItemsColor={Colors.White}
-          backgroundHeader={'rgba(0, 0, 0, 0.1)'}
-          transparent
-          title=' '
-        >
-          <View style={styles.Preview}>
-            {previewFile && type === 'image' &&
-              <PreviewImage item={previewFile} />
-            }
-            {previewFile && type === 'video' &&
-              <PreviewVideo item={previewFile} />
-            }
-          </View>
-        </ScreenHeaderProvider>
-      </Modal>
+        data={[previewFile?.node.image.uri]}
+      />
+      {type === 'video' &&
+        <>
+          <Modal
+            visible={previewMode && !!previewFile}
+            onRequestClose={() => setPreviewMode(false)}
+          >
+            <ScreenHeaderProvider
+              backgroundContent={'#000'}
+              callback={closePreview}
+              headerItemsColor={Colors.White}
+              backgroundHeader={'rgba(0, 0, 0, 0.1)'}
+              transparent
+              title=' '
+            >
+              {previewFile &&
+                <View style={styles.Preview}>
+                  <PreviewVideo item={previewFile} />
+                </View>
+              }
+            </ScreenHeaderProvider>
+          </Modal>
+          <Modal
+            transparent={true}
+            visible={sizeInfoModal}
+            onRequestClose={() => setSizeInfoModal(false)}
+          >
+            <View style={styles.SizeModalContainer}>
+              <View style={styles.SizeModalContent}>
+                <Typography>
+                  Zbyt duży rozmiar pliku. Maksymalny rozmiar wynosi: {Math.round(maxAllowedFileSize / (1024 * 1024) * 100) / 100} MB
+                </Typography>
+                <Button
+                  style={{ height: 30 }}
+                  variant='text'
+                  onPress={() => setSizeInfoModal(false)}
+                >
+                  Ok
+                </Button>
+              </View>
+            </View>
+          </Modal>
+        </>
+      }
     </ScreenHeaderProvider>
   );
 };
@@ -345,6 +364,21 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: Colors.Basic900,
     justifyContent: 'center',
+  },
+  SizeModalContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
+  },
+  SizeModalContent: {
+    width: 300,
+    backgroundColor: Colors.White,
+    borderRadius: 4,
+    padding: 20,
+    justifyContent: 'space-between',
+    gap: 20,
   },
 });
 
