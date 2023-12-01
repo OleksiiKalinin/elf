@@ -1,6 +1,4 @@
 import { Alert, Text, View } from 'react-native';
-
-// somewhere in your app
 import {
   Menu,
   MenuOptions,
