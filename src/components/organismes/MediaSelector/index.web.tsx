@@ -46,6 +46,24 @@ const MediaSelector: FC<MediaSelectorProps> = ({
     //   setFiles(Array.from(files));
     // });
 
+	/**
+	 * @author Oleksii
+	 * 
+	 * Łukasz musisz dodać poniższe linni kodu przed metodą "click" bo bez tego nie zadziała na mac oraz ios
+	 * 
+	 * fileInput.style.display = 'none';
+	 * document.body.append(fileInput);
+	 * 
+	 * a także:
+	 * 
+	 * fileInput.addEventListener('change', (event) => {
+	 * 		// jakaś logika...
+	 * 		fileInput.remove();
+	 * });
+	 * 
+	 * :)
+	 */
+
     fileInput.click();
   };
 

@@ -11,7 +11,6 @@ import { createParam } from 'solito';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { InitialPropsFromParams } from '../../hooks/types';
 import useRouter from '../../hooks/useRouter';
-import { ReadDirItem } from 'react-native-fs';
 import MediaSelector, { MediaFileType } from '../../components/organismes/MediaSelector';
 
 type Params = NonNullable<MenuStackParamList['default']['ImageScreen']>;
