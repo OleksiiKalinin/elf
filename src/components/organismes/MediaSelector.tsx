@@ -7,16 +7,10 @@ import { Image, Video } from 'react-native-compressor';
 import { stat } from 'react-native-fs';
 
 export type MediaFileType = {
-  name: string | undefined,
+  mime: string,
   path: string,
-  size: number,
-  mode?: number,
-  ctime: number,
-  mtime: number,
-  originalFilepath?: string,
-  isFile: () => boolean,
-  isDirectory: () => boolean,
   beforePath?: string,
+  name?: string,
 }
 
 export type MediaSelectorProps = ({
@@ -35,6 +29,8 @@ export type MediaSelectorProps = ({
   },
   videoCompressionSettings?: never,
   compressionProgress?: never,
+  minSizeToCompress?: never,
+  maxAllowedFileSize?: never,
 } | {
   type: 'image',
   multiple?: false,
@@ -52,6 +48,8 @@ export type MediaSelectorProps = ({
   },
   videoCompressionSettings?: never,
   compressionProgress?: never,
+  minSizeToCompress?: never,
+  maxAllowedFileSize?: never,
 } | {
   type: 'image',
   multiple?: false,
@@ -68,6 +66,8 @@ export type MediaSelectorProps = ({
   },
   videoCompressionSettings?: never,
   compressionProgress?: never,
+  minSizeToCompress?: never,
+  maxAllowedFileSize?: never,
 } | {
   type: 'video',
   multiple?: never,
@@ -76,10 +76,12 @@ export type MediaSelectorProps = ({
   initialSelected?: never,
   cropResolution?: never,
   imageCompressionSettings?: never,
-  videoCompressionSettings?:{
+  videoCompressionSettings?: {
     bitrate?: number,
     maxSize?: number,
   }
+  minSizeToCompress?: number,
+  maxAllowedFileSize?: number,
   compressionProgress?: (progress: number) => void,
 }) & {
   callback: (images: MediaFileType[]) => void,
@@ -95,6 +97,8 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
   cropResolution,
   imageCompressionSettings,
   videoCompressionSettings,
+  minSizeToCompress = 20971520,
+  maxAllowedFileSize = 104857600,
   compressionProgress,
   callback,
   render,
@@ -143,12 +147,24 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
       setSwipeablePanelProps({
         mode: 'screen',
         children:
-          <MediaPicker
-            type={type}
-            callback={handleFiles}
-            selectionLimit={multiple ? (selectionLimit || undefined) : 1}
-            initialSelected={initialSelected || undefined}
-          />
+          type === 'image' ?
+
+            <MediaPicker
+              type={'image'}
+              callback={handleFiles}
+              selectionLimit={multiple ? (selectionLimit || undefined) : 1}
+              initialSelected={initialSelected || undefined}
+            />
+
+            :
+
+            <MediaPicker
+              type={'video'}
+              callback={handleFiles}
+              selectionLimit={multiple ? (selectionLimit || undefined) : 1}
+              initialSelected={initialSelected || undefined}
+              maxAllowedFileSize={maxAllowedFileSize}
+            />
       });
     } else {
       setSwipeablePanelProps(null);
@@ -156,21 +172,28 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
   }, [pickerActive])
 
   const compressor = async (file: any, type: 'image' | 'video') => {
-    if (!file.beforePath) {
+    if (file.beforePath) return file;
+    console.log(file);
 
-      let result;
-      const filePath = file.path.startsWith('file://') ? file.path : 'file://' + file.path
+    const filePath = file.path.startsWith('file://') ? file.path : 'file://' + file.path
+    const statFile = await stat(file.path);
+    let result;
 
-      if (type === 'image') {
-        result = await Image.compress(
-          filePath,
-          {
-            compressionMethod: imageCompressionSettings ? 'manual' : 'auto',
-            progressDivider: 10,
-            ...imageCompressionSettings
-          }
-        );
+    if (type === 'image') {
+      result = await Image.compress(
+        filePath,
+        {
+          compressionMethod: imageCompressionSettings ? 'manual' : 'auto',
+          progressDivider: 10,
+          ...imageCompressionSettings
+        }
+      );
+    } else {
+      if (statFile.size < minSizeToCompress) {
+        console.log('bez kompresji')
+        result = file.path;
       } else {
+        console.log('kompresja')
         result = await Video.compress(
           filePath,
           {
@@ -182,22 +205,25 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
           }
         );
       };
+    };
 
-      const statFile = await stat(file.path);
-      console.log('Before compression:', statFile);
+    // console.log('Before compression:', statFile);
+    // const statResult = await stat(result);
+    // console.log('After compression:', statResult);
 
-      const statResult = await stat(result);
-      console.log('After compression:', statResult);
+    const compressedFile: MediaFileType = {
+      name: result.split('/').pop()?.split('.').slice(0, -1).pop(),
+      mime: file.mime,
+      path: result,
+      beforePath: statFile.path,
+    };
 
-      const compressedFile: MediaFileType = { ...statResult, beforePath: statFile.path };
+    console.log(compressedFile);
 
-      return compressedFile;
-    } else {
-      return file;
-    }
+    return compressedFile;
   };
 
-  const handleFiles = (files: any[]) => {
+  const handleFiles = (files: MediaFileType[]) => {
     setFiles(files);
     setPickerActive(false);
   };
@@ -212,10 +238,18 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
             children: 'Aparat',
             onPress: () => ImagePicker.openCamera({
               mediaType: type === 'image' ? 'photo' : 'video',
-            }).then(result => {
-              const files = [];
-              files.push(result);
-              return setFiles(files);
+            }).then(async result => {
+              if (type === 'image') {
+                return setFiles([result]);
+              } else {
+                const statFile = await stat(result.path);
+                if (statFile.size > maxAllowedFileSize) {
+                  console.log('zbyt duży rozmiar')
+                } else {
+                  console.log('rozmiar ok')
+                  return setFiles([result]);
+                };
+              }
             }),
           },
           {
@@ -235,9 +269,5 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-
-});
 
 export default MediaSelector;
