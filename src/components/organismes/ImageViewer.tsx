@@ -82,17 +82,28 @@ const ImageViewer: FC<Props> = ({ close, visible, index = 0, data }) => {
                                             initialScale={1}
                                             onTransformed={(ref, state) => {
                                                 if (ref.instance.bounds) {
-                                                    const { maxPositionX, minPositionX, minPositionY } = ref.instance.bounds
+                                                    const { maxPositionX, minPositionX, minPositionY } = ref.instance.bounds;
                                                     const { positionX, positionY, scale } = state;
 
-                                                    snapCloseRequested.current = (positionY > 99 || positionY < minPositionY - 99) && (positionX >= -45 && positionX <= 45) && scale >= 1;
-                                                    setColorTransparent(snapCloseRequested.current)
+                                                    snapCloseRequested.current = (
+                                                        (positionY > 99 || positionY < minPositionY - 99) &&
+                                                        (positionX >= -35 && positionX <= 35) &&
+                                                        scale >= 1
+                                                    );
+                                                    setColorTransparent(snapCloseRequested.current);
 
-                                                    setCarouselEnabled((positionX > maxPositionX || positionX < minPositionX) && scale >= 1)
+                                                    setCarouselEnabled(
+                                                        (positionX > maxPositionX || positionX < minPositionX) &&
+                                                        !snapCloseRequested.current &&
+                                                        scale >= 1
+                                                    );
                                                 }
                                             }}
                                         >
-                                            <TransformComponent wrapperStyle={{ width: '100%', height: '100%' }} contentStyle={{ width: '100%', height: '100%', alignItems: 'center' }}>
+                                            <TransformComponent
+                                                wrapperStyle={{ width: '100%', height: '100%' }}
+                                                contentStyle={{ width: '100%', height: '100%', alignItems: 'center' }}
+                                            >
                                                 <Image
                                                     source={{ uri: typeof item === 'string' ? item : item.src }}
                                                     resizeMode='contain'
@@ -119,7 +130,7 @@ const ImageViewer: FC<Props> = ({ close, visible, index = 0, data }) => {
                         backgroundColor='transparent'
                         onSwipeDown={close}
                         menuContext={{ saveToLocal: 'Pobierz', cancel: 'Anuluj' }}
-                        renderIndicator={(index, amount) => !!index && !!amount && (amount > 1) ? renderIndicator(index, amount) : <></>}
+                        renderIndicator={(index, amount) => !!index && !!amount && amount > 1 ? renderIndicator(index, amount) : <></>}
                         renderHeader={() => CloseButton}
                     />
                 }

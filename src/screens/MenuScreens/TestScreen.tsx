@@ -1,23 +1,27 @@
-import React, {useEffect} from 'react';
-import {Platform, StyleSheet, View} from 'react-native';
+import React, { useEffect } from 'react';
+import { Image, Platform, StyleSheet, View } from 'react-native';
 import Colors from '../../colors/Colors';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Typography from '../../components/atoms/Typography';
 import Button from '../../components/molecules/Button';
-import {ScrollView} from '../../components/molecules/ScrollView';
+import { ScrollView } from '../../components/molecules/ScrollView';
 import CornerCircleButton from '../../components/molecules/CornerCircleButton';
-import {MenuStackParamList} from '../../navigators/MenuNavigator';
-import {createParam} from 'solito';
-import {useTypedSelector} from '../../hooks/useTypedSelector';
-import {Snackbar} from 'react-native-paper';
+import { MenuStackParamList } from '../../navigators/MenuNavigator';
+import { createParam } from 'solito';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
+import { Snackbar } from 'react-native-paper';
 import SvgIcon from '../../components/atoms/SvgIcon';
-import {InitialPropsFromParams} from '../../hooks/types';
+import { InitialPropsFromParams } from '../../hooks/types';
 import useRouter from '../../hooks/useRouter';
-import Demo4 from './demo4';
+import Carousel from '../../components/organismes/Carousel';
+import im1 from '../../assets/images/certificate.png';
+import im2 from '../../assets/images/certificate1.png';
+import im3 from '../../assets/images/certificate2.png';
+import im4 from '../../assets/images/portfolio1.png';
 
 type Params = NonNullable<MenuStackParamList['default']['TestScreen']>;
 
-const {useParam} = createParam<Params>();
+const { useParam } = createParam<Params>();
 
 const TestScreen: React.FC<InitialPropsFromParams<Params>> = () => {
   const router = useRouter();
@@ -25,18 +29,18 @@ const TestScreen: React.FC<InitialPropsFromParams<Params>> = () => {
   const TestJobCategoryDataMode1 = (industryId: number) => {
     console.log(`Kategoria: ${industryId}`);
   };
-  
+
   const TestJobCategoryDataMode2 = (industryId: number, positionId: number) => {
     console.log(`Kategoria: ${industryId}, Stanowisko: ${positionId}`);
   };
-  
+
   const TestJobCategoryDataMode3 = (industryId: number, positionId: number[]) => {
     console.log(`Kategoria: ${industryId}, Stanowisko: ${positionId}`);
   };
-  
+
   // Test
   const goToCandidatesFilters = () => {
-    router.push({ stack: 'CandidatesStack', screen: 'FilterScreen', params: undefined});
+    router.push({ stack: 'CandidatesStack', screen: 'FilterScreen', params: undefined });
   };
   const goToJobCategoryScreenMode1 = () => {
     router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'JobCategoryScreen', mode: 'industry', callback: TestJobCategoryDataMode1 } });
@@ -54,7 +58,18 @@ const TestScreen: React.FC<InitialPropsFromParams<Params>> = () => {
   return (
     <ScreenHeaderProvider mainTitlePosition="flex-start">
       <ScrollView style={styles.ScrollView}>
-        <Demo4 />
+        <Carousel
+          // innerPagination
+          data={[im4, im2, im1, im3]}
+          renderItem={({ index, item }) => (
+            <View style={{ flex: 1 }}>
+              <Image
+                source={Platform.select({ native: item, web: item.src })}
+                style={{ height: '100%' }}
+              />
+            </View>
+          )}
+        />
         <Button
           onPress={goToCandidatesFilters}
           style={{ marginTop: 30 }}
