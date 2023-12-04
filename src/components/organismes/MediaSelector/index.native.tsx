@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Modal, StyleSheet, View } from 'react-native';
 import { useActions } from '../../../hooks/useActions';
 import ImagePicker from 'react-native-image-crop-picker';
-import MediaPicker from './MediaPicker.native';
+import MediaPicker from './MediaPicker';
 import { Image, Video } from 'react-native-compressor';
 import { stat } from 'react-native-fs';
 import Typography from '../../atoms/Typography';
