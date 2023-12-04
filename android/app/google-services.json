@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "808570809394",
+    "project_id": "jobassistant-407115",
+    "storage_bucket": "jobassistant-407115.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:808570809394:android:36ea9b4c20e48f3f3c602b",
+        "android_client_info": {
+          "package_name": "com.elfemployer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "808570809394-bp4503ipt9jgnp4qirin268npj6r4sei.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.elfemployer",
+            "certificate_hash": "0a598138ec0ba4d23c09c8f1d7626385d5618197"
+          }
+        },
+        {
+          "client_id": "808570809394-7kol8skr8o68nnkrqauu52i59i7oe3q2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCGT1yOEtLYu5O-0tAacOlPk-Nj6n_WNY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "808570809394-7kol8skr8o68nnkrqauu52i59i7oe3q2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

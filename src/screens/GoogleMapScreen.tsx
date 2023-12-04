@@ -20,7 +20,7 @@ if (Platform.OS === 'android' || Platform.OS === 'ios') {
 const markerIcon: any = 'https://drive.google.com/uc?id=18XoaiN-bJE9zslCbZNk6xpRCVLdikwGr&export=download';
 
 export type GoogleMapScreenProps = {
-    callback: (address: AddressType) => void, 
+    callback: (address: AddressType) => void,
     initialAddress: AddressType | null,
     hideControls?: boolean,
     /** 
@@ -47,6 +47,11 @@ export type GoogleMapScreenProps = {
 
 const GoogleMapScreen: FC<GoogleMapScreenProps> = ({ callback, initialAddress, hideControls = false, optionsType = 'geocode' }) => {
     const [location, setLocation] = useState(initialAddress);
+    const [delta, setDelta] = useState<number>(2.2);
+    const [lastCoordinates, setLastCoordinates] = useState({
+        lat: 52.087696,
+        lng: 19.708369,
+    });
     const [webInputValue, setWebInputValue] = useState<string>(location?.formattedAddress || '');
     const NativeInputRef = useRef<any>(null);
     const WebInputRef = useRef<HTMLInputElement | null>(null);
@@ -54,6 +59,9 @@ const GoogleMapScreen: FC<GoogleMapScreenProps> = ({ callback, initialAddress, h
 
     useEffect(() => {
         if (location) {
+            setDelta(0.02);
+            if (location?.position) setLastCoordinates(location?.position);
+
             NativeInputRef.current?.setAddressText(location.formattedAddress);
             setWebInputValue(location.formattedAddress || '');
             if (WebInputRef.current) WebInputRef.current.value = location.formattedAddress || '';
@@ -68,6 +76,22 @@ const GoogleMapScreen: FC<GoogleMapScreenProps> = ({ callback, initialAddress, h
             <SvgIcon icon="arrowLeft" />
         </TouchableOpacity>
     ), []);
+
+    const changePositionHandler = (e: any) => {
+        let [lat, lng]: (number | null)[] = [null, null];
+        if (Platform.OS === 'android' || Platform.OS === 'ios') {
+            const { nativeEvent: { coordinate: { latitude, longitude } } } = e;
+            [lat, lng] = [latitude, longitude];
+        } else if (Platform.OS === 'web' && e.latLng) {
+            [lat, lng] = [e.latLng.lat?.() || null, e.latLng.lng?.() || null];
+        }
+
+        if (lat && lng) {
+            geocoder.geocodePosition({ lat, lng })
+                .then(res => setLocation({ ...(res[0] as unknown as AddressType), position: lat && lng ? { lat, lng } : res[0].position }))
+                .catch(err => console.log(err));
+        }
+    }
 
     return (
         <View style={{ backgroundColor: Colors.Basic100, flex: 1, position: 'relative' }}>
@@ -95,7 +119,7 @@ const GoogleMapScreen: FC<GoogleMapScreenProps> = ({ callback, initialAddress, h
                     )}
                     // fetchDetails
                     query={{
-                        key: 'AIzaSyBLA1spwwoOjY2rOvMliOBc2C87k6ZOJ_s',
+                        key: 'AIzaSyCuD83IZtlNNM3sxn9Hac4YSOXkRZurb9c',
                         language: 'pl',
                         components: 'country:pl',
                         type: optionsType
@@ -148,13 +172,13 @@ const GoogleMapScreen: FC<GoogleMapScreenProps> = ({ callback, initialAddress, h
                 style={[styles.Map]}
                 provider={PROVIDER_GOOGLE}
                 region={{
-                    latitude: location?.position?.lat || 52.087696,
-                    longitude: location?.position?.lng || 19.708369,
-                    latitudeDelta: location?.position ? 0.02 : 2.2,
-                    longitudeDelta: location?.position ? 0.02 : 2.2,
+                    latitude: lastCoordinates.lat,
+                    longitude: lastCoordinates.lng,
+                    latitudeDelta: delta,
+                    longitudeDelta: delta,
                 }}
                 options={{ gestureHandling: "greedy" }}
-                // onPress={(e) => console.log(e?.latLng)}
+                onPress={changePositionHandler}
             >
                 {!!location?.position?.lat && !!location?.position?.lng &&
                     <Map.Marker
@@ -165,20 +189,7 @@ const GoogleMapScreen: FC<GoogleMapScreenProps> = ({ callback, initialAddress, h
                             latitude: location?.position.lat,
                             longitude: location?.position.lng
                         }}
-                        onDragEnd={(e: any) => {
-                            let [lat, lng]: (number | null)[] = [null, null];
-                            if (Platform.OS === 'android' || Platform.OS === 'ios') {
-                                const { nativeEvent: { coordinate: { latitude, longitude } } } = e;
-                                [lat, lng] = [latitude, longitude];
-                            } else if (Platform.OS === 'web' && e.latLng) {
-                                [lat, lng] = [e.latLng.lat?.() || null, e.latLng.lng?.() || null];
-                            }
-                            if (lat && lng) {
-                                geocoder.geocodePosition({ lat, lng })
-                                    .then(res => setLocation({ ...(res[0] as unknown as AddressType), position: lat && lng ? { lat, lng } : res[0].position }))
-                                    .catch(err => console.log(err));
-                            }
-                        }}
+                        onDragEnd={changePositionHandler}
                     />
                 }
             </Map>

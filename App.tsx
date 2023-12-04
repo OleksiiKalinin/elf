@@ -1,10 +1,9 @@
 import { StyleSheet, StatusBar, LogBox, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { TamaguiProvider, useTheme, Stack, H4 } from 'tamagui';
+import { TamaguiProvider } from 'tamagui';
 import {
   initialWindowMetrics,
   SafeAreaProvider,
-  SafeAreaView,
 } from 'react-native-safe-area-context';
 import config from './tamagui';
 import { Provider } from 'react-redux';
@@ -14,14 +13,10 @@ import RootNavigator, { navigationLinking } from './src/navigators/RootNavigator
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import SwipeablePanel from './src/components/organismes/SwipeablePanel';
 import AppUnifiedProvider from './src/components/organismes/AppUnifiedProvider';
-import LoadingScreen from './src/components/atoms/LoadingScreen';
-import { useTypedSelector } from './src/hooks/useTypedSelector';
 
 LogBox.ignoreAllLogs();
 
 const App = () => {
-  // const colorScheme = useColorScheme() || 'light';
-  // const isDarkMode = colorScheme === 'dark';
   const colorScheme = 'light';
   const isDarkMode = false;
 
@@ -39,7 +34,6 @@ const App = () => {
                 showHideTransition="slide"
                 backgroundColor={Colors.White}
                 barStyle='dark-content'
-              // barStyle={isDarkMode ? 'light-content' : 'dark-content'}
               />
               <AppUnifiedProvider>
                 <View style={styles.Flex1}>

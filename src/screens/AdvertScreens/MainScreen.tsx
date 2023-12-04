@@ -51,9 +51,6 @@ const MainScreen: React.FC = () => {
     setLoading(false);
   }
 
-  console.log(userAdverts);
-
-
   // useEffect(() => {
   //   getUserAdverts();
   // }, [userCompany, token]);
