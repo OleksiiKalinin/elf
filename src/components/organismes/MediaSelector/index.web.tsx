@@ -182,19 +182,16 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 	};
 
 	const getCroppedCanvas = (image: any, crop: Crop) => {
-		const canvas = document.createElement('canvas');
-		const ctx = canvas.getContext('2d');
+		const scaleX = image.naturalWidth / image.width;
+    const scaleY = image.naturalHeight / image.height;
+    const canvas = document.createElement("canvas");
 
+    canvas.width = Math.ceil(crop.width * scaleX);
+    canvas.height = Math.ceil(crop.height * scaleY);
+
+    const ctx = canvas.getContext("2d");
+		
 		if (ctx) {
-			const scaleX = image.naturalWidth / image.width;
-			const scaleY = image.naturalHeight / image.height;
-
-			canvas.width = crop.width;
-			canvas.height = crop.height;
-
-			ctx.imageSmoothingQuality = 'high';
-			canvas.style.imageRendering = 'auto';
-
 			ctx.drawImage(
 				image,
 				crop.x * scaleX,
@@ -203,10 +200,10 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 				crop.height * scaleY,
 				0,
 				0,
-				crop.width,
-				crop.height
+				crop.width * scaleX,
+				crop.height * scaleY
 			);
-
+	
 			return canvas;
 		};
 	};

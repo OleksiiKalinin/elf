@@ -69,7 +69,7 @@ const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
 
 
 
-        {/* <MediaSelector
+        <MediaSelector
           key={'8798789'}
           type='image'
           crop
@@ -86,9 +86,9 @@ const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
             </Button>
           }
           callback={callback}
-        /> */}
+        />
 
-        <MediaSelector
+        {/* <MediaSelector
           key={'2121'}
           type='image'
           multiple
@@ -100,7 +100,7 @@ const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
           callback={callback}
           selectionLimit={20}
           initialSelected={images}
-        />
+        /> */}
 
 
         <View style={{ width: windowSizes.width * progress, height: 3, backgroundColor: 'green' }}>
