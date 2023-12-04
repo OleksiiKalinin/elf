@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Image, View} from 'react-native';
+import { StyleSheet, Image, View } from 'react-native';
 import Colors from '../../colors/Colors';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Typography from '../../components/atoms/Typography';
@@ -25,20 +25,40 @@ const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
   const [progress, setProgress] = useState(0);
   const { windowSizes } = useTypedSelector(state => state.general);
 
-  const callback = (image: MediaFileType[]) =>{
+  const callback = (image: MediaFileType[]) => {
     setImages(image);
     console.log('Otrzymana tablica:', image);
   };
 
-  const handleProgress = (progress: number) =>{
+  const handleProgress = (progress: number) => {
     console.log(progress);
     setProgress(progress);
   };
 
+  // const cropCallback = (path: string) =>{
+  //   console.log(path);
+  //   setBase64Image(path);
+  // };
+
   return (
     <ScreenHeaderProvider mainTitlePosition="flex-start">
-      <View style={{gap: 20, flex: 1}}>
+      <View style={{ gap: 20, flex: 1, width: '100%', height: '100%' }}>
+        {/* <MediaSelector
+          key={'132313'}
+          type='video'
+          render={(onPress) =>
+            <Button onPress={() => onPress()}>
+              Dodaj wideo
+            </Button>
+          }
+          callback={callback}
+          compressionProgress={handleProgress}
+          maxAllowedFileSize={8388608}
+          minSizeToCompress={5000000}
+        />
+
         <MediaSelector
+          key={'1217878'}
           type='image'
           render={(onPress) =>
             <Button onPress={() => onPress()}>
@@ -46,14 +66,17 @@ const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
             </Button>
           }
           callback={callback}
-        />
+        /> */}
 
-        <MediaSelector
+
+
+        {/* <MediaSelector
+          key={'8798789'}
           type='image'
           crop
           cropResolution={{
-            width: 500,
-            height: 500,
+            width: 300,
+            height: 200,
           }}
           imageCompressionSettings={{
             quality: .7,
@@ -64,9 +87,10 @@ const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
             </Button>
           }
           callback={callback}
-        />
+        /> */}
 
         <MediaSelector
+          key={'2121'}
           type='image'
           multiple
           render={(onPress) =>
@@ -79,31 +103,33 @@ const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
           initialSelected={images}
         />
 
-        <MediaSelector
-          type='video'
-          render={(onPress) =>
-            <Button onPress={() => onPress()}>
-              Dodaj wideo
-            </Button>
-          }
-          callback={callback}
-          compressionProgress={handleProgress}
-          maxAllowedFileSize={8388608}
-          minSizeToCompress={5000000}
-        />
-        <View style={{width: windowSizes.width * progress, height: 3, backgroundColor: 'green'}}>
+
+        <View style={{ width: windowSizes.width * progress, height: 3, backgroundColor: 'green' }}>
 
         </View>
-        <ScrollView style={{flex: 1, backgroundColor: Colors.Basic200}}>
-          <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
-            {images.map(item=> 
+        {images.length > 0 &&
+          <View style={{ width: '100%', height: 600 }}>
+            <Image
+              source={{ uri: images[0].path }}
+              resizeMode="contain"
+              style={{
+                flex: 1,
+                width: '100%',
+                height: '100%',
+              }}
+            />
+          </View>
+        }
+        <ScrollView style={{ flex: 1, backgroundColor: Colors.Basic200 }}>
+          <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap' }}>
+            {images.map(item =>
               <Image
-                source={{ uri: item.path}}
+                source={{ uri: item.path }}
                 style={{
                   width: 100,
                   height: 100,
                 }}
-              />  
+              />
             )}
           </View>
         </ScrollView>
