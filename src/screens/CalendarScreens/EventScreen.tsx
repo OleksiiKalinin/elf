@@ -56,7 +56,7 @@ const EventScreen: React.FC = () => {
   const router = useRouter();
   const { token, userCompany, userEvents } = useTypedSelector(state => state.general);
   const [loading, setLoading] = useState<boolean>(false);
-  const [eventType, setEventType] = useState<'meeting' | 'call'>('call');
+  const [eventType, setEventType] = useState<'meeting' | 'call'>('meeting');
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [showTimepicker, setShowTimepicker] = useState<'start' | 'end' | false>(false);
@@ -139,59 +139,57 @@ const EventScreen: React.FC = () => {
         <Typography weight="Bold" variant='h5' style={styles.Title}>
           Data i godzina*
         </Typography>
-        <View style={{ margin: 18 }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <View>
-              <Button
-                my={5}
-                contentWeight='SemiBold'
-                contentVariant='h5'
-                variant="secondary"
-                onPress={() => setShowCalendar('start')}
-                borderRadius={4}
-              >
-                {startDate.toLocaleDateString()}
-              </Button>
-              <Button
-                my={5}
-                contentWeight='SemiBold'
-                contentVariant='h5'
-                variant="secondary"
-                onPress={() => setShowTimepicker('start')}
-                borderRadius={4}
-              >
-                {`${displayStartHours < 10 ? '0' : ''}${displayStartHours}`}
-                {':'}
-                {`${displayStartMinutes < 10 ? '0' : ''}${displayStartMinutes}`}
-              </Button>
-            </View>
-            <View style={{ justifyContent: 'center' }}>
-              <SvgIcon icon='arrowRight' fill={Colors.Basic500} />
-            </View>
-            <View>
-              <Button
-                my={5}
-                contentWeight='SemiBold'
-                contentVariant='h5'
-                variant="secondary"
-                onPress={() => setShowCalendar('end')}
-                borderRadius={4}
-              >
-                {endDate.toLocaleDateString()}
-              </Button>
-              <Button
-                my={5}
-                contentWeight='SemiBold'
-                contentVariant='h5'
-                variant="secondary"
-                onPress={() => setShowTimepicker('end')}
-                borderRadius={4}
-              >
-                {`${displayEndHours < 10 ? '0' : ''}${displayEndHours}`}
-                {':'}
-                {`${displayEndMinutes < 10 ? '0' : ''}${displayEndMinutes}`}
-              </Button>
-            </View>
+        <View style={{ margin: 18, flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View style={{flex: 1}}>
+            <Button
+              mb={7.5}
+              contentWeight='SemiBold'
+              contentVariant='h5'
+              variant="secondary"
+              onPress={() => setShowCalendar('start')}
+              borderRadius={4}
+            >
+              {startDate.toLocaleDateString()}
+            </Button>
+            <Button
+              mt={7.5}
+              contentWeight='SemiBold'
+              contentVariant='h5'
+              variant="secondary"
+              onPress={() => setShowTimepicker('start')}
+              borderRadius={4}
+            >
+              {`${displayStartHours < 10 ? '0' : ''}${displayStartHours}`}
+              {':'}
+              {`${displayStartMinutes < 10 ? '0' : ''}${displayStartMinutes}`}
+            </Button>
+          </View>
+          <View style={{ justifyContent: 'center', marginHorizontal: 12 }}>
+            <SvgIcon icon='arrowRight' fill={Colors.Basic500} />
+          </View>
+          <View style={{flex: 1}}>
+            <Button
+              mb={7.5}
+              contentWeight='SemiBold'
+              contentVariant='h5'
+              variant="secondary"
+              onPress={() => setShowCalendar('end')}
+              borderRadius={4}
+            >
+              {endDate.toLocaleDateString()}
+            </Button>
+            <Button
+              mt={7.5}
+              contentWeight='SemiBold'
+              contentVariant='h5'
+              variant="secondary"
+              onPress={() => setShowTimepicker('end')}
+              borderRadius={4}
+            >
+              {`${displayEndHours < 10 ? '0' : ''}${displayEndHours}`}
+              {':'}
+              {`${displayEndMinutes < 10 ? '0' : ''}${displayEndMinutes}`}
+            </Button>
           </View>
         </View>
         <DatePickerModal

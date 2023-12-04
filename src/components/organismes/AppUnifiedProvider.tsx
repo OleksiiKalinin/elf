@@ -18,13 +18,12 @@ import { ConfigureParams } from '@react-native-google-signin/google-signin';
 import LoadingScreen from '../atoms/LoadingScreen';
 
 calendarLocaleConfig();
-geocoder.fallbackToGoogle('AIzaSyBLA1spwwoOjY2rOvMliOBc2C87k6ZOJ_s');
+geocoder.fallbackToGoogle('AIzaSyCuD83IZtlNNM3sxn9Hac4YSOXkRZurb9c');
 geocoder.setLanguage('pl');
 datePickerLocaleConfig('pl', pl);
 
 export const googleSigninConfig: ConfigureParams & { webClientId: string } = {
-  webClientId: '766851891222-ut39jbn8qkotddl1v24k3ogf207ubaev.apps.googleusercontent.com',
-  // iosClientId: '716572673445-3poodfeo7g3viri30h12vvlfgeqa80oc.apps.googleusercontent.com',
+  webClientId: '808570809394-7kol8skr8o68nnkrqauu52i59i7oe3q2.apps.googleusercontent.com',
   offlineAccess: true,
 };
 
