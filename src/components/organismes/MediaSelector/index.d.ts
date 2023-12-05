@@ -6,23 +6,23 @@ export type MediaFileType = {
 };
   
 export type MediaSelectorProps = ({
-  type: 'image',
-  multiple?: true,
-  selectionLimit?: number,
-  crop?: never,
-  initialSelected?: MediaFileType[],
-  cropResolution?: never,
+  type: 'image', // multiplatform compatibility
+  multiple?: true, // multiplatform compatibility
+  selectionLimit?: number, // multiplatform compatibility
+  crop?: never, // multiplatform compatibility
+  initialSelected?: MediaFileType[], // doesn't work on web
+  cropResolution?: never, // multiplatform compatibility
   imageCompressionSettings?: {
-    maxWidth?: number,
-    maxHeight?: number,
-    quality?: number,
-    output?: 'jpg' | 'png',
-    disablePngTransparency?: boolean,
+    maxWidth?: number, // multiplatform compatibility
+    maxHeight?: number, // multiplatform compatibility
+    quality?: number, // doesn't work on web
+    output?: 'jpg' | 'png', // doesn't work on web
+    disablePngTransparency?: boolean, // doesn't work on web
   },
-  videoCompressionSettings?: never,
-  compressionProgress?: never,
-  minSizeToCompress?: never,
-  maxAllowedFileSize?: never,
+  videoCompressionSettings?: never, // not present on web
+  compressionProgress?: never, // not present on web
+  minSizeToCompress?: never, // not present on web
+  maxAllowedFileSize?: never, // not present on web
   } | {
   type: 'image',
   multiple?: false,
@@ -34,6 +34,8 @@ export type MediaSelectorProps = ({
     height: number,
   },
   imageCompressionSettings?: {
+    maxWidth?: never,
+    maxHeight?: never,
     quality?: number,
     output?: 'jpg' | 'png',
     disablePngTransparency?: boolean,
