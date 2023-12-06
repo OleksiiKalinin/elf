@@ -1,18 +1,24 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { Modal, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { MediaFileType, MediaSelectorProps } from '.';
-import { useActions } from '../../../hooks/useActions';
 import Typography from '../../atoms/Typography';
-import { MenuStackParamList } from '../../../navigators/MenuNavigator';
-import { createParam } from 'solito';
-import useRouter from '../../../hooks/useRouter';
 import ReactCrop, { type Crop, PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import Colors from '../../../colors/Colors';
 import Button from '../../molecules/Button';
 import imageCompression from 'browser-image-compression';
+import Modal from '../../atoms/Modal';
 
-const { useParam } = createParam<NonNullable<MenuStackParamList['default']['MainScreen']>>();
+const defaultImageSettings = {
+	maxWidth: 1920,
+	maxHeight: 1080,
+	maxInputFileSize: 20,
+	maxOutputFileSize: 3,
+};
+
+const defaultVideoSettings = {
+	maxInputFileSize: 20,
+};
 
 const MediaSelector: FC<MediaSelectorProps> = ({
 	type,
@@ -20,71 +26,43 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 	selectionLimit = 20,
 	crop = false,
 	cropResolution,
-	imageCompressionSettings = {
-		maxWidth: 1920,
-		maxHeight: 1080,
-	},
-	compressionProgress,
+	imageSettings = {},
+	videoSettings,
 	callback,
 	render,
 }) => {
-	const [subView] = useParam('subView');
-	const { setSwipeablePanelProps } = useActions();
-	const router = useRouter();
-	const [files, setFiles] = useState<MediaFileType[]>();
+	const [files, setFiles] = useState<MediaFileType[]>([]);
 	const [beforeCropData, setBeforeCropData] = useState<File>();
 	const [cropModal, setCropModal] = useState(false);
-	const [errorModal, setErrorModal] = useState<string | null>();
+	const [errorModal, setErrorModal] = useState<string | null>(null);
 	const [cropData, setCropData] = useState<Crop>();
 	const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
 	const imgRef = useRef<HTMLImageElement>(null);
-	const maxFileSize = 20971520;
+
+	const mergedImageSettings = { ...defaultImageSettings, ...imageSettings };
+	const { maxWidth, maxHeight, maxInputFileSize, maxOutputFileSize, compressionProgress } = mergedImageSettings;
+	const mergedVideoSettings = { ...defaultVideoSettings, ...videoSettings };
+	const maxFileSize = type === 'image' ? mergedImageSettings.maxInputFileSize : mergedVideoSettings.maxInputFileSize;
 
 	useEffect(() => {
-		if (files) {
-			console.log(type);
-			console.log(multiple);
+		if (files.length) {
 			if (type === 'image') {
 				if (!multiple && crop) {
 					setCropModal(true);
-				} else if (!multiple) {
-					callback(files);
 				} else {
 					callback(files);
 				};
-			};
+			} else if (type === 'video') {
+				callback(files);
+			}
 		};
 	}, [files]);
 
-	useEffect(() => {
-		setSwipeablePanelProps((() => {
-			if (subView === 'options') return {
-				title: 'Co robimy tym razem?',
-				closeButton: true,
-				buttons: [
-					{
-						children: 'Wybierz z dysku',
-						onPress: () => handleFilePick('device'),
-					},
-					{
-						children: 'Aparat',
-						onPress: () => handleFilePick('camera'),
-					},
-				],
-			};
-			return null;
-		})());
-	}, [subView]);
-
-	const handleFilePick = (source: 'device' | 'camera') => {
+	const handleFilePick = () => {
 		const fileInput = document.createElement('input');
 		fileInput.type = 'file';
-		fileInput.accept = 'image/*';
+		fileInput.accept = `${type}/*`;
 		fileInput.multiple = multiple;
-		if (source === 'camera') {
-			// fileInput.accept = 'image/*;capture=camera';
-			fileInput.capture = 'camera';
-		};
 		fileInput.style.display = 'none';
 		document.body.append(fileInput);
 
@@ -95,8 +73,11 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 				if (multiple && files.length > selectionLimit) {
 					setErrorModal(`Maksymalna liczba plików to ${selectionLimit}`);
 				} else {
-					const base64Array = await processImages(files);
-					setFiles(base64Array as MediaFileType[]);
+
+					const base64Array = await processFiles(files);
+					if (base64Array) {
+						setFiles(base64Array as MediaFileType[]);
+					};
 				};
 			} catch (error) {
 				setErrorModal('Błąd przesyłania!');
@@ -108,38 +89,52 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 		fileInput.click();
 	};
 
-	const processImages = async (files: File[]) => {
+	const processFiles = async (files: File[]) => {
 		const base64Array: MediaFileType[] = [];
-		let i = 0;
+		let progress = 0;
+		let counter = 0;
+
+		for (const file of files) {
+			if (!file.type.startsWith(`${type}/`)) {
+				return setErrorModal(`Niepoprawny format. Możesz wybrać tylko pliki ${type === 'image' ? 'graficzne' : 'wideo.'}`);
+			} else if (file.size > megabytesToBytes(maxFileSize)) {
+				return setErrorModal(`Maksymalny rozmiar jednego pliku wynosi ${maxInputFileSize} MB`);
+			};
+		};
 
 		for (const file of files) {
 			try {
-				if (file.type.startsWith('image/') && file.size < maxFileSize) {
-					if (!crop) {
+				if (type === 'video') {
+					const base64Data = await convertToBase64(file);
+					base64Array.push({ mime: file.type, path: base64Data, name: file.name });
+				} else if (type === 'image' && !crop) {
+					const isHorizontal = await isImageHorizontal(file);
+					const options = {
+						maxSizeMB: maxOutputFileSize,
+						useWebWorker: true,
+						maxWidthOrHeight: isHorizontal ? maxWidth : maxHeight,
+						onProgress: compressionProgress ?
+							(value: number) => {
+								progress = (((counter * 100 / files.length) + (value / files.length)) / 100)
+								compressionProgress(progress);
+								if (value === 100) {
+									counter++
+								};
+							}
 
-						const isHorizontal = await isImageHorizontal(file);
+							:
 
-						const options = {
-							maxSizeMB: 5,
-							useWebWorker: true,
-							maxWidthOrHeight: isHorizontal ? imageCompressionSettings.maxWidth : imageCompressionSettings.maxHeight,
-							onProgress: (progress: number) => console.log(`Plik progress ${i}:`, progress),
-						};
+							undefined
+					};
 
-						i++;
-						const compressedFile = await imageCompression(file, options);
-						const base64Data = await convertToBase64(compressedFile);
-						base64Array.push({ mime: file.type, path: base64Data as string, name: file.name });
-					} else {
-						setBeforeCropData(file);
-						const base64Data = await convertToBase64(file);
-						base64Array.push({ mime: file.type, path: base64Data as string, name: file.name });
-					}
-				} else if (!file.type.startsWith('image/')) {
-					return setErrorModal(`Niepoprawny format. Możesz wybrać tylko pliku graficzne.`);
-				} else if (file.size > maxFileSize) {
-					return setErrorModal(`Maksymalny rozmiar jednego pliku wynosi ${Math.round(maxFileSize / (1024 * 1024) * 100) / 100} MB`);
-				};
+					const compressedFile = await imageCompression(file, options);
+					const base64Data = await convertToBase64(compressedFile);
+					base64Array.push({ mime: file.type, path: base64Data, name: file.name });
+				} else if (type === 'image' && crop) {
+					setBeforeCropData(file);
+					const base64Data = await convertToBase64(file);
+					base64Array.push({ mime: file.type, path: base64Data, name: file.name });
+				}
 			} catch (error) {
 				return error;
 			};
@@ -151,26 +146,26 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 	const isImageHorizontal = async (file: File): Promise<boolean> => {
 		return new Promise((resolve, reject) => {
 			const reader = new FileReader();
-	
+
 			reader.onload = (e) => {
 				const image = new Image();
 				image.src = e.target?.result as string;
-	
+
 				image.onload = () => {
 					const isHorizontal = image.width > image.height;
 					resolve(isHorizontal);
 				};
 			};
-	
+
 			reader.onerror = (error) => {
 				reject(error);
 			};
-	
+
 			reader.readAsDataURL(file);
 		});
 	};
 
-	const convertToBase64 = (file: File) => {
+	const convertToBase64 = (file: File): Promise<string> => {
 		return new Promise((resolve) => {
 			const reader = new FileReader();
 
@@ -239,10 +234,17 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 
 				if (croppedCanvas) {
 					const options = {
-						maxSizeMB: 5,
+						maxSizeMB: maxOutputFileSize,
 						maxWidthOrHeight: cropResolution?.width,
 						useWebWorker: true,
-						onProgress: (progress: number) => console.log(progress),
+						onProgress: compressionProgress ?
+							(progress: number) => {
+									compressionProgress(progress)
+							}
+
+							:
+
+							undefined
 					};
 
 					const canvasToFile = await imageCompression.canvasToFile(croppedCanvas, beforeCropData.type, beforeCropData.name, beforeCropData.lastModified);
@@ -262,26 +264,19 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 		};
 	};
 
-	const handlePress = () => {
-		if (!multiple) {
-			router.push({
-				stack: 'MenuStack',
-				screen: 'ImageScreen',
-				params: { subView: 'options' },
-			});
-		} else {
-			handleFilePick('device');
-		};
+	const megabytesToBytes = (mb: number) => {
+		const bytes = mb * 1024 * 1024;
+		return bytes;
 	};
 
 	return (
 		<View>
-			{render(handlePress)}
+			{render(handleFilePick)}
 			{crop &&
 				<Modal
 					transparent={true}
 					visible={cropModal}
-					onRequestClose={() => setCropModal(false)}
+					onClose={() => setCropModal(false)}
 				>
 					<View style={styles.Modal}>
 						<View style={styles.CropContainer}>
@@ -292,7 +287,7 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 								aspect={cropResolution && cropResolution?.width / cropResolution?.height}
 								style={styles.ReactCrop}
 							>
-								{files &&
+								{files.length &&
 									<img
 										ref={imgRef}
 										src={files[0].path}
@@ -313,6 +308,7 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 			<Modal
 				transparent={true}
 				visible={!!errorModal}
+				onClose={() => setErrorModal(null)}
 			>
 				<View style={styles.ErrorModalContainer}>
 					<View style={styles.ErrorModalContent}>

@@ -42,54 +42,20 @@ const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
   return (
     <ScreenHeaderProvider mainTitlePosition="flex-start">
       <View style={{ gap: 20, flex: 1, width: '100%', height: '100%' }}>
-        {/* <MediaSelector
-          key={'132313'}
-          type='video'
-          render={(onPress) =>
-            <Button onPress={() => onPress()}>
-              Dodaj wideo
-            </Button>
-          }
-          callback={callback}
-          compressionProgress={handleProgress}
-          maxAllowedFileSize={8388608}
-          minSizeToCompress={5000000}
-        />
-
         <MediaSelector
-          key={'1217878'}
           type='image'
           render={(onPress) =>
             <Button onPress={() => onPress()}>
               Dodaj zdjęcie
             </Button>
           }
-          callback={callback}
-        /> */}
-
-
-
-        {/* <MediaSelector
-          key={'8798789'}
-          type='image'
-          crop
-          cropResolution={{
-            width: 500,
-            height: 500,
+          imageSettings={{
+            maxInputFileSize: 0.5
           }}
-          imageCompressionSettings={{
-            quality: .7,
-          }}
-          render={(onPress) =>
-            <Button onPress={() => onPress()}>
-              Dodaj zdjęcie - crop
-            </Button>
-          }
           callback={callback}
-        /> */}
+        />
 
         <MediaSelector
-          key={'2121'}
           type='image'
           multiple
           render={(onPress) =>
@@ -100,26 +66,63 @@ const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
           callback={callback}
           selectionLimit={20}
           initialSelected={images}
+          imageSettings={{
+            compressionProgress: handleProgress,
+          }}
         />
 
+        <MediaSelector
+          type='image'
+          crop
+          cropResolution={{
+            width: 500,
+            height: 500,
+          }}
+          imageSettings={{
+            quality: .7,
+          }}
+          render={(onPress) =>
+            <Button onPress={() => onPress()}>
+              Dodaj zdjęcie - crop
+            </Button>
+          }
+          callback={callback}
+        />
 
-        <View style={{ width: windowSizes.width * progress, height: 3, backgroundColor: 'green' }}>
+        <MediaSelector
+          type='video'
+          render={(onPress) =>
+            <Button onPress={() => onPress()}>
+              Dodaj wideo
+            </Button>
+          }
+          callback={callback}
+          videoSettings={{
+            compressionProgress: handleProgress,
+            maxAllowedFileSize: 40,
+            minSizeToCompress: 20,
+          }}
+        />
 
-        </View>
-        {images.length > 0 &&
-          <View style={{ width: '100%', height: 600, backgroundColor: 'red' }}>
-            <Image
-              source={{ uri: images[0].path }}
-              resizeMode="contain"
-              style={{
-                flex: 1,
-                width: '100%',
-                height: '100%',
-              }}
-            />
-          </View>
-        }
+        {/* <View style={{ width: windowSizes.width * progress, height: 3, backgroundColor: 'green' }}>
+
+        </View> */}
+        <Typography size={24}>Progress: {Math.round(progress * 100)}%</Typography>
+ 
         <ScrollView style={{ flex: 1, backgroundColor: Colors.Basic200 }}>
+          {images.length > 0 &&
+            <View style={{ width: '100%', height: 600, backgroundColor: 'red' }}>
+              <Image
+                source={{ uri: images[0].path }}
+                resizeMode="contain"
+                style={{
+                  flex: 1,
+                  width: '100%',
+                  height: '100%',
+                }}
+              />
+            </View>
+          }
           <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap' }}>
             {images.map(item =>
               <Image
