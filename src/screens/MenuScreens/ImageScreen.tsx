@@ -99,7 +99,7 @@ const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
           callback={callback}
           videoSettings={{
             compressionProgress: handleProgress,
-            maxAllowedFileSize: 30,
+            maxAllowedFileSize: 40,
             minSizeToCompress: 20,
           }}
         />
