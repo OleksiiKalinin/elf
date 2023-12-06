@@ -1,5 +1,5 @@
 import { LinkingOptions, NavigatorScreenParams, } from '@react-navigation/native';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import AuthNavigator, { AuthStackLinking, AuthStackParamList } from './AuthNavigator';
 import CalendarNavigator, { CalendarStackLinking, CalendarStackParamList } from './CalendarNavigator';
 import CandidatesNavigator, { CandidatesStackLinking, CandidatesStackParamList, } from './CandidatesNavigator';
@@ -13,6 +13,8 @@ import { useActions } from '../hooks/useActions';
 import { Keyboard, StyleSheet } from 'react-native';
 import Colors from '../colors/Colors';
 import BottomTabs from '../components/organismes/BottomTabs';
+import { useRouter } from 'solito/router';
+import notificationHandler from '../../notificationHandler/notificationHandler';
 
 export type RootStackParamList = {
   MenuStack: MenuStackParamList;
@@ -118,6 +120,18 @@ const RootNavigator: React.FC = () => {
   const { isTabbarVisible } = useTypedSelector(state => state.general);
   const { setCurrentScreen, setIsTabbarVisible } = useActions();
   const tempKeyboardAccess = useRef<boolean>(false);
+  const { push } = useRouter();
+
+  useEffect(() => {
+    const lastRedirectTo = notificationHandler.lastRedirectTo;
+    console.log(lastRedirectTo);
+    if (lastRedirectTo && lastRedirectTo.startsWith('/')) {
+      push(lastRedirectTo);
+
+      // nie działa przy fast refresh!
+      notificationHandler.setLastRedirectTo('');
+    }
+  }, []);
 
   /*     useEffect(() => {
         if (!appLoading) {

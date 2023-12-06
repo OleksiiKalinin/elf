@@ -31,7 +31,7 @@ const CheckBox: FC<ComponentProps<typeof TamaCheckBox> & Props> = ({ rightTextVi
                     borderColor: Colors.Basic600,
                     backgroundColor: Colors.Basic100
                 })}
-                focusStyle={{ borderColor: 'none' }}
+                focusStyle={{ borderColor: 'transparent' }}
                 {...props}
                 checked={checked}
             >

@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   },
   SnackbarWrapper: {
     zIndex: 9999999,
-    backgroundColor: 'none',
+    backgroundColor: 'transparent',
     maxWidth: 768,
     height: 43,
   },

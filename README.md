@@ -1,5 +1,17 @@
 # 🛸 elfemployer
 
+splash screen: https://blog.logrocket.com/splash-screen-react-native/#react-native-splash-screen-example icon: https://romannurik.github.io/AndroidAssetStudio/icons-launcher.html#foreground.type=clipart&foreground.clipart=android&foreground.space.trim=1&foreground.space.pad=0.25&foreColor=rgba(96%2C%20125%2C%20139%2C%200)&backColor=rgb(68%2C%20138%2C%20255)&crop=0&backgroundShape=circle&effects=none&name=ic_launcher
+
+Generate debug build: 
+
+Step 1: npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
+
+Step 2: cd android
+
+Step 3: ./gradlew assembleDebug
+
+Result path: yourProject/android/app/build/outputs/apk/debug/app-debug.apk
+
 ## ⭐ Features
 
 - [React Native Web][22]

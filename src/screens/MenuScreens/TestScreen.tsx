@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Image, Platform, StyleSheet, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Image, Platform, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import Colors from '../../colors/Colors';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Typography from '../../components/atoms/Typography';
