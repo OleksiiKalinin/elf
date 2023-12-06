@@ -10,6 +10,19 @@ import Button from '../../molecules/Button';
 import Colors from '../../../colors/Colors';
 import { MediaFileType, MediaSelectorProps } from '.';
 
+const defaultImageSettings = {
+	maxWidth: 1920,
+	maxHeight: 1080,
+  quality: .8,
+};
+
+const defaultVideoSettings = {
+  bitrate: 4000,
+  maxSize: 1920,
+	minSizeToCompress: 20,
+  maxAllowedFileSize: 100,
+};
+
 const MediaSelector: React.FC<MediaSelectorProps> = ({
   type,
   multiple = false,
@@ -17,11 +30,8 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
   crop = false,
   initialSelected,
   cropResolution,
-  imageCompressionSettings,
-  videoCompressionSettings,
-  minSizeToCompress = 20971520,
-  maxAllowedFileSize = 104857600,
-  compressionProgress,
+  imageSettings,
+  videoSettings,
   callback,
   render,
 }) => {
@@ -29,6 +39,11 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
   const [pickerActive, setPickerActive] = useState(false);
   const [sizeInfoModal, setSizeInfoModal] = useState(false);
   const { setSwipeablePanelProps } = useActions();
+
+  const mergedImageSettings = { ...defaultImageSettings, ...imageSettings };
+	const { maxWidth, maxHeight, quality} = mergedImageSettings;
+	const mergedVideoSettings = { ...defaultVideoSettings, ...videoSettings };
+  const {bitrate, maxSize, minSizeToCompress, maxAllowedFileSize } = mergedVideoSettings;
 
   useEffect(() => {
     const handleCallback = async () => {
@@ -88,7 +103,7 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
               onClose={() => setPickerActive(false)}
               selectionLimit={multiple ? (selectionLimit || undefined) : 1}
               initialSelected={initialSelected || undefined}
-              maxAllowedFileSize={maxAllowedFileSize}
+              maxAllowedFileSize={megabytesToBytes(maxAllowedFileSize)}
             />
       });
     } else {
@@ -107,24 +122,28 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
       result = await Image.compress(
         filePath,
         {
-          compressionMethod: imageCompressionSettings ? 'manual' : 'auto',
-          progressDivider: 10,
-          ...imageCompressionSettings
-        }
+          compressionMethod: 'manual',
+          maxWidth: maxWidth,
+          maxHeight: maxHeight,
+          quality: quality,
+        },
       );
     } else {
-      if (statFile.size < minSizeToCompress) {
+      if (statFile.size < megabytesToBytes(minSizeToCompress)) {
+        console.log('Test')
+        console.log(statFile.size)
         result = file.path;
       } else {
         result = await Video.compress(
           filePath,
           {
-            compressionMethod: videoCompressionSettings ? 'manual' : 'auto',
-            ...videoCompressionSettings
+            compressionMethod: 'manual',
+            bitrate: bitrate,
+            maxSize: maxSize,
           },
           (progress) => {
-            compressionProgress && compressionProgress(progress);
-          }
+            videoSettings?.compressionProgress && videoSettings.compressionProgress(progress);
+          },
         );
       };
     };
@@ -163,7 +182,7 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
                 return setFiles([result]);
               } else {
                 const statFile = await stat(result.path);
-                if (statFile.size > maxAllowedFileSize) {
+                if (statFile.size > megabytesToBytes(maxAllowedFileSize)) {
                   setSizeInfoModal(true);
                 } else {
                   return setFiles([result]);
@@ -182,6 +201,11 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
     };
   };
 
+  const megabytesToBytes = (mb: number) => {
+		const bytes = mb * 1024 * 1024;
+		return bytes;
+	};
+
   return (
     <View>
       {render(handlePress)}
@@ -194,7 +218,7 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
           <View style={styles.SizeModalContainer}>
             <View style={styles.SizeModalContent}>
               <Typography>
-                Zbyt duży rozmiar pliku. Maksymalny rozmiar wynosi: {Math.round(maxAllowedFileSize / (1024 * 1024) * 100) / 100} MB
+                Zbyt duży rozmiar pliku. Maksymalny rozmiar wynosi: {maxAllowedFileSize} MB
               </Typography>
               <Button
                 style={{ height: 30 }}
