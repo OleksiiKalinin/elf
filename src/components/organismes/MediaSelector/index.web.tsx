@@ -335,7 +335,6 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		width: '100%',
 		height: '100%',
-		backgroundColor: 'rgba(0, 0, 0, 0.5)',
 		padding: 30,
 	},
 	CropContainer: {
@@ -354,7 +353,6 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		width: '100%',
 		height: '100%',
-		backgroundColor: 'rgba(0, 0, 0, 0.5)'
 	},
 	ErrorModalContent: {
 		width: 300,
