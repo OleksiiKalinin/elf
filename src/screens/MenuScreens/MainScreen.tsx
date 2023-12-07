@@ -42,7 +42,7 @@ const MainScreen: React.FC = ({ }) => {
             children: 'Stwórz nowe wydarzenie',
             icon: <SvgIcon icon='calendar' />,
             closeAction: 'props-null',
-            onPress: () => replace({ stack: 'CalendarStack', screen: 'EventScreen', params: undefined })
+            onPress: () => replace({ stack: 'CalendarStack', screen: 'EventEditorScreen', params: undefined })
           },
           {
             children: 'Stwórz nowe ogłoszenie',

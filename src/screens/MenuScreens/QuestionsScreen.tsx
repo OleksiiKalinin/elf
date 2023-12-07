@@ -22,9 +22,7 @@ const QuestionsScreen: React.FC = () => {
   const [id] = useParam('id');
   const [subView] = useParam('subView');
   const [index, setIndex] = useState<number | null>(null);
-  const [subViewMode, setSubViewMode] = useState<'optionsMenu' | 'deleteMenu'>(
-    'optionsMenu',
-  );
+  const [subViewMode, setSubViewMode] = useState<'optionsMenu' | 'deleteMenu'>('optionsMenu');
   const [selectedList, setSelectedList] = useState<UserQuestionsType>();
   const { userQuestions } = useTypedSelector(state => state.general);
   const { setSwipeablePanelProps, setUserQuestions } = useActions();

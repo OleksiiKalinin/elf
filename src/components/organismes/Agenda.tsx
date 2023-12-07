@@ -9,6 +9,7 @@ import { AgendaEntry, DateData } from '../modified_modules/react-native-calendar
 import { useActions } from '../../hooks/useActions';
 import Lodash from "lodash";
 import Typography from '../atoms/Typography';
+import useRouter from '../../hooks/useRouter';
 
 type ScheduleType = {
     [k: string]: ItemType[]
@@ -34,6 +35,7 @@ const Agenda: React.FC<{ getCurrentDate: (s: string) => void, events: UserEventT
     const { jobIndustries } = useTypedSelector(s => s.general);
     const [jobPositions, setJobPositions] = useState<JobPositionType[]>([]);
     const { setSwipeablePanelProps } = useActions();
+    const { push } = useRouter();
 
     useEffect(() => {
         const [year, month] = date.split('-');
@@ -104,7 +106,7 @@ const Agenda: React.FC<{ getCurrentDate: (s: string) => void, events: UserEventT
                 const { timeStart, timeEnd, isPhoneCall, address, firstName, lastName, jobPosition, id } = item as ItemType;
                 return (
                     <TouchableOpacity
-                        // onPress={() => options(id)} 
+                        onPress={() => push({ stack: 'CalendarStack', screen: 'EventScreen', params: { id: id.toString() } })}
                         style={{
                             flex: 1,
                             minHeight: 110,

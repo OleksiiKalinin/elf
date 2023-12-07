@@ -40,17 +40,11 @@ const validateUrl = (props: WithUrlProps): string => {
     }
 
     if (
-        (props.stack === 'CalendarStack' && props.screen === 'EventScreen' && (
+        (props.stack === 'CalendarStack' && props.screen === 'EventEditorScreen' && (
             props.params?.subView === 'GoogleMapScreen' ||
             props.params?.subView === 'ChooseAdvertScreen' ||
-            props.params?.subView === 'ChooseCandidateScreen' ||
-            // Test
-            props.params?.subView === 'JobCategoryScreen'
+            props.params?.subView === 'ChooseCandidateScreen'
         )) ||
-        false //something else
-    ) {
-        exec(props.params);
-    } else if (
         (props.stack === 'CandidatesStack' && props.screen === 'FilterScreen' && (
             props.params?.subView === 'GoogleMapScreen' ||
             props.params?.subView === 'JobCategoryScreen' ||

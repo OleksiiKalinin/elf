@@ -1,5 +1,5 @@
 import PushNotification, { Importance, PushNotificationOptions } from 'react-native-push-notification';
-import notificationHandler from './notificationHandler/notificationHandler';
+import notificationHandler from './notificationHandler';
 
 export default class NotifService {
   lastId: number;

@@ -22,7 +22,8 @@ export const screensTitles: ScreensTitlesType = {
   },
   CalendarStack: {
     MainScreen: '',
-    EventScreen: 'Zaplanuj wydarzenie',
+    EventScreen: 'Wydarzenie',
+    EventEditorScreen: 'Zaplanuj wydarzenie',
   },
   CandidatesStack: {
     MainScreen: 'Kandydaci',
@@ -140,7 +141,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
       // backgroundColor: Colors.Basic200,
     }}>
       <View style={{ maxWidth: 768, width: '100%', flex: 1 }}>
-        <View style={[styles.Header, {backgroundColor: transparent && backgroundHeader ? backgroundHeader : transparent ? 'transparent' : Colors.White}]}>
+        <View style={[styles.Header, { backgroundColor: transparent && backgroundHeader ? backgroundHeader : transparent ? 'transparent' : Colors.White }]}>
           {mode === 'backAction' && (
             <View style={{ flex: 1, height: '100%', alignItems: 'flex-start', flexDirection: 'row' }}>
               <Button
@@ -149,7 +150,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
                 alignItems='center'
                 width={50}
                 height='100%'
-                icon={<SvgIcon icon='arrowLeft' fill={headerItemsColor}/>}
+                icon={<SvgIcon icon='arrowLeft' fill={headerItemsColor} />}
                 onPress={callback ? callback : (!!swipeablePanelProps ? backToRemoveParams : back)}
               />
               <Typography variant="h4" weight="Bold" style={{ alignSelf: 'center', color: headerItemsColor }}>

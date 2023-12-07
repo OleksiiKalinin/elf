@@ -11,6 +11,8 @@ import QuestionsListScreen from '../screens/MenuScreens/QuestionsListScreen';
 import QuestionsScreen from '../screens/MenuScreens/QuestionsScreen';
 import TestScreen from '../screens/MenuScreens/TestScreen';
 import ImageScreen from '../screens/MenuScreens/ImageScreen';
+import { JobCategoryScreenProps } from '../screens/JobCategoryScreen';
+
 type SubView<T extends keyof MenuStackParamList['extended']> = { subView: T } & MenuStackParamList['extended'][T]
 
 export type MenuStackParamList = {
@@ -24,14 +26,18 @@ export type MenuStackParamList = {
     NewsScreen: undefined,
     NewsDetailsScreen: undefined,
     QuestionEditorScreen: { id: string } | undefined,
-    QuestionsListScreen: {newlist: string} | undefined,
+    QuestionsListScreen: { newlist: string } | undefined,
     QuestionsScreen: { id: string, subView?: 'options' },
-    TestScreen: undefined,
+    TestScreen:
+    | undefined
+    | SubView<'JobCategoryScreen'>
+    ,
     ImageScreen:
     | undefined
     ,
   },
   extended: {
+    JobCategoryScreen: JobCategoryScreenProps
   };
 };
 

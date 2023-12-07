@@ -22,7 +22,7 @@ const getUserAdverts = (token: string | null, id: number) => async (dispatch: Di
     }
 };
 
-const getAdvertCandidates = (token: string | null, ids: number[]) => async (dispatch: Dispatch<any>) => {
+const getAdvertCandidates = (token: string | null, ids: number[]) => async (dispatch: Dispatch<any>): Promise<any[]> => {
     try {
         const res = await axios.post(`employer/candidate_info/list_by_ids/`, { ids }, { headers: { Authorization: `Bearer ${token}` } });
         return res.data?.length ? res.data.map(({account, main_photos, video_cv, portfolio, certificates, ...e}: any) => ({

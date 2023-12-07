@@ -32,7 +32,7 @@ const hiddenTabbarScreens: ScreensType = {
     AdvertStack: ['AdvertScreen', 'AdvertEditorScreen', 'CandidatesScreen'],
     AuthStack: ['MainScreen', 'LoginScreen', 'RegistrationScreen', 'RememberPasswordScreen', 'FillUserDataScreen'],
     CandidatesStack: ['ProfileScreen', 'VideoScreen', 'FavouritesScreen', 'FavSettingsScreen', 'FilterScreen', 'ProfileScreen', 'VideoScreen'],
-    CalendarStack: ['EventScreen'],
+    CalendarStack: ['EventEditorScreen'],
     MenuStack: ['CallsScreen', 'EventsScreen', 'NewsScreen', 'QuestionsScreen', 'QuestionEditorScreen', 'QuestionsListScreen'],
     MessengerStack: [],
     ProfileStack: ['SettingsScreen', 'PackagesScreen', 'NoCompanyScreen', 'AddCompanyScreen', 'AddPaymentScreen', 'CompanyScreen', 'EditPaymentScreen', 'LanguageScreen', 'MethodsScreen', 'NotificationScreen', 'PaymentScreen', 'PointsScreen', 'PrivacyScreen', 'AccountDataScreen', 'ToolsScreen'],

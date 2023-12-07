@@ -14,7 +14,7 @@ import { Keyboard, StyleSheet } from 'react-native';
 import Colors from '../colors/Colors';
 import BottomTabs from '../components/organismes/BottomTabs';
 import { useRouter } from 'solito/router';
-import notificationHandler from '../../notificationHandler/notificationHandler';
+import notificationHandler from '../hooks/notificationHandler';
 
 export type RootStackParamList = {
   MenuStack: MenuStackParamList;
@@ -125,7 +125,7 @@ const RootNavigator: React.FC = () => {
   useEffect(() => {
     const lastRedirectTo = notificationHandler.lastRedirectTo;
     console.log(lastRedirectTo);
-    if (lastRedirectTo && lastRedirectTo.startsWith('/')) {
+    if (lastRedirectTo) {
       push(lastRedirectTo);
 
       // nie działa przy fast refresh!

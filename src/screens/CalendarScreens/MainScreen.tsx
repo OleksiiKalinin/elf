@@ -104,7 +104,7 @@ const MainScreen: React.FC = () => {
     <ScreenHeaderProvider staticContentHeightOnWeb mode="mainTitle" title={monthTitle}>
       <Agenda getCurrentDate={setMonthTitle} events={userEvents} />
     </ScreenHeaderProvider>
-    <CornerCircleButton {...useLink({ href: {stack: 'CalendarStack', screen: 'EventScreen', params: undefined} })} />
+    <CornerCircleButton {...useLink({ href: {stack: 'CalendarStack', screen: 'EventEditorScreen', params: undefined} })} />
   </>);
 };
 

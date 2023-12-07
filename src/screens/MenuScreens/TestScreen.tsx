@@ -43,16 +43,16 @@ const TestScreen: React.FC<InitialPropsFromParams<Params>> = () => {
     router.push({ stack: 'CandidatesStack', screen: 'FilterScreen', params: undefined });
   };
   const goToJobCategoryScreenMode1 = () => {
-    router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'JobCategoryScreen', mode: 'industry', callback: TestJobCategoryDataMode1 } });
+    router.push({ stack: 'MenuStack', screen: 'TestScreen', params: { subView: 'JobCategoryScreen', mode: 'industry', callback: TestJobCategoryDataMode1 } });
   };
   const goToJobCategoryScreenMode2 = () => {
-    router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'JobCategoryScreen', mode: 'singlePosition', callback: TestJobCategoryDataMode2, initialPosition: [21] } });
+    router.push({ stack: 'MenuStack', screen: 'TestScreen', params: { subView: 'JobCategoryScreen', mode: 'singlePosition', callback: TestJobCategoryDataMode2, initialPosition: [21] } });
   };
   const goToJobCategoryScreenMode3 = () => {
-    router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'JobCategoryScreen', mode: 'multiplePosition', callback: TestJobCategoryDataMode3 } });
+    router.push({ stack: 'MenuStack', screen: 'TestScreen', params: { subView: 'JobCategoryScreen', mode: 'multiplePosition', callback: TestJobCategoryDataMode3 } });
   };
   const goToJobCategoryScreenMode4 = () => {
-    router.push({ stack: 'CalendarStack', screen: 'EventScreen', params: { subView: 'JobCategoryScreen', mode: 'singlePosition', callback: TestJobCategoryDataMode2, initialIndustry: 2 } });
+    router.push({ stack: 'MenuStack', screen: 'TestScreen', params: { subView: 'JobCategoryScreen', mode: 'singlePosition', callback: TestJobCategoryDataMode2, initialIndustry: 2 } });
   };
 
   return (
