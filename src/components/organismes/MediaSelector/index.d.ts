@@ -13,7 +13,7 @@ export type MediaSelectorProps = ({
   /** Limit of the number of selected files. */
   selectionLimit?: number,
   crop?: never,
-  /** Works only on Android and iOS. */
+  /** Pre-selected images. Works only on Android and iOS. */
   initialSelected?: MediaFileType[],
   cropResolution?: never,
   /** Settings for files of type: image. */
@@ -35,10 +35,10 @@ export type MediaSelectorProps = ({
   } | {
   /** Type of media files selected. */
   type: 'image',
-  /** Available only for type: image and crop: false. */
+  /** Available only for type: 'image' and crop: false. */
   multiple?: false,
   selectionLimit?: never,
-  /** Cuts a fragment of an image. Available for type: image and multiple: false. */
+  /** Cuts a fragment of an image. Available for type: 'image' and multiple: false. */
   crop?: true,
   initialSelected?: never,
   /** Resolution of the cropped image fragment. */
@@ -48,7 +48,7 @@ export type MediaSelectorProps = ({
     /** Height in pixels. */
     height: number,
   },
-  /** Settings for files of type: image. */
+  /** Settings for files of type: 'image'. */
   imageSettings?: {
     /** Width in pixels. */
     maxWidth?: number,
@@ -67,14 +67,14 @@ export type MediaSelectorProps = ({
   } | {
   /** Type of media files selected. */
   type: 'image',
-  /** Available only for type: image and crop: false. */
+  /** Available only for type: 'image' and crop: false. */
   multiple?: false,
   selectionLimit?: never,
-   /** Cuts a fragment of an image. Available for type: image and multiple: false. */
+   /** Cuts a fragment of an image. Available for type: 'image' and multiple: false. */
   crop?: false,
   initialSelected?: never,
   cropResolution?: never,
-  /** Settings for files of type: image. */
+  /** Settings for files of type: 'image'. */
   imageSettings?: {
     /** Width in pixels. */
     maxWidth?: number,
@@ -112,8 +112,7 @@ export type MediaSelectorProps = ({
     maxInputFileSize?: number,
     /** Compression progress of all selected files. The function returns decimal numbers from 0 to 1. Available only for Android and iOS. */
     compressionProgress?: (progress: number) => void,
-  };
- 
+  },
   }) & {
   /** Callback returns an array of objects of type MediaFileType. In the case of web path is base64, and Android and iOS is the path to the temporary file. BeforePath is returned only on Android and iOS. */
   callback: (images: MediaFileType[]) => void,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useActions } from '../../../hooks/useActions';
 import ImagePicker from 'react-native-image-crop-picker';
 import MediaPicker from './MediaPicker';
@@ -9,6 +9,7 @@ import Typography from '../../atoms/Typography';
 import Button from '../../molecules/Button';
 import Colors from '../../../colors/Colors';
 import { MediaFileType, MediaSelectorProps } from '.';
+import Modal from '../../atoms/Modal';
 
 const defaultImageSettings = {
 	maxWidth: 1920,
@@ -17,7 +18,6 @@ const defaultImageSettings = {
 };
 
 const defaultVideoSettings = {
-  bitrate: 4000,
   maxSize: 1920,
 	minSizeToCompress: 20,
   maxAllowedFileSize: 100,
@@ -43,7 +43,7 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
   const mergedImageSettings = { ...defaultImageSettings, ...imageSettings };
 	const { maxWidth, maxHeight, quality} = mergedImageSettings;
 	const mergedVideoSettings = { ...defaultVideoSettings, ...videoSettings };
-  const {bitrate, maxSize, minSizeToCompress, maxAllowedFileSize } = mergedVideoSettings;
+  const {bitrate, maxSize, minSizeToCompress, maxAllowedFileSize, compressionProgress } = mergedVideoSettings;
 
   useEffect(() => {
     const handleCallback = async () => {
@@ -130,8 +130,6 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
       );
     } else {
       if (statFile.size < megabytesToBytes(minSizeToCompress)) {
-        console.log('Test')
-        console.log(statFile.size)
         result = file.path;
       } else {
         result = await Video.compress(
@@ -142,15 +140,15 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
             maxSize: maxSize,
           },
           (progress) => {
-            videoSettings?.compressionProgress && videoSettings.compressionProgress(progress);
+            compressionProgress && compressionProgress(progress);
           },
         );
       };
     };
 
-    // console.log('Before compression:', statFile);
+    // console.log('Before compression:', statFile.size / 1024 / 1024);
     // const statResult = await stat(result);
-    // console.log('After compression:', statResult);
+    // console.log('After compression:', statResult.size / 1024 / 1024);
 
     const compressedFile: MediaFileType = {
       name: result.split('/').pop()?.split('.').slice(0, -1).pop(),
@@ -213,7 +211,7 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
         <Modal
           transparent={true}
           visible={sizeInfoModal}
-          onRequestClose={() => setSizeInfoModal(false)}
+          onClose={() => setSizeInfoModal(false)}
         >
           <View style={styles.SizeModalContainer}>
             <View style={styles.SizeModalContent}>
@@ -241,7 +239,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)'
   },
   SizeModalContent: {
     width: 300,

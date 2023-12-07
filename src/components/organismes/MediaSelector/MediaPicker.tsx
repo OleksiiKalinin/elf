@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View, Image, FlatList, Modal, Platform, BackHandler } from 'react-native';
+import { StyleSheet, View, Image, FlatList, Platform, BackHandler } from 'react-native';
 import Colors from '../../../colors/Colors';
 import ScreenHeaderProvider from '../ScreenHeaderProvider';
 import Typography from '../../atoms/Typography';
@@ -12,6 +12,7 @@ import Video from 'react-native-video';
 import { CameraRoll, SubTypes } from "@react-native-camera-roll/camera-roll";
 import ImageViewer from '../ImageViewer';
 import { MediaFileType } from '.';
+import Modal from '../../atoms/Modal';
 
 type PhotoIdentifier = {
   node: {
@@ -67,7 +68,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
   const [images, setImages] = useState<PhotoIdentifier[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<PhotoIdentifier[]>([]);
   const [previewMode, setPreviewMode] = useState(false);
-  const [previewFile, setPreviewFile] = useState<PhotoIdentifier>();
+  const [previewFile, setPreviewFile] = useState<string[]>([]);
   const [sizeInfoModal, setSizeInfoModal] = useState(false);
   const { windowSizes } = useTypedSelector(state => state.general);
 
@@ -203,7 +204,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
 
   const handleLongPressItem = (item: PhotoIdentifier) => {
     setPreviewMode(true);
-    setPreviewFile(item);
+    setPreviewFile([item.node.image.uri]);
   };
 
   const handleConfirm = () => {
@@ -220,13 +221,12 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
     setPreviewMode(false);
   };
 
-  const PreviewVideo = ({ item }: { item: PhotoIdentifier }) => {
+  const PreviewVideo = ({ item }: { item: string[] }) => {
     const [height, setHeight] = useState(0);
-    const uri = item.node.image.uri;
 
     return (
       <Video
-        source={{ uri: uri }}
+        source={{ uri: item[0] }}
         style={{ width: windowSizes.width, height: height }}
         resizeMode='cover'
         paused={false}
@@ -293,13 +293,14 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
       <ImageViewer
         close={() => setPreviewMode(false)}
         visible={previewMode && !!previewFile}
-        data={[previewFile?.node.image.uri]}
+        data={previewFile}
       />
       {type === 'video' &&
         <>
           <Modal
-            visible={previewMode && !!previewFile}
-            onRequestClose={() => setPreviewMode(false)}
+            visible={previewMode && !!previewFile.length}
+            onRequestClose={() => setPreviewMode(false)} 
+            onClose={() => setPreviewMode(false)}
           >
             <ScreenHeaderProvider
               backgroundContent={'#000'}
@@ -309,7 +310,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
               transparent
               title=' '
             >
-              {previewFile &&
+              {previewFile.length &&
                 <View style={styles.Preview}>
                   <PreviewVideo item={previewFile} />
                 </View>
@@ -319,7 +320,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
           <Modal
             transparent={true}
             visible={sizeInfoModal}
-            onRequestClose={() => setSizeInfoModal(false)}
+            onClose={() => setSizeInfoModal(false)}
           >
             <View style={styles.SizeModalContainer}>
               <View style={styles.SizeModalContent}>
@@ -370,7 +371,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)'
   },
   SizeModalContent: {
     width: 300,

@@ -25,6 +25,7 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import { TabbarRoute } from '../../components/organismes/TabbarMenu';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { useRouter } from 'solito/router';
+import Button from '../../components/molecules/Button';
 
 const pointCards = [
   { points: 23, type: 'Pakiet Medium', time: 'na tydzień' },
@@ -114,8 +115,8 @@ const MainScreen: React.FC = () => {
           marginBottom={false}
           marginTop={false}
           borderBottom={false}
-        />
-        <ButtonArrowSelector
+        /> */}
+        {/* <ButtonArrowSelector
           text={<View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <SvgIcon icon='work' />
             <Typography style={{ marginLeft: 10 }} weight='SemiBold' variant='h5'>Profil firmy</Typography>
@@ -124,8 +125,16 @@ const MainScreen: React.FC = () => {
           marginBottom={false}
           marginTop={false}
           borderBottom={false}
-        />
-        <ButtonArrowSelector
+        /> */}
+        <Button
+          variant='text'
+          arrowRight
+          borderBottom
+        >
+          <SvgIcon icon='user' /> 
+          <Typography>Profil firmy</Typography>
+        </Button>
+        {/* <ButtonArrowSelector
           text={<View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <SvgIcon icon='bag' />
             <Typography style={{ marginLeft: 10 }} weight='SemiBold' variant='h5'>Pakiety</Typography>

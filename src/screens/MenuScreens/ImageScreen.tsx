@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Image, View } from 'react-native';
+import { StyleSheet, Image, View, Platform } from 'react-native';
 import Colors from '../../colors/Colors';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Typography from '../../components/atoms/Typography';
@@ -12,6 +12,7 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { InitialPropsFromParams } from '../../hooks/types';
 import useRouter from '../../hooks/useRouter';
 import MediaSelector, { MediaFileType } from '../../components/organismes/MediaSelector';
+// import Video from 'react-native-video';
 
 type Params = NonNullable<MenuStackParamList['default']['ImageScreen']>;
 
@@ -30,14 +31,26 @@ const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
   };
 
   const handleProgress = (progress: number) => {
-    console.log(progress);
     setProgress(progress);
   };
 
-  // const cropCallback = (path: string) =>{
-  //   console.log(path);
-  //   setBase64Image(path);
-  // };
+  const PreviewVideo = ({ item }: { item: string[] }) => {
+    const [height, setHeight] = useState(0);
+
+    // return (
+    //   <Video
+    //     source={{ uri: item[0] }}
+    //     style={{ width: windowSizes.width, height: height }}
+    //     resizeMode='cover'
+    //     paused={false}
+    //     controls
+    //     onLoad={data => {
+    //       const { width, height } = data.naturalSize;
+    //       setHeight(height * (windowSizes.width / width));
+    //     }}
+    //   />
+    // );
+  };
 
   return (
     <ScreenHeaderProvider mainTitlePosition="flex-start">
@@ -100,7 +113,7 @@ const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
           videoSettings={{
             compressionProgress: handleProgress,
             maxAllowedFileSize: 40,
-            minSizeToCompress: 20,
+            minSizeToCompress: 0,
           }}
         />
 
@@ -108,7 +121,6 @@ const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
 
         </View> */}
         <Typography size={24}>Progress: {Math.round(progress * 100)}%</Typography>
- 
         <ScrollView style={{ flex: 1, backgroundColor: Colors.Basic200 }}>
           {images.length > 0 &&
             <View style={{ width: '100%', height: 600, backgroundColor: 'red' }}>
@@ -123,6 +135,11 @@ const ImageScreen: React.FC<InitialPropsFromParams<Params>> = () => {
               />
             </View>
           }
+          {/* {images.length > 0 &&
+           <PreviewVideo 
+              item={[images[0].path]}
+            />
+          } */}
           <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap' }}>
             {images.map(item =>
               <Image
