@@ -35,7 +35,7 @@ const hiddenTabbarScreens: ScreensType = {
     CalendarStack: ['EventEditorScreen'],
     MenuStack: ['CallsScreen', 'EventsScreen', 'NewsScreen', 'QuestionsScreen', 'QuestionEditorScreen', 'QuestionsListScreen'],
     MessengerStack: [],
-    ProfileStack: ['SettingsScreen', 'PackagesScreen', 'NoCompanyScreen', 'AddCompanyScreen', 'AddPaymentScreen', 'CompanyScreen', 'EditPaymentScreen', 'LanguageScreen', 'MethodsScreen', 'NotificationScreen', 'PaymentScreen', 'PointsScreen', 'PrivacyScreen', 'AccountDataScreen', 'ToolsScreen'],
+    ProfileStack: ['SettingsScreen', 'PackagesScreen', 'NoCompanyScreen', 'CompanyEditorScreen', 'AddPaymentScreen', 'CompanyScreen', 'EditPaymentScreen', 'LanguageScreen', 'MethodsScreen', 'NotificationScreen', 'PaymentScreen', 'PointsScreen', 'PrivacyScreen', 'AccountDataScreen', 'ToolsScreen'],
 };
 
 const BottomTabs: FC<BottomTabsProps> = ({ routes }) => {

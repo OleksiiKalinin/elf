@@ -271,12 +271,14 @@ export interface CompanyDataType {
 }
 
 export type MediaType = {
+    name?: string,
     company_id?: number,
     id?: number,
     path: string,
     mime?: string,
     order?: number,
     duration?: number,
+    beforePath?: string,
 }
 
 export interface ContactPersonType {

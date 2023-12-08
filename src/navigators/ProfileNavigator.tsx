@@ -9,7 +9,7 @@ import AddPaymentScreen from '../screens/ProfileScreens/AddPaymentScreen';
 import NotificationScreen from '../screens/ProfileScreens/NotificationScreen';
 import PrivacyScreen from '../screens/ProfileScreens/PrivacyScreen';
 import PointsScreen from '../screens/ProfileScreens/PointsScreen';
-import AddCompanyScreen from '../screens/ProfileScreens/AddCompanyScreen';
+import CompanyEditorScreen from '../screens/ProfileScreens/CompanyEditorScreen';
 import LanguageScreen from '../screens/ProfileScreens/LanguageScreen';
 import MethodsScreen from '../screens/ProfileScreens/MethodsScreen';
 import ToolsScreen from '../screens/ProfileScreens/ToolsScreen';
@@ -26,7 +26,7 @@ export type ProfileStackParamList = {
   default: {
     MainScreen: undefined,
     // PaymentTemporalScreen: undefined,
-    AddCompanyScreen: { 
+    CompanyEditorScreen: { 
       editMode: string,
       subView?: 'map',
     },
@@ -70,7 +70,7 @@ export type ProfileStackParamList = {
 export const ProfileStackLinking: PathConfigMap<ProfileStackParamList['default']> = {
   MainScreen: '',
   AccountDataScreen: 'AccountDataScreen',
-  AddCompanyScreen: 'AddCompanyScreen',
+  CompanyEditorScreen: 'CompanyEditorScreen',
   AddPaymentScreen: 'AddPaymentScreen',
 
   CompanyScreen: 'CompanyScreen',
@@ -111,7 +111,7 @@ const ProfileNavigator: React.FC = () => {
     <ProfileStack.Navigator initialRouteName="MainScreen" screenOptions={{ headerShown: false }}>
       <ProfileStack.Screen name="MainScreen" component={MainScreen} />
       {/* <ProfileStack.Screen name="PaymentTemporalScreen" component={PaymentTemporalScreen} /> */}
-      <ProfileStack.Screen name="AddCompanyScreen" component={AddCompanyScreen} />
+      <ProfileStack.Screen name="CompanyEditorScreen" component={CompanyEditorScreen} />
       <ProfileStack.Screen name="NoCompanyScreen" component={NoCompanyScreen} />
       <ProfileStack.Screen name="CompanyScreen" component={CompanyScreen} />
       <ProfileStack.Screen name="PackagesScreen" component={PackagesScreen} />

@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   View,
   Dimensions,
-  Alert
+  Alert,
+  Platform
 } from 'react-native';
 import React, { Fragment, useCallback, useEffect, useState, useRef } from 'react';
 import {
@@ -35,7 +36,7 @@ import generalServices from '../../services/generalServices';
 import { useDispatch } from 'react-redux';
 import DraggableFlatList, { ScaleDecorator, RenderItemParams } from 'react-native-draggable-flatlist';
 import companyServices from '../../services/companyServices';
-import { isNumber } from 'lodash';
+import { forEach, isNumber } from 'lodash';
 import SvgIcon, { IconTypes } from '../../components/atoms/SvgIcon';
 import Typography from '../../components/atoms/Typography';
 import TextField from '../../components/molecules/TextField';
@@ -44,6 +45,7 @@ import Button from '../../components/molecules/Button';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { createParam } from 'solito';
 import { Skeleton, SkeletonContainer } from 'react-native-skeleton-component';
+import MediaSelector, { MediaFileType } from '../../components/organismes/MediaSelector';
 
 /*
 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingLeft: 20 }}>
@@ -99,9 +101,9 @@ const socialLinksData: {
 
 type DisplayDataKeysType = keyof CompanyDataType | 'contact_persons' | 'social_media';
 
-const { useParam } = createParam<ProfileStackParamList['default']['AddCompanyScreen']>();
+const { useParam } = createParam<ProfileStackParamList['default']['CompanyEditorScreen']>();
 
-const AddCompanyScreen: React.FC = () => {
+const CompanyEditorScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   // const { editMode } = route.params;
   const [editMode] = useParam('editMode');
@@ -148,6 +150,10 @@ const AddCompanyScreen: React.FC = () => {
   const [companyVideo, setCompanyVideo] = useState<MediaType | null>(userCompany?.video || null);
   const [companyPhotos, setCompanyPhotos] = useState<MediaType[]>(userCompany?.photos || []);
   const [companyCertificates, setCompanyCertificates] = useState<MediaType[]>(userCompany?.certificates || []);
+  const [logoProgress, setLogoProgress] = useState<number | null>(null);
+  const [photosProgress, setPhotosProgress] = useState<number | null>(null);
+  const [certificatesProgress, setCertificatesProgress] = useState<number | null>(null);
+  const [videoProgress, setVideoProgress] = useState<number | null>(null);
   const companyDataRefreshAccess = useRef(true);
 
   const submitCompanyCreation = async () => {
@@ -225,67 +231,6 @@ const AddCompanyScreen: React.FC = () => {
   //   { name: 'Lokalizacja', star: false, selected: industry && true },
   // ];
 
-  const attachMediaHandler = (mode: 'logo' | 'photos' | 'certificates' | 'video') => {
-    // if (mode) {
-    //   const initOptions: OptionsType = {
-    //     width: windowSizes.width,
-    //     height: windowSizes.width / 1.5,
-    //     cropperStatusBarColor: 'black',
-    //     cropperToolbarTitle: 'Wytnij fragment',
-    //     mediaType: 'photo',
-    //     cropperActiveWidgetColor: 'black',
-    //     cropperToolbarColor: 'white',
-    //     cropperToolbarWidgetColor: 'black',
-    //     hideBottomControls: true,
-    //     enableRotationGesture: true,
-    //   }
-    //   const setUniqueImages = (prevImages: MediaType[]) => (newImages: MediaType[]): MediaType[] => {
-    //     const slicedNewImages = newImages.slice(0, 20);
-    //     if (prevImages.length >= 20) return prevImages;
-    //     if (!prevImages.length) return slicedNewImages;
-    //     const existedImages = prevImages.map(image => image.path);
-    //     const filtered = slicedNewImages.filter(curr => !existedImages.includes(curr.path));
-    //     return [...prevImages, ...filtered].slice(0, 20);
-    //   }
-
-    //   const data: { [k in typeof mode]: { options: OptionsType, callback: any } } = {
-    //     logo: {
-    //       callback: setCompanyLogo,
-    //       options: { cropping: true, }
-    //     },
-    //     certificates: {
-    //       callback: (images: MediaType[]) => setCompanyCertificates(prev => setUniqueImages(prev)(images)),
-    //       options: { multiple: true }f
-    //     },
-    //     photos: {
-    //       callback: (images: MediaType[]) => setCompanyPhotos(prev => setUniqueImages(prev)(images)),
-    //       options: { multiple: true }
-    //     },
-    //     video: {
-    //       callback: setCompanyVideo,
-    //       options: { mediaType: 'video' }
-    //     }
-    //   }
-    //   const options: OptionsType = { ...initOptions, ...data[mode].options };
-    //   const open = (thing: 'Camera' | 'Picker') => {
-    //     ImageCropPicker[`open${thing}`](options).then(data[mode].callback).catch(() => { });
-    //   }
-    //   if (mode === 'logo' || mode === 'video')
-    //     setSwipeablePanelProps({
-    //       title: 'W jaki sposób chcesz dodać media?',
-    //       buttons: [{
-    //         children: 'Zrób teraz',
-    //         onPress: () => open('Camera')
-    //       },
-    //       {
-    //         children: 'Wybierz z galerii',
-    //         onPress: () => open('Picker')
-    //       },]
-    //     });
-    //   else if (mode === 'photos' || mode === 'certificates') open('Picker');
-    // }
-  }
-
   const deletePhotoHandler = (index: number, mode: 'photos' | 'certificates') => {
     const callback: React.SetStateAction<MediaType[]> = photos => {
       if (photos[index]) {
@@ -302,6 +247,30 @@ const AddCompanyScreen: React.FC = () => {
     if (mode === 'photos') setCompanyPhotos(callback);
     else if (mode === 'certificates') setCompanyCertificates(callback);
   }
+
+  const handleMultipleFiles = (files: MediaFileType[]) => {
+    const newArray: MediaType[] = [];
+
+    files.forEach((item, i) => {
+      newArray.push({
+        id: i,
+        path: item.path,
+        mime: item.mime,
+        order: i + 1,
+        beforePath: item.beforePath,
+      })
+    });
+
+    return newArray
+  };
+
+  const handleSingleFile = (files: MediaFileType[]) => {
+    return {
+      name: files[0].name,
+      path: files[0].path,
+      mime: files[0].mime,
+    };
+  };
 
   const showTipsHandler = () => {
     setSwipeablePanelProps({
@@ -472,35 +441,64 @@ const AddCompanyScreen: React.FC = () => {
           </Typography>
         </View>
         <View style={{ marginBottom: 24 }}>
-          {!!companyLogo ?
-            <>
-              <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 9 }}>
-                <TouchableOpacity style={{ padding: 10, marginVertical: 10 }} onPress={() => setCompanyLogo(null)}>
-                  <Typography variant='h5' weight="Bold" color={Colors.Basic600} style={{ textDecorationLine: 'underline' }}>
-                    Usuń wybrane
-                  </Typography>
-                </TouchableOpacity>
-                <TouchableOpacity style={{ padding: 10, marginVertical: 10 }} onPress={() => attachMediaHandler('logo')}>
-                  <Typography variant='h5' weight="Bold" color={Colors.Blue500} style={{ textDecorationLine: 'underline' }}>
-                    Dodaj ponownie
-                  </Typography>
-                </TouchableOpacity>
-              </View>
-              <Image
-                style={{ width: windowSizes.width, height: windowSizes.width / 1.5 }}
-                source={{ uri: companyLogo.path }}
-              />
-            </>
-            :
-            <TouchableOpacity onPress={() => attachMediaHandler('logo')}>
-              <View style={styles.addPhotoButton}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <SvgIcon icon="createCircleSmall" fill={Colors.Basic900} />
-                  <Typography variant="h5" weight='Bold'>{'  '}Dodaj logo</Typography>
-                </View>
-              </View>
-            </TouchableOpacity>
-          }
+          <MediaSelector
+            type='image'
+            crop
+            cropResolution={{
+              width: 500,
+              height: 300,
+            }}
+            imageSettings={{
+              compressionProgress: (progress) => (Math.round(progress * 100)) === 100 ? setLogoProgress(null) : setLogoProgress(progress),
+            }}
+            callback={(images) => setCompanyLogo(handleSingleFile(images))}
+            render={(onPress) =>
+              <>
+                {!!companyLogo ?
+                  <>
+                    <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 9 }}>
+                      <TouchableOpacity style={{ padding: 10, marginVertical: 10 }} onPress={() => setCompanyLogo(null)}>
+                        <Typography variant='h5' weight="Bold" color={Colors.Basic600} style={{ textDecorationLine: 'underline' }}>
+                          Usuń wybrane
+                        </Typography>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={{ padding: 10, marginVertical: 10 }} onPress={() => onPress()}>
+                        <Typography variant='h5' weight="Bold" color={Colors.Blue500} style={{ textDecorationLine: 'underline' }}>
+                          Dodaj ponownie
+                        </Typography>
+                      </TouchableOpacity>
+                    </View>
+                    <View style={{ paddingHorizontal: 19 }}>
+                      <Image
+                        // style={{ width: windowSizes.width, height: windowSizes.width / 1.5 }}
+                        style={{ aspectRatio: 5 / 3, width: '100%', borderRadius: 4 }}
+                        source={{ uri: companyLogo.path }}
+                      />
+                    </View>
+                  </>
+
+                  :
+
+                  !logoProgress ?
+
+                    <TouchableOpacity onPress={() => onPress()}>
+                      <View style={styles.addPhotoButton}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          <SvgIcon icon="createCircleSmall" fill={Colors.Basic900} />
+                          <Typography variant="h5" weight='Bold'>{'  '}Dodaj logo</Typography>
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+
+                    :
+
+                    <View style={styles.addPhotoButton}>
+                      Progress: {logoProgress}%
+                    </View>
+                }
+              </>
+            }
+          />
         </View>
         <View style={{ marginHorizontal: 19, marginBottom: 5 }}>
           <Typography weight="Bold" variant="h5">
@@ -510,55 +508,92 @@ const AddCompanyScreen: React.FC = () => {
             </Typography>
           </Typography>
         </View>
-        {!!companyPhotos.length ?
-          <View style={{ backgroundColor: Colors.Basic300, marginBottom: 24 }}>
-            <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 9 }}>
-              <TouchableOpacity style={{ padding: 10, marginVertical: 10 }} onPress={() => setCompanyPhotos([])}>
-                <Typography variant='h5' weight="Bold" color={Colors.Basic600} style={{ textDecorationLine: 'underline' }}>
-                  Usuń wszystkie
-                </Typography>
-              </TouchableOpacity>
-              <TouchableOpacity style={{ padding: 10, marginVertical: 10 }} onPress={() => attachMediaHandler('photos')}>
-                <Typography variant='h5' weight="Bold" color={Colors.Blue500} style={{ textDecorationLine: 'underline' }}>
-                  Dodaj kolejne
-                </Typography>
-              </TouchableOpacity>
-            </View>
-            {/* quick fix ScrollView onContentSizeChange for DraggableFlatList - constant height wrapper, wtf sht mzfk? */}
-            <View style={{ height: 100, flexDirection: 'row', marginBottom: 9 }}>
-              <DraggableFlatList
-                horizontal
-                showsHorizontalScrollIndicator
-                contentContainerStyle={{ paddingLeft: 19, paddingVertical: 10 }}
-                style={{ flex: 1 }}
-                data={companyPhotos}
-                onDragEnd={({ data }) => setCompanyPhotos(data)}
-                keyExtractor={({ path }) => path}
-                renderItem={props => renderScrollPhotoItem({ ...props, mode: 'photos' })}
-              />
-            </View>
-          </View>
-          :
-          <TouchableOpacity onPress={() => attachMediaHandler('photos')} style={{ marginBottom: 24 }}>
-            <View style={[styles.addPhotoButton, { height: 118 },]}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: -14 }}>
-                <View style={{ flex: 1 }}>
-                  <Typography variant='h5' weight='SemiBold' color={Colors.Basic600}>Dodaj do 20 zdjęć.</Typography>
+        <MediaSelector
+          type='image'
+          multiple
+          selectionLimit={20}
+          initialSelected={companyPhotos as any}
+          imageSettings={{
+            compressionProgress: (progress) => (Math.round(progress * 100)) === 100 ? setPhotosProgress(null) : setPhotosProgress(progress),
+          }}
+          callback={(images) => setCompanyPhotos(handleMultipleFiles(images))}
+          render={(onPress) =>
+            <>
+              {!!photosProgress && photosProgress < 100 ?
+
+                <View style={styles.addPhotoButton}>
+                  Progress: {Math.round(photosProgress * 100)}%
                 </View>
-                <TouchableOpacity style={{ padding: 15 }} onPress={() => showTipsHandler()}>
-                  <Typography variant='h5' weight="Bold" color={Colors.Blue500} style={{ textDecorationLine: 'underline' }}>
-                    {/* Zobacz wskazówki */}
-                  </Typography>
-                </TouchableOpacity>
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-                <SvgIcon icon="createCircleSmall" />
-                <Typography variant="h5" weight='Bold'>{'  '}Dodaj zdjęcia</Typography>
-              </View>
-            </View>
-          </TouchableOpacity>
-        }
-        {/* <View style={{ marginLeft: 19, marginBottom: 5 }}>
+
+                :
+
+                !!companyPhotos.length ?
+                  <View style={{ backgroundColor: Colors.Basic300, marginBottom: 24 }}>
+                    <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 9 }}>
+                      <TouchableOpacity style={{ padding: 10, marginVertical: 10 }} onPress={() => setCompanyPhotos([])}>
+                        <Typography variant='h5' weight="Bold" color={Colors.Basic600} style={{ textDecorationLine: 'underline' }}>
+                          Usuń wszystkie
+                        </Typography>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={{ padding: 10, marginVertical: 10 }} onPress={() => onPress()}>
+                        <Typography variant='h5' weight="Bold" color={Colors.Blue500} style={{ textDecorationLine: 'underline' }}>
+                          Dodaj kolejne
+                        </Typography>
+                      </TouchableOpacity>
+                    </View>
+                    {/* quick fix ScrollView onContentSizeChange for DraggableFlatList - constant height wrapper, wtf sht mzfk? */}
+                    <View style={{ height: 100, flexDirection: 'row', marginBottom: 9 }}>
+                      {/* <DraggableFlatList
+                      horizontal
+                      showsHorizontalScrollIndicator
+                      contentContainerStyle={{ paddingLeft: 19, paddingVertical: 10 }}
+                      style={{ flex: 1 }}
+                      data={companyPhotos}
+                      onDragEnd={({ data }) => setCompanyPhotos(data)}
+                      keyExtractor={({ path }) => path}
+                      renderItem={props => renderScrollPhotoItem({ ...props, mode: 'photos' })}
+                    /> */}
+                      <View style={{ paddingHorizontal: 19 }}>
+                        <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 19 }}>
+                          {companyPhotos.map(item =>
+                            <Image
+                              source={{ uri: item.path }}
+                              style={{
+                                width: 100,
+                                height: 100,
+                              }}
+                            />
+                          )}
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+
+                  :
+
+                  <TouchableOpacity onPress={() => onPress()} style={{ marginBottom: 24 }}>
+                    <View style={[styles.addPhotoButton, { height: 118 },]}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: -14 }}>
+                        <View style={{ flex: 1 }}>
+                          <Typography variant='h5' weight='SemiBold' color={Colors.Basic600}>Dodaj do 20 zdjęć.</Typography>
+                        </View>
+                        <TouchableOpacity style={{ padding: 15 }} onPress={() => showTipsHandler()}>
+                          <Typography variant='h5' weight="Bold" color={Colors.Blue500} style={{ textDecorationLine: 'underline' }}>
+                            {/* Zobacz wskazówki */}
+                          </Typography>
+                        </TouchableOpacity>
+                      </View>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+                        <SvgIcon icon="createCircleSmall" />
+                        <Typography variant="h5" weight='Bold'>{'  '}Dodaj zdjęcia</Typography>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+              }
+            </>
+          }
+        />
+        <View style={{ marginLeft: 19, marginBottom: 5 }}>
           <Typography weight="Bold" variant="h5">
             Inne zdjęcia{' '}
             <Typography weight="Bold" variant="h5" color={Colors.Basic600}>
@@ -566,56 +601,70 @@ const AddCompanyScreen: React.FC = () => {
             </Typography>
           </Typography>
           <Typography weight="Regular" color={Colors.Basic600}>Certyfikaty, dyplomy, wyniki finansowe itp.</Typography>
-        </View> */}
-        {!!companyCertificates.length ? <></>
-          // <View style={{ backgroundColor: Colors.Basic300, marginBottom: 24 }}>
-          //   <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 9 }}>
-          //     <TouchableOpacity style={{ padding: 10, marginVertical: 10 }} onPress={() => setCompanyCertificates([])}>
-          //       <Typography variant='h5' weight="Bold" color={Colors.Basic600} style={{ textDecorationLine: 'underline' }}>
-          //         Usuń wszystkie
-          //       </Typography>
-          //     </TouchableOpacity>
-          //     <TouchableOpacity style={{ padding: 10, marginVertical: 10 }} onPress={() => attachMediaHandler('certificates')}>
-          //       <Typography variant='h5' weight="Bold" color={Colors.Blue500} style={{ textDecorationLine: 'underline' }}>
-          //         Dodaj kolejne
-          //       </Typography>
-          //     </TouchableOpacity>
-          //   </View>
-          //   {/* quick fix ScrollView onContentSizeChange for DraggableFlatList - constant height wrapper, wtf sht mzfk? */}
-          //   <View style={{ height: 100, flexDirection: 'row', marginBottom: 9 }}>
-          //     <DraggableFlatList
-          //       horizontal
-          //       showsHorizontalScrollIndicator
-          //       contentContainerStyle={{ paddingLeft: 19, paddingVertical: 10 }}
-          //       style={{ flex: 1 }}
-          //       data={companyCertificates}
-          //       onDragEnd={({ data }) => setCompanyCertificates(data)}
-          //       keyExtractor={({ path }) => path}
-          //       renderItem={props => renderScrollPhotoItem({ ...props, mode: 'certificates' })}
-          //     />
-          //   </View>
-          // </View>
-          :
-          <></>
-          // <TouchableOpacity onPress={() => attachMediaHandler('certificates')} style={{ marginBottom: 24 }}>
-          //   <View style={[styles.addPhotoButton, { height: 118 },]}>
-          //     <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: -14 }}>
-          //       <View style={{ flex: 1 }}>
-          //         <Typography variant='h5' weight='SemiBold' color={Colors.Basic600}>Dodaj do 20 zdjęć.</Typography>
-          //       </View>
-          //       <TouchableOpacity style={{ padding: 15 }} onPress={() => showTipsHandler()}>
-          //         <Typography variant='h5' weight="Bold" color={Colors.Blue500} style={{ textDecorationLine: 'underline' }}>
-          //           {/* Zobacz wskazówki */}
-          //         </Typography>
-          //       </TouchableOpacity>
-          //     </View>
-          //     <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-          //       <SvgIcon icon="createCircleSmall" />
-          //       <Typography variant="h5" weight='Bold'>{'  '}Dodaj zdjęcia</Typography>
-          //     </View>
-          //   </View>
-          // </TouchableOpacity>
-        }
+        </View>
+        <MediaSelector
+          type='image'
+          multiple
+          selectionLimit={20}
+          initialSelected={companyCertificates as any}
+          callback={(images) => setCompanyCertificates(handleMultipleFiles(images))}
+          render={(onPress) =>
+            <>
+              {!!companyCertificates.length ?
+                <>
+                  <View style={{ backgroundColor: Colors.Basic300, marginBottom: 24 }}>
+                    <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 9 }}>
+                      <TouchableOpacity style={{ padding: 10, marginVertical: 10 }} onPress={() => setCompanyCertificates([])}>
+                        <Typography variant='h5' weight="Bold" color={Colors.Basic600} style={{ textDecorationLine: 'underline' }}>
+                          Usuń wszystkie
+                        </Typography>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={{ padding: 10, marginVertical: 10 }} onPress={() => onPress()}>
+                        <Typography variant='h5' weight="Bold" color={Colors.Blue500} style={{ textDecorationLine: 'underline' }}>
+                          Dodaj kolejne
+                        </Typography>
+                      </TouchableOpacity>
+                    </View>
+                    {/* quick fix ScrollView onContentSizeChange for DraggableFlatList - constant height wrapper, wtf sht mzfk? */}
+                    <View style={{ height: 100, flexDirection: 'row', marginBottom: 9 }}>
+                      <DraggableFlatList
+                        horizontal
+                        showsHorizontalScrollIndicator
+                        contentContainerStyle={{ paddingLeft: 19, paddingVertical: 10 }}
+                        style={{ flex: 1 }}
+                        data={companyCertificates}
+                        onDragEnd={({ data }) => setCompanyCertificates(data)}
+                        keyExtractor={({ path }) => path}
+                        renderItem={props => renderScrollPhotoItem({ ...props, mode: 'certificates' })}
+                      />
+                    </View>
+                  </View>
+                </>
+                :
+                <>
+                  <TouchableOpacity onPress={() => onPress()} style={{ marginBottom: 24 }}>
+                    <View style={[styles.addPhotoButton, { height: 118 },]}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: -14 }}>
+                        <View style={{ flex: 1 }}>
+                          <Typography variant='h5' weight='SemiBold' color={Colors.Basic600}>Dodaj do 20 zdjęć.</Typography>
+                        </View>
+                        <TouchableOpacity style={{ padding: 15 }} onPress={() => showTipsHandler()}>
+                          <Typography variant='h5' weight="Bold" color={Colors.Blue500} style={{ textDecorationLine: 'underline' }}>
+                            {/* Zobacz wskazówki */}
+                          </Typography>
+                        </TouchableOpacity>
+                      </View>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+                        <SvgIcon icon="createCircleSmall" />
+                        <Typography variant="h5" weight='Bold'>{'  '}Dodaj zdjęcia</Typography>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                </>
+              }
+            </>
+          }
+        />
         <View style={{ marginLeft: 19, marginBottom: 5 }}>
           <Typography weight="Bold" variant="h5">
             Krótki film{' '}
@@ -625,35 +674,43 @@ const AddCompanyScreen: React.FC = () => {
           </Typography>
           <Typography weight="Regular" color={Colors.Basic600}>Przedstawiający i zachęcający do pracy w firmie</Typography>
         </View>
-        {!!companyVideo ?
-          <View style={{ marginBottom: 24 }}>
-            <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 9 }}>
-              <TouchableOpacity style={{ padding: 10, marginBottom: 10 }} onPress={() => setCompanyVideo(null)}>
-                <Typography variant='h5' weight="Bold" color={Colors.Basic600} style={{ textDecorationLine: 'underline' }}>
-                  Usuń wybrany
-                </Typography>
-              </TouchableOpacity>
-              <TouchableOpacity style={{ padding: 10, marginBottom: 10 }} onPress={() => attachMediaHandler('video')}>
-                <Typography variant='h5' weight="Bold" color={Colors.Blue500} style={{ textDecorationLine: 'underline' }}>
-                  Dodaj ponownie
-                </Typography>
-              </TouchableOpacity>
-            </View>
-            <Typography style={{ paddingHorizontal: 19 }} variant='h5'>
-              Nazwa filmu:{' '}
-              <Typography variant='h5' weight='Bold'>{companyVideo.path.slice(companyVideo.path.lastIndexOf('/') + 1)}</Typography>
-            </Typography>
-          </View>
-          :
-          <TouchableOpacity onPress={() => attachMediaHandler('video')} style={{ marginBottom: 24 }}>
-            <View style={styles.addPhotoButton}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <SvgIcon icon="createCircleSmall" fill={Colors.Basic900} />
-                <Typography variant="h5" weight='Bold'>{'  '}Dodaj film</Typography>
-              </View>
-            </View>
-          </TouchableOpacity>
-        }
+        <MediaSelector
+          type='video'
+          callback={(images) => setCompanyVideo(handleSingleFile(images))}
+          render={(onPress) =>
+            <>
+              {!!companyVideo ?
+                <View style={{ marginBottom: 24 }}>
+                  <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 9 }}>
+                    <TouchableOpacity style={{ padding: 10, marginBottom: 10 }} onPress={() => setCompanyVideo(null)}>
+                      <Typography variant='h5' weight="Bold" color={Colors.Basic600} style={{ textDecorationLine: 'underline' }}>
+                        Usuń wybrany
+                      </Typography>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{ padding: 10, marginBottom: 10 }} onPress={() => onPress()}>
+                      <Typography variant='h5' weight="Bold" color={Colors.Blue500} style={{ textDecorationLine: 'underline' }}>
+                        Dodaj ponownie
+                      </Typography>
+                    </TouchableOpacity>
+                  </View>
+                  <Typography style={{ paddingHorizontal: 19 }} variant='h5'>
+                    Nazwa filmu:{' '}
+                    <Typography variant='h5' weight='Bold'>{companyVideo.name}</Typography>
+                  </Typography>
+                </View>
+                :
+                <TouchableOpacity onPress={() => onPress()} style={{ marginBottom: 24 }}>
+                  <View style={styles.addPhotoButton}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <SvgIcon icon="createCircleSmall" fill={Colors.Basic900} />
+                      <Typography variant="h5" weight='Bold'>{'  '}Dodaj film</Typography>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              }
+            </>
+          }
+        />
         <View style={{ marginLeft: 19, marginBottom: 10 }}>
           <Typography weight="Bold" variant="h5" color={Colors.Basic600}>
             O firmie
@@ -863,4 +920,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddCompanyScreen;
+export default CompanyEditorScreen;

@@ -92,7 +92,7 @@ const CompanyScreen: React.FC = () => {
       buttons: [
         {
           children: 'Edytuj',
-          onPress: () => router.push('/profile/AddCompanyScreen?editMode=true'),
+          onPress: () => router.push('/profile/CompanyEditorScreen?editMode=true'),
         },
         {
           children: 'Usuń',

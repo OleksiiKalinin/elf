@@ -10,7 +10,7 @@ import { MenuStackParamList } from '../../navigators/MenuNavigator';
 import { createParam } from 'solito';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { Snackbar } from 'react-native-paper';
-import SvgIcon from '../../components/atoms/SvgIcon';
+import SvgIcon, { icons } from '../../components/atoms/SvgIcon';
 import { InitialPropsFromParams } from '../../hooks/types';
 import useRouter from '../../hooks/useRouter';
 import Carousel from '../../components/organismes/Carousel';
@@ -100,6 +100,18 @@ const TestScreen: React.FC<InitialPropsFromParams<Params>> = () => {
         >
           Job category - mode 2 (initial id)
         </Button>
+
+        {/* <View style={{flexDirection: 'row', flexWrap: 'wrap', flex: 1, height: 1500}}>
+          {icons.map(item =>
+            <View style={{width: 50, height: 50}}>
+              <SvgIcon icon={item.name} />
+              <Typography>
+                {item.name}
+              </Typography>
+            </View>
+          )}
+        </View> */}
+
       </ScrollView>
     </ScreenHeaderProvider>
   );

@@ -24,8 +24,8 @@ import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { TabbarRoute } from '../../components/organismes/TabbarMenu';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
-import { useRouter } from 'solito/router';
 import Button from '../../components/molecules/Button';
+import useRouter from '../../hooks/useRouter';
 
 const pointCards = [
   { points: 23, type: 'Pakiet Medium', time: 'na tydzień' },
@@ -59,7 +59,7 @@ const MainScreen: React.FC = () => {
         {
           children: 'OK',
           contentColor: Colors.Basic600,
-          onPress: () => router.push('/home')
+          // onPress: () => router.push('/home')
         }
       ]
     })
@@ -81,7 +81,7 @@ const MainScreen: React.FC = () => {
                 {
                   children: 'OK',
                   contentColor: Colors.Basic600,
-                  onPress: () => router.push('/home')
+                  // onPress: () => router.push('/home')
                 }
               ]
             })
@@ -106,16 +106,25 @@ const MainScreen: React.FC = () => {
     // }]}
     >
       <View style={{ flex: 1, backgroundColor: Colors.Basic100, paddingTop: 24 }}>
-        {/* <ButtonArrowSelector
-          text={<View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <SvgIcon icon='user' />
-            <Typography style={{ marginLeft: 10 }} weight='SemiBold' variant='h5'>Dane konta</Typography>
-          </View>}
-          onPress={() => navigation.navigate('AccountDataScreen')}
-          marginBottom={false}
-          marginTop={false}
-          borderBottom={false}
-        /> */}
+        <Typography weight='Bold' size={20} style={styles.GroupHeader}>
+          Moje dane
+        </Typography>
+        <Button
+          variant='text'
+          arrowRight
+          borderTop
+          borderBottom
+          onPress={()=> router.push({stack: 'ProfileStack', screen: 'AccountDataScreen'})}
+        >
+          <View style={styles.ArrowButton}>
+            <View style={styles.ButtonIconContainer}>
+              <SvgIcon icon='user' />
+            </View>
+            <Typography weight='SemiBold' variant='h5' style={{ alignSelf: 'center' }}>
+              Dane konta
+            </Typography>
+          </View>
+        </Button>
         {/* <ButtonArrowSelector
           text={<View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <SvgIcon icon='work' />
@@ -130,9 +139,16 @@ const MainScreen: React.FC = () => {
           variant='text'
           arrowRight
           borderBottom
+          onPress={()=> router.push({stack: 'ProfileStack', screen: 'CompanyEditorScreen', params: {editMode: 'true'}})}
         >
-          <SvgIcon icon='user' /> 
-          <Typography>Profil firmy</Typography>
+          <View style={styles.ArrowButton}>
+            <View style={styles.ButtonIconContainer}>
+              <SvgIcon icon='work' />
+            </View>
+            <Typography weight='SemiBold' variant='h5' style={{ alignSelf: 'center' }}>
+              Profil firmy
+            </Typography>
+          </View>
         </Button>
         {/* <ButtonArrowSelector
           text={<View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -143,6 +159,21 @@ const MainScreen: React.FC = () => {
           marginBottom={false}
           marginTop={false}
         /> */}
+        <Button
+          variant='text'
+          arrowRight
+          borderBottom
+          // onPress={()=> router.push({stack: 'ProfileStack', screen: 'PaymentTemporalScreen'})}
+        >
+          <View style={styles.ArrowButton}>
+            <View style={styles.ButtonIconContainer}>
+              <SvgIcon icon='payment' />
+            </View>
+            <Typography weight='SemiBold' variant='h5' style={{ alignSelf: 'center' }}>
+              Pakiety płatności
+            </Typography>
+          </View>
+        </Button>
         {!!token && <View style={{ flex: 1, marginVertical: 20, alignItems: 'center', justifyContent: 'flex-end' }}>
           <TouchableOpacity onPress={logoutHandler}>
             <Typography color={Colors.Danger} variant="h4" weight='SemiBold' style={{ textDecorationLine: 'underline', textAlign: 'center', }}>
@@ -164,6 +195,21 @@ const MainScreen: React.FC = () => {
           marginBottom={false}
           marginTop={false}
         /> */}
+        <Button
+          variant='text'
+          arrowRight
+          borderBottom
+          onPress={()=> router.push({stack: 'ProfileStack', screen: 'SettingsScreen'})}
+        >
+          <View style={styles.ArrowButton}>
+            <View style={styles.ButtonIconContainer}>
+              <SvgIcon icon='settings' />
+            </View>
+            <Typography weight='SemiBold' variant='h5' style={{ alignSelf: 'center' }}>
+              Ustawienia
+            </Typography>
+          </View>
+        </Button>
         {/* <View style={{ marginTop: 32, paddingLeft: 19 }}>
           <Typography weight='Bold' size={20}>Twoje punkty</Typography>
         </View>
@@ -317,6 +363,22 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     paddingTop: 10,
     justifyContent: 'space-between',
+  },
+  GroupHeader: {
+    marginBottom: 10,
+    paddingHorizontal: 19,
+  },
+  ArrowButton: {
+    flexDirection: 'row',
+    gap: 5,
+  },
+  ButtonIconContainer: {
+    width: 40,
+    height: 40,
+    backgroundColor: Colors.Basic300,
+    borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

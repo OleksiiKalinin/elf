@@ -66,7 +66,7 @@ const NoCompanyScreen: React.FC = () => {
                         contentWeight='Medium'
                         contentVariant='h5'
                         style={{ paddingVertical: 5 }}
-                        onPress={() => router.push('/profile/AddCompanyScreen')}
+                        onPress={() => router.push('/profile/CompanyEditorScreen')}
                     >
                         Dodaj profil firmy
                     </Button>
