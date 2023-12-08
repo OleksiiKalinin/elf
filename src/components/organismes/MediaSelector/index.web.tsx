@@ -23,7 +23,8 @@ const defaultVideoSettings = {
 const MediaSelector: FC<MediaSelectorProps> = ({
 	type,
 	multiple = false,
-	selectionLimit = 20,
+	selectionLimit = 0,
+	initialSelected = [],
 	crop = false,
 	cropResolution,
 	imageSettings = {},
@@ -48,9 +49,18 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 		if (files.length) {
 			if (type === 'image') {
 				if (!multiple && crop) {
+					if(compressionProgress) compressionProgress(1);
 					setCropModal(true);
 				} else {
-					callback(files);
+					console.log(initialSelected);
+					const filteredFiles: MediaFileType[] = [];
+					files.forEach(item => {
+						if (!initialSelected.some(image => image.path === item.path)) {
+							filteredFiles.push(item);
+						};
+					});
+					if(compressionProgress) compressionProgress(1);
+					callback([...initialSelected, ...filteredFiles]);
 				};
 			} else if (type === 'video') {
 				callback(files);
@@ -70,8 +80,8 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 			try {
 				const files = (event.target as any)?.files;
 
-				if (multiple && files.length > selectionLimit) {
-					setErrorModal(`Maksymalna liczba plików to ${selectionLimit}`);
+				if (multiple && files.length > (selectionLimit - initialSelected.length)) {
+					setErrorModal(`Maksymalna liczba obrazów to ${selectionLimit}`);
 				} else {
 
 					const base64Array = await processFiles(files);
@@ -115,7 +125,8 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 						maxWidthOrHeight: isHorizontal ? maxWidth : maxHeight,
 						onProgress: compressionProgress ?
 							(value: number) => {
-								progress = (((counter * 100 / files.length) + (value / files.length)) / 100)
+								const updatedValue = (((counter * 100 / files.length) + (value / files.length)) / 100)
+								progress = updatedValue < 0.97 ? updatedValue : 0.97;
 								compressionProgress(progress);
 								if (value === 100) {
 									counter++
@@ -239,7 +250,7 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 						useWebWorker: true,
 						onProgress: compressionProgress ?
 							(progress: number) => {
-									compressionProgress(progress)
+								if(progress < 97)compressionProgress(progress / 100);
 							}
 
 							:

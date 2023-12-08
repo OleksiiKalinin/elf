@@ -13,7 +13,7 @@ export type MediaSelectorProps = ({
   /** Limit of the number of selected files. */
   selectionLimit?: number,
   crop?: never,
-  /** Pre-selected images. Works only on Android and iOS. */
+  /** Pre-selected images. On Android and iOS, the image array is passed to the gallery as selected images. On web, the selectionLimit value is reduced by the length of the initialSelected array, and the initialSelected images will be placed at the beginning of the array returned in the callback. */
   initialSelected?: MediaFileType[],
   cropResolution?: never,
   /** Settings for files of type: image. */

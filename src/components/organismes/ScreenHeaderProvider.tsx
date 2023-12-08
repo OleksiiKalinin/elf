@@ -39,7 +39,7 @@ export const screensTitles: ScreensTitlesType = {
   ProfileStack: {
     MainScreen: 'Profil',
     NoCompanyScreen: 'Profil firmy',
-    AddCompanyScreen: 'Dodaj profil firmy',
+    CompanyEditorScreen: 'Dodaj profil firmy',
     AddPaymentScreen: 'Dodaj kartę płatniczą',
     CompanyScreen: '',
     CookieScreen: 'Pliki Cookies',
