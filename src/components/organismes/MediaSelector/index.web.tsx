@@ -49,7 +49,6 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 		if (files.length) {
 			if (type === 'image') {
 				if (!multiple && crop) {
-					if(compressionProgress) compressionProgress(1);
 					setCropModal(true);
 				} else {
 					console.log(initialSelected);
@@ -250,7 +249,7 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 						useWebWorker: true,
 						onProgress: compressionProgress ?
 							(progress: number) => {
-								if(progress < 97)compressionProgress(progress / 100);
+								if(progress < 97) compressionProgress(progress / 100);
 							}
 
 							:
@@ -261,6 +260,7 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 					const canvasToFile = await imageCompression.canvasToFile(croppedCanvas, beforeCropData.type, beforeCropData.name, beforeCropData.lastModified);
 					const compressedFile = await imageCompression(canvasToFile, options);
 					const base64Data = await convertToBase64(compressedFile);
+					if(compressionProgress) compressionProgress(1);
 
 					setCropModal(false);
 					callback([{

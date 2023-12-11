@@ -8,7 +8,7 @@ import {
   View,
   Dimensions,
   Alert,
-  Platform
+  Platform,
 } from 'react-native';
 import React, { Fragment, useCallback, useEffect, useState, useRef } from 'react';
 import {
@@ -46,6 +46,7 @@ import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { createParam } from 'solito';
 import { Skeleton, SkeletonContainer } from 'react-native-skeleton-component';
 import MediaSelector, { MediaFileType } from '../../components/organismes/MediaSelector';
+import Slider from '../../components/atoms/Slider';
 
 /*
 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingLeft: 20 }}>
@@ -272,6 +273,10 @@ const CompanyEditorScreen: React.FC = () => {
     };
   };
 
+  useEffect(()=> {
+    console.log(videoProgress)
+  },[videoProgress])
+
   const showTipsHandler = () => {
     setSwipeablePanelProps({
       closeButton: false,
@@ -365,8 +370,8 @@ const CompanyEditorScreen: React.FC = () => {
           activeOpacity={1} onLongPress={drag} disabled={isActive}
           style={{ opacity: isActive ? 0.5 : 1, marginRight: 19, position: 'relative' }}
         >
-          <View style={{ position: 'absolute', top: -12, right: -12, zIndex: 1 }}>
-            <Button p='5px' circular
+          <View style={{ position: 'absolute', top: -17, right: -17, zIndex: 1 }}>
+            <Button p={5} variant='text' circular
               onPress={() => index !== undefined && deletePhotoHandler(index, mode)}
               icon={<SvgIcon icon='crossSmall' />}
             />
@@ -446,7 +451,7 @@ const CompanyEditorScreen: React.FC = () => {
             crop
             cropResolution={{
               width: 500,
-              height: 300,
+              height: 500,
             }}
             imageSettings={{
               compressionProgress: (progress) => (Math.round(progress * 100)) === 100 ? setLogoProgress(null) : setLogoProgress(progress),
@@ -454,7 +459,25 @@ const CompanyEditorScreen: React.FC = () => {
             callback={(images) => setCompanyLogo(handleSingleFile(images))}
             render={(onPress) =>
               <>
-                {!!companyLogo ?
+                {!!logoProgress && logoProgress < 100 ?
+                
+                <View style={{height: 118, padding: 20, backgroundColor: Colors.Basic300, marginHorizontal: 19, borderRadius: 4, marginBottom: 24, justifyContent: 'center'}}>
+                  <Typography size={16} weight='SemiBold' style={{color: Colors.Basic600, textAlign: 'center' }}>
+                    Ładowanie zdjęć: {Math.round(logoProgress * 100)}%
+                  </Typography>
+                  <Slider
+                    min={0} max={100} step={1}
+                    value={[Math.round(logoProgress * 100)]}
+                  >
+                    <Slider.Track>
+                      <Slider.TrackActive />
+                    </Slider.Track>
+                  </Slider>
+                </View>
+
+                :
+                
+                !!companyLogo ?
                   <>
                     <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 9 }}>
                       <TouchableOpacity style={{ padding: 10, marginVertical: 10 }} onPress={() => setCompanyLogo(null)}>
@@ -468,10 +491,10 @@ const CompanyEditorScreen: React.FC = () => {
                         </Typography>
                       </TouchableOpacity>
                     </View>
-                    <View style={{ paddingHorizontal: 19 }}>
+                    <View style={{ alignItems: 'center', backgroundColor: Colors.Basic300, marginHorizontal: 19, padding: 19, borderRadius: 4}}>
                       <Image
                         // style={{ width: windowSizes.width, height: windowSizes.width / 1.5 }}
-                        style={{ aspectRatio: 5 / 3, width: '100%', borderRadius: 4 }}
+                        style={{ aspectRatio: 1 / 1, width: '100%', maxWidth: 400, borderRadius: 4 }}
                         source={{ uri: companyLogo.path }}
                       />
                     </View>
@@ -479,22 +502,14 @@ const CompanyEditorScreen: React.FC = () => {
 
                   :
 
-                  !logoProgress ?
-
-                    <TouchableOpacity onPress={() => onPress()}>
-                      <View style={styles.addPhotoButton}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                          <SvgIcon icon="createCircleSmall" fill={Colors.Basic900} />
-                          <Typography variant="h5" weight='Bold'>{'  '}Dodaj logo</Typography>
-                        </View>
-                      </View>
-                    </TouchableOpacity>
-
-                    :
-
+                  <TouchableOpacity onPress={() => onPress()}>
                     <View style={styles.addPhotoButton}>
-                      Progress: {logoProgress}%
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <SvgIcon icon="createCircleSmall" fill={Colors.Basic900} />
+                        <Typography variant="h5" weight='Bold'>{'  '}Dodaj logo</Typography>
+                      </View>
                     </View>
+                  </TouchableOpacity>
                 }
               </>
             }
@@ -521,8 +536,18 @@ const CompanyEditorScreen: React.FC = () => {
             <>
               {!!photosProgress && photosProgress < 100 ?
 
-                <View style={styles.addPhotoButton}>
-                  Progress: {Math.round(photosProgress * 100)}%
+                <View style={{height: 118, padding: 20, backgroundColor: Colors.Basic300, marginHorizontal: 19, borderRadius: 4, marginBottom: 24, justifyContent: 'center'}}>
+                  <Typography size={16} weight='SemiBold' style={{color: Colors.Basic600, textAlign: 'center' }}>
+                    Ładowanie zdjęć: {Math.round(photosProgress * 100)}%
+                  </Typography>
+                  <Slider
+                    min={0} max={100} step={1}
+                    value={[Math.round(photosProgress * 100)]}
+                  >
+                    <Slider.Track>
+                      <Slider.TrackActive />
+                    </Slider.Track>
+                  </Slider>
                 </View>
 
                 :
@@ -553,7 +578,7 @@ const CompanyEditorScreen: React.FC = () => {
                       keyExtractor={({ path }) => path}
                       renderItem={props => renderScrollPhotoItem({ ...props, mode: 'photos' })}
                     /> */}
-                      <View style={{ paddingHorizontal: 19 }}>
+                      <View style={{ marginHorizontal: 19 }}>
                         <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 19 }}>
                           {companyPhotos.map(item =>
                             <Image
@@ -677,36 +702,60 @@ const CompanyEditorScreen: React.FC = () => {
         <MediaSelector
           type='video'
           callback={(images) => setCompanyVideo(handleSingleFile(images))}
+          videoSettings={{
+            compressionProgress: (progress) => (Math.round(progress * 100)) === 100 ? setVideoProgress(null) : setVideoProgress(progress),
+            minSizeToCompress: 0
+          }}
           render={(onPress) =>
             <>
-              {!!companyVideo ?
-                <View style={{ marginBottom: 24 }}>
-                  <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 9 }}>
-                    <TouchableOpacity style={{ padding: 10, marginBottom: 10 }} onPress={() => setCompanyVideo(null)}>
-                      <Typography variant='h5' weight="Bold" color={Colors.Basic600} style={{ textDecorationLine: 'underline' }}>
-                        Usuń wybrany
-                      </Typography>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={{ padding: 10, marginBottom: 10 }} onPress={() => onPress()}>
-                      <Typography variant='h5' weight="Bold" color={Colors.Blue500} style={{ textDecorationLine: 'underline' }}>
-                        Dodaj ponownie
-                      </Typography>
-                    </TouchableOpacity>
-                  </View>
-                  <Typography style={{ paddingHorizontal: 19 }} variant='h5'>
-                    Nazwa filmu:{' '}
-                    <Typography variant='h5' weight='Bold'>{companyVideo.name}</Typography>
+              {!!videoProgress && videoProgress < 100 ?
+
+                <View style={{height: 118, padding: 20, backgroundColor: Colors.Basic300, marginHorizontal: 19, borderRadius: 4, marginBottom: 24, justifyContent: 'center'}}>
+                  <Typography size={16} weight='SemiBold' style={{color: Colors.Basic600, textAlign: 'center' }}>
+                    Ładowanie zdjęć: {Math.round(videoProgress * 100)}%
                   </Typography>
+                  <Slider
+                    min={0} max={100} step={1}
+                    value={[Math.round(videoProgress * 100)]}
+                  >
+                    <Slider.Track>
+                      <Slider.TrackActive />
+                    </Slider.Track>
+                  </Slider>
                 </View>
+
                 :
-                <TouchableOpacity onPress={() => onPress()} style={{ marginBottom: 24 }}>
-                  <View style={styles.addPhotoButton}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <SvgIcon icon="createCircleSmall" fill={Colors.Basic900} />
-                      <Typography variant="h5" weight='Bold'>{'  '}Dodaj film</Typography>
+              
+                !!companyVideo ?
+                  <View style={{ marginBottom: 24 }}>
+                    <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 9 }}>
+                      <TouchableOpacity style={{ padding: 10, marginBottom: 10 }} onPress={() => setCompanyVideo(null)}>
+                        <Typography variant='h5' weight="Bold" color={Colors.Basic600} style={{ textDecorationLine: 'underline' }}>
+                          Usuń wybrany
+                        </Typography>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={{ padding: 10, marginBottom: 10 }} onPress={() => onPress()}>
+                        <Typography variant='h5' weight="Bold" color={Colors.Blue500} style={{ textDecorationLine: 'underline' }}>
+                          Dodaj ponownie
+                        </Typography>
+                      </TouchableOpacity>
                     </View>
+                    <Typography style={{ paddingHorizontal: 19 }} variant='h5'>
+                      Nazwa filmu:{' '}
+                      <Typography variant='h5' weight='Bold'>{companyVideo.name}</Typography>
+                    </Typography>
                   </View>
-                </TouchableOpacity>
+
+                  :
+
+                  <TouchableOpacity onPress={() => onPress()} style={{ marginBottom: 24 }}>
+                    <View style={styles.addPhotoButton}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <SvgIcon icon="createCircleSmall" fill={Colors.Basic900} />
+                        <Typography variant="h5" weight='Bold'>{'  '}Dodaj film</Typography>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
               }
             </>
           }
@@ -852,11 +901,14 @@ const CompanyEditorScreen: React.FC = () => {
           </View>
         ))}
       </ScrollView>
-      <View>
-        <Button withLoading disabled={loading} onPress={submitCompanyCreation}>
-          {editMode ? 'Zaktualizuj' : 'Utwórz'}
-        </Button>
-      </View>
+      <Button
+        stickyBottom 
+        withLoading 
+        disabled={loading} 
+        onPress={submitCompanyCreation}
+      >
+        {editMode ? 'Zaktualizuj' : 'Utwórz'}
+      </Button>
     </ScreenHeaderProvider>
   );
 };
