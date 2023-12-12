@@ -21,15 +21,25 @@ import { PathConfigMap } from '@react-navigation/native';
 import { AddContactPersonsScreenProps } from '../screens/AddContactPersonsScreen';
 import { CompanyDescriptionScreenProps } from '../screens/CompanyDescriptionScreen';
 import { CompanyInvoiceScreenProps } from '../screens/CompanyInvoiceScreen';
+import { GoogleMapScreenProps } from '../screens/GoogleMapScreen';
+import { JobCategoryScreenProps } from '../screens/JobCategoryScreen';
+import { ItemSelectorScreenProps } from '../screens/ItemSelectorScreen';
+
+type SubView<T extends keyof ProfileStackParamList['extended']> = { subView: T } & ProfileStackParamList['extended'][T] | { subView?: never };
 
 export type ProfileStackParamList = {
   default: {
     MainScreen: undefined,
     // PaymentTemporalScreen: undefined,
-    CompanyEditorScreen: { 
-      editMode: string,
-      subView?: 'map',
-    },
+    CompanyEditorScreen:  
+    | {editMode: string}
+    & (
+      | SubView<'GoogleMapScreen'>
+      | SubView<'CompanyInvoiceScreen'>
+      | SubView<'JobCategoryScreen'>
+      | SubView<'ItemSelectorScreen'>
+    )
+    ,
     NoCompanyScreen: undefined;
     CompanyScreen: undefined,
     PackagesScreen: undefined,
@@ -61,9 +71,12 @@ export type ProfileStackParamList = {
     //??????
   },
   extended: {
+    GoogleMapScreen: GoogleMapScreenProps,
     AddContactPersonsScreen: AddContactPersonsScreenProps,
     CompanyDescriptionScreen: CompanyDescriptionScreenProps,
     CompanyInvoiceScreen: CompanyInvoiceScreenProps,
+    JobCategoryScreen: JobCategoryScreenProps,
+    ItemSelectorScreen: ItemSelectorScreenProps
   }
 }
 
@@ -72,7 +85,6 @@ export const ProfileStackLinking: PathConfigMap<ProfileStackParamList['default']
   AccountDataScreen: 'AccountDataScreen',
   CompanyEditorScreen: 'CompanyEditorScreen',
   AddPaymentScreen: 'AddPaymentScreen',
-
   CompanyScreen: 'CompanyScreen',
   EditPaymentScreen: 'EditPaymentScreen',
   LanguageScreen: 'LanguageScreen',

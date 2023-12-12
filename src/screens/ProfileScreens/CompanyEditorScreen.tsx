@@ -27,7 +27,6 @@ import tip4 from '../../assets/images/tip4.png';
 import tip5 from '../../assets/images/tip5.png';
 import tip6 from '../../assets/images/tip6.png';
 import { useActions } from '../../hooks/useActions';
-import { SvgUri } from 'react-native-svg';
 import minutesToHours from '../../hooks/minutesToHours';
 import { AddressType, CompanyDataType, MediaType, ContactPersonType } from '../../store/reducers/types';
 // import ImageCropPicker, { Options as OptionsType } from 'react-native-image-crop-picker';
@@ -47,6 +46,9 @@ import { createParam } from 'solito';
 import { Skeleton, SkeletonContainer } from 'react-native-skeleton-component';
 import MediaSelector, { MediaFileType } from '../../components/organismes/MediaSelector';
 import Slider from '../../components/atoms/Slider';
+import useRouter from '../../hooks/useRouter';
+import SvgUriImage from '../../components/atoms/SvgUriImage';
+import MapPreview from '../../components/molecules/MapPreview';
 
 /*
 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingLeft: 20 }}>
@@ -156,6 +158,7 @@ const CompanyEditorScreen: React.FC = () => {
   const [certificatesProgress, setCertificatesProgress] = useState<number | null>(null);
   const [videoProgress, setVideoProgress] = useState<number | null>(null);
   const companyDataRefreshAccess = useRef(true);
+  const router = useRouter();
 
   const submitCompanyCreation = async () => {
     const { other_address, job_industry, short_name, full_decription } = companyData;
@@ -409,34 +412,6 @@ const CompanyEditorScreen: React.FC = () => {
             onChangeText={text => changeCompanyDataHandler('short_name', text, false)}
           />
         </View>
-        <View style={{ marginBottom: 24 }}>
-          {/* <SmallMap
-            label='Lokalizacja*'
-            place={companyData.other_address?.formattedAddress}
-            onPress={() => navigation.navigate('MapScreen', {
-              callback: (address) => changeCompanyDataHandler('other_address', address),
-              initialAddress: companyData.other_address
-            })}
-          /> */}
-          {/* {companyData.other_address && <View style={{ marginHorizontal: 19, marginVertical: 15 }}>
-            <TextField
-              label="Numer mieszkania/biura (opcjonalne)"
-            // value={companyData.full_name || ''}
-            // onChangeText={text => changeCompanyDataHandler('full_name', text, false)}
-            />
-          </View>} */}
-        </View>
-        <View style={{ marginBottom: 32 }}>
-          {/* <ButtonArrowSelector
-            text='Dane do kontaktu'
-            onPress={() => navigation.navigate('AddContactPersonsScreen', {
-              contactPersons,
-              setContactPersons,
-              companyData,
-              changeCompanyDataHandler
-            })}
-          /> */}
-        </View>
         <View style={{ marginHorizontal: 19, marginBottom: 5 }}>
           <Typography weight="Bold" variant="h5">
             Logo firmy{' '}
@@ -514,6 +489,83 @@ const CompanyEditorScreen: React.FC = () => {
               </>
             }
           />
+        </View>
+        <View style={{ marginBottom: 24 }}>
+          <MapPreview
+            label='Lokalizacja*'
+            place={companyData.other_address?.formattedAddress}
+            onPress={()=> router.push({
+              stack: 'ProfileStack', 
+              screen: 'CompanyEditorScreen', 
+              params: { 
+                editMode: editMode || '',
+                subView: 'GoogleMapScreen',  
+                callback: (address) => changeCompanyDataHandler('other_address', address),
+                initialAddress: companyData.other_address
+              } 
+            })}
+          />
+          {/* {companyData.other_address && <View style={{ marginHorizontal: 19, marginVertical: 15 }}>
+            <TextField
+              label="Numer mieszkania/biura (opcjonalne)"
+            // value={companyData.full_name || ''}
+            // onChangeText={text => changeCompanyDataHandler('full_name', text, false)}
+            />
+          </View>} */}
+        </View>
+        <TouchableOpacity
+            onPress={()=> router.push({
+              stack: 'ProfileStack', 
+              screen: 'CompanyEditorScreen', 
+              params: { 
+                editMode: editMode || '',
+                subView: 'JobCategoryScreen', 
+                mode: 'industry', 
+                callback: (industry)=> changeCompanyDataHandler('job_industry', industry), 
+              } 
+            })
+          }
+          style={{
+            flexDirection: 'row', padding: 19,
+            ...(!!Number(companyData.job_industry) ?
+              { backgroundColor: Colors.White } :
+              { borderColor: Colors.Basic300, borderTopWidth: 1, borderBottomWidth: 1 })
+          }}
+        >
+          {isNumber(companyData.job_industry) && <View style={{ width: 34, height: 34, position: 'relative', marginRight: 19 }}>
+            <View style={{ position: 'absolute' }}>
+              <SkeletonContainer animation='wave' speed={600}>
+                <Skeleton style={{ width: 34, height: 34, borderRadius: 17 }} />
+              </SkeletonContainer>
+            </View>
+            <SvgUriImage width={34} height={34} src={jobIndustries.find(curr => curr.id === companyData.job_industry)?.icon || ''} />
+          </View>}
+          <View style={{ flex: 1, justifyContent: 'center' }}>
+            <Typography variant='h5' weight='SemiBold'>{jobIndustries.find(curr => curr.id === companyData.job_industry)?.name || 'Branża*'}</Typography>
+          </View>
+          <View style={{ justifyContent: 'center' }}>
+            <SvgIcon icon={!!Number(companyData.job_industry) ? 'crossBig' : 'arrowRightSmall'} fill={Colors.Basic500} />
+          </View>
+        </TouchableOpacity>
+        <Button
+          variant='text'
+          arrowRight
+          borderBottom
+        >
+          <Typography variant='h5'>
+            Usługi
+          </Typography>
+        </Button>
+        <View style={{ marginBottom: 32 }}>
+          {/* <ButtonArrowSelector
+            text='Dane do kontaktu'
+            onPress={() => navigation.navigate('AddContactPersonsScreen', {
+              contactPersons,
+              setContactPersons,
+              companyData,
+              changeCompanyDataHandler
+            })}
+          /> */}
         </View>
         <View style={{ marginHorizontal: 19, marginBottom: 5 }}>
           <Typography weight="Bold" variant="h5">
@@ -765,31 +817,7 @@ const CompanyEditorScreen: React.FC = () => {
             O firmie
           </Typography>
         </View>
-        <TouchableOpacity
-          // onPress={() => navigation.navigate('JobCategoryScreen', { callback: (id) => changeCompanyDataHandler('job_industry', id) })}
-          style={{
-            flexDirection: 'row', padding: 19,
-            ...(!!Number(companyData.job_industry) ?
-              { backgroundColor: Colors.White } :
-              { borderColor: Colors.Basic300, borderTopWidth: 1, borderBottomWidth: 1 })
-          }}
-        >
-          {isNumber(companyData.job_industry) && <View style={{ width: 34, height: 34, position: 'relative', marginRight: 19 }}>
-            <View style={{ position: 'absolute' }}>
-              <SkeletonContainer animation='wave' speed={600}>
-                <Skeleton style={{ width: 34, height: 34, borderRadius: 17 }} />
-              </SkeletonContainer>
-            </View>
-            <SvgUri width={34} height={34} uri={jobIndustries.find(curr => curr.id === companyData.job_industry)?.icon || null} />
-          </View>}
-          <View style={{ flex: 1, justifyContent: 'center' }}>
-            <Typography variant='h5' weight='SemiBold'>{jobIndustries.find(curr => curr.id === companyData.job_industry)?.name || 'Branża*'}</Typography>
-          </View>
-          <View style={{ justifyContent: 'center' }}>
-            {/* <SvgIcon icon={!!Number(companyData.job_industry) ? 'crossBig' : 'arrowRightSmall'} fill={Colors.Basic500} /> */}
-            <SvgIcon icon={'arrowRightSmall'} fill={Colors.Basic500} />
-          </View>
-        </TouchableOpacity>
+
         {/* <ButtonArrowSelector
           text='Usługi'
           marginTop={false}
@@ -823,6 +851,30 @@ const CompanyEditorScreen: React.FC = () => {
             title: 'Dodaj dane do faktury'
           })}
         /> */}
+        <Button
+          variant='text'
+          arrowRight
+          onPress={() => router.push({
+            stack: 'ProfileStack',
+            screen: 'CompanyEditorScreen',
+            params: {
+              subView: 'CompanyInvoiceScreen',
+              editMode: editMode || '',
+              callback: (address, NIP, full_name) => {
+                changeCompanyDataHandler('full_name', full_name, false);
+                changeCompanyDataHandler('main_address', address);
+              },
+              address: companyData.main_address,
+              full_name: companyData.full_name,
+              NIP: '',
+              title: 'Dodaj dane do faktury'
+            }
+          })}
+        >
+          <Typography variant='h5'>
+            Dane do faktury
+          </Typography>
+        </Button>
         <View style={{ marginHorizontal: 19, marginBottom: 5, marginTop: 30 }}>
           <Typography weight="Bold" variant="h5">
             Liczba pracowników{' '}

@@ -140,7 +140,7 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
             maxSize: maxSize,
           },
           (progress) => {
-            compressionProgress && compressionProgress(progress);
+            compressionProgress && compressionProgress(parseFloat(progress.toString().slice(0, 2) + progress.toString().slice(4, 8)));
           },
         );
       };
