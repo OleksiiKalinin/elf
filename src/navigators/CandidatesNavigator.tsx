@@ -11,7 +11,7 @@ import { GoogleMapScreenProps } from '../screens/GoogleMapScreen';
 import { JobCategoryScreenProps } from '../screens/JobCategoryScreen';
 import { ItemSelectorScreenProps } from '../screens/ItemSelectorScreen';
 
-type SubView<T extends keyof CandidatesStackParamList['extended']> = { subView: T } & CandidatesStackParamList['extended'][T]
+type SubView<T extends keyof CandidatesStackParamList['extended']> = ({ subView: T } & CandidatesStackParamList['extended'][T]) | { subView?: never };
 
 export type CandidatesStackParamList = {
   default: {

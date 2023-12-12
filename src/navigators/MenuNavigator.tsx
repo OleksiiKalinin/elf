@@ -13,7 +13,7 @@ import TestScreen from '../screens/MenuScreens/TestScreen';
 import ImageScreen from '../screens/MenuScreens/ImageScreen';
 import { JobCategoryScreenProps } from '../screens/JobCategoryScreen';
 
-type SubView<T extends keyof MenuStackParamList['extended']> = { subView: T } & MenuStackParamList['extended'][T]
+type SubView<T extends keyof MenuStackParamList['extended']> = ({ subView: T } & MenuStackParamList['extended'][T]) | { subView?: never };
 
 export type MenuStackParamList = {
   default: {
