@@ -269,6 +269,8 @@ export interface CompanyDataType {
     id?: number,
     contactPersons?: ContactPersonType[] | null,
     // contactPersons?: ContactPersonType[] | null,
+    languages?: number[] | null,
+    services?: number[] | null,
 }
 
 export type MediaType = {

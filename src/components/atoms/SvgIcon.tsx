@@ -129,6 +129,7 @@ import RefreshIcon from "../../assets/icons/RefreshIcon";
 import EventsHistoryIcon from "../../assets/icons/EventsHistoryIcon";
 import DoneCircleIcon from "../../assets/icons/DoneCircleIcon";
 import CloseCircleAltIcon from "../../assets/icons/CloseCircleAltIcon";
+import DoneCircleGreenIcon from "../../assets/icons/DoneCircleGreenIcon";
 
 export const icons = [
     {
@@ -586,6 +587,10 @@ export const icons = [
     {
         name: 'doneCircle',
         value: <DoneCircleIcon />
+    },
+    {
+        name: 'doneCircleGreen',
+        value: <DoneCircleGreenIcon />
     },
 ] as const;
 

@@ -4,7 +4,6 @@ import Button from '../molecules/Button';
 import Colors from '../../colors/Colors';
 import Typography from '../atoms/Typography';
 import { Sheet } from 'tamagui';
-import { SwipeablePanelParamsType } from '../../hooks/useSwipeablePanelParams';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useActions } from '../../hooks/useActions';
 import BottomSheet from '@gorhom/bottom-sheet';
@@ -22,7 +21,7 @@ export type SwipeablePanelProps = {
 	backgroundColor?: string;
 	hideBar?: boolean;
 	buttons?: (React.ComponentProps<typeof Button> & { closeAction?: CloseActionType })[];
-	mode?: SwipeablePanelParamsType['subViewMode'],
+	mode?: 'options' | 'screen',
 	defaultCloseAction?: CloseActionType,
 };
 

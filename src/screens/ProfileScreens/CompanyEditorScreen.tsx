@@ -10,7 +10,7 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-import React, { Fragment, useCallback, useEffect, useState, useRef } from 'react';
+import React, { Fragment, useCallback, useEffect, useState, useRef, useMemo } from 'react';
 import {
   CompositeScreenProps,
 } from '@react-navigation/native';
@@ -28,14 +28,14 @@ import tip5 from '../../assets/images/tip5.png';
 import tip6 from '../../assets/images/tip6.png';
 import { useActions } from '../../hooks/useActions';
 import minutesToHours from '../../hooks/minutesToHours';
-import { AddressType, CompanyDataType, MediaType, ContactPersonType } from '../../store/reducers/types';
+import { AddressType, CompanyDataType, MediaType, ContactPersonType, LanguageType } from '../../store/reducers/types';
 // import ImageCropPicker, { Options as OptionsType } from 'react-native-image-crop-picker';
 // import Carousel, { Pagination } from 'react-native-snap-carousel';
 import generalServices from '../../services/generalServices';
 import { useDispatch } from 'react-redux';
 import DraggableFlatList, { ScaleDecorator, RenderItemParams } from 'react-native-draggable-flatlist';
 import companyServices from '../../services/companyServices';
-import { forEach, isNumber } from 'lodash';
+import { forEach, isArray, isNumber } from 'lodash';
 import SvgIcon, { IconTypes } from '../../components/atoms/SvgIcon';
 import Typography from '../../components/atoms/Typography';
 import TextField from '../../components/molecules/TextField';
@@ -49,6 +49,69 @@ import Slider from '../../components/atoms/Slider';
 import useRouter from '../../hooks/useRouter';
 import SvgUriImage from '../../components/atoms/SvgUriImage';
 import MapPreview from '../../components/molecules/MapPreview';
+import { Separator } from 'tamagui';
+
+const languages: LanguageType[] = [
+  {
+    id: 1,
+    name: 'Polski',
+  },
+  {
+    id: 2,
+    name: 'Angielski',
+  },
+  {
+    id: 3,
+    name: 'Włoski',
+  },
+  {
+    id: 4,
+    name: 'Francuski',
+  },
+  {
+    id: 5,
+    name: 'Ukraiński',
+  },
+  {
+    id: 6,
+    name: 'Hiszpański',
+  },
+  {
+    id: 7,
+    name: 'Niemiecki',
+  },
+];
+
+const services: LanguageType[] = [
+  {
+    id: 1,
+    name: 'Manicure',
+  },
+  {
+    id: 2,
+    name: 'Pedicure',
+  },
+  {
+    id: 3,
+    name: 'Przedłużanie rzęs',
+  },
+  {
+    id: 4,
+    name: 'Regulacja i henna brwi',
+  },
+  {
+    id: 5,
+    name: 'Zabiegi na twarz',
+  },
+  {
+    id: 6,
+    name: 'Zabiegi na ciało',
+  },
+  {
+    id: 7,
+    name: 'Usługi fryzjerskie',
+  },
+];
 
 /*
 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingLeft: 20 }}>
@@ -115,7 +178,7 @@ const CompanyEditorScreen: React.FC = () => {
   const { setSwipeablePanelProps } = useActions();
   const [companyData, setCompanyData] = useState<CompanyDataType>(userCompany || {
     short_name: null,
-    full_name: 'blabla',
+    full_name: null,
     main_address: null,
     other_address: null,
     short_decription: 'hello hello',
@@ -129,6 +192,8 @@ const CompanyEditorScreen: React.FC = () => {
     account_twitter: null,
     account_youtube: null,
     job_industry: null,
+    languages: null,
+    services: null,
   });
   const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(userCompany?.contactPersons || [{
     account_facebook: null,
@@ -179,14 +244,22 @@ const CompanyEditorScreen: React.FC = () => {
     }
   }
 
-  const changeCompanyDataHandler = (name: keyof CompanyDataType, value: string | number | AddressType | null, replaceSpaces: boolean = true) => {
+  const selectedLanguages = useMemo(() => {
+    return languages.filter(item => companyData.languages?.includes(item.id));
+  }, [companyData.languages, languages]);
+
+  const selectedServices = useMemo(() => {
+    return services.filter(item => companyData.services?.includes(item.id));
+  }, [companyData.services, services]);
+
+  const changeCompanyDataHandler = (name: keyof CompanyDataType, value: string | number | number[] | AddressType | null, replaceSpaces: boolean = true) => {
     setCompanyData(prev => ({
       ...prev,
       [name]: value ?
         (typeof value === 'string') && replaceSpaces ?
           value.replace(/\s/g, '')
           :
-          value
+          !isArray(value) ? value : value.length === 0 ? null : value
         :
         null
     }));
@@ -276,16 +349,115 @@ const CompanyEditorScreen: React.FC = () => {
     };
   };
 
-  useEffect(()=> {
-    console.log(videoProgress)
-  },[videoProgress])
+  const goToJobCategoryScreen = () => {
+    router.push({
+      stack: 'ProfileStack',
+      screen: 'CompanyEditorScreen',
+      params: {
+        editMode: editMode || '',
+        subView: 'JobCategoryScreen',
+        mode: 'industry',
+        callback: (industry) => changeCompanyDataHandler('job_industry', industry),
+      }
+    });
+  };
+
+  const goToSelectServicesScreen = () => {
+    router.push({
+      stack: 'ProfileStack',
+      screen: 'CompanyEditorScreen',
+      params: {
+        editMode: editMode || '',
+        subView: 'ItemSelectorScreen',
+        mode: 'multiple',
+        list: services,
+        callback: (services) => changeCompanyDataHandler('services', services),
+        labels: {
+          searchLabel: 'Znajdź usługi',
+          itemsLabel: 'Popularne usługi',
+        },
+        headerProps: { title: 'Usługi' },
+        initialSelected: companyData.services ?? undefined,
+        allowReturnEmptyList: true,
+      },
+    });
+  };
+
+  const goToAddPersonsContactScreen = () => {
+    router.push({
+      stack: 'ProfileStack',
+      screen: 'CompanyEditorScreen',
+      params: {
+        editMode: editMode || '',
+        subView: 'AddContactPersonsScreen',
+        contactPersons,
+        setContactPersons,
+        companyData,
+        changeCompanyDataHandler
+      },
+    });
+  };
+
+  const goToCompanyDescriptionScreen = () => {
+    router.push({
+      stack: 'ProfileStack',
+      screen: 'CompanyEditorScreen',
+      params: {
+        editMode: editMode || '',
+        subView: 'CompanyDescriptionScreen',
+        callback: (value) => changeCompanyDataHandler('full_decription', value, false),
+        description: companyData.full_decription,
+        title: 'Dodaj opis firmy'
+      },
+    });
+  };
+
+  const goToCompanyInvoiceScreen = () => {
+    router.push({
+      stack: 'ProfileStack',
+      screen: 'CompanyEditorScreen',
+      params: {
+        subView: 'CompanyInvoiceScreen',
+        editMode: editMode || '',
+        callback: (address, NIP, full_name) => {
+          changeCompanyDataHandler('full_name', full_name, false);
+          changeCompanyDataHandler('main_address', address);
+        },
+        address: companyData.main_address,
+        full_name: companyData.full_name,
+        NIP: '',
+        title: 'Dodaj dane do faktury'
+      }
+    })
+  };
+
+  const goToSelectLanguagesScreen = () => {
+    router.push({
+      stack: 'ProfileStack',
+      screen: 'CompanyEditorScreen',
+      params: {
+        editMode: editMode || '',
+        subView: 'ItemSelectorScreen',
+        mode: 'multiple',
+        list: languages,
+        callback: (languages) => changeCompanyDataHandler('languages', languages),
+        labels: {
+          searchLabel: 'Znajdź język',
+          itemsLabel: 'Popularne języki',
+        },
+        headerProps: { title: 'Preferowane języki' },
+        initialSelected: companyData.languages ?? undefined,
+        allowReturnEmptyList: true,
+      },
+    });
+  };
 
   const showTipsHandler = () => {
     setSwipeablePanelProps({
       closeButton: false,
       children: (
-        <ScrollView style={styles.tipsView}>
-          <View style={styles.tipsHeader}>
+        <ScrollView style={styles.TipsView}>
+          <View style={styles.TipsHeader}>
             <Typography variant="h5">Podpowiedzi</Typography>
             <TouchableOpacity style={{ position: 'absolute', right: 25 }} onPress={() => setSwipeablePanelProps(null)}>
               <SvgIcon icon="crossBig" />
@@ -402,10 +574,14 @@ const CompanyEditorScreen: React.FC = () => {
           ))}
           <View style={{ width: 60 }}></View>
         </ScrollView> */}
+        <Typography
+          size={20}
+          weight='Bold'
+          style={[styles.SectionHeader, { marginTop: 15 }]}
+        >
+          Podstawowe
+        </Typography>
         <View style={{ marginHorizontal: 19, marginBottom: 30 }}>
-          <Typography style={styles.Header} weight="Bold" variant="h5">
-            Twoja firma
-          </Typography>
           <TextField
             label="Nazwa firmy*"
             value={companyData.short_name || ''}
@@ -435,56 +611,56 @@ const CompanyEditorScreen: React.FC = () => {
             render={(onPress) =>
               <>
                 {!!logoProgress && logoProgress < 100 ?
-                
-                <View style={{height: 118, padding: 20, backgroundColor: Colors.Basic300, marginHorizontal: 19, borderRadius: 4, marginBottom: 24, justifyContent: 'center'}}>
-                  <Typography size={16} weight='SemiBold' style={{color: Colors.Basic600, textAlign: 'center' }}>
-                    Ładowanie zdjęć: {Math.round(logoProgress * 100)}%
-                  </Typography>
-                  <Slider
-                    min={0} max={100} step={1}
-                    value={[Math.round(logoProgress * 100)]}
-                  >
-                    <Slider.Track>
-                      <Slider.TrackActive />
-                    </Slider.Track>
-                  </Slider>
-                </View>
 
-                :
-                
-                !!companyLogo ?
-                  <>
-                    <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 9 }}>
-                      <TouchableOpacity style={{ padding: 10, marginVertical: 10 }} onPress={() => setCompanyLogo(null)}>
-                        <Typography variant='h5' weight="Bold" color={Colors.Basic600} style={{ textDecorationLine: 'underline' }}>
-                          Usuń wybrane
-                        </Typography>
-                      </TouchableOpacity>
-                      <TouchableOpacity style={{ padding: 10, marginVertical: 10 }} onPress={() => onPress()}>
-                        <Typography variant='h5' weight="Bold" color={Colors.Blue500} style={{ textDecorationLine: 'underline' }}>
-                          Dodaj ponownie
-                        </Typography>
-                      </TouchableOpacity>
-                    </View>
-                    <View style={{ alignItems: 'center', backgroundColor: Colors.Basic300, marginHorizontal: 19, padding: 19, borderRadius: 4}}>
-                      <Image
-                        // style={{ width: windowSizes.width, height: windowSizes.width / 1.5 }}
-                        style={{ aspectRatio: 1 / 1, width: '100%', maxWidth: 400, borderRadius: 4 }}
-                        source={{ uri: companyLogo.path }}
-                      />
-                    </View>
-                  </>
+                  <View style={{ height: 118, padding: 20, backgroundColor: Colors.Basic300, marginHorizontal: 19, borderRadius: 4, marginBottom: 24, justifyContent: 'center' }}>
+                    <Typography size={16} weight='SemiBold' style={{ color: Colors.Basic600, textAlign: 'center' }}>
+                      Ładowanie zdjęć: {Math.round(logoProgress * 100)}%
+                    </Typography>
+                    <Slider
+                      min={0} max={100} step={1}
+                      value={[Math.round(logoProgress * 100)]}
+                    >
+                      <Slider.Track>
+                        <Slider.TrackActive />
+                      </Slider.Track>
+                    </Slider>
+                  </View>
 
                   :
 
-                  <TouchableOpacity onPress={() => onPress()}>
-                    <View style={styles.addPhotoButton}>
-                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <SvgIcon icon="createCircleSmall" fill={Colors.Basic900} />
-                        <Typography variant="h5" weight='Bold'>{'  '}Dodaj logo</Typography>
+                  !!companyLogo ?
+                    <>
+                      <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 9 }}>
+                        <TouchableOpacity style={{ padding: 10, marginVertical: 10 }} onPress={() => setCompanyLogo(null)}>
+                          <Typography variant='h5' weight="Bold" color={Colors.Basic600} style={{ textDecorationLine: 'underline' }}>
+                            Usuń wybrane
+                          </Typography>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={{ padding: 10, marginVertical: 10 }} onPress={() => onPress()}>
+                          <Typography variant='h5' weight="Bold" color={Colors.Blue500} style={{ textDecorationLine: 'underline' }}>
+                            Dodaj ponownie
+                          </Typography>
+                        </TouchableOpacity>
                       </View>
-                    </View>
-                  </TouchableOpacity>
+                      <View style={{ alignItems: 'center', backgroundColor: Colors.Basic300, marginHorizontal: 19, padding: 19, borderRadius: 4 }}>
+                        <Image
+                          // style={{ width: windowSizes.width, height: windowSizes.width / 1.5 }}
+                          style={{ aspectRatio: 1 / 1, width: '100%', maxWidth: 400, borderRadius: 4 }}
+                          source={{ uri: companyLogo.path }}
+                        />
+                      </View>
+                    </>
+
+                    :
+
+                    <TouchableOpacity onPress={() => onPress()}>
+                      <View style={styles.AddPhotoButton}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          <SvgIcon icon="createCircleSmall" fill={Colors.Basic900} />
+                          <Typography variant="h5" weight='Bold'>{'  '}Dodaj logo</Typography>
+                        </View>
+                      </View>
+                    </TouchableOpacity>
                 }
               </>
             }
@@ -494,80 +670,219 @@ const CompanyEditorScreen: React.FC = () => {
           <MapPreview
             label='Lokalizacja*'
             place={companyData.other_address?.formattedAddress}
-            onPress={()=> router.push({
-              stack: 'ProfileStack', 
-              screen: 'CompanyEditorScreen', 
-              params: { 
+            onPress={() => router.push({
+              stack: 'ProfileStack',
+              screen: 'CompanyEditorScreen',
+              params: {
                 editMode: editMode || '',
-                subView: 'GoogleMapScreen',  
+                subView: 'GoogleMapScreen',
                 callback: (address) => changeCompanyDataHandler('other_address', address),
                 initialAddress: companyData.other_address
-              } 
+              }
             })}
           />
-          {/* {companyData.other_address && <View style={{ marginHorizontal: 19, marginVertical: 15 }}>
-            <TextField
-              label="Numer mieszkania/biura (opcjonalne)"
-            // value={companyData.full_name || ''}
-            // onChangeText={text => changeCompanyDataHandler('full_name', text, false)}
-            />
-          </View>} */}
         </View>
-        <TouchableOpacity
-            onPress={()=> router.push({
-              stack: 'ProfileStack', 
-              screen: 'CompanyEditorScreen', 
-              params: { 
-                editMode: editMode || '',
-                subView: 'JobCategoryScreen', 
-                mode: 'industry', 
-                callback: (industry)=> changeCompanyDataHandler('job_industry', industry), 
-              } 
-            })
-          }
-          style={{
-            flexDirection: 'row', padding: 19,
-            ...(!!Number(companyData.job_industry) ?
-              { backgroundColor: Colors.White } :
-              { borderColor: Colors.Basic300, borderTopWidth: 1, borderBottomWidth: 1 })
-          }}
-        >
-          {isNumber(companyData.job_industry) && <View style={{ width: 34, height: 34, position: 'relative', marginRight: 19 }}>
-            <View style={{ position: 'absolute' }}>
-              <SkeletonContainer animation='wave' speed={600}>
-                <Skeleton style={{ width: 34, height: 34, borderRadius: 17 }} />
-              </SkeletonContainer>
-            </View>
-            <SvgUriImage width={34} height={34} src={jobIndustries.find(curr => curr.id === companyData.job_industry)?.icon || ''} />
-          </View>}
-          <View style={{ flex: 1, justifyContent: 'center' }}>
-            <Typography variant='h5' weight='SemiBold'>{jobIndustries.find(curr => curr.id === companyData.job_industry)?.name || 'Branża*'}</Typography>
-          </View>
-          <View style={{ justifyContent: 'center' }}>
-            <SvgIcon icon={!!Number(companyData.job_industry) ? 'crossBig' : 'arrowRightSmall'} fill={Colors.Basic500} />
-          </View>
-        </TouchableOpacity>
         <Button
           variant='text'
           arrowRight
+          borderTop
           borderBottom
+          onPress={() => goToJobCategoryScreen()}
         >
-          <Typography variant='h5'>
-            Usługi
-          </Typography>
+          {companyData.job_industry ?
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <View style={{ width: 34, height: 34, position: 'relative' }}>
+                <View style={{ position: 'absolute' }}>
+                  <SkeletonContainer animation='wave' speed={600}>
+                    <Skeleton style={{ width: 34, height: 34, borderRadius: 17 }} />
+                  </SkeletonContainer>
+                </View>
+                <SvgUriImage width={34} height={34} src={jobIndustries.find(curr => curr.id === companyData.job_industry)?.icon || ''} />
+              </View>
+              <Typography variant='h5' weight='SemiBold'>{jobIndustries.find(curr => curr.id === companyData.job_industry)?.name || ''}</Typography>
+            </View>
+
+            :
+
+            <>
+              <Typography
+                variant='h5'
+              >
+                Branża
+              </Typography>
+              <Typography style={{ color: Colors.Red }}>
+                *
+              </Typography>
+            </>
+          }
         </Button>
-        <View style={{ marginBottom: 32 }}>
-          {/* <ButtonArrowSelector
-            text='Dane do kontaktu'
-            onPress={() => navigation.navigate('AddContactPersonsScreen', {
-              contactPersons,
-              setContactPersons,
-              companyData,
-              changeCompanyDataHandler
-            })}
-          /> */}
-        </View>
-        <View style={{ marginHorizontal: 19, marginBottom: 5 }}>
+        {companyData.services ?
+          <>
+            <View style={{ paddingHorizontal: 19 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
+                <Typography variant='h5' weight='Bold'>
+                  Usługi
+                </Typography>
+                <Button
+                  variant='text'
+                  style={{ width: 'auto', padding: 0 }}
+                  onPress={() => goToSelectServicesScreen()}
+                >
+                  <Typography variant='h5' weight='Bold' color={Colors.Blue500} >
+                    Edytuj
+                  </Typography>
+                </Button>
+              </View>
+              <Typography color={Colors.Basic600}>
+                {selectedServices.map(({ id, name }, i) =>
+                  <Fragment key={id}>
+                    {name}
+                    {i !== selectedServices.length - 1 ? ', ' : ''}
+                  </Fragment>
+                )}
+              </Typography>
+            </View>
+            <Separator marginTop={12} />
+          </>
+
+          :
+
+          <Button
+            variant='text'
+            borderBottom
+            arrowRight
+            onPress={() => goToSelectServicesScreen()}
+          >
+            <Typography variant='h5'>
+              Usługi
+            </Typography>
+            <Typography variant='h5' style={styles.Optional}>
+              (opcjonalnie)
+            </Typography>
+          </Button>
+        }
+        {contactPersons[0].email ?
+          <>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 19, height: 58 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <SvgIcon icon='doneCircleGreen' />
+                <Typography variant='h5' weight='Bold'>
+                  Dane do kontaktu uzupełnione
+                </Typography>
+              </View>
+              <Button
+                variant='text'
+                style={{ width: 'auto', padding: 0 }}
+                onPress={() => goToAddPersonsContactScreen()}
+              >
+                <Typography variant='h5' weight='Bold' color={Colors.Blue500} >
+                  Edytuj
+                </Typography>
+              </Button>
+            </View>
+            <Separator />
+          </>
+
+          :
+
+          <Button
+            variant='text'
+            arrowRight
+            borderBottom
+            onPress={() => goToAddPersonsContactScreen()}
+          >
+            <Typography variant='h5'>
+              Dane do kontaktu
+            </Typography>
+            <Typography style={{ color: Colors.Red }}>
+              *
+            </Typography>
+          </Button>
+        }
+        {companyData.full_decription ?
+          <>
+            <View style={{ paddingHorizontal: 19 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
+                <Typography variant='h5' weight='Bold'>
+                  Opis firmy
+                </Typography>
+                <Button
+                  variant='text'
+                  style={{ width: 'auto', padding: 0 }}
+                  onPress={() => goToCompanyDescriptionScreen()}
+                >
+                  <Typography variant='h5' weight='Bold' color={Colors.Blue500} >
+                    Edytuj
+                  </Typography>
+                </Button>
+              </View>
+              <Typography color={Colors.Basic600}>
+                {companyData.full_decription}
+              </Typography>
+
+            </View>
+            <Separator marginTop={12} />
+          </>
+
+          :
+
+          <Button
+            variant='text'
+            arrowRight
+            borderBottom
+            onPress={() => goToCompanyDescriptionScreen()}
+          >
+            <Typography variant='h5'>
+              Opis firmy
+            </Typography>
+          </Button>
+        }
+        {companyData.full_name ?
+          <>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 19, height: 58 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <SvgIcon icon='doneCircleGreen' />
+                <Typography variant='h5' weight='Bold'>
+                  Dane do faktury uzupełnione
+                </Typography>
+              </View>
+              <Button
+                variant='text'
+                style={{ width: 'auto', padding: 0 }}
+                onPress={() => goToCompanyInvoiceScreen()}
+              >
+                <Typography variant='h5' weight='Bold' color={Colors.Blue500} >
+                  Edytuj
+                </Typography>
+              </Button>
+            </View>
+            <Separator />
+          </>
+
+          :
+
+          <Button
+            variant='text'
+            arrowRight
+            borderBottom
+            onPress={() => goToCompanyInvoiceScreen()}
+          >
+            <Typography variant='h5'>
+              Dane do faktury
+            </Typography>
+            <Typography variant='h5' style={styles.Optional}>
+              (opcjonalnie)
+            </Typography>
+          </Button>
+        }
+        <Typography
+          size={20}
+          weight='Bold'
+          style={[styles.SectionHeader, { marginTop: 26 }]}
+        >
+          Dodatkowe
+        </Typography>
+        <View style={{ marginHorizontal: 19, marginBottom: 5, }}>
           <Typography weight="Bold" variant="h5">
             Zdjęcia firmy{' '}
             <Typography weight="Bold" variant="h5" color={Colors.Basic600}>
@@ -588,8 +903,8 @@ const CompanyEditorScreen: React.FC = () => {
             <>
               {!!photosProgress && photosProgress < 100 ?
 
-                <View style={{height: 118, padding: 20, backgroundColor: Colors.Basic300, marginHorizontal: 19, borderRadius: 4, marginBottom: 24, justifyContent: 'center'}}>
-                  <Typography size={16} weight='SemiBold' style={{color: Colors.Basic600, textAlign: 'center' }}>
+                <View style={{ height: 118, padding: 20, backgroundColor: Colors.Basic300, marginHorizontal: 19, borderRadius: 4, marginBottom: 24, justifyContent: 'center' }}>
+                  <Typography size={16} weight='SemiBold' style={{ color: Colors.Basic600, textAlign: 'center' }}>
                     Ładowanie zdjęć: {Math.round(photosProgress * 100)}%
                   </Typography>
                   <Slider
@@ -649,7 +964,7 @@ const CompanyEditorScreen: React.FC = () => {
                   :
 
                   <TouchableOpacity onPress={() => onPress()} style={{ marginBottom: 24 }}>
-                    <View style={[styles.addPhotoButton, { height: 118 },]}>
+                    <View style={[styles.AddPhotoButton, { height: 118 },]}>
                       <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: -14 }}>
                         <View style={{ flex: 1 }}>
                           <Typography variant='h5' weight='SemiBold' color={Colors.Basic600}>Dodaj do 20 zdjęć.</Typography>
@@ -719,8 +1034,8 @@ const CompanyEditorScreen: React.FC = () => {
                 </>
                 :
                 <>
-                  <TouchableOpacity onPress={() => onPress()} style={{ marginBottom: 24 }}>
-                    <View style={[styles.addPhotoButton, { height: 118 },]}>
+                  <TouchableOpacity onPress={() => onPress()}>
+                    <View style={[styles.AddPhotoButton, { height: 118 },]}>
                       <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: -14 }}>
                         <View style={{ flex: 1 }}>
                           <Typography variant='h5' weight='SemiBold' color={Colors.Basic600}>Dodaj do 20 zdjęć.</Typography>
@@ -742,7 +1057,8 @@ const CompanyEditorScreen: React.FC = () => {
             </>
           }
         />
-        <View style={{ marginLeft: 19, marginBottom: 5 }}>
+        <Separator marginTop={16} />
+        {/* <View style={{ marginLeft: 19, marginBottom: 5 }}>
           <Typography weight="Bold" variant="h5">
             Krótki film{' '}
             <Typography weight="Bold" variant="h5" color={Colors.Basic600}>
@@ -762,8 +1078,8 @@ const CompanyEditorScreen: React.FC = () => {
             <>
               {!!videoProgress && videoProgress < 100 ?
 
-                <View style={{height: 118, padding: 20, backgroundColor: Colors.Basic300, marginHorizontal: 19, borderRadius: 4, marginBottom: 24, justifyContent: 'center'}}>
-                  <Typography size={16} weight='SemiBold' style={{color: Colors.Basic600, textAlign: 'center' }}>
+                <View style={{ height: 118, padding: 20, backgroundColor: Colors.Basic300, marginHorizontal: 19, borderRadius: 4, marginBottom: 24, justifyContent: 'center' }}>
+                  <Typography size={16} weight='SemiBold' style={{ color: Colors.Basic600, textAlign: 'center' }}>
                     Ładowanie zdjęć: {Math.round(videoProgress * 100)}%
                   </Typography>
                   <Slider
@@ -777,7 +1093,7 @@ const CompanyEditorScreen: React.FC = () => {
                 </View>
 
                 :
-              
+
                 !!companyVideo ?
                   <View style={{ marginBottom: 24 }}>
                     <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 9 }}>
@@ -801,7 +1117,7 @@ const CompanyEditorScreen: React.FC = () => {
                   :
 
                   <TouchableOpacity onPress={() => onPress()} style={{ marginBottom: 24 }}>
-                    <View style={styles.addPhotoButton}>
+                    <View style={styles.AddPhotoButton}>
                       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <SvgIcon icon="createCircleSmall" fill={Colors.Basic900} />
                         <Typography variant="h5" weight='Bold'>{'  '}Dodaj film</Typography>
@@ -811,29 +1127,13 @@ const CompanyEditorScreen: React.FC = () => {
               }
             </>
           }
-        />
-        <View style={{ marginLeft: 19, marginBottom: 10 }}>
-          <Typography weight="Bold" variant="h5" color={Colors.Basic600}>
-            O firmie
-          </Typography>
-        </View>
+        /> */}
 
         {/* <ButtonArrowSelector
           text='Usługi'
           marginTop={false}
           marginBottom={false}
           borderTop={false}
-        /> */}
-        {/* <ButtonArrowSelector
-          text='Opis firmy*'
-          marginTop={false}
-          marginBottom={false}
-          borderTop={false}
-          onPress={() => navigation.navigate('CompanyDescriptionScreen', {
-            callback: value => changeCompanyDataHandler('full_decription', value, false),
-            description: companyData.full_decription,
-            title: 'Dodaj opis firmy'
-          })}
         /> */}
         {/* <ButtonArrowSelector
           text='Dane do faktury'
@@ -851,30 +1151,6 @@ const CompanyEditorScreen: React.FC = () => {
             title: 'Dodaj dane do faktury'
           })}
         /> */}
-        <Button
-          variant='text'
-          arrowRight
-          onPress={() => router.push({
-            stack: 'ProfileStack',
-            screen: 'CompanyEditorScreen',
-            params: {
-              subView: 'CompanyInvoiceScreen',
-              editMode: editMode || '',
-              callback: (address, NIP, full_name) => {
-                changeCompanyDataHandler('full_name', full_name, false);
-                changeCompanyDataHandler('main_address', address);
-              },
-              address: companyData.main_address,
-              full_name: companyData.full_name,
-              NIP: '',
-              title: 'Dodaj dane do faktury'
-            }
-          })}
-        >
-          <Typography variant='h5'>
-            Dane do faktury
-          </Typography>
-        </Button>
         <View style={{ marginHorizontal: 19, marginBottom: 5, marginTop: 30 }}>
           <Typography weight="Bold" variant="h5">
             Liczba pracowników{' '}
@@ -883,7 +1159,7 @@ const CompanyEditorScreen: React.FC = () => {
             </Typography>
           </Typography>
         </View>
-        <View style={{ marginHorizontal: 19, marginBottom: 32, flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{ marginHorizontal: 19, flexDirection: 'row', alignItems: 'center' }}>
           <View style={{ width: '35%' }}>
             <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>od</Typography>
             <TextField
@@ -912,7 +1188,8 @@ const CompanyEditorScreen: React.FC = () => {
             />
           </View>
         </View>
-        <View style={{ marginHorizontal: 19, marginBottom: 16 }}>
+        <Separator marginTop={16} />
+        <View style={{ marginHorizontal: 19, marginBottom: 16, marginTop: 24 }}>
           <Typography weight="Bold" variant="h5">
             Metraż miejsca pracy{' '}
             <Typography weight="Bold" variant="h5" color={Colors.Basic600}>
@@ -920,7 +1197,7 @@ const CompanyEditorScreen: React.FC = () => {
             </Typography>
           </Typography>
         </View>
-        <View style={{ marginHorizontal: 19, marginBottom: 34 }}>
+        <View style={{ marginHorizontal: 19, marginBottom: 16 }}>
           <TextField
             placeholder='60'
             placeholderTextColor={Colors.Basic600}
@@ -932,7 +1209,7 @@ const CompanyEditorScreen: React.FC = () => {
             onChangeText={(text) => changeCompanyDataHandler('square_footage', text.replace(/^0/, '').replace(/[^0-9]/g, ''))}
           />
         </View>
-        <View style={{ marginHorizontal: 19, marginBottom: 15 }}>
+        {/* <View style={{ marginHorizontal: 19 }}>
           <Typography weight="Bold" variant="h5">
             Social media{' '}
             <Typography weight="Bold" variant="h5" color={Colors.Basic600}>
@@ -940,9 +1217,10 @@ const CompanyEditorScreen: React.FC = () => {
             </Typography>
           </Typography>
         </View>
+        <Separator marginTop={16}/>
 
         {socialLinksData.map(({ icon, label, value }) => (
-          <View style={styles.textField}>
+          <View style={styles.TextField}>
             <TextField
               left={<SvgIcon icon={icon} />}
               label={label}
@@ -951,12 +1229,66 @@ const CompanyEditorScreen: React.FC = () => {
               onChangeText={text => changeCompanyDataHandler(value, text)}
             />
           </View>
-        ))}
+        ))} */}
+        {companyData.languages ?
+          <>
+            <View style={{ paddingHorizontal: 19 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
+                <Typography variant='h5' weight='Bold'>
+                  Preferowane języki w komunikacji
+                </Typography>
+                <Button
+                  variant='text'
+                  style={{ width: 'auto', padding: 0 }}
+                  onPress={() => goToSelectLanguagesScreen()}
+                >
+                  <Typography variant='h5' weight='Bold' color={Colors.Blue500} >
+                    Edytuj
+                  </Typography>
+                </Button>
+              </View>
+              <Typography color={Colors.Basic600}>
+                {selectedLanguages.map(({ id, name }, i) =>
+                  <Fragment key={id}>
+                    {name}
+                    {i !== selectedLanguages.length - 1 ? ', ' : ''}
+                  </Fragment>
+                )}
+              </Typography>
+            </View>
+            <Separator marginTop={12} />
+          </>
+
+          :
+
+          <Button
+            variant='text'
+            borderTop
+            borderBottom
+            arrowRight
+            onPress={() => goToSelectLanguagesScreen()}
+          >
+            <Typography variant='h5'>
+              Preferowane języki w komunikacji
+            </Typography>
+          </Button>
+        }
+        <View style={{ paddingBottom: 60 }}>
+          <Button
+            variant='text'
+            borderBottom
+            arrowRight
+          >
+            <Typography variant='h5'>
+              Social media
+            </Typography>
+          </Button>
+        </View>
       </ScrollView>
       <Button
-        stickyBottom 
-        withLoading 
-        disabled={loading} 
+        stickyBottom
+        withLoading
+        disabled={loading}
         onPress={submitCompanyCreation}
       >
         {editMode ? 'Zaktualizuj' : 'Utwórz'}
@@ -975,25 +1307,18 @@ const styles = StyleSheet.create({
     marginBottom: 18,
     // marginLeft: 19,
   },
-  textField: {
+  TextField: {
     marginHorizontal: 19,
     marginBottom: 16
   },
-  addPhotoButton: {
+  AddPhotoButton: {
     backgroundColor: Colors.Basic300,
     alignItems: 'center',
     borderRadius: 4,
     marginHorizontal: 19,
     padding: 14,
   },
-  Label: {
-    position: 'absolute',
-    bottom: 50,
-    backgroundColor: Colors.Basic300,
-    paddingVertical: 5,
-    paddingHorizontal: 11,
-  },
-  tipsView: {
+  TipsView: {
     // position: 'absolute',
     backgroundColor: 'white',
     // height: '100%',
@@ -1002,7 +1327,7 @@ const styles = StyleSheet.create({
     // left: 0,
     // zIndex: 1000,
   },
-  tipsHeader: {
+  TipsHeader: {
     height: 60,
     flexDirection: 'row',
     alignItems: 'center',
@@ -1010,17 +1335,13 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: Colors.Basic400,
   },
-  rowItem: {
-    height: 100,
-    width: 100,
-    alignItems: "center",
-    justifyContent: "center",
+  SectionHeader: {
+    paddingHorizontal: 19,
+    marginBottom: 30,
   },
-  text: {
-    color: "white",
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
+  Optional: {
+    color: Colors.Basic600,
+    marginLeft: 5
   },
 });
 

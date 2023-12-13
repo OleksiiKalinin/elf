@@ -29,7 +29,8 @@ const Colors = {
   Blue500: 'rgba(74, 50, 205, 1)',
   Transparent: 'rgba(255, 255, 255, 0)',
   Green500: 'rgba(3, 214, 176, 1)',
-  Yellow500: "#ECB904"
+  Yellow500: "#ECB904",
+  Red: '#FB1818',
 };
 
 export default Colors;

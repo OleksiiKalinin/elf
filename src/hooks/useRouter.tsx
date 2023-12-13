@@ -16,6 +16,8 @@ import ChooseCandidateScreen from "../screens/ChooseCandidateScreen";
 import JobCategoryScreen from "../screens/JobCategoryScreen";
 import ItemSelectorScreen from "../screens/ItemSelectorScreen";
 import CompanyInvoiceScreen from "../screens/CompanyInvoiceScreen";
+import AddContactPersonsScreen from "../screens/AddContactPersonsScreen";
+import CompanyDescriptionScreen from "../screens/CompanyDescriptionScreen";
 
 export type SubViewType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? AllScreens<T, keyof RootStackParamList[T]['default']> : never;
 type AllScreens<T extends keyof RootStackParamList, K extends keyof RootStackParamList[T]['default'] = keyof RootStackParamList[T]['default']> = K extends K ? AllParams<RootStackParamList[T]['default'][K]> : never;
@@ -54,7 +56,10 @@ const validateUrl = (props: WithUrlProps): string => {
         (props.stack === 'ProfileStack' && props.screen === 'CompanyEditorScreen' && (
             props.params?.subView === 'GoogleMapScreen' ||
             props.params?.subView === 'JobCategoryScreen' ||
-            props.params?.subView === 'CompanyInvoiceScreen' 
+            props.params?.subView === 'CompanyInvoiceScreen' ||
+            props.params?.subView === 'AddContactPersonsScreen' ||
+            props.params?.subView === 'CompanyDescriptionScreen' ||
+            props.params?.subView === 'ItemSelectorScreen'
         )) ||
         false //something else
     ) {
@@ -102,6 +107,10 @@ export default function useRouter() {
                         Component = ItemSelectorScreen
                     } else if (params.subView === 'CompanyInvoiceScreen') {
                         Component = CompanyInvoiceScreen
+                    } else if (params.subView === 'AddContactPersonsScreen') {
+                        Component = AddContactPersonsScreen
+                    } else if (params.subView === 'CompanyDescriptionScreen') {
+                        Component = CompanyDescriptionScreen
                     } else {
                         return;
                     }
