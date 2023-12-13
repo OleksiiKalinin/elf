@@ -90,6 +90,7 @@ const OpinionCard: FC<OpinionCardProps> = ({...props}) => {
     <View style={{backgroundColor: Colors.Basic100}}>
 
       <Typography weight="Bold" style={styles.Header}>
+        qwe
       {/* {selectedCompany?.companyName} */}
       </Typography>
 

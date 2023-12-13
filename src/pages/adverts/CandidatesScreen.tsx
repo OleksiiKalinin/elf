@@ -1,13 +1,13 @@
 import { useRouter } from "next/router";
-import Screen from "../../screens/AdvertScreens/AdvertEditorScreen";
+import Screen from "../../screens/AdvertScreens/CandidatesScreen";
 import { useState } from "react";
 import getUrlSearchParam from "../../hooks/getUrlSearchParam";
 
-const AdvertEditorScreen = () => {
+const CandidatesScreen = () => {
     const { asPath } = useRouter();
     const [id] = useState(getUrlSearchParam(asPath, 'id') || undefined);
 
     return <Screen idInitial={id} />;
 };
 
-export default AdvertEditorScreen;
+export default CandidatesScreen;

@@ -656,7 +656,7 @@ const CompanyEditorScreen: React.FC = () => {
                         </View>
                         <TouchableOpacity style={{ padding: 15 }} onPress={() => showTipsHandler()}>
                           <Typography variant='h5' weight="Bold" color={Colors.Blue500} style={{ textDecorationLine: 'underline' }}>
-                            {/* Zobacz wskazówki */}
+                            Zobacz wskazówki
                           </Typography>
                         </TouchableOpacity>
                       </View>
@@ -727,7 +727,7 @@ const CompanyEditorScreen: React.FC = () => {
                         </View>
                         <TouchableOpacity style={{ padding: 15 }} onPress={() => showTipsHandler()}>
                           <Typography variant='h5' weight="Bold" color={Colors.Blue500} style={{ textDecorationLine: 'underline' }}>
-                            {/* Zobacz wskazówki */}
+                            Zobacz wskazówki
                           </Typography>
                         </TouchableOpacity>
                       </View>

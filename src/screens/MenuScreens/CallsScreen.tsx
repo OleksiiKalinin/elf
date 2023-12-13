@@ -37,6 +37,7 @@ const CallsScreen: React.FC = () => {
                 color={Colors.Basic600}
                 style={{ marginTop: 16, marginLeft: 19 }}
               >
+                qwe
                 {/* {CalendarLocaleConfig.locales['pl'].dayNames[new Date(item.start_time).getDay()]}
                 {', '}
                 {new Date(item.start_time).getDate()} {CalendarLocaleConfig.locales['pl'].monthNamesShort[new Date(item.start_time).getMonth()].toLowerCase()} */}

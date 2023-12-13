@@ -8,7 +8,7 @@ import { rootState } from "../store";
 const getUserAdverts = (token: string | null, id: number) => async (dispatch: Dispatch<any>) => {
     try {
         const res = await axios.get(`/employer/company_job_offers/${id}/`, { headers: { Authorization: `Bearer ${token}` } });
-        dispatch(generalActions.setUserAdverts(
+        await dispatch(generalActions.setUserAdverts(
             res.data ?
                 res.data.map((advert: any) => ({
                     ...advert,

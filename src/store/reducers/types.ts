@@ -164,16 +164,17 @@ export interface UserEventType {
 }
 
 export interface UserAdvertType {
-    id?: number,
-    num_views?: number,
+    id: number,
+    is_active: boolean,
+    num_views: number,
     location: AddressType | null,
     salary_amount_up: string | null,
     salary_amount_low: string | null,
     description: string | null,
     working_hour_down: string | null,
     working_hour_up: string | null,
-    expiration_time: string | null,
-    company_id: number | null,
+    expiration_time: string,
+    company_id: number,
     job_experience_id: number | null,
     job_position_id: number | null,
     job_mode_id: number | null,

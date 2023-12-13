@@ -71,6 +71,7 @@ const ResumesScreen: React.FC = () => {
         },
       ]}
     >
+      <></>
       {/* <ScrollView style={{ backgroundColor: Colors.Basic100, paddingTop: 19 }}>
         {data.persons
           .map((item, index) =>

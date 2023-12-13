@@ -14,15 +14,17 @@ import CandidateCard from '../../components/organismes/CandidateCard';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { createParam } from 'solito';
+import { InitialPropsFromParams } from '../../hooks/types';
 
-const { useParam } = createParam<AdvertStackParamList['default']['CandidatesScreen']>();
+type Props = NonNullable<AdvertStackParamList['default']['CandidatesScreen']>;
+const { useParam } = createParam<Props>();
 
-const CandidatesScreen: React.FC = () => {
+const CandidatesScreen: React.FC<InitialPropsFromParams<Props>> = ({idInitial}) => {
   const dispatch = useTypedDispatch();
   const { token, userAdverts } = useTypedSelector(s => s.general);
   const [loading, setLoading] = useState<boolean>(true);
   const [candidates, setCandidates] = useState<CandidateDataType[]>([]);
-  const [id] = useParam('id')
+  const [id] = useParam('id', {initial: idInitial})
   const candidatesWithRating = userAdverts.find(e => e.id === Number(id))?.candidate_data;
 
   useEffect(() => {
@@ -33,7 +35,7 @@ const CandidatesScreen: React.FC = () => {
       }
       setLoading(false);
     })();
-  }, []);
+  }, [userAdverts]);
 
   const CandidatesList = useMemo(() => (<View style={{ flex: 1, backgroundColor: Colors.Basic100 }}>
     <SectionList

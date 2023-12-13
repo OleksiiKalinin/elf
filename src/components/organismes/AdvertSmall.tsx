@@ -9,107 +9,111 @@ import SvgIcon from '../atoms/SvgIcon';
 import Button from '../molecules/Button';
 
 type AdvertSmallProps = {
-  options?: () => void;
-  onPressButton0?: () => void;
-  onPressButton1?: () => void;
-  onPressDetails?: () => void;
-  onChoose?: () => void;
+  onPressOptions?: (advert: UserAdvertType) => void;
+  onPressCandidates?: (advert: UserAdvertType) => void;
+  onPressExtendActivity?: (advert: UserAdvertType) => void;
+  onPress?: (advert: UserAdvertType) => void;
+  onChoose?: (advert: UserAdvertType) => void;
 } & UserAdvertType;
 
-const AdvertSmall: FC<AdvertSmallProps> = (props) => {
-  const { onPressButton0, onPressButton1, onPressDetails, options, onChoose, benefits_ids, company_id, description, duties_ids, expiration_time, job_experience_id, job_mode_id, job_position_id, job_start_id, known_language_id, location, requirements_ids, salary_amount_low, salary_amount_up, salary_tax_type_id, salary_time_type_id, trial_time_id, trial_type_id, type_of_contract_id, working_hour_down, working_hour_up, id, num_views, candidate_data } = props;
+const AdvertSmall: FC<AdvertSmallProps> = (advert) => {
+  const { onPressCandidates, onPressExtendActivity, onPress, onPressOptions, onChoose, benefits_ids, company_id, description, duties_ids, expiration_time, job_experience_id, job_mode_id, job_position_id, job_start_id, known_language_id, location, requirements_ids, salary_amount_low, salary_amount_up, salary_tax_type_id, salary_time_type_id, trial_time_id, trial_type_id, type_of_contract_id, working_hour_down, working_hour_up, id, num_views, candidate_data } = advert;
   const { jobSalaryModes, jobSalaryTaxes, jobIndustries, userCompany } = useTypedSelector(state => state.general);
+  const expiresIn = Math.ceil(new Date(new Date(expiration_time).getTime() - Date.now()).getTime() / 1000 / 60 / 60 / 24);
+  const expired = expiresIn < 0;
 
   return (
     <View
       style={{
-        backgroundColor: expiration_time
-          ? Colors.Basic200
-          : /*props.active*/true
-            ? Colors.White
-            : Colors.Basic100,
+        backgroundColor: expired ?
+          Colors.Basic200
+          :
+          advert.is_active ?
+            Colors.White
+            :
+            Colors.Basic100,
         paddingVertical: 20,
-        borderColor: Colors.Basic300,
-        borderBottomWidth: 1,
-        borderTopWidth: 1,
       }}>
       <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity onPress={onPressDetails} style={{ flexDirection: 'row', flex: 1, paddingLeft: 20 }}>
-          {/* <Image
-            source={require('../../../assets/images/logo.png')}
-            style={{ marginRight: 5, height: 50, width: 70 }}
-          /> */}
+        <TouchableOpacity onPress={() => onPress?.(advert)} style={{ flexDirection: 'row', flex: 1, paddingLeft: 20 }}>
           <View>
-            <Typography weight="Bold" variant="h4" color={!true || expiration_time ? Colors.Basic700 : Colors.Basic900}>
+            <Typography weight="Bold" variant="h4" color={expired ? Colors.Basic700 : Colors.Basic900}>
               {jobIndustries.find(curr => curr.id === userCompany?.job_industry)?.job_positions.find(curr => curr.id === job_position_id)?.name}
             </Typography>
-            <Typography weight='SemiBold' variant='h5' color={!true || expiration_time ? Colors.Basic700 : Colors.Blue500}>
+            <Typography weight='SemiBold' variant='h5' color={expired ? Colors.Basic700 : Colors.Blue500}>
               {salary_time_type_id !== 1 && salary_amount_low && salary_amount_up ?
                 `${salary_amount_low} - ${salary_amount_up} zł ${{ 2: 'msc', 3: 'godz' }[salary_time_type_id || 2] || 'msc'} ${jobSalaryTaxes.find(el => el.id === salary_tax_type_id)?.name || 'brutto'}`
                 :
                 'Stawka nieustalona'
               }
             </Typography>
-            <Typography color={!true || expiration_time ? Colors.Basic500 : Colors.Basic700}>
-              {props.location?.formattedAddress}
+            <Typography color={expired ? Colors.Basic500 : Colors.Basic700}>
+              {advert.location?.formattedAddress}
             </Typography>
           </View>
         </TouchableOpacity>
-        {options && <View>
-          {/* <IconButton mt='-13px' colorScheme={Colors.White} onPress={options} icon={<SvgIcon icon="threeDots" />} /> */}
+        {!!onPressOptions && <View style={{ marginTop: -10 }}>
+          <Button
+            circular
+            variant='text'
+            onPress={() => onPressOptions?.(advert)}
+            icon={<SvgIcon icon="threeDots" />}
+          />
         </View>}
       </View>
       {onChoose && <View>
         <Button
           // containerStyles={{ marginTop: 12, marginHorizontal: 20 }}
           style={{ paddingVertical: 5 }} borderRadius={4} contentVariant='h5' contentWeight='Bold'
-          onPress={onChoose}
+          onPress={() => onChoose?.(advert)}
         >
           Wybierz
         </Button>
       </View>}
-      {onPressButton0 && onPressButton1 && (
+      {onPressCandidates && onPressExtendActivity && (
         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
+            paddingHorizontal: 10,
             paddingTop: 12,
-            // paddingBottom: 8,
           }}>
-          <View style={{ flex: 1, marginRight: 0 }}>
+          <View style={{ flex: 1, paddingHorizontal: 10 }}>
             <Button
               contentWeight="Bold"
               contentVariant='h5'
-              variant={expiration_time ? 'disabled' : 'primary'}
-              style={{ paddingVertical: 5 }}
-              onPress={onPressButton0}
+              py={5} br={4}
+              onPress={() => onPressCandidates(advert)}
             >
               Kandydaci: {candidate_data.length}
             </Button>
-            {/* {isNumber(num_views) && <Typography
+            {isNumber(num_views) && <Typography
+              variant='h5'
               color={Colors.Basic600}
-              style={{ textAlign: 'right', marginTop: 8 }}>
-              Wyświetlenia:{' '}{num_views}
-            </Typography>} */}
+              style={{ textAlign: 'right', marginTop: 8 }}
+            >
+              {'Wyświetlenia: '}{num_views}
+            </Typography>}
           </View>
-          {/* <View style={{ flex: 1, marginLeft: 10 }}>
-            <ButtonRipple
+          <View style={{ flex: 1, paddingHorizontal: 10 }}>
+            <Button
               contentWeight="Bold"
               contentVariant='h5'
-              variant={expiration_time ? 'primary' : 'light'}
-              style={{ paddingVertical: 5 }}
-              onPress={onPressButton1}
+              variant={expired ? 'primary' : 'light'}
+              py={5} br={4}
+              onPress={() => onPressExtendActivity(advert)}
             >
               Przedłuż
-            </ButtonRipple>
+            </Button>
             <Typography
+              variant='h5'
               color={!expiration_time ? Colors.Basic600 : Colors.Danger}
               style={{ textAlign: 'left', marginTop: 8 }}>
-              {!expiration_time
-                ? 'Wygasa za ' + 30 + ' dni'
+              {!expired
+                ? `Wygasa za ${expiresIn} ${expiresIn > 1 ? 'dni' : 'dzień'}`
                 : 'Wygasło'}
             </Typography>
-          </View> */}
+          </View>
         </View>
       )}
     </View>

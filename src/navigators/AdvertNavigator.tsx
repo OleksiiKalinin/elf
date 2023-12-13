@@ -6,18 +6,27 @@ import AdvertScreen from '../screens/AdvertScreens/AdvertScreen';
 import CandidatesScreen from '../screens/AdvertScreens/CandidatesScreen';
 import { PathConfigMap } from '@react-navigation/native';
 import { JobCategoryScreenProps } from '../screens/JobCategoryScreen';
+import { GoogleMapScreenProps } from '../screens/GoogleMapScreen';
+
+type SubView<T extends keyof AdvertStackParamList['extended']> = ({ subView: T } & AdvertStackParamList['extended'][T]) | { subView?: never };
 
 export type AdvertStackParamList = {
   default: {
     MainScreen: undefined;
     AdvertScreen: { id: string },
-    AdvertEditorScreen: { 
-      id?: string, isMainMenuSender?: 'true' | 'false',
-      subView?: 'map',
-    } | undefined,
+    AdvertEditorScreen:
+    | undefined
+    | {
+      id?: string,
+      isMainMenuSender?: 'true' | 'false',
+    } & (
+      | SubView<'GoogleMapScreen'>
+      | SubView<'JobCategoryScreen'>
+    ),
     CandidatesScreen: { id: string },
   },
   extended: {
+    GoogleMapScreen: GoogleMapScreenProps,
     JobCategoryScreen: JobCategoryScreenProps,
   }
 };

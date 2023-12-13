@@ -7,7 +7,7 @@ type Props = React.ComponentProps<typeof ScrollViewNative> & {
 
 export function ScrollView({ disableWindowScroll = false, ...props }: Props) {
     const Component = Platform.select({
-        web: disableWindowScroll ? ScrollViewNative : (View as unknown as typeof ScrollViewNative),
+        web: disableWindowScroll || props.horizontal ? ScrollViewNative : (View as unknown as typeof ScrollViewNative),
         default: ScrollViewNative,
     })
     //@ts-ignore

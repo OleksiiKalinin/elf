@@ -1,5 +1,9 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { ComponentProps, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  FlatList,
+  ListRenderItem,
+  ListRenderItemInfo,
+  Platform,
   SectionList,
   StyleSheet,
   TouchableOpacity,
@@ -18,16 +22,14 @@ import { UserAdvertType } from '../../store/reducers/types';
 import TabbarMenu, { TabbarRoute } from '../../components/organismes/TabbarMenu';
 import Typography from '../../components/atoms/Typography';
 import AdvertSmall from '../../components/organismes/AdvertSmall';
-import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import ScreenHeaderProvider, { SCREEN_HEADER_HEIGHT } from '../../components/organismes/ScreenHeaderProvider';
 import LoadingScreen from '../../components/atoms/LoadingScreen';
 import SvgIcon from '../../components/atoms/SvgIcon';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
-import { useRouter } from 'solito/router';
 import CornerCircleButton from '../../components/molecules/CornerCircleButton';
-import { Separator } from 'tamagui';
+import useRouter from '../../hooks/useRouter';
 
 const MainScreen: React.FC = () => {
-  const SectionListRef = useRef<SectionList>(null);
   const dispatch = useTypedDispatch();
   const router = useRouter();
   const { token, userCompany, userAdverts } = useTypedSelector(state => state.general);
@@ -38,35 +40,15 @@ const MainScreen: React.FC = () => {
     { key: '1', title: 'W edycji' },
     { key: '2', title: 'Wygasłe' },
   ]);
-  const [selectedAdvertIndex, setSelectedAdvertIndex] = useState<number>();
-  const [loading, setLoading] = useState<boolean>(true);
-  const advertsRequested = useRef(false);
 
-  const getUserAdverts = async (granted?: boolean) => {
-    if (token && userCompany?.id && (!advertsRequested.current || granted)) {
-      advertsRequested.current = true;
-      setLoading(true);
-      await dispatch(advertsServices.getUserAdverts(token, userCompany.id));
-    }
-    setLoading(false);
-  }
-
-  // useEffect(() => {
-  //   getUserAdverts();
-  // }, [userCompany, token]);
-
-  const changeSectionHandler = (sectionIndex: number, withScroll: boolean = true) => {
-    setTabbarIndex(sectionIndex);
-    if (withScroll) SectionListRef.current?.scrollToLocation({ sectionIndex, itemIndex: 0, animated: false });
-  }
-
-  const moreOptionsHandler = (data: any) => {
+  const moreOptionsHandler = (data: UserAdvertType) => {
     setSwipeablePanelProps({
       title: 'Czy chcesz zmienić to ogłoszenie?',
       buttons: [
         {
           children: 'Edytuj',
-          onPress: () => router.push(`/adverts/AdvertEditorScreen?id=${selectedAdvertIndex}`)
+          closeAction: 'props-null',
+          onPress: () => router.push({stack: 'AdvertStack', screen: 'AdvertEditorScreen', params: {id: data.id.toString()}})
         },
         {
           children: 'Usuń',
@@ -142,116 +124,109 @@ const MainScreen: React.FC = () => {
     })
   }
 
-  const CandidatesList = useMemo(() => (<View style={{ flex: 1, backgroundColor: Colors.Basic100 }}>
-    <SectionList
-      ref={SectionListRef}
-      initialNumToRender={userAdverts.length}
-      onScrollToIndexFailed={() => { }}
-      viewabilityConfig={{
-        minimumViewTime: 500,
-        itemVisiblePercentThreshold: 100
-      }}
-      onViewableItemsChanged={({ viewableItems }) => changeSectionHandler(viewableItems[0]?.section.index, false)}
-      sections={[
-        { title: 'Aktywne', data: userAdverts, index: 0 },
-        { title: 'W edycji', data: [], index: 1 },
-        { title: 'Wygasłe', data: [], index: 2 }
-      ]}
-      // ListHeaderComponent={
-      //   <View style={styles.AdCounterBackground}>
-      //     <MatchCircle
-      //       fullCircle={true}
-      //       percent={15}
-      //       height={48}
-      //       width={48}
-      //       fontSize={30}
-      //       backgroundColor={Colors.White}
-      //     />
-      //     <Typography style={{ lineHeight: 48, marginLeft: 10 }}>
-      //       Masz 15 darmowych ogłoszeń.
-      //     </Typography>
-      //   </View>
-      // }
-      renderSectionHeader={({ section: { title, index } }) => (
-        <Typography weight="Bold" style={styles.Title}>{title}</Typography>
-      )}
-      renderItem={({ item: i }) => {
-        const item = i as UserAdvertType;
-        return (
-          <View style={{ marginBottom: 12 }}>
-            <AdvertSmall
-              {...item}
-              options={() => (moreOptionsHandler(item), setSelectedAdvertIndex(item.id))}
-              onPressButton0={() => router.push(`/adverts/CandidatesScreen?id=${item.id}`)}
-              onPressButton1={() => extendAdvertHandler(item)}
-              onPressDetails={() => item.id && router.push(`/adverts/AdvertScreen?id=${item.id}`)}
-            />
-          </View>
-        )
-      }
-      }
-      renderSectionFooter={({ section: { index, data } }) => {
-        const titles = ['Brak ofert aktywnych', 'Brak ofert w edycji', 'Brak ofert wygasłych'];
-        return !data.length ? (<>
-          {/* <Separator /> */}
-          <View style={{ paddingVertical: 5, marginHorizontal: 16 }}>
-            <Typography variant='h5' weight='SemiBold' color={Colors.Basic600} textAlign='center'>{titles[index]}</Typography>
-          </View>
-          {/* <Separator /> */}
-        </>) : null
-      }}
+  const renderAdvert = ({ item }: ListRenderItemInfo<UserAdvertType>) => (
+    <AdvertSmall
+      {...item}
+      onPress={({id}) => router.push({ stack: 'AdvertStack', screen: 'AdvertScreen', params: { id: id.toString() } })}
+      onPressCandidates={({id}) => router.push({ stack: 'AdvertStack', screen: 'CandidatesScreen', params: { id: id.toString() } })}
+      onPressOptions={(advert) => moreOptionsHandler(advert)}
+      onPressExtendActivity={(advert) => extendAdvertHandler(advert)}
     />
-  </View>), [userAdverts]);//!!!!!deps!!!!!
+  )
+
+  const adverts = useMemo(() => {
+    const active: UserAdvertType[] = [];
+    const notActive: UserAdvertType[] = [];
+    const expired: UserAdvertType[] = [];
+
+    userAdverts.forEach((advert) => {
+      if (new Date(advert.expiration_time).getTime() < Date.now()) {
+        expired.push(advert);
+      } else if (advert.is_active) {
+        active.push(advert);
+        active.push(advert);
+        active.push(advert);
+        active.push(advert);
+        active.push(advert);
+        active.push(advert);
+        active.push(advert);
+        active.push(advert);
+        active.push(advert);
+        active.push(advert);
+        active.push(advert);
+        active.push(advert);
+      } else {
+        notActive.push(advert);
+      }
+    });
+
+    console.log(active, notActive, expired);
+
+    const props = (data: ComponentProps<typeof FlatList<UserAdvertType>>['data']): ComponentProps<typeof FlatList<UserAdvertType>> => ({
+      data,
+      renderItem: renderAdvert,
+      ItemSeparatorComponent: () => <View style={{
+        borderColor: Colors.Basic300,
+        borderBottomWidth: 1,
+        borderTopWidth: 1,
+        padding: 6
+      }} />,
+      ListHeaderComponent: !!data?.length ? () => <View style={{
+        borderColor: Colors.Basic300,
+        borderBottomWidth: 1,
+        padding: 10
+      }} /> : undefined,
+      ListFooterComponent: !!data?.length ? () => <View style={{
+        borderColor: Colors.Basic300,
+        borderTopWidth: 1,
+        padding: 10
+      }} /> : undefined,
+      ListEmptyComponent: () => (
+        <Typography color={Colors.Basic600}>Nie masz ofert tej kategorii</Typography>
+      )
+    })
+
+    return {
+      active: (() => <FlatList {...props(active)} />),
+      notActive: (() => <FlatList {...props(notActive)} />),
+      expired: (() => <FlatList {...props(expired)} />),
+    }
+  }, [userAdverts]);//!!!!!deps!!!!!
 
   return (<>
-    <ScreenHeaderProvider mode="mainTitle" actions={!loading ? [{
-      icon: 'refresh',
-      onPress: () => getUserAdverts(true)
-    }] : undefined}>
-      {loading ? <LoadingScreen /> : <>
-        <View style={{ height: 45 }}>
-          <TabbarMenu
-            backgroundColor={Colors.White}
-            navigationState={{ index: tabbarIndex, routes }}
-            onIndexChange={changeSectionHandler}
-            renderScene={SceneMap({ 0: () => null, 1: () => null, 2: () => null })}
-          />
-        </View>
-        {!!userAdverts.length ?
-          CandidatesList :
-          <Typography style={{ marginHorizontal: 19, marginVertical: 20 }}>Nie masz ofert</Typography>
-        }
-      </>}
+    <ScreenHeaderProvider
+      mode="mainTitle"
+      backgroundContent={Colors.Basic100}
+      staticContentHeightOnWeb
+    >
+      <TabbarMenu
+        stickyTop={SCREEN_HEADER_HEIGHT}
+        renderLazyPlaceholder={() => <Typography>Loading...</Typography>}
+        backgroundColor={Colors.White}
+        navigationState={{ index: tabbarIndex, routes }}
+        onIndexChange={setTabbarIndex}
+        renderScene={SceneMap({
+          0: adverts.active,
+          1: adverts.notActive,
+          2: adverts.expired
+        })}
+      />
     </ScreenHeaderProvider>
-    <CornerCircleButton onPress={() => router.push('/adverts/AdvertEditorScreen')} />
+    <CornerCircleButton onPress={() => router.push({stack: 'AdvertStack', screen: 'AdvertEditorScreen', params: undefined})} />
   </>);
 };
 
 const styles = StyleSheet.create({
-  Title: {
-    fontSize: 20,
-    marginTop: 24,
-    marginBottom: 8,
-    marginLeft: 16,
-  },
-  nullAd: {
-    textAlign: 'center',
-    paddingVertical: 31,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.Basic300,
-    borderTopColor: Colors.Basic300,
-  },
-  AdCounterBackground: {
-    flexDirection: 'row',
-    paddingVertical: 11,
-    marginTop: 12,
-    paddingLeft: 19,
-  },
-  createIcon: {
-    position: "absolute",
-    bottom: 20,
-    right: 20,
+  Tabs: {
+    height: 45,
+    position: Platform.select({
+      native: 'absolute',
+      web: 'fixed'
+    }),
+    top: SCREEN_HEADER_HEIGHT,
+    width: '100%',
+    zIndex: 1,
+    maxWidth: 768,
   },
 });
 

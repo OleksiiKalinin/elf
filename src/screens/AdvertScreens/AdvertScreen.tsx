@@ -20,10 +20,12 @@ import AdvertLarge from '../../components/organismes/AdvertLarge';
 import TabbarMenu, { TabbarRoute } from '../../components/organismes/TabbarMenu';
 import { createParam } from 'solito';
 import useRouter from '../../hooks/useRouter';
+import { InitialPropsFromParams } from '../../hooks/types';
 
-const { useParam } = createParam<AdvertStackParamList['default']['AdvertScreen']>();
+type Props = NonNullable<AdvertStackParamList['default']['AdvertScreen']>;
+const { useParam } = createParam<Props>();
 
-const AdvertScreen: React.FC = () => {
+const AdvertScreen: React.FC<InitialPropsFromParams<Props>> = ({idInitial}) => {
   const { userAdverts, userCompany } = useTypedSelector(state => state.general);
   const [tabbarIndex, setTabbarIndex] = React.useState(0);
   const [routes] = React.useState<TabbarRoute[]>([
@@ -35,7 +37,7 @@ const AdvertScreen: React.FC = () => {
   const [isPanelActive, setIsPanelActive] = useState(false);
   const [isPanelActive2, setIsPanelActive2] = useState(false);
   const { useLink, push } = useRouter();
-  const [id] = useParam('id')
+  const [id] = useParam('id', {initial: idInitial})
   console.log(id);
   
   const advert = userAdverts.find(curr => curr.id === Number(id));

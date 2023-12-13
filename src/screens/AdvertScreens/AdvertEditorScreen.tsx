@@ -25,8 +25,8 @@ import TextField from '../../components/molecules/TextField';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { createParam } from 'solito';
 import { useActions } from '../../hooks/useActions';
-import { useSwipeablePanelParams } from '../../hooks/useSwipeablePanelParams';
 import { Separator } from 'tamagui';
+import { InitialPropsFromParams, PartialBy } from '../../hooks/types';
 
 /*
 title="Dostosuj listę kandydatów"
@@ -49,13 +49,14 @@ buttons={[
 //   salary_time_type_id: number | null,
 // }
 
-const { useParam } = createParam<NonNullable<AdvertStackParamList['default']['AdvertEditorScreen']>>();
+type Props = NonNullable<AdvertStackParamList['default']['AdvertEditorScreen']>;
+const { useParam } = createParam<Props>();
 
-const AdvertEditorScreen: React.FC = () => {
+const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial }) => {
   const dispatch = useTypedDispatch();
   const { jobIndustries, userCompany, jobSalaryModes, jobSalaryTaxes, jobExperiences, token, userAdverts, windowSizes } = useTypedSelector(state => state.general);
   const currentPositions = jobIndustries.find(({ id }) => id === userCompany?.job_industry)?.job_positions || [];
-  const [advertData, setAdvertData] = useState<UserAdvertType>({
+  const [advertData, setAdvertData] = useState<PartialBy<UserAdvertType, 'company_id' | 'expiration_time' | 'id' | 'is_active' | 'num_views'>>({
     job_experience_id: 2,
     job_position_id: null,
     location: null,
@@ -67,9 +68,7 @@ const AdvertEditorScreen: React.FC = () => {
     requirements_ids: [],
     duties_ids: [],
     candidate_data: [],
-    company_id: null,
     description: null,
-    expiration_time: null,
     job_mode_id: null,
     job_start_id: null,
     known_language_id: null,
@@ -80,21 +79,28 @@ const AdvertEditorScreen: React.FC = () => {
     working_hour_up: null,
   });
   const [loading, setLoading] = useState<boolean>(false);
-  const [id] = useParam('id')
-  const [isMainMenuSender] = useParam('isMainMenuSender')
-  const { subView, subViewMode } = useSwipeablePanelParams();
-  const {setSwipeablePanelProps} = useActions();
-  
-  
+  const [id] = useParam('id', { initial: idInitial })
+  const [isMainMenuSender] = useParam('isMainMenuSender');
+  const { setSwipeablePanelProps } = useActions();
+
+
   // useEffect(() => {
   //   setSwipeablePanelProps((() => {
   //     if (subView === 'options') return {
-    // JobCategoryScreen
-    // MapScreen
+  // JobCategoryScreen
+  // MapScreen
   //     }
   //     return null;
   //   })());
   // }, [subView, subViewMode]);
+
+
+  useEffect(() => {
+    if (id) {
+      const advert = userAdverts.find(e => e.id.toString() === id);
+      advert && setAdvertData(advert);
+    }
+  }, [id, userAdverts]);
 
   const changeAdvertDataHandler = (name: keyof UserAdvertType, value: string | number | AddressType | null, replaceSpaces: boolean = true) => {
     setAdvertData(prev => ({
@@ -240,7 +246,6 @@ const AdvertEditorScreen: React.FC = () => {
           {jobSalaryModes.map(({ id, name }) => (
             <View style={{ marginRight: 20 }}>
               <Button
-                color='transparent'
                 contentVariant='h5'
                 contentWeight={advertData.salary_time_type_id === id ? 'Bold' : 'SemiBold'}
                 contentColor={advertData.salary_time_type_id === id ? Colors.Basic900 : Colors.Basic700}
