@@ -28,6 +28,7 @@ export type ItemSelectorScreenProps =
     render?: (id: number, name: string, i: number, icon?: string, initialSelected?: number[]) => JSX.Element,
     initialSelected?: number[],
     subViewMode?: boolean,
+    allowReturnEmptyList?: boolean,
   };
 
 const ItemSelectorScreen: React.FC<ItemSelectorScreenProps> = ({
@@ -38,7 +39,8 @@ const ItemSelectorScreen: React.FC<ItemSelectorScreenProps> = ({
   headerProps,
   render,
   subViewMode = true,
-  initialSelected
+  initialSelected,
+  allowReturnEmptyList = false,
 }) => {
   const [search, setSearch] = useState<string>('');
   const [selectedItems, setSelectedItems] = useState<number[]>(initialSelected ? mode === 'multiple' ? initialSelected : [] : []);
@@ -159,7 +161,7 @@ const ItemSelectorScreen: React.FC<ItemSelectorScreenProps> = ({
         <Button
           stickyBottom
           onPress={handleConfirmMultiple}
-          disabled={selectedItems.length === 0}
+          disabled={allowReturnEmptyList ? false : selectedItems.length === 0}
         >
           Potwierdź
         </Button>

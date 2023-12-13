@@ -31,12 +31,15 @@ export type ProfileStackParamList = {
   default: {
     MainScreen: undefined,
     // PaymentTemporalScreen: undefined,
-    CompanyEditorScreen:  
-    | {editMode: string}
+    CompanyEditorScreen:
+    | { editMode: string }
     & (
       | SubView<'GoogleMapScreen'>
       | SubView<'CompanyInvoiceScreen'>
       | SubView<'JobCategoryScreen'>
+      | SubView<'ItemSelectorScreen'>
+      | SubView<'AddContactPersonsScreen'>
+      | SubView<'CompanyDescriptionScreen'>
       | SubView<'ItemSelectorScreen'>
     )
     ,
@@ -76,7 +79,7 @@ export type ProfileStackParamList = {
     CompanyDescriptionScreen: CompanyDescriptionScreenProps,
     CompanyInvoiceScreen: CompanyInvoiceScreenProps,
     JobCategoryScreen: JobCategoryScreenProps,
-    ItemSelectorScreen: ItemSelectorScreenProps
+    ItemSelectorScreen: ItemSelectorScreenProps,
   }
 }
 
