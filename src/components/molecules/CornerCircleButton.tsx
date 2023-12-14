@@ -4,7 +4,7 @@ import { BOTTOM_TABS_HEIGHT } from '../organismes/BottomTabs';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 
 const CornerCircleButton: React.FC<{ onPress: (event: GestureResponderEvent) => void }> = ({ onPress, ...props }) => {
-    const { isTabbarVisible } = useTypedSelector(s => s.general);
+    const { isTabbarVisible, windowSizes } = useTypedSelector(s => s.general);
 
     return (
         <View style={{
@@ -16,7 +16,10 @@ const CornerCircleButton: React.FC<{ onPress: (event: GestureResponderEvent) => 
                 native: 20,
                 web: 20 + (isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0),
             }),
-            right: 20,
+            right: Platform.select({
+                native: 20,
+                web: 20 + (windowSizes.width > 768 ? (windowSizes.width - 768) / 2 : 0),
+            }),
             zIndex: 1,
         }}>
             <TouchableOpacity onPress={onPress} {...props}>

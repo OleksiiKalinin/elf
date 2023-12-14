@@ -135,20 +135,12 @@ export default function useRouter() {
 
     const backOrReplace = () => {
         if (Platform.OS === 'web') {
-            let popStatus = false;
-            const callback = () => popStatus = true;
-            window.addEventListener('popstate', callback);
-
-            back();
-
-            setTimeout(() => {
-                if (!popStatus) {
-                    const [stack, screen] = currentScreen.split('-');
-                    replace(withUrl({ stack: (screen === 'MainScreen' ? 'MenuStack' : stack as any) }));
-                }
-
-                window.removeEventListener('popstate', callback);
-            }, 200);
+            if ((window as any).prevPage) {
+                back();
+            } else {
+                const [stack, screen] = currentScreen.split('-');
+                replace(withUrl({ stack: (screen === 'MainScreen' ? 'MenuStack' : stack as any) }));
+            }
         } else {
             back();
         }

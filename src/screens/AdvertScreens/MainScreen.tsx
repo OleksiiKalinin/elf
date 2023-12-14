@@ -28,109 +28,119 @@ import SvgIcon from '../../components/atoms/SvgIcon';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import CornerCircleButton from '../../components/molecules/CornerCircleButton';
 import useRouter from '../../hooks/useRouter';
+import { Spinner } from 'tamagui';
+import { createParam } from 'solito';
+
+type Props = NonNullable<AdvertStackParamList['default']['MainScreen']>;
+const { useParam } = createParam<Props>();
 
 const MainScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const router = useRouter();
+  const [subView] = useParam('subView');
   const { token, userCompany, userAdverts } = useTypedSelector(state => state.general);
   const { setSwipeablePanelProps } = useActions();
   const [tabbarIndex, setTabbarIndex] = React.useState<number>(0);
+  const [selectedAdvertId, setSelectedAdvertId] = React.useState<number | null>(null);
   const [routes] = React.useState<TabbarRoute[]>([
     { key: '0', title: 'Aktywne' },
     { key: '1', title: 'W edycji' },
     { key: '2', title: 'Wygasłe' },
   ]);
 
-  const moreOptionsHandler = (data: UserAdvertType) => {
-    setSwipeablePanelProps({
-      title: 'Czy chcesz zmienić to ogłoszenie?',
-      buttons: [
-        {
-          children: 'Edytuj',
-          closeAction: 'props-null',
-          onPress: () => router.push({stack: 'AdvertStack', screen: 'AdvertEditorScreen', params: {id: data.id.toString()}})
-        },
-        {
-          children: 'Usuń',
-          contentColor: Colors.Danger,
-          contentVariant: 'h5',
-          closeAction: 'none',
-          onPress: () => setSwipeablePanelProps({
-            title: 'Naprawdę chcesz usunąć?',
-            buttons: [
-              {
-                children: 'Tak',
-                contentColor: Colors.Danger,
-                contentVariant: 'h5',
-                onPress: () => {
-                  // nativeStore.dispatch({
-                  //   type: advertActionTypes.REMOVE_ADVERT,
-                  //   payload: {
-                  //     pushedIndex: selectedAdvertIndex,
-                  //   },
-                  // });
+  useEffect(() => {
+    setSwipeablePanelProps((() => {
+      if (subView === 'options') return {
+        title: 'Co chcesz zrobić z ogłoszeniem?',
+        closeButton: true,
+        buttons: [
+          {
+            children: 'Edytuj',
+            closeAction: 'props-null',
+            onPress: () => selectedAdvertId && router.replace({ stack: 'AdvertStack', screen: 'AdvertEditorScreen', params: { id: selectedAdvertId.toString() } })
+          },
+          {
+            children: 'Usuń',
+            contentColor: Colors.Danger,
+            contentVariant: 'h5',
+            closeAction: 'none',
+            onPress: () => setSwipeablePanelProps({
+              title: 'Naprawdę chcesz usunąć?',
+              closeButton: true,
+              buttons: [
+                {
+                  children: 'Tak',
+                  contentColor: Colors.Danger,
+                  contentVariant: 'h5',
+                  onPress: () => {
+                    ///delete
+                  },
                 },
-              },
-            ]
-          }),
-        },
-      ]
-    })
+              ]
+            }),
+          },
+        ]
+      }
+      return null;
+    })());
+  }, [subView, selectedAdvertId]);
+
+  const moreOptionsHandler = (advert: UserAdvertType) => {
+    setSelectedAdvertId(advert.id);
+    router.push({stack: 'AdvertStack', screen: 'MainScreen', params: {subView: 'options'}});
   }
 
-  const extendAdvertHandler = (data: any) => {
-    setSwipeablePanelProps({
-      title: 'Pakiety',
-      children: (
-        <View>
-          <View style={{ paddingHorizontal: 19 }}>
-            <Typography variant="h5">
-              Ups! Skończyły Ci się darmowe ogłoszenia.
-            </Typography>
-          </View>
-          <View
-            style={{
-              backgroundColor: Colors.Sea300,
-              marginTop: 16,
-              padding: 19
-            }}>
-            <Typography color={Colors.Basic600} variant="h5" weight='Bold'>
-              PAKIET - MEDIUM
-            </Typography>
-            <Typography variant="h2" weight='Bold'>
-              50zł <Typography variant="main" weight='Medium'>tydzień</Typography>
-            </Typography>
-            <Typography variant="small" color={Colors.Danger}>
-              Pakiet wygasł
-            </Typography>
-          </View>
-        </View>
-      ),
-      buttons: [
-        {
-          variant: "primary",
-          contentVariant: 'h5',
-          contentWeight: 'Bold',
-          contentColor: Colors.White,
-          children: 'Przedłuż pakiet',
-          onPress: () => { },
-        },
-        {
-          children: 'Zobacz pakiety',
-          contentVariant: 'h5',
-          onPress: () => { }//navigation.navigate("ProfileStack", { screen: "MainScreen" }),
-        },
-      ]
-    })
-  }
+  // const extendAdvertHandler = (data: any) => {
+  //   setSwipeablePanelProps({
+  //     title: 'Pakiety',
+  //     children: (
+  //       <View>
+  //         <View style={{ paddingHorizontal: 19 }}>
+  //           <Typography variant="h5">
+  //             Ups! Skończyły Ci się darmowe ogłoszenia.
+  //           </Typography>
+  //         </View>
+  //         <View
+  //           style={{
+  //             backgroundColor: Colors.Sea300,
+  //             marginTop: 16,
+  //             padding: 19
+  //           }}>
+  //           <Typography color={Colors.Basic600} variant="h5" weight='Bold'>
+  //             PAKIET - MEDIUM
+  //           </Typography>
+  //           <Typography variant="h2" weight='Bold'>
+  //             50zł <Typography variant="main" weight='Medium'>tydzień</Typography>
+  //           </Typography>
+  //           <Typography variant="small" color={Colors.Danger}>
+  //             Pakiet wygasł
+  //           </Typography>
+  //         </View>
+  //       </View>
+  //     ),
+  //     buttons: [
+  //       {
+  //         variant: "primary",
+  //         contentVariant: 'h5',
+  //         contentWeight: 'Bold',
+  //         contentColor: Colors.White,
+  //         children: 'Przedłuż pakiet',
+  //         onPress: () => { },
+  //       },
+  //       {
+  //         children: 'Zobacz pakiety',
+  //         contentVariant: 'h5',
+  //         onPress: () => { }//navigation.navigate("ProfileStack", { screen: "MainScreen" }),
+  //       },
+  //     ]
+  //   })
+  // }
 
   const renderAdvert = ({ item }: ListRenderItemInfo<UserAdvertType>) => (
     <AdvertSmall
       {...item}
-      onPress={({id}) => router.push({ stack: 'AdvertStack', screen: 'AdvertScreen', params: { id: id.toString() } })}
-      onPressCandidates={({id}) => router.push({ stack: 'AdvertStack', screen: 'CandidatesScreen', params: { id: id.toString() } })}
       onPressOptions={(advert) => moreOptionsHandler(advert)}
-      onPressExtendActivity={(advert) => extendAdvertHandler(advert)}
+      onPressExtendActivity={(advert) => console.log(advert)}
     />
   )
 
@@ -160,8 +170,6 @@ const MainScreen: React.FC = () => {
       }
     });
 
-    console.log(active, notActive, expired);
-
     const props = (data: ComponentProps<typeof FlatList<UserAdvertType>>['data']): ComponentProps<typeof FlatList<UserAdvertType>> => ({
       data,
       renderItem: renderAdvert,
@@ -182,7 +190,9 @@ const MainScreen: React.FC = () => {
         padding: 10
       }} /> : undefined,
       ListEmptyComponent: () => (
-        <Typography color={Colors.Basic600}>Nie masz ofert tej kategorii</Typography>
+        <View style={{ padding: 20, alignItems: 'center' }}>
+          <Typography color={Colors.Basic600} variant='h4'>Nie masz ofert tej kategorii</Typography>
+        </View>
       )
     })
 
@@ -191,7 +201,7 @@ const MainScreen: React.FC = () => {
       notActive: (() => <FlatList {...props(notActive)} />),
       expired: (() => <FlatList {...props(expired)} />),
     }
-  }, [userAdverts]);//!!!!!deps!!!!!
+  }, [userAdverts]);
 
   return (<>
     <ScreenHeaderProvider
@@ -200,8 +210,9 @@ const MainScreen: React.FC = () => {
       staticContentHeightOnWeb
     >
       <TabbarMenu
-        stickyTop={SCREEN_HEADER_HEIGHT}
-        renderLazyPlaceholder={() => <Typography>Loading...</Typography>}
+        renderLazyPlaceholder={() => <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Spinner color={Colors.Basic900} size='large' />
+        </View>}
         backgroundColor={Colors.White}
         navigationState={{ index: tabbarIndex, routes }}
         onIndexChange={setTabbarIndex}
@@ -212,7 +223,7 @@ const MainScreen: React.FC = () => {
         })}
       />
     </ScreenHeaderProvider>
-    <CornerCircleButton onPress={() => router.push({stack: 'AdvertStack', screen: 'AdvertEditorScreen', params: undefined})} />
+    <CornerCircleButton onPress={() => router.push({ stack: 'AdvertStack', screen: 'AdvertEditorScreen', params: undefined })} />
   </>);
 };
 

@@ -12,7 +12,10 @@ type SubView<T extends keyof AdvertStackParamList['extended']> = ({ subView: T }
 
 export type AdvertStackParamList = {
   default: {
-    MainScreen: undefined;
+    MainScreen:
+    | undefined
+    | { subView?: 'options' }
+    ;
     AdvertScreen: { id: string },
     AdvertEditorScreen:
     | undefined

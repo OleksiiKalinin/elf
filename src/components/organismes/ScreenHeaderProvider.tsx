@@ -70,7 +70,7 @@ export const screensTitles: ScreensTitlesType = {
   AdvertStack: {
     MainScreen: 'Moje ogłoszenia',
     AdvertScreen: '',
-    AdvertEditorScreen: 'Nowe ogłoszenie',
+    AdvertEditorScreen: '',
     CandidatesScreen: '',
   },
   MenuStack: {

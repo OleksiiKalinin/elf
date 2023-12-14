@@ -126,7 +126,9 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
   }
 
   return (
-    <ScreenHeaderProvider>
+    <ScreenHeaderProvider
+      title={id ? 'Edytuj ogłoszenie' : 'Nowe ogłoszenie'}
+    >
       <ScrollView style={{ backgroundColor: Colors.Basic100, flex: 1 }}>
         <View style={{ marginLeft: 16, marginTop: 32, marginBottom: 16 }}>
           <Typography weight="Bold" size={20}>Opis stanowiska</Typography>
@@ -545,7 +547,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
         </View> */}
       </ScrollView>
       <Button variant="primary" onPress={createAdvertHandler} disabled={!token || loading} withLoading={!!token}>
-        DODAJ OGŁOSZENIE
+        {id ? 'Zapisz' : 'Dodaj'}
       </Button>
     </ScreenHeaderProvider>
   );
