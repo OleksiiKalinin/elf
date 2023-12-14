@@ -15,22 +15,23 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { createParam } from 'solito';
 import { InitialPropsFromParams } from '../../hooks/types';
+import AdvertSmall from '../../components/organismes/AdvertSmall';
 
 type Props = NonNullable<AdvertStackParamList['default']['CandidatesScreen']>;
 const { useParam } = createParam<Props>();
 
-const CandidatesScreen: React.FC<InitialPropsFromParams<Props>> = ({idInitial}) => {
+const CandidatesScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial }) => {
   const dispatch = useTypedDispatch();
   const { token, userAdverts } = useTypedSelector(s => s.general);
   const [loading, setLoading] = useState<boolean>(true);
   const [candidates, setCandidates] = useState<CandidateDataType[]>([]);
-  const [id] = useParam('id', {initial: idInitial})
-  const candidatesWithRating = userAdverts.find(e => e.id === Number(id))?.candidate_data;
+  const [id] = useParam('id', { initial: idInitial })
+  const advert = userAdverts.find(e => e.id === Number(id));
 
   useEffect(() => {
     (async () => {
-      if (!!candidatesWithRating?.length) {
-        const res = await dispatch(advertsServices.getAdvertCandidates(token, candidatesWithRating.map(e => e.candidate_id)));
+      if (!!advert?.candidate_data.length) {
+        const res = await dispatch(advertsServices.getAdvertCandidates(token, advert.candidate_data.map(e => e.candidate_id)));
         setCandidates(res as unknown as CandidateDataType[]);
       }
       setLoading(false);
@@ -252,10 +253,10 @@ const CandidatesScreen: React.FC<InitialPropsFromParams<Props>> = ({idInitial}) 
         </View>
       )}
       renderItem={({ item }) => (
-        <TouchableOpacity style={{ marginBottom: 10 }} 
+        <TouchableOpacity style={{ marginBottom: 10 }}
         // onPress={() => navigation.navigate('ProfileScreen', { candidateData: item })}
         >
-          <CandidateCard {...item} rating={candidatesWithRating?.find(e => e.candidate_id === item.id)?.fit_rating} />
+          <CandidateCard {...item} rating={advert?.candidate_data.find(e => e.candidate_id === item.id)?.fit_rating} />
         </TouchableOpacity>
       )
       } />
@@ -264,6 +265,7 @@ const CandidatesScreen: React.FC<InitialPropsFromParams<Props>> = ({idInitial}) 
   return loading ? <LoadingScreen /> : (
     <ScreenHeaderProvider
       mainTitlePosition="flex-start"
+      title='Zaaplikowane kandydaci'
     // actions={[
     //   {
     //     icon: <SvgIcon icon="search" />,
@@ -279,6 +281,14 @@ const CandidatesScreen: React.FC<InitialPropsFromParams<Props>> = ({idInitial}) 
     //   },
     // ]}
     >
+      {advert && <View style={{ padding: 18 }}>
+        <AdvertSmall
+          containerStyle={{
+            borderRadius: 4
+          }}
+          {...advert}
+        />
+      </View>}
       {CandidatesList}
     </ScreenHeaderProvider>
   );

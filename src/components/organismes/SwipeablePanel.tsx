@@ -71,7 +71,11 @@ const SwipeablePanel: React.FC = () => {
 				onLayout={e => {
 					if (!!buttons?.length || !!title || !!children || !!subTitle) {
 						const windowHeight = windowSizes.height;
-						setHeight((e.nativeEvent.layout.height / (windowHeight - (StatusBar.currentHeight || 0)) + (hideBar ? 0 : BAR_HEIGHT / windowHeight)) * 100);
+						const height = (e.nativeEvent.layout.height / (windowHeight - (StatusBar.currentHeight || 0)) + (hideBar ? 0 : BAR_HEIGHT / windowHeight)) * 100;
+						setHeight(0);
+						setTimeout((height) => {
+							setHeight(height);
+						}, 1, height);
 					} else {
 						setHeight(0);
 					}
@@ -125,9 +129,10 @@ const SwipeablePanel: React.FC = () => {
 				open={mode === 'options' && !!swipeablePanelProps && !!height}
 				onOpenChange={() => close()}
 				snapPoints={[Math.min(height, 100)]}
-				dismissOnSnapToBottom={false}
-				dismissOnOverlayPress={false}
-				disableDrag
+				position={0}
+				dismissOnSnapToBottom
+				// dismissOnOverlayPress={false}
+				// disableDrag
 			>
 				{!hideBar && <Sheet.Handle h={4} bg={Colors.White} opacity={1} mx='45%' my={8} />}
 				{mode === 'options' && !!swipeablePanelProps && !!height && <Sheet.Overlay />}

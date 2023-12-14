@@ -9,6 +9,13 @@ import Colors from '../colors/Colors';
 import SwipeablePanel from '../components/organismes/SwipeablePanel';
 import getScreenFromPathname from '../hooks/getScreenFromPathname';
 import LoadingScreen from '../components/atoms/LoadingScreen';
+import windowExists from '../hooks/windowExists';
+
+if (windowExists()) {
+  const win: any = window;
+  win.prevPage = window.sessionStorage.getItem('prevPage');
+  win.currPage = window.sessionStorage.getItem('currPage');
+}
 
 export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
   const { isTabbarVisible } = useTypedSelector(s => s.general);
@@ -17,6 +24,15 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
 
   useEffect(() => {
     setCurrentScreen(getScreenFromPathname(router.pathname));
+
+    if (windowExists()) {
+      const win: any = window;
+      win.prevPage = win.currPage;
+      win.currPage = router.asPath;
+
+      if (win.prevPage) window.sessionStorage.setItem('prevPage', win.prevPage);
+      if (win.currPage) window.sessionStorage.setItem('currPage', win.currPage);
+    }
   }, [router]);
 
   return (
