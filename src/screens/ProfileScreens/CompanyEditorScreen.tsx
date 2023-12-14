@@ -50,6 +50,7 @@ import useRouter from '../../hooks/useRouter';
 import SvgUriImage from '../../components/atoms/SvgUriImage';
 import MapPreview from '../../components/molecules/MapPreview';
 import { Separator } from 'tamagui';
+import DraggableList from '../../components/organismes/DraggableList';
 
 const languages: LanguageType[] = [
   {
@@ -560,6 +561,23 @@ const CompanyEditorScreen: React.FC = () => {
     );
   }, []);
 
+  const testPhotoItem = (path: string) => {
+    return <Image
+      style={{
+        width: 80,
+        height: 80,
+        borderRadius: 7,
+        // top: 'auto !important',
+        // left: 'auto !important',
+      }}
+      source={{ uri: path }}
+    />
+  };
+
+  useEffect(()=> {
+    console.log(companyPhotos);
+  },[companyPhotos])
+
   return (
     <ScreenHeaderProvider {...(editMode ? { title: 'Edytuj profil firmy' } : {})}>
       <ScrollView style={styles.Content} contentContainerStyle={{ paddingVertical: 20 }}>
@@ -920,7 +938,7 @@ const CompanyEditorScreen: React.FC = () => {
                 :
 
                 !!companyPhotos.length ?
-                  <View style={{ backgroundColor: Colors.Basic300, marginBottom: 24 }}>
+                  <View style={{ backgroundColor: Colors.Basic300, marginBottom: 24, marginHorizontal: 19 }}>
                     <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 9 }}>
                       <TouchableOpacity style={{ padding: 10, marginVertical: 10 }} onPress={() => setCompanyPhotos([])}>
                         <Typography variant='h5' weight="Bold" color={Colors.Basic600} style={{ textDecorationLine: 'underline' }}>
@@ -970,9 +988,9 @@ const CompanyEditorScreen: React.FC = () => {
                           <Typography variant='h5' weight='SemiBold' color={Colors.Basic600}>Dodaj do 20 zdjęć.</Typography>
                         </View>
                         <TouchableOpacity style={{ padding: 15 }} onPress={() => showTipsHandler()}>
-                          <Typography variant='h5' weight="Bold" color={Colors.Blue500} style={{ textDecorationLine: 'underline' }}>
+                          {/* <Typography variant='h5' weight="Bold" color={Colors.Blue500} style={{ textDecorationLine: 'underline' }}>
                             Zobacz wskazówki
-                          </Typography>
+                          </Typography> */}
                         </TouchableOpacity>
                       </View>
                       <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
@@ -985,6 +1003,15 @@ const CompanyEditorScreen: React.FC = () => {
             </>
           }
         />
+        <View style={{ height: 150, backgroundColor: Colors.Basic300, flexDirection: 'row', width: '100%', marginHorizontal: 19 }}>
+          <ScrollView horizontal>
+            <DraggableList
+              list={companyPhotos}
+              callback={(newList) => setCompanyPhotos(newList)}
+              listItem={(path) => testPhotoItem(path)}
+            />
+          </ScrollView>
+        </View>
         <View style={{ marginLeft: 19, marginBottom: 5 }}>
           <Typography weight="Bold" variant="h5">
             Inne zdjęcia{' '}
@@ -1041,9 +1068,9 @@ const CompanyEditorScreen: React.FC = () => {
                           <Typography variant='h5' weight='SemiBold' color={Colors.Basic600}>Dodaj do 20 zdjęć.</Typography>
                         </View>
                         <TouchableOpacity style={{ padding: 15 }} onPress={() => showTipsHandler()}>
-                          <Typography variant='h5' weight="Bold" color={Colors.Blue500} style={{ textDecorationLine: 'underline' }}>
+                          {/* <Typography variant='h5' weight="Bold" color={Colors.Blue500} style={{ textDecorationLine: 'underline' }}>
                             Zobacz wskazówki
-                          </Typography>
+                          </Typography> */}
                         </TouchableOpacity>
                       </View>
                       <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
