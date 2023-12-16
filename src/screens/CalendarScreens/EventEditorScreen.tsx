@@ -153,7 +153,7 @@ const EventEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial 
               onPress={() => setShowCalendar('start')}
               borderRadius={4}
             >
-              {startDate.toLocaleDateString()}
+              {startDate.toLocaleDateString('pl')}
             </Button>
             <Button
               mt={7.5}
@@ -180,7 +180,7 @@ const EventEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial 
               onPress={() => setShowCalendar('end')}
               borderRadius={4}
             >
-              {endDate.toLocaleDateString()}
+              {endDate.toLocaleDateString('pl')}
             </Button>
             <Button
               mt={7.5}
