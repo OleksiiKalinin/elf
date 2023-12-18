@@ -59,6 +59,7 @@ module.exports = function () {
     },
     experimental: {
       forceSwcTransforms: true,
+      scrollRestoration: true,
       //   swcPlugins: [['react-native-reanimated-swc-plugin']],
     },
     webpack: (config, options) => {
