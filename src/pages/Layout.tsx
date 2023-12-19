@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { ReactNode, FC, useEffect, useState, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, useColorScheme } from 'react-native';
 import { useActions } from '../hooks/useActions';
 import { useTypedSelector } from '../hooks/useTypedSelector';
 import { navigationLinking } from '../navigators/RootNavigator';
@@ -37,7 +37,7 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
 
   return (
     <>
-      <View style={{ paddingBottom: isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0, minHeight: '100vh', backgroundColor: Colors.Basic200, alignItems: 'center' }}>
+      <View style={{ paddingBottom: isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0, minHeight: '100vh', backgroundColor: '#e3e3e3' /*useColorScheme() === 'dark' ? '#3c3c3c' : '#e3e3e3'*/, alignItems: 'center' }}>
         <View style={{ height: '100%', maxWidth: 768, width: '100%', flex: 1 }}>
           {children}
         </View>
@@ -57,7 +57,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     width: '100%',
-    backgroundColor: Colors.White,
     flexDirection: 'row',
     justifyContent: 'center',
   }

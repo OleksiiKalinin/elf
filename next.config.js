@@ -21,6 +21,7 @@ const transpilePackages = [
   'react-native-maps',
   'react-native-vector-icons',
   'expo-linear-gradient',
+  'react-native-shadow-2',
 ];
 
 const plugins = [

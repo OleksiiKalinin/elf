@@ -25,12 +25,11 @@ const TabbarMenu: React.FC<TabbarMenuProps> = ({
   scrollable = false,
   autoWidth = false,
   stickyTop,
+  backgroundColor,
   paddingHorizontal = 0,
   ComponentToPassDown,
   ...props
 }) => {
-  const { windowSizes } = useTypedSelector(s => s.general);
-
   return (
     <TabView
       swipeEnabled={false}
@@ -42,10 +41,10 @@ const TabbarMenu: React.FC<TabbarMenuProps> = ({
           indicatorStyle={styles.Indicator}
           style={[
             styles.Tabbar,
-            isNumber(stickyTop) ? { ...styles.TabbarSticky, top: stickyTop } : {},
+            isNumber(stickyTop) ? { ...styles.TabbarSticky, top: Platform.select({native: 0, web: stickyTop}) } : {},
             {
-              backgroundColor: props.backgroundColor || Colors.Basic100,
-              shadowColor: props.backgroundColor ? 'transparent' : Colors.White
+              backgroundColor: backgroundColor || Colors.Basic100,
+              shadowColor: backgroundColor ? 'transparent' : Colors.White
             }
           ]}
           tabStyle={[styles.Tab, autoWidth ? { width: 'auto' } : {}]}
@@ -68,6 +67,11 @@ const TabbarMenu: React.FC<TabbarMenuProps> = ({
         {ComponentToPassDown}
       </>)}
       {...props}
+      style={[{
+        zIndex: 10,
+        minHeight: isNumber(stickyTop) ? TABBAR_HEIGHT : undefined,
+        flex: Platform.select({ native: 1, web: 'none' as any })
+      }, props.style]}
       sceneContainerStyle={[{
         marginTop: isNumber(stickyTop) ? TABBAR_HEIGHT : undefined,
       }, props.sceneContainerStyle]}
@@ -86,7 +90,6 @@ const styles = StyleSheet.create({
       web: 'fixed'
     }),
     width: '100%',
-    zIndex: 1,
     maxWidth: 768,
   },
   Tab: {

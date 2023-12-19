@@ -1,4 +1,4 @@
-import React, { ComponentProps, FC } from 'react';
+import React, { ComponentProps, FC, useRef, useState } from 'react';
 import { View, StyleSheet, Image, TouchableOpacityBase, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
 import { isNumber } from 'lodash';
 import { UserAdvertType } from '../../store/reducers/types';
@@ -8,18 +8,23 @@ import Typography from '../atoms/Typography';
 import SvgIcon from '../atoms/SvgIcon';
 import Button from '../molecules/Button';
 import useRouter from '../../hooks/useRouter';
+import Popover from '../molecules/Popover';
+import { Separator } from 'tamagui';
 
 type AdvertSmallProps = {
-  onPressOptions?: (advert: UserAdvertType) => void;
-  onPressExtendActivity?: (advert: UserAdvertType) => void;
-  onChoose?: (advert: UserAdvertType) => void;
+  onChooseButton?: (advert: UserAdvertType) => void;
   containerStyle?: StyleProp<ViewStyle>,
+  hideOptions?: boolean,
+  hideCandidatesButton?: boolean,
+  hideExtendActivityButton?: boolean,
+  hideFooter?: boolean,
 } & UserAdvertType;
 
 const AdvertSmall: FC<AdvertSmallProps> = (advert) => {
-  const { onPressExtendActivity, onPressOptions, onChoose, containerStyle, benefits_ids, company_id, description, duties_ids, expiration_time, job_experience_id, job_mode_id, job_position_id, job_start_id, known_language_id, location, requirements_ids, salary_amount_low, salary_amount_up, salary_tax_type_id, salary_time_type_id, trial_time_id, trial_type_id, type_of_contract_id, working_hour_down, working_hour_up, id, num_views, candidate_data } = advert;
+  const { onChooseButton, hideOptions = false, hideCandidatesButton = false, hideExtendActivityButton = false, hideFooter = false, is_active, containerStyle, benefits_ids, company_id, description, duties_ids, expiration_time, job_experience_id, job_mode_id, job_position_id, job_start_id, known_language_id, location, requirements_ids, salary_amount_low, salary_amount_up, salary_tax_type_id, salary_time_type_id, trial_time_id, trial_type_id, type_of_contract_id, working_hour_down, working_hour_up, id, num_views, candidate_data } = advert;
   const { jobSalaryModes, jobSalaryTaxes, jobIndustries, userCompany } = useTypedSelector(state => state.general);
   const router = useRouter();
+  // const [optionsVisible, setOptionsVisible] = useState(false);
   const expiresIn = Math.ceil(new Date(new Date(expiration_time).getTime() - Date.now()).getTime() / 1000 / 60 / 60 / 24);
   const expired = expiresIn < 0;
 
@@ -57,16 +62,49 @@ const AdvertSmall: FC<AdvertSmallProps> = (advert) => {
             </Typography>
           </View>
         </TouchableOpacity>
-        {!!onPressOptions && <View style={{ marginTop: -10 }}>
-          <Button
-            circular
-            variant='text'
-            onPress={() => onPressOptions?.(advert)}
-            icon={<SvgIcon icon="threeDots" />}
-          />
-        </View>}
+        {!hideOptions &&
+          <Popover
+            placement='left-start'
+            triggerComponent={(open) => (
+              <View style={{ marginTop: -8 }}>
+                <Button
+                  variant='text'
+                  circular
+                  icon={<SvgIcon icon="threeDots" />}
+                  onPress={open}
+                />
+              </View>
+            )}
+          >
+            {(close) => (<>
+              <TouchableOpacity
+                style={{ padding: 10, flexDirection: 'row', alignItems: 'center' }}
+                onPress={() => {
+                  close();
+                  router.push({ stack: 'AdvertStack', screen: 'AdvertEditorScreen', params: { id: id.toString() } })
+                }}
+              >
+                <SvgIcon icon="pencil" style={{marginRight: 10}} />
+                <Typography variant='h4'>
+                  Edytuj
+                </Typography>
+              </TouchableOpacity>
+              <Separator borderColor={Colors.Basic500} />
+              <TouchableOpacity
+                style={{ padding: 10, flexDirection: 'row', alignItems: 'center' }}
+                onPress={() => {
+                  close();
+                  //delete
+                }}
+              >
+                <SvgIcon icon="closeX" fill={Colors.Danger} style={{marginRight: 10}} />
+                <Typography variant='h4' color={Colors.Danger}>Usuń</Typography>
+              </TouchableOpacity>
+            </>)}
+          </Popover>
+        }
       </View>
-      {onChoose && <View
+      {!!onChooseButton && <View
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
@@ -75,11 +113,10 @@ const AdvertSmall: FC<AdvertSmallProps> = (advert) => {
         }}
       >
         <Button
-          style={{ paddingVertical: 5 }} 
-          borderRadius={4} 
-          contentVariant='h5' 
+          borderRadius={4}
+          contentVariant='h5'
           contentWeight='Bold'
-          onPress={() => onChoose(advert)}
+          onPress={() => onChooseButton(advert)}
         >
           Wybierz
         </Button>
@@ -89,10 +126,9 @@ const AdvertSmall: FC<AdvertSmallProps> = (advert) => {
           flexDirection: 'row',
           justifyContent: 'space-between',
           paddingHorizontal: 10,
-          paddingTop: 12,
         }}
       >
-        <View style={{ flex: 1, paddingHorizontal: 10 }}>
+        {!hideCandidatesButton && <View style={{ flex: 1, paddingHorizontal: 10, paddingTop: 12 }}>
           <Button
             contentWeight="Bold"
             contentVariant='h5'
@@ -101,20 +137,20 @@ const AdvertSmall: FC<AdvertSmallProps> = (advert) => {
           >
             Kandydaci: {candidate_data.length}
           </Button>
-        </View>
-        <View style={{ flex: 1, paddingHorizontal: 10 }}>
-          {onPressExtendActivity && <Button
+        </View>}
+        {!hideExtendActivityButton && <View style={{ flex: 1, paddingHorizontal: 10, paddingTop: 12 }}>
+          <Button
             contentWeight="Bold"
             contentVariant='h5'
             variant={expired ? 'primary' : 'light'}
             br={4}
-            onPress={() => onPressExtendActivity(advert)}
+            onPress={() => console.log('extend')}
           >
             Przedłuż
-          </Button>}
-        </View>
+          </Button>
+        </View>}
       </View>
-      <View
+      {!hideFooter && <View
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
@@ -140,10 +176,56 @@ const AdvertSmall: FC<AdvertSmallProps> = (advert) => {
               : 'Wygasło'}
           </Typography>
         </View>
-      </View>
+      </View>}
     </View>
   );
 };
+
+// const extendAdvertHandler = (data: any) => {
+//   setSwipeablePanelProps({
+//     title: 'Pakiety',
+//     children: (
+//       <View>
+//         <View style={{ paddingHorizontal: 19 }}>
+//           <Typography variant="h5">
+//             Ups! Skończyły Ci się darmowe ogłoszenia.
+//           </Typography>
+//         </View>
+//         <View
+//           style={{
+//             backgroundColor: Colors.Sea300,
+//             marginTop: 16,
+//             padding: 19
+//           }}>
+//           <Typography color={Colors.Basic600} variant="h5" weight='Bold'>
+//             PAKIET - MEDIUM
+//           </Typography>
+//           <Typography variant="h2" weight='Bold'>
+//             50zł <Typography variant="main" weight='Medium'>tydzień</Typography>
+//           </Typography>
+//           <Typography variant="small" color={Colors.Danger}>
+//             Pakiet wygasł
+//           </Typography>
+//         </View>
+//       </View>
+//     ),
+//     buttons: [
+//       {
+//         variant: "primary",
+//         contentVariant: 'h5',
+//         contentWeight: 'Bold',
+//         contentColor: Colors.White,
+//         children: 'Przedłuż pakiet',
+//         onPress: () => { },
+//       },
+//       {
+//         children: 'Zobacz pakiety',
+//         contentVariant: 'h5',
+//         onPress: () => { }//navigation.navigate("ProfileStack", { screen: "MainScreen" }),
+//       },
+//     ]
+//   })
+// }
 
 const styles = StyleSheet.create({});
 

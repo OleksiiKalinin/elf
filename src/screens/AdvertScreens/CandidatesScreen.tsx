@@ -38,7 +38,7 @@ const CandidatesScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial }
     })();
   }, [userAdverts]);
 
-  const CandidatesList = useMemo(() => (<View style={{ flex: 1, backgroundColor: Colors.Basic100 }}>
+  const CandidatesList = useMemo(() => (<View style={{ flex: 1 }}>
     <SectionList
       initialNumToRender={5}
       sections={[{ title: '', data: candidates }]}
@@ -266,6 +266,7 @@ const CandidatesScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial }
     <ScreenHeaderProvider
       mainTitlePosition="flex-start"
       title='Zaaplikowane kandydaci'
+      backgroundContent={Colors.Basic100}
     // actions={[
     //   {
     //     icon: <SvgIcon icon="search" />,

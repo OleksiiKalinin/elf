@@ -236,7 +236,13 @@ const EventEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial 
             </TouchableOpacity>}
           </View>
           {selectedAdvert ?
-            <AdvertSmall {...selectedAdvert} />
+            <AdvertSmall
+              hideOptions
+              hideCandidatesButton
+              hideExtendActivityButton
+              hideFooter
+              {...selectedAdvert}
+            />
             :
             <Button
               variant='secondary'

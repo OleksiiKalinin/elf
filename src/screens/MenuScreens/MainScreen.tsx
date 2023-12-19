@@ -248,10 +248,11 @@ const MainScreen: React.FC = ({ }) => {
   }, [userData]);
 
   return (
-    <View style={styles.Wrapper}>
+    <>
       <ScreenHeaderProvider
         mode="mainTitle"
         mainTitlePosition="flex-start"
+        backgroundContent={Colors.Basic200}
         alterTitle={
           <View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 15 }}>
             <View style={{ marginRight: 12 }}>
@@ -370,15 +371,11 @@ const MainScreen: React.FC = ({ }) => {
         </ScrollView>
       </ScreenHeaderProvider>
       <CornerCircleButton {...useLink({ href: { stack: 'MenuStack', screen: 'MainScreen', params: { subView: 'options' } } })} />
-    </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  Wrapper: {
-    flex: 1,
-    backgroundColor: Colors.Basic200,
-  },
   FlatSectionWrapper: {
     paddingHorizontal: 20,
     paddingTop: 25,

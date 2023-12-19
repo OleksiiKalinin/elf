@@ -1,4 +1,4 @@
-import { LinkingOptions, NavigatorScreenParams, } from '@react-navigation/native';
+import { LinkingOptions, NavigatorScreenParams } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
 import AuthNavigator, { AuthStackLinking, AuthStackParamList } from './AuthNavigator';
 import CalendarNavigator, { CalendarStackLinking, CalendarStackParamList } from './CalendarNavigator';
@@ -171,6 +171,7 @@ const RootNavigator: React.FC = () => {
 
   return (
     <RootStack.Navigator
+      // sceneContainerStyle={{ maxWidth: 768, width: '100%' }}
       backBehavior='history' initialRouteName="MenuStack" screenOptions={{ headerShown: false }}
       tabBar={({ state }) => <BottomTabs routes={state.routes.map(({ name }) => name)} />}
     >

@@ -98,7 +98,7 @@ const SwipeablePanel: React.FC = () => {
 					top: mode === 'screen' && !!swipeablePanelProps ? 0 : '100%',
 					width: '100%',
 					height: '100%',
-					backgroundColor: 'rgba(255,255,255,.5)'
+					backgroundColor: Colors.White50
 				}}
 			>
 				<Sheet

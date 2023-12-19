@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { BlurBackgroundProps } from '.';
+import Colors from '../../../colors/Colors';
 
 const BlurBackground: FC<BlurBackgroundProps> = ({ blurAmount = 4 }) => {
 	return (
@@ -8,9 +9,9 @@ const BlurBackground: FC<BlurBackgroundProps> = ({ blurAmount = 4 }) => {
 			//@ts-ignore
 			WebkitBackdropFilter: `blur(${blurAmount}px)`,
 			backdropFilter: `blur(${blurAmount}px)`,
-			background: 'rgba(255, 255, 255, 0.1)',
+			background: Colors.White10,
 			filter: 'blur(0)',
-			zIndex: 1,
+			zIndex: 0,
 		}, styles.Blur]} />
 	);
 };

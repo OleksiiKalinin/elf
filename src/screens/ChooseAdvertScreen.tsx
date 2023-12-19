@@ -21,10 +21,16 @@ const ChooseAdvertScreen: FC<ChooseAdvertScreenProps> = ({ callback }) => {
       <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
         {userAdverts.map(item => (
           <View style={{ marginTop: 12 }}>
-            <AdvertSmall {...item} onChoose={() => {
-              callback(item);
-              backToRemoveParams();
-            }} />
+            <AdvertSmall
+              {...item}
+              hideOptions
+              hideCandidatesButton
+              hideExtendActivityButton
+              hideFooter
+              onChooseButton={(advert) => {
+                callback(advert);
+                backToRemoveParams();
+              }} />
           </View>
         ))}
       </ScrollView>

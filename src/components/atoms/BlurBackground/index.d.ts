@@ -1,4 +1,8 @@
 export interface BlurBackgroundProps {
+    /** 
+     * - max 32 
+     * - default 4 
+     * */
     blurAmount?: number
 }
 

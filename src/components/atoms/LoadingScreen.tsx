@@ -10,7 +10,7 @@ const LoadingScreen = () => {
     <ScrollLock>
       <View style={styles.Loading}>
         <BlurBackground blurAmount={5} />
-        <Spinner color={Colors.Basic900} size='large' zIndex={2} />
+        <Spinner color={Colors.Basic900} size='large' zIndex={1} />
       </View>
     </ScrollLock>
   );

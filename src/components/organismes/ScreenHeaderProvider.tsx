@@ -137,8 +137,6 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
       flex: Platform.select({ native: 1 }),
       minHeight: Platform.select({ web: windowSizes.height - BottomSpace }),
       alignItems: 'center',
-      backgroundColor: 'rgb(249, 249, 249)',
-      // backgroundColor: Colors.Basic200,
     }}>
       <View style={{ maxWidth: 768, width: '100%', flex: 1 }}>
         <View style={[styles.Header, { backgroundColor: transparent && backgroundHeader ? backgroundHeader : transparent ? 'transparent' : Colors.White }]}>

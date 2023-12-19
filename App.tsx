@@ -23,36 +23,43 @@ const App = () => {
   return (
     <TamaguiProvider config={config} disableInjectCSS defaultTheme={colorScheme}>
       <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-        <GestureHandlerRootView style={styles.Flex1}>
-          <Provider store={nativeStore}>
-            <NavigationContainer
-              theme={isDarkMode ? DarkTheme : DefaultTheme}
-              linking={navigationLinking}
-            >
-              <StatusBar
-                animated
-                showHideTransition="slide"
-                backgroundColor={Colors.White}
-                barStyle='dark-content'
-              />
-              <AppUnifiedProvider>
-                <View style={styles.Flex1}>
+        <Provider store={nativeStore}>
+          <NavigationContainer
+            theme={isDarkMode ? DarkTheme : DefaultTheme}
+            linking={navigationLinking}
+          >
+            <StatusBar
+              animated
+              showHideTransition="slide"
+              backgroundColor={Colors.White}
+              barStyle='dark-content'
+            />
+            <AppUnifiedProvider>
+              <GestureHandlerRootView style={styles.Container}>
+                <View style={styles.Content}>
                   <RootNavigator />
                   <SwipeablePanel />
                 </View>
-              </AppUnifiedProvider>
-            </NavigationContainer>
-          </Provider>
-        </GestureHandlerRootView>
+              </GestureHandlerRootView>
+            </AppUnifiedProvider>
+          </NavigationContainer>
+        </Provider>
       </SafeAreaProvider>
     </TamaguiProvider>
   );
 };
 
 const styles = StyleSheet.create({
-  Flex1: {
+  Container: {
     flex: 1,
+    alignItems: 'center',
+    backgroundColor: '#e3e3e3'
   },
+  Content: {
+    maxWidth: 768,
+    width: '100%',
+    flex: 1
+  }
 });
 
 export default App;

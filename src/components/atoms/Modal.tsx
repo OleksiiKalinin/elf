@@ -2,6 +2,7 @@ import React, { ComponentProps, FC, useEffect } from 'react';
 import ScrollLock from './ScrollLock';
 import { Platform, Modal as RNModal, TouchableOpacity, View } from 'react-native';
 import windowExists from '../../hooks/windowExists';
+import Colors from '../../colors/Colors';
 
 /** Custom Modal with good web support, including support onClose event (web history back button, dismiss, native hardware back button, etc.) */
 const Modal: FC<ComponentProps<typeof RNModal> & { onClose: () => void }> = ({ onClose, children, ...props }) => {
@@ -39,7 +40,7 @@ const Modal: FC<ComponentProps<typeof RNModal> & { onClose: () => void }> = ({ o
             >
                 <TouchableOpacity
                     activeOpacity={1}
-                    style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', alignItems: 'center', justifyContent: 'center', cursor: 'default' }}
+                    style={{ flex: 1, backgroundColor: Colors.Black50, alignItems: 'center', justifyContent: 'center', cursor: 'default' }}
                     onPress={closeRequest}
                 >
                     <TouchableOpacity

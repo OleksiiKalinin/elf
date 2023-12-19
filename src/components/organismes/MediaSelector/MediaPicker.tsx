@@ -306,7 +306,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
               backgroundContent={'#000'}
               callback={closePreview}
               headerItemsColor={Colors.White}
-              backgroundHeader={'rgba(0, 0, 0, 0.1)'}
+              backgroundHeader={Colors.Black10}
               transparent
               title=' '
             >

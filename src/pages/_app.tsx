@@ -16,6 +16,7 @@ import { nextStore } from '../store/nextstore';
 import { Layout } from './Layout';
 import AppUnifiedProvider from '../components/organismes/AppUnifiedProvider';
 import { useRouter } from 'next/router';
+import { navigationLinking } from '../navigators/RootNavigator';
 
 const insets = {
   top: 0,
@@ -34,20 +35,22 @@ const frame = {
 const initialMetrics = { insets, frame };
 
 //always starts with "/" 
-const ROUTES_TO_RETAIN = ['/calendar/EventEditorScreen'];
+const ROUTES_TO_RETAIN = [
+  '/calendar/EventEditorScreen',
+];
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
-  const retainedComponents = useRef<any>({});
+  const retainedComponents = useRef<{ [k: string]: { component: ReactNode } }>({});
   const [theme, setTheme] = useRootTheme();
 
   const isRetainableRoute = ROUTES_TO_RETAIN.includes(router.asPath);
-  const splitted = router.asPath.split('/');
+  const splittedRoute = router.asPath.split('/');
 
-  if (!splitted[2]) {
-    const key = Object.keys(retainedComponents.current).find(key => key.includes(splitted[1], 1));
+  if (!splittedRoute[2]) {
+    const key = Object.keys(retainedComponents.current).find(key => key.includes(splittedRoute[1], 1));
     if (key) {
-      retainedComponents.current[key] = undefined;
+      delete retainedComponents.current[key];
     }
   }
 
@@ -92,17 +95,18 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
             <GestureHandlerRootView style={styles.container}>
               <AppUnifiedProvider>
                 <Layout>
-                  {/* Retained Components */}
+                  {/* __start Retained Components */}
                   <View style={{ display: isRetainableRoute ? 'flex' : 'none', width: '100%', height: '100%' }}>
-                    {Object.entries(retainedComponents.current).map(([key, value]: any) => (
+                    {Object.entries(retainedComponents.current).map(([key, value]) => (
                       <View
                         key={key}
                         style={{ display: router.asPath === key ? 'flex' : 'none', width: '100%', height: '100%' }}
                       >
-                        {value?.component}
+                        {value.component}
                       </View>
                     ))}
                   </View>
+                  {/* __end Retained Components */}
                   {!isRetainableRoute && <Component {...pageProps} />}
                 </Layout>
               </AppUnifiedProvider>
@@ -123,6 +127,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    maxWidth: 768
+    // maxWidth: 768
   },
 });

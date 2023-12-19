@@ -60,7 +60,7 @@ const ImageViewer: FC<Props> = ({ close, visible, index = 0, data }) => {
             transparent
             onClose={close}
         >
-            <View style={{ flex: 1, backgroundColor: colorTransparent ? 'rgba(0,0,0,0.5)' : Colors.Basic900 }}>
+            <View style={{ flex: 1, backgroundColor: colorTransparent ? Colors.Black50 : Colors.Basic900 }}>
                 {Platform.OS === 'web' ?
                     <>
                         {data.length > 1 && renderIndicator(currIndex + 1, data.length)}
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
         height: 44,
         justifyContent: 'center',
         zIndex: 10000,
-        backgroundColor: 'rgba(0,0,0,0.2)',
+        backgroundColor: Colors.Black20,
         borderBottomLeftRadius: 10
     },
     CloseButton: {
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
         top: 0,
         left: 0,
         padding: 10,
-        backgroundColor: 'rgba(0,0,0,0.2)',
+        backgroundColor: Colors.Black20,
         zIndex: 10000,
         borderBottomRightRadius: 10
     }

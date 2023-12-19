@@ -73,7 +73,6 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes }) => {
             visibility: isTabbarVisible ? 'visible' : 'hidden',
             flex: Platform.select({ web: 1 }),
             alignItems: 'center',
-            backgroundColor: 'rgb(249, 249, 249)',
         }]}>
             <View style={[{ flexDirection: 'row', backgroundColor: Colors.White, maxWidth: 768, width: '100%', flex: 1 }]}>
                 {routes.map((route) => {
