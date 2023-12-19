@@ -11,6 +11,8 @@ export type DraggableListProps = {
   keyExtractor: (item: any, index: number) => string,
   renderItem: RenderItem<any> = (params: RenderItemParams<T>) => React.ReactNode,
   horizontal?: boolean,
+  contentContainerStyle?: StyleProp<ViewStyle>,
+  style?: StyleProp<ViewStyle>,
 };
  
 declare const DraggableList: React.FC<DraggableListProps>;

@@ -958,7 +958,8 @@ const CompanyEditorScreen: React.FC = () => {
                         onDragEnd={({ data }) => setCompanyPhotos(data)}
                         keyExtractor={({ path }) => path}
                         renderItem={(props: RenderItemParams<MediaType>) => renderScrollPhotoItem({ ...props, mode: 'photos' })}
-                      // renderItem={(item, getIndex, drag, isActive) => renderScrollPhotoItem({ item, drag, isActive, getIndex, mode: 'photos' })}
+                        contentContainerStyle={{ paddingLeft: 19, paddingVertical: 10 }}
+                        style={{ flex: 1 }}
                       />
                       {/* <View style={{ marginHorizontal: 19 }}>
                         <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 19 }}>

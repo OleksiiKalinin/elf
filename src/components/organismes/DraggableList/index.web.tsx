@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React from 'react';
+import { View } from 'react-native';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { DraggableListProps } from '.';
 import { isString } from 'lodash';
-import { tree } from 'next/dist/build/templates/app-page';
 import { ScrollView } from '../../molecules/ScrollView';
-
-type DroppableProvidedType = { innerRef: React.LegacyRef<HTMLDivElement> | undefined; droppableProps: React.JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>; placeholder: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | React.PromiseLikeOfReactNode | null | undefined; };
 
 type DraggableProvidedType = { draggableProps: React.JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>; dragHandleProps: React.JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>; innerRef: React.LegacyRef<HTMLDivElement> | undefined; };
 
@@ -15,6 +12,8 @@ const DraggableList: React.FC<DraggableListProps> = ({
 	onDragEnd,
 	renderItem,
 	horizontal = false,
+	contentContainerStyle,
+	style,
 }) => {
 
 	const handleDragEnd = (result: { destination: { index: number; }; source: { index: number; }; }) => {
@@ -29,25 +28,6 @@ const DraggableList: React.FC<DraggableListProps> = ({
 		return onDragEnd({ data: reorderedList });
 	};
 
-	const getListStyle = (isDraggingOver: boolean) => ({
-		display: horizontal ? 'flex' : 'initial',
-		// background: isDraggingOver ? "lightblue" : "lightgrey",
-		width: '100%',
-		// overflow: 'scroll',
-		// flexDirection: horizontal ? 'row' : 'column'
-	});
-
-	const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
-		...draggableStyle,
-		userSelect: "none",
-		// padding: grid * 2,
-		// margin: `0 0 ${grid}px 0`,
-		// position: 'static !important',
-		// opacity: isDragging ? .5 : 1,
-
-		// background: isDragging ? "lightgreen" : '',
-	});
-
 	const getRenderItem = (items: any[]) => (provided: DraggableProvidedType, snapshot: { isDragging: boolean; }, rubric: { source: { index: string | number; }; }) => {
 
 		const index = isString(rubric.source.index) ? parseInt(rubric.source.index) : rubric.source.index;
@@ -57,10 +37,10 @@ const DraggableList: React.FC<DraggableListProps> = ({
 				{...provided.draggableProps}
 				{...provided.dragHandleProps}
 				ref={provided.innerRef}
-				style={getItemStyle(
-					snapshot.isDragging,
-					provided.draggableProps.style
-				)}
+				style={{
+					...provided.draggableProps.style,
+					userSelect: 'none',
+				}}
 			>
 				{renderItem({
 					item: items[index],
@@ -76,13 +56,17 @@ const DraggableList: React.FC<DraggableListProps> = ({
 		<DragDropContext onDragEnd={handleDragEnd}>
 			<Droppable
 				droppableId="droppable"
-				direction={horizontal}
+				direction={horizontal ? 'horizontal' : 'vertical'}
 				renderClone={renderElement}
 			>
-				{(provided: DroppableProvidedType, snapshot: { isDraggingOver: boolean; }) => (
-					<div
+				{(provided: any) => (
+					<View
 						ref={provided.innerRef}
-						style={getListStyle(snapshot.isDraggingOver)}
+						style={{
+							width: '100%',
+							flexDirection: horizontal ? 'row' : 'column',
+							...contentContainerStyle,
+						}}
 						{...provided.droppableProps}
 					>
 						{data.map((item: any, index) => (
@@ -91,7 +75,7 @@ const DraggableList: React.FC<DraggableListProps> = ({
 							</Draggable>
 						))}
 						{provided.placeholder}
-					</div>
+					</View>
 				)}
 			</Droppable>
 		</DragDropContext>
@@ -101,21 +85,19 @@ const DraggableList: React.FC<DraggableListProps> = ({
 
 	return (
 		<>
-			{horizontal ? 
+			{horizontal ?
 				<ScrollView horizontal>
-					<DraggableContent/>
+					<DraggableContent />
 				</ScrollView>
 
 				:
 
-				<DraggableContent/>
+				<View style={style}>
+					<DraggableContent />
+				</View>
 			}
 		</>
 	);
 };
-
-const styles = StyleSheet.create({
-
-});
 
 export default DraggableList;

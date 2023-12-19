@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
+import React from 'react';
+import { StyleSheet } from 'react-native';
+import DraggableFlatList from 'react-native-draggable-flatlist';
 import { DraggableListProps } from '.';
 
 const DraggableList: React.FC<DraggableListProps> = ({
@@ -9,21 +9,21 @@ const DraggableList: React.FC<DraggableListProps> = ({
   keyExtractor,
   renderItem,
   horizontal = false,
+  contentContainerStyle,
+  style,
 }) => {
 
   return (
-      <DraggableFlatList
-        data={data}
-        onDragEnd={onDragEnd}
-        keyExtractor={keyExtractor}
-        renderItem={renderItem}
-        horizontal={horizontal}
-      />
+    <DraggableFlatList
+      data={data}
+      onDragEnd={onDragEnd}
+      keyExtractor={keyExtractor}
+      renderItem={renderItem}
+      horizontal={horizontal}
+      contentContainerStyle={contentContainerStyle}
+      style={style}
+    />
   );
 };
-
-const styles = StyleSheet.create({
-
-});
 
 export default DraggableList;
