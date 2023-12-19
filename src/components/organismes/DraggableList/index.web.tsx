@@ -1,82 +1,103 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React from 'react';
+import { View } from 'react-native';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { DraggableListProps } from '.';
+import { isString } from 'lodash';
+import { ScrollView } from '../../molecules/ScrollView';
 
-const DraggableList: React.FC<DraggableListProps> = ({ list, callback, listItem }) => {
+type DraggableProvidedType = { draggableProps: React.JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>; dragHandleProps: React.JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>; innerRef: React.LegacyRef<HTMLDivElement> | undefined; };
 
-	const handleDragEnd = (result: any) => {
+const DraggableList: React.FC<DraggableListProps> = ({
+	data,
+	onDragEnd,
+	renderItem,
+	horizontal = false,
+	contentContainerStyle,
+	style,
+}) => {
+
+	const handleDragEnd = (result: { destination: { index: number; }; source: { index: number; }; }) => {
 		if (!result.destination) {
 			return;
 		}
 
-		const reorderedList= Array.from(list);
+		const reorderedList = Array.from(data);
 		const [moved] = reorderedList.splice(result.source.index, 1);
 		reorderedList.splice(result.destination.index, 0, moved);
 
-		callback(reorderedList);
+		return onDragEnd({ data: reorderedList });
 	};
 
-	const grid = 8;
+	const getRenderItem = (items: any[]) => (provided: DraggableProvidedType, snapshot: { isDragging: boolean; }, rubric: { source: { index: string | number; }; }) => {
 
-	const getListStyle = (isDraggingOver: boolean) => ({
-		display: 'flex',
-		// background: isDraggingOver ? "lightblue" : "lightgrey",
-		padding: grid,
-		width: '100%',
-	});
+		const index = isString(rubric.source.index) ? parseInt(rubric.source.index) : rubric.source.index;
 
-	const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
-		userSelect: "none",
-		padding: grid * 2,
-		margin: `0 0 ${grid}px 0`,
-		// top: 'auto !important',
-		// left: 'auto !important',
-		// position: 'static !important',
+		return (
+			<div
+				{...provided.draggableProps}
+				{...provided.dragHandleProps}
+				ref={provided.innerRef}
+				style={{
+					...provided.draggableProps.style,
+					userSelect: 'none',
+				}}
+			>
+				{renderItem({
+					item: items[index],
+					drag: () => { },
+					getIndex: () => index,
+					isActive: snapshot.isDragging,
+				})}
+			</div>
+		)
+	};
 
-		background: isDragging ? "lightgreen" : '',
-
-		...draggableStyle
-	});
-
-	return (
+	const DraggableContent = () => (
 		<DragDropContext onDragEnd={handleDragEnd}>
-			<Droppable droppableId="droppable" direction="horizontal">
-				{(provided: any, snapshot: any) => (
-					<div
+			<Droppable
+				droppableId="droppable"
+				direction={horizontal ? 'horizontal' : 'vertical'}
+				renderClone={renderElement}
+			>
+				{(provided: any) => (
+					<View
 						ref={provided.innerRef}
-
-						// style={{ display: 'flex', padding: 0,}}
-						style={getListStyle(snapshot.isDraggingOver)}
+						style={{
+							width: '100%',
+							flexDirection: horizontal ? 'row' : 'column',
+							...contentContainerStyle,
+						}}
 						{...provided.droppableProps}
 					>
-						{list.map((item: any, index) => (
+						{data.map((item: any, index) => (
 							<Draggable key={item.id} draggableId={item.id.toString()} index={index}>
-								{(provided: any, snapshot: any) => (
-									<div
-										ref={provided.innerRef}
-										{...provided.draggableProps}
-										{...provided.dragHandleProps}
-										style={getItemStyle(
-											snapshot.isDragging,
-											provided.draggableProps.style
-										)}
-									>
-										{listItem(item.path)}
-									</div>
-								)}
+								{renderElement}
 							</Draggable>
 						))}
 						{provided.placeholder}
-					</div>
+					</View>
 				)}
 			</Droppable>
 		</DragDropContext>
+	)
+
+	const renderElement = getRenderItem(data);
+
+	return (
+		<>
+			{horizontal ?
+				<ScrollView horizontal>
+					<DraggableContent />
+				</ScrollView>
+
+				:
+
+				<View style={style}>
+					<DraggableContent />
+				</View>
+			}
+		</>
 	);
 };
-
-const styles = StyleSheet.create({
-
-});
 
 export default DraggableList;

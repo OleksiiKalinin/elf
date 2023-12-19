@@ -540,43 +540,31 @@ const CompanyEditorScreen: React.FC = () => {
 
   const renderScrollPhotoItem = useCallback(({ item, drag, isActive, getIndex, mode }: RenderItemParams<MediaType> & { mode: 'photos' | 'certificates' }) => {
     const index = getIndex();
+
     return (
-      <ScaleDecorator>
-        <TouchableOpacity
-          activeOpacity={1} onLongPress={drag} disabled={isActive}
-          style={{ opacity: isActive ? 0.5 : 1, marginRight: 19, position: 'relative' }}
-        >
-          <View style={{ position: 'absolute', top: -17, right: -17, zIndex: 1 }}>
-            <Button p={5} variant='text' circular
-              onPress={() => index !== undefined && deletePhotoHandler(index, mode)}
-              icon={<SvgIcon icon='crossSmall' />}
-            />
-          </View>
-          {index !== undefined && <View style={{ position: 'absolute', top: -6, left: -5, zIndex: 1, backgroundColor: Colors.White, width: 20, height: 20, borderRadius: 10 }}>
-            <Typography weight='Bold' textAlign='center'>{index + 1}</Typography>
-          </View>}
-          <Image style={{ width: 80, height: 80, borderRadius: 7 }} source={{ uri: item.path }} />
-        </TouchableOpacity>
-      </ScaleDecorator>
+      // <ScaleDecorator>
+      <TouchableOpacity
+        activeOpacity={1} onLongPress={drag} disabled={isActive}
+        style={{ opacity: isActive ? 0.5 : 1, marginRight: 19, position: 'relative' }}
+      >
+        <View style={{ position: 'absolute', top: -17, right: -17, zIndex: 1 }}>
+          <Button p={5} variant='text' circular
+            onPress={() => index !== undefined && deletePhotoHandler(index, mode)}
+            icon={<SvgIcon icon='crossSmall' />}
+          />
+        </View>
+        {index !== undefined && <View style={{ position: 'absolute', top: -6, left: -5, zIndex: 1, backgroundColor: Colors.White, width: 20, height: 20, borderRadius: 10 }}>
+          <Typography weight='Bold' textAlign='center'>{index + 1}</Typography>
+        </View>}
+        <Image style={{ width: 80, height: 80, borderRadius: 7 }} source={{ uri: item.path }} />
+      </TouchableOpacity>
+      // </ScaleDecorator>
     );
   }, []);
 
-  const testPhotoItem = (path: string) => {
-    return <Image
-      style={{
-        width: 80,
-        height: 80,
-        borderRadius: 7,
-        // top: 'auto !important',
-        // left: 'auto !important',
-      }}
-      source={{ uri: path }}
-    />
-  };
-
-  useEffect(()=> {
+  useEffect(() => {
     console.log(companyPhotos);
-  },[companyPhotos])
+  }, [companyPhotos])
 
   return (
     <ScreenHeaderProvider {...(editMode ? { title: 'Edytuj profil firmy' } : {})}>
@@ -954,16 +942,26 @@ const CompanyEditorScreen: React.FC = () => {
                     {/* quick fix ScrollView onContentSizeChange for DraggableFlatList - constant height wrapper, wtf sht mzfk? */}
                     <View style={{ height: 100, flexDirection: 'row', marginBottom: 9 }}>
                       {/* <DraggableFlatList
-                      horizontal
-                      showsHorizontalScrollIndicator
-                      contentContainerStyle={{ paddingLeft: 19, paddingVertical: 10 }}
-                      style={{ flex: 1 }}
-                      data={companyPhotos}
-                      onDragEnd={({ data }) => setCompanyPhotos(data)}
-                      keyExtractor={({ path }) => path}
-                      renderItem={props => renderScrollPhotoItem({ ...props, mode: 'photos' })}
-                    /> */}
-                      <View style={{ marginHorizontal: 19 }}>
+                        horizontal
+                        showsHorizontalScrollIndicator
+                        contentContainerStyle={{ paddingLeft: 19, paddingVertical: 10 }}
+                        style={{ flex: 1 }}
+                        data={companyPhotos}
+                        onDragEnd={({ data }) => setCompanyPhotos(data)}
+                        keyExtractor={({ path }) => path}
+                        renderItem={props => renderScrollPhotoItem({ ...props, mode: 'photos' })}
+                      /> */}
+
+                      <DraggableList
+                        horizontal
+                        data={companyPhotos}
+                        onDragEnd={({ data }) => setCompanyPhotos(data)}
+                        keyExtractor={({ path }) => path}
+                        renderItem={(props: RenderItemParams<MediaType>) => renderScrollPhotoItem({ ...props, mode: 'photos' })}
+                        contentContainerStyle={{ paddingLeft: 19, paddingVertical: 10 }}
+                        style={{ flex: 1 }}
+                      />
+                      {/* <View style={{ marginHorizontal: 19 }}>
                         <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 19 }}>
                           {companyPhotos.map(item =>
                             <Image
@@ -975,7 +973,7 @@ const CompanyEditorScreen: React.FC = () => {
                             />
                           )}
                         </View>
-                      </View>
+                      </View> */}
                     </View>
                   </View>
 
@@ -1003,15 +1001,6 @@ const CompanyEditorScreen: React.FC = () => {
             </>
           }
         />
-        <View style={{ height: 150, backgroundColor: Colors.Basic300, flexDirection: 'row', width: '100%', marginHorizontal: 19 }}>
-          <ScrollView horizontal>
-            <DraggableList
-              list={companyPhotos}
-              callback={(newList) => setCompanyPhotos(newList)}
-              listItem={(path) => testPhotoItem(path)}
-            />
-          </ScrollView>
-        </View>
         <View style={{ marginLeft: 19, marginBottom: 5 }}>
           <Typography weight="Bold" variant="h5">
             Inne zdjęcia{' '}
