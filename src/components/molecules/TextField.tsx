@@ -6,6 +6,7 @@ import {
     StyleSheetProperties,
     StyleProp,
     TextStyle,
+    Platform,
 } from 'react-native';
 import TextInput from 'react-native-mask-input';
 import Typography from '../atoms/Typography';
@@ -24,6 +25,7 @@ type TextFieldProps = {
     inputStyles?: StyleProp<TextStyle>,
     rowStyles?: StyleProp<TextStyle>,
     containerStyles?: StyleProp<TextStyle>,
+    autoGrow?: boolean,
 } & ComponentProps<typeof TextInput>;
 
 const TextField: FC<TextFieldProps> = ({
@@ -36,6 +38,8 @@ const TextField: FC<TextFieldProps> = ({
     containerStyles,
     rowStyles,
     activeLabel,
+    autoGrow = false,
+    numberOfLines = 1,
     style,
     ...props
 }) => {
@@ -44,6 +48,42 @@ const TextField: FC<TextFieldProps> = ({
     const [isSecured, setIsSecured] = useState<boolean>(!!props.secureTextEntry);
     const moveText = useRef(new Animated.Value(0)).current;
     const inputRef = useRef(null);
+    const hiddenInputRef = useRef<HTMLInputElement>(null);
+    const [lineCount, setLineCount] = useState(1);
+
+    useEffect(() => {
+        if (autoGrow) {
+            const inputElement = hiddenInputRef.current;
+            if (Platform.OS === 'web') {
+                if (inputElement) {
+                    const { lineHeight, paddingTop, paddingBottom } = getComputedStyle(inputElement);
+                    const lineHeightValue = parseFloat(lineHeight);
+                    const paddingTopValue = parseFloat(paddingTop);
+                    const paddingBottomValue = parseFloat(paddingBottom);
+
+                    const contentHeight = inputElement.scrollHeight - (paddingTopValue + paddingBottomValue);
+                    const lines = Math.round(contentHeight / lineHeightValue);
+
+                    setLineCount(lines);
+                };
+            }
+            // else {
+            //     if (inputElement) {
+
+            //         let elementHeight;
+            //         hiddenInputRef.measure((a, b, width, height, px, py) => {
+            //             elementHeight = parseFloat(height);
+            //             console.log(height);
+            //         });
+
+            //         const lines = Math.round(elementHeight / 20);
+
+            //         console.log(lines);
+            //         setLineCount(lines);
+            //     }
+            // }
+        }
+    }, [props.value]);
 
     useEffect(() => {
         if (moveLabelDir) moveTextTop();
@@ -79,13 +119,13 @@ const TextField: FC<TextFieldProps> = ({
                 {left && <View style={[styles.Adornment, { paddingRight: 10 }]}>{left}</View>}
                 <View style={[styles.InputWrapper]}>
                     <Animated.View style={[styles.Label, { transform: [{ translateY }] }]}>
-                        <Typography {...(isOnTop ? { color: Colors.Basic600 } : {variant: 'h5'})}>
+                        <Typography {...(isOnTop ? { color: Colors.Basic600 } : { variant: 'h5' })}>
                             {label}
                         </Typography>
                     </Animated.View>
                     <TextInput
                         placeholderTextColor={Colors.Basic600}
-                        style={[styles.Input, inputStyles]}
+                        style={[styles.Input, inputStyles, (autoGrow && Platform.OS === 'web') ? { overflow: 'hidden' } : {}]}
                         onFocus={() => setMoveLabelDir(true)}
                         onBlur={() => !activeLabel && setMoveLabelDir(false)}
                         blurOnSubmit
@@ -94,7 +134,25 @@ const TextField: FC<TextFieldProps> = ({
                         textAlignVertical={props.multiline ? 'top' : 'center'}
                         {...props}
                         secureTextEntry={isSecured}
+                        numberOfLines={(autoGrow && Platform.OS === 'web') ? (numberOfLines > lineCount) ? numberOfLines : lineCount : numberOfLines}
                     />
+                    {(autoGrow && Platform.OS === 'web') &&
+                        <TextInput
+                            style={[styles.Input, inputStyles, Platform.OS === 'web' ? { visibility: 'hidden', height: 0 } : { opacity: 0, position: 'absolute' }]}
+                            ref={hiddenInputRef as any}
+                            textAlignVertical={props.multiline ? 'top' : 'center'}
+                            {...props}
+                            secureTextEntry={isSecured}
+                            // onLayout={(e) => {
+                            //     if (Platform.OS === 'android' || Platform.OS === 'ios') {
+                            //         hiddenInputRef.current.measure((x, y, width, height, pageX, pageY) => {
+                            //             console.log(Math.round(height / 20));
+                            //             setLineCount(Math.round(height / 20));
+                            //         });
+                            //     }
+                            // }}
+                        />
+                    }
                 </View>
                 {(right || props.secureTextEntry) &&
                     <View style={[styles.Adornment, { paddingLeft: 10 }]}>
@@ -102,7 +160,7 @@ const TextField: FC<TextFieldProps> = ({
                             <Button
                                 circular
                                 bg='transparent'
-                                style={{height: 'auto', width: 'auto', minHeight: 0, minWidth: 0}}
+                                style={{ height: 'auto', width: 'auto', minHeight: 0, minWidth: 0 }}
                                 // _pressed={{ bg: Colors.Basic100 }}
                                 onPress={() => setIsSecured(prev => !prev)}
                                 icon={<SvgIcon icon={isSecured ? 'eyeOff' : 'eyeOn'} />}
