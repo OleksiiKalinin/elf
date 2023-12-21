@@ -9,12 +9,7 @@ import Popover from '../components/molecules/Popover';
 import SvgIcon from '../components/atoms/SvgIcon';
 import Typography from '../components/atoms/Typography';
 import { useTypedSelector } from '../hooks/useTypedSelector';
-
-const popoverText = `Przykładowy opis 1:
-Prowadzimy kameralną restaurację w centrum Wrocławia, w której serwujemy oryginalne dania kuchni włoskiej. Przyrządzając je wyłącznie z wysokiej jakości składników, pozwalamy naszym klientom odkrywać wyjątkowe smaki Półwyspu Apenińskiego.
-
-Zatrudniamy 12 wykwalifikowanych pracowników, którzy dbają nie tylko o profesjonalną obsługę, lecz również odpowiednią atmosferę. Oferujemy usługi cateringowe, umożliwiając zamawianie jedzenia za pomocą najpopularniejszych aplikacji kurierskich.
-`;
+import { ScrollView } from '../components/molecules/ScrollView';
 
 export type CompanyDescriptionScreenProps = {
   description: string | null,
@@ -25,8 +20,19 @@ export type CompanyDescriptionScreenProps = {
 const CompanyDescriptionScreen: React.FC<CompanyDescriptionScreenProps> = (props) => {
   const { callback, description, title } = props;
   const [value, setValue] = useState<string>(description || '');
+  const [showTips, setShowTips] = useState<boolean>(false);
   const { backToRemoveParams } = useRouter();
   const { windowSizes } = useTypedSelector(state => state.general);
+  const minChars = 20;
+
+  const handleConfirm = () => {
+    if(value.length >= minChars){
+      callback(value);
+      backToRemoveParams();
+    } else {
+      setShowTips(true);
+    };
+  };
 
   return (
     <ScreenHeaderProvider
@@ -70,22 +76,21 @@ const CompanyDescriptionScreen: React.FC<CompanyDescriptionScreenProps> = (props
             containerStyles={{ borderWidth: 1, padding: 10, paddingBottom: 15, borderRadius: 4 }}
             value={value}
             onChangeText={setValue}
-            inputStyles={{ lineHeight: 20 }}
             numberOfLines={5}
             autoGrow
+            lineHeight={20}
+            {...(showTips && (!value || value.length < minChars) && {
+              bottomText: !value ? 'Wprowadź opis' : `Opis musi zawierać minimum ${minChars} znaków`,
+            })}
           />
         </View>
       </View>
       <Button
         stickyBottom
-        onPress={() => {
-          callback(value);
-          backToRemoveParams();
-        }}
+        onPress={() => handleConfirm()}
       >
         Zapisz
       </Button>
-
     </ScreenHeaderProvider>
   );
 };

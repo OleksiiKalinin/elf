@@ -567,7 +567,7 @@ const CompanyEditorScreen: React.FC = () => {
   }, [companyPhotos])
 
   return (
-    <ScreenHeaderProvider {...(editMode ? { title: 'Edytuj profil firmy' } : {})}>
+    <ScreenHeaderProvider {...(editMode === 'true' ? { title: 'Edytuj profil firmy' } : {title: 'Utwórz profil firmy'})}>
       <ScrollView style={styles.Content} contentContainerStyle={{ paddingVertical: 20 }}>
         {/* <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingLeft: 20 }}>
           {MainButtons.map(item => (

@@ -1,4 +1,3 @@
-import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Image, Dimensions } from 'react-native';
 import Colors from '../../colors/Colors';
@@ -19,8 +18,12 @@ import MainDataCard from './CompanyScreenRoutes/MainDataCard/MainDataCard';
 import SvgIcon from '../../components/atoms/SvgIcon';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
-import { useRouter } from 'solito/router';
+import useRouter from '../../hooks/useRouter';
 import { ScrollView } from '../../components/molecules/ScrollView';
+import Carousel from '../../components/organismes/Carousel';
+import TabbarMenu, { TabbarRoute } from '../../components/organismes/TabbarMenu';
+import Typography from '../../components/atoms/Typography';
+import { Separator } from 'tamagui';
 
 const companyExample: CompanyDataType = {
   account_facebook: null,
@@ -75,10 +78,10 @@ const companyExample: CompanyDataType = {
 };
 
 const CompanyScreen: React.FC = () => {
-  // const [routes] = useState<TabbarRoute[]>([
-  //   { key: '0', title: 'O firmie' },
-  //   { key: '1', title: 'Opinie' },
-  // ]);
+  const [routes] = useState<TabbarRoute[]>([
+    { key: '0', title: 'O firmie' },
+    { key: '1', title: 'Opinie' },
+  ]);
   const dispatch = useTypedDispatch();
   const [tabbarIndex, setTabbarIndex] = useState(0);
   const { setSwipeablePanelProps, setUserCompany } = useActions();
@@ -86,13 +89,17 @@ const CompanyScreen: React.FC = () => {
   const [companyData, setCompanyData] = useState<CompanyDataType | null>(userCompany || companyExample);
   const router = useRouter();
 
+  const goToCompanyEditorScreen = () => {
+    router.push({ stack: 'ProfileStack', screen: 'CompanyEditorScreen', params: { editMode: 'false' } });
+  };
+
   const moreOptionsHandler = () => {
     setSwipeablePanelProps({
       title: 'Czy chcesz usunąć tę firmę?',
       buttons: [
         {
           children: 'Edytuj',
-          onPress: () => router.push('/profile/CompanyEditorScreen?editMode=true'),
+          onPress: () => goToCompanyEditorScreen(),
         },
         {
           children: 'Usuń',
@@ -143,28 +150,99 @@ const CompanyScreen: React.FC = () => {
   return (
     <ScreenHeaderProvider transparent
       actions={userCompany ? [{
-        icon: 'moreVert',
+        icon: 'threeDots',
         onPress: moreOptionsHandler,
       }] : []}
+      headerItemsColor={Colors.White}
     >
-      <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
-        {companyData && <>
-          <MainDataCard {...companyData} />
-          {/* <TabbarMenu
-          navigationState={{ index: tabbarIndex, routes }}
-          onIndexChange={setTabbarIndex}
-          renderScene={SceneMap({ 0: () => null, 1: () => null })}
-        /> */}
-          <View>{{
-            0: <AboutCard {...companyData} />,
-            // 1: <OpinionCard />
-          }[tabbarIndex]}</View>
-        </>}
+      <ScrollView style={{ backgroundColor: Colors.Basic100, flex: 1 }}>
+        {companyData &&
+          <>
+            {companyData.photos?.length &&
+              <Carousel
+                // innerPagination
+                data={companyData.photos}
+                style={{ width: '100%', aspectRatio: '3/2', height: undefined }}
+                renderItem={({ index, item }) => (
+                  <View style={{ width: '100%', aspectRatio: '3/2', height: undefined, backgroundColor: Colors.Basic500 }}>
+                    <Image
+                      // resizeMode={'contain'}
+                      source={item.path}
+                      style={{ height: '100%', width: 'auto' }}
+                    />
+                  </View>
+                )}
+              />}
+            <MainDataCard {...companyData} />
+            <Typography variant='h5' weight='Bold' style={[styles.CategoryHeader, { marginTop: 40 }]}>
+              O firmie
+            </Typography>
+            <View style={styles.CompanyAmountsContainer}>
+              <View style={styles.CompanyAmounts}>
+                <Typography size={20} weight='Bold' textAlign='center'>
+                  6-8{companyData.employees_amount}
+                </Typography>
+                <Typography textAlign='center'>
+                  Liczba pracowników
+                </Typography>
+              </View>
+              <View style={styles.CompanyAmounts}>
+                <Typography size={20} weight='Bold' textAlign='center'>
+                  50 - 100 m2{companyData.employees_amount}
+                </Typography>
+                <Typography textAlign='center'>
+                  Metraż miejsca pracy
+                </Typography>
+              </View>
+            </View>
+            <Separator marginTop={16}/>
+            <Typography variant='h5' weight='Bold' style={[styles.CategoryHeader, { marginTop: 40 }]}>
+              O firmie
+            </Typography>
+
+
+
+
+
+            {/* <TabbarMenu
+              navigationState={{ index: tabbarIndex, routes }}
+              onIndexChange={setTabbarIndex}
+              renderScene={SceneMap({ 0: () => null, 1: () => null })}
+            />
+            <View>{{
+              0:
+                <>
+                  
+                </>,
+              1: <OpinionCard />
+            }[tabbarIndex]}
+            </View> */}
+          </>
+        }
       </ScrollView>
     </ScreenHeaderProvider>
   );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  CompanyAmountsContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 19,
+    gap: 8,
+    marginTop: 20
+  },
+  CompanyAmounts: {
+    height: 60,
+    backgroundColor: Colors.Basic300,
+    borderRadius: 4,
+    minWidth: 160,
+    width: '40%',
+    justifyContent: 'center',
+  },
+  CategoryHeader: {
+    marginTop: 15,
+    marginHorizontal: 19,
+  }
+});
 
 export default CompanyScreen;

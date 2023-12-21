@@ -18,7 +18,7 @@ import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Button from '../../components/molecules/Button';
 import SvgIcon from '../../components/atoms/SvgIcon';
-import { useRouter } from 'solito/router';
+import useRouter from '../../hooks/useRouter';
 
 const pointCards = [
     { points: 23, type: 'Pakiet Medium', time: 'na tydzień' },
@@ -36,6 +36,10 @@ const NoCompanyScreen: React.FC = () => {
     useEffect(() => {
         if (showHelp && !profileHelpScreenDisplayed) AsyncStorage.setItem('profileHelpScreenDisplayed', 'true');
     }, [showHelp]);
+
+    const goToCompanyEditorScreen = () => {
+        router.push({stack: 'ProfileStack', screen: 'CompanyEditorScreen', params: {editMode: 'false'}});
+    };
 
     return (
         <ScreenHeaderProvider>
@@ -66,7 +70,7 @@ const NoCompanyScreen: React.FC = () => {
                         contentWeight='Medium'
                         contentVariant='h5'
                         style={{ paddingVertical: 5 }}
-                        onPress={() => router.push('/profile/CompanyEditorScreen')}
+                        onPress={() => goToCompanyEditorScreen()}
                     >
                         Dodaj profil firmy
                     </Button>

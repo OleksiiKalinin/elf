@@ -9,7 +9,7 @@ export const pythonAdmin = {
     client_secret: 'QWGF9559NvwTCOgIrsS38w'
 }
 
-export const baseURL = 'http://ec2-13-53-212-186.eu-north-1.compute.amazonaws.com:8000';
+export const baseURL = 'http://91.200.34.126:8000';
 
 const instance = axios.create({
     baseURL,

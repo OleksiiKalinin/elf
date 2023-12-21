@@ -49,6 +49,7 @@ const TextField: FC<TextFieldProps> = ({
   numberOfLines = 1,
   lineHeight,
   style,
+  multiline = true,
   ...props
 }) => {
   const [moveLabelDir, setMoveLabelDir] = useState<boolean>(!!props.value || !!props.defaultValue || !!activeLabel);
@@ -119,22 +120,22 @@ const TextField: FC<TextFieldProps> = ({
           </Animated.View>
           <TextInput
             placeholderTextColor={Colors.Basic600}
-            style={[styles.Input, inputStyles, { lineHeight: lineHeight }, (autoGrow && Platform.OS === 'web') ? { overflow: 'hidden' } : {}]}
+            style={[styles.Input, inputStyles, { lineHeight: 20 }, (autoGrow && Platform.OS === 'web') ? { overflow: 'hidden' } : {}]}
             onFocus={() => setMoveLabelDir(true)}
             onBlur={() => !activeLabel && setMoveLabelDir(false)}
             blurOnSubmit
             selectionColor={Colors.TextDark}
             ref={inputRef}
-            textAlignVertical={props.multiline ? 'top' : 'center'}
+            textAlignVertical={multiline ? 'top' : 'center'}
             {...props}
             secureTextEntry={isSecured}
             numberOfLines={(autoGrow && Platform.OS === 'web') ? (numberOfLines > lineCount) ? numberOfLines : lineCount : numberOfLines}
           />
           {(autoGrow && Platform.OS === 'web') &&
             <TextInput
-              style={[styles.Input, inputStyles, { visibility: 'hidden', height: 0, lineHeight: lineHeight }]}
+              style={[styles.Input, inputStyles, { visibility: 'hidden', height: 0 }, { lineHeight: 20 }]}
               ref={hiddenInputRef as any}
-              textAlignVertical={props.multiline ? 'top' : 'center'}
+              textAlignVertical={multiline ? 'top' : 'center'}
               {...props}
               secureTextEntry={isSecured}
             />
@@ -155,7 +156,7 @@ const TextField: FC<TextFieldProps> = ({
           </View>
         }
       </View>
-      {props.multiline && props.maxLength && <View style={{ position: 'absolute', bottom: 2, right: 5 }}>
+      {multiline && props.maxLength && <View style={{ position: 'absolute', bottom: 2, right: 5 }}>
         <Typography variant='small'>{props.value?.length}/{props.maxLength}</Typography>
       </View>}
     </View>
