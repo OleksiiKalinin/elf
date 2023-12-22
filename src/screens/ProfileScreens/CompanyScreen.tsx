@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Image, Dimensions } from 'react-native';
+import { StyleSheet, View, Image, Dimensions, Platform } from 'react-native';
 import Colors from '../../colors/Colors';
 import { SceneMap } from 'react-native-tab-view';
 import { nativeStore } from '../../store';
@@ -9,7 +9,7 @@ import OpinionCard from './CompanyScreenRoutes/OpinionCard/OpinionCard';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import { CompanyDataType, MediaType, ContactPersonType } from '../../store/reducers/types';
+import { CompanyDataType, MediaType, ContactPersonType, LanguageType } from '../../store/reducers/types';
 import { useDispatch } from 'react-redux';
 import generalServices from '../../services/generalServices';
 import { baseURL } from '../../services';
@@ -24,15 +24,22 @@ import Carousel from '../../components/organismes/Carousel';
 import TabbarMenu, { TabbarRoute } from '../../components/organismes/TabbarMenu';
 import Typography from '../../components/atoms/Typography';
 import { Separator } from 'tamagui';
+import Accordion from '../../components/molecules/Accordion';
+import Button from '../../components/molecules/Button';
+import { Linking } from "react-native";
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { createParam } from 'solito';
 
 const companyExample: CompanyDataType = {
-  account_facebook: null,
-  account_instagram: null,
-  account_twitter: null,
-  account_youtube: null,
+  account_facebook: 'www.google.pl',
+  account_instagram: 'www.google.pl',
+  account_linkedIn: 'www.google.pl',
   contact_hours: "08:05-14:25",
   employees_amount: "61-80",
-  full_decription: "nullllll",
+  full_decription: `Prowadzimy kameralną restaurację w centrum Wrocławia, w której serwujemy oryginalne dania kuchni włoskiej. Przyrządzając je wyłącznie z wysokiej jakości składników, pozwalamy naszym klientom odkrywać wyjątkowe smaki Półwyspu Apenińskiego.
+
+  Zatrudniamy 12 wykwalifikowanych pracowników, którzy dbają nie tylko o profesjonalną obsługę, lecz również odpowiednią atmosferę. Oferujemy usługi cateringowe, umożliwiając zamawianie jedzenia za pomocą najpopularniejszych aplikacji kurierskich.
+  `,
   full_name: "blablablabla",
   job_industry: 3,
   main_address: {
@@ -74,84 +81,197 @@ const companyExample: CompanyDataType = {
   short_decription: "null",
   short_name: "Firma testowa",
   square_footage: null,
-  website: null
+  website: 'www.google.pl',
+  languages: [4, 5, 7],
+  services: [4, 5, 7],
+  photos: [
+    {
+      path: 'https://img.freepik.com/darmowe-zdjecie/biale-wnetrze-niewyrazne-krzeslo_1203-4272.jpg?2&w=740&t=st=1703256759~exp=1703257359~hmac=0625895100579764d94fdd94d98648b7687f3da1582ee9eca8f361465d1a72ed',
+    },
+    {
+      path: 'https://img.freepik.com/darmowe-zdjecie/stol-z-kwiatami-w-doniczkach-w-restauracji_181624-24428.jpg?size=626&ext=jpg&uid=R72634302&semt=sph',
+    },
+    {
+      path: 'https://img.freepik.com/darmowe-zdjecie/widok-z-boku-kucharz-robi-pyszne-makarony_23-2150690631.jpg?w=740&t=st=1703256778~exp=1703257378~hmac=bbe493ee21e71585841968eadc4956e5b7dcf9797e3d4fe22ce341cf83c14453',
+    },
+    {
+      path: 'https://img.freepik.com/darmowe-zdjecie/wnetrze-restauracji_1127-3394.jpg?w=740&t=st=1703256915~exp=1703257515~hmac=b2d67622c95ac2b5120aeb938c2cdb5959a993eb71b3273d3fee992e6ceca9a2',
+    },
+    {
+      path: 'https://img.freepik.com/darmowe-zdjecie/widok-z-boku-danie-flambeing-mezczyzna-szefa-kuchni_23-2148763217.jpg?w=740&t=st=1703256916~exp=1703257516~hmac=256216eb4df3a1af764260db0ef4655e86d60f7e35472b91628814b4b78dde9c',
+    },
+  ],
+  certificates: [
+    {
+      path: 'https://img.freepik.com/darmowe-wektory/elegancki-swiadectwo-uznania_23-2147612119.jpg?w=740&t=st=1703257013~exp=1703257613~hmac=13e806aa65fb0f13893d7c55312fb41f43a31bf855197450978c5c15e0f84d96',
+    },
+    {
+      path: 'https://img.freepik.com/darmowe-wektory/szablon-certyfikatu_1035-3901.jpg?w=740&t=st=1703257065~exp=1703257665~hmac=0d096cb9f494ed42f182f7b4360eb554f2eb14efc8b3f753a80c0072a4ab29ec',
+    },
+  ],
 };
 
+const services: LanguageType[] = [
+  {
+    id: 1,
+    name: 'Manicure',
+  },
+  {
+    id: 2,
+    name: 'Pedicure',
+  },
+  {
+    id: 3,
+    name: 'Przedłużanie rzęs',
+  },
+  {
+    id: 4,
+    name: 'Regulacja i henna brwi',
+  },
+  {
+    id: 5,
+    name: 'Zabiegi na twarz',
+  },
+  {
+    id: 6,
+    name: 'Zabiegi na ciało',
+  },
+  {
+    id: 7,
+    name: 'Usługi fryzjerskie',
+  },
+];
+
+const languages: LanguageType[] = [
+  {
+    id: 1,
+    name: 'Polski',
+  },
+  {
+    id: 2,
+    name: 'Angielski',
+  },
+  {
+    id: 3,
+    name: 'Włoski',
+  },
+  {
+    id: 4,
+    name: 'Francuski',
+  },
+  {
+    id: 5,
+    name: 'Ukraiński',
+  },
+  {
+    id: 6,
+    name: 'Hiszpański',
+  },
+  {
+    id: 7,
+    name: 'Niemiecki',
+  },
+];
+
+const { useParam } = createParam<NonNullable<ProfileStackParamList['default']['CompanyScreen']>>();
+
 const CompanyScreen: React.FC = () => {
-  const [routes] = useState<TabbarRoute[]>([
-    { key: '0', title: 'O firmie' },
-    { key: '1', title: 'Opinie' },
-  ]);
   const dispatch = useTypedDispatch();
-  const [tabbarIndex, setTabbarIndex] = useState(0);
   const { setSwipeablePanelProps, setUserCompany } = useActions();
   const { userCompany, token, jobIndustries } = useTypedSelector(state => state.general);
-  const [companyData, setCompanyData] = useState<CompanyDataType | null>(userCompany || companyExample);
+  const [companyData, setCompanyData] = useState<CompanyDataType | null>(/* userCompany || */ companyExample);
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
+  const [servicesExpanded, setServicesExpanded] = useState(false);
+  const [languagesExpanded, setLanguagesExpanded] = useState(false);
   const router = useRouter();
-
-  const goToCompanyEditorScreen = () => {
-    router.push({ stack: 'ProfileStack', screen: 'CompanyEditorScreen', params: { editMode: 'false' } });
-  };
-
-  const moreOptionsHandler = () => {
-    setSwipeablePanelProps({
-      title: 'Czy chcesz usunąć tę firmę?',
-      buttons: [
-        {
-          children: 'Edytuj',
-          onPress: () => goToCompanyEditorScreen(),
-        },
-        {
-          children: 'Usuń',
-          contentVariant: 'h5',
-          contentColor: Colors.Danger,
-          closeAction: 'none',
-          onPress: () => setSwipeablePanelProps({
-            title: 'Naprawdę chcesz usunąć?',
-            buttons: [
-              {
-                children: 'TAK',
-                contentWeight: 'SemiBold',
-                contentColor: Colors.Danger,
-                closeAction: 'props-null',
-                onPress: () => {
-                  // (async () => {
-                  //   if (companyData?.id) {
-                  //     const isOk = await dispatch(companyServices.deleteUserCompany(companyData.id, token));
-                  //     if (!!isOk) {
-                  //       setSwipeablePanelProps({
-                  //         title: 'Firma została usunięta!',
-                  //         closeButton: false,
-                  //         buttons: [
-                  //           {
-                  //             children: 'OK',
-                  //             onPress: () => { }
-                  //           }
-                  //         ]
-                  //       });
-                  //       navigation.navigate('NoCompanyScreen');
-                  //     }
-                  //   }
-                  // })();
-                }
-              }
-            ]
-          }),
-        },
-      ]
-    })
-  }
+  const [subView] = useParam('subView');
 
   useEffect(() => {
-    console.log(JSON.stringify(userCompany, null, 4));
-    if (userCompany) setCompanyData(userCompany);
-  }, [userCompany]);
+    setSwipeablePanelProps((() => {
+      if (subView === 'options') return {
+        title: 'Czy chcesz usunąć tę firmę?',
+        closeButton: true,
+        buttons: [
+          {
+            children: 'Edytuj',
+            onPress: () => goToCompanyEditorScreen(),
+          },
+          {
+            children: 'Usuń',
+            contentVariant: 'h5',
+            contentColor: Colors.Danger,
+            closeAction: 'none',
+            onPress: () => setSwipeablePanelProps({
+              title: 'Naprawdę chcesz usunąć?',
+              buttons: [
+                {
+                  children: 'TAK',
+                  contentWeight: 'SemiBold',
+                  contentColor: Colors.Danger,
+                  closeAction: 'props-null',
+                  onPress: () => {
+                    (async () => {
+                      if (companyData?.id) {
+                        const isOk = await dispatch(companyServices.deleteUserCompany(companyData.id, token));
+                        if (!!isOk) {
+                          setSwipeablePanelProps({
+                            title: 'Firma została usunięta!',
+                            closeButton: false,
+                            buttons: [
+                              {
+                                children: 'OK',
+                                onPress: () => { }
+                              }
+                            ]
+                          });
+                          goToNoCompanyScreen();
+                        }
+                      }
+                    })();
+                  }
+                }
+              ]
+            }),
+          },
+        ]
+      }
+      return null;
+    })());
+  }, [subView]);
+
+  /*   useEffect(() => {
+      console.log(JSON.stringify(userCompany, null, 4));
+      if (userCompany) setCompanyData(userCompany);
+    }, [userCompany]); */
+
+  const goToCompanyEditorScreen = () => {
+    router.push({
+      stack: 'ProfileStack',
+      screen: 'CompanyEditorScreen',
+      params: { editMode: 'false' }
+    });
+  };
+
+  const goToNoCompanyScreen = () => {
+    router.push({
+      stack: 'ProfileStack',
+      screen: 'NoCompanyScreen',
+    });
+  };
+
+  const setOptions = () => {
+    router.push({
+      stack: 'ProfileStack',
+      screen: 'CompanyScreen',
+      params: { subView: 'options' }
+    });
+  };
 
   return (
     <ScreenHeaderProvider transparent
       actions={userCompany ? [{
         icon: 'threeDots',
-        onPress: moreOptionsHandler,
+        onPress: setOptions,
       }] : []}
       headerItemsColor={Colors.White}
     >
@@ -160,19 +280,18 @@ const CompanyScreen: React.FC = () => {
           <>
             {companyData.photos?.length &&
               <Carousel
-                // innerPagination
-                data={companyData.photos}
+                data={companyData.photos.map(item => item.path)}
                 style={{ width: '100%', aspectRatio: '3/2', height: undefined }}
-                renderItem={({ index, item }) => (
+                renderItem={({ item }) => (
                   <View style={{ width: '100%', aspectRatio: '3/2', height: undefined, backgroundColor: Colors.Basic500 }}>
                     <Image
-                      // resizeMode={'contain'}
-                      source={item.path}
+                      source={{ uri: item }}
                       style={{ height: '100%', width: 'auto' }}
                     />
                   </View>
                 )}
-              />}
+              />
+            }
             <MainDataCard {...companyData} />
             <Typography variant='h5' weight='Bold' style={[styles.CategoryHeader, { marginTop: 40 }]}>
               O firmie
@@ -180,7 +299,7 @@ const CompanyScreen: React.FC = () => {
             <View style={styles.CompanyAmountsContainer}>
               <View style={styles.CompanyAmounts}>
                 <Typography size={20} weight='Bold' textAlign='center'>
-                  6-8{companyData.employees_amount}
+                  {companyData.employees_amount}
                 </Typography>
                 <Typography textAlign='center'>
                   Liczba pracowników
@@ -188,35 +307,120 @@ const CompanyScreen: React.FC = () => {
               </View>
               <View style={styles.CompanyAmounts}>
                 <Typography size={20} weight='Bold' textAlign='center'>
-                  50 - 100 m2{companyData.employees_amount}
+                  {companyData.employees_amount}
                 </Typography>
                 <Typography textAlign='center'>
                   Metraż miejsca pracy
                 </Typography>
               </View>
             </View>
-            <Separator marginTop={16}/>
-            <Typography variant='h5' weight='Bold' style={[styles.CategoryHeader, { marginTop: 40 }]}>
-              O firmie
+            <Separator marginTop={16} />
+            <Accordion
+              onPress={() => setDescriptionExpanded(prev => !prev)}
+              expanded={descriptionExpanded}
+              title={
+                <Typography variant='h5' weight={descriptionExpanded ? 'Bold' : 'Medium'}>
+                  Opis firmy
+                </Typography>
+              }
+            >
+              <Typography variant='h5' style={{ marginHorizontal: 19, color: Colors.Basic600, marginBottom: 16 }}>
+                {companyData.full_decription}
+              </Typography>
+            </Accordion>
+            <Separator />
+            <>
+              <Accordion
+                onPress={() => setServicesExpanded(prev => !prev)}
+                expanded={servicesExpanded}
+                title={
+                  <Typography variant='h5' weight={servicesExpanded ? 'Bold' : 'Medium'}>
+                    Usługi
+                  </Typography>
+                }
+              >
+                {services.filter(item => companyData.services?.includes(item.id)).map(({ id, name }) =>
+                  <Typography key={id} style={{ marginHorizontal: 19, color: Colors.Basic600, marginBottom: 16 }}>
+                    {name}
+                  </Typography>
+                )}
+              </Accordion>
+              <Separator />
+            </>
+
+            {companyData.certificates &&
+              <>
+                <Typography variant='h5' weight='Bold' style={[styles.CategoryHeader, { marginTop: 24 }]}>
+                  Certyfikaty
+                </Typography>
+                <Carousel
+                  data={companyData.certificates.map(item => item.path)}
+                  style={{ width: '100%', aspectRatio: '3/2', height: undefined, marginTop: 16 }}
+                  renderItem={({ item }) => (
+                    <View style={{ width: '100%', aspectRatio: '3/2', height: undefined, backgroundColor: Colors.Basic500 }}>
+                      <Image
+                        resizeMode={'contain'}
+                        source={{ uri: item }}
+                        style={{ height: '100%', width: 'auto' }}
+                      />
+                    </View>
+                  )}
+                />
+              </>
+            }
+            <Typography variant='h5' weight='Bold' style={[styles.CategoryHeader, { marginTop: 24 }]}>
+              Social media
             </Typography>
-
-
-
-
-
-            {/* <TabbarMenu
-              navigationState={{ index: tabbarIndex, routes }}
-              onIndexChange={setTabbarIndex}
-              renderScene={SceneMap({ 0: () => null, 1: () => null })}
-            />
-            <View>{{
-              0:
-                <>
-                  
-                </>,
-              1: <OpinionCard />
-            }[tabbarIndex]}
-            </View> */}
+            <View style={styles.SocialMedia}>
+              {companyData.account_instagram &&
+                <TouchableOpacity
+                  onPress={() => Linking.openURL(companyData.account_instagram as string)}
+                  activeOpacity={.5}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <SvgIcon icon={'instagram'} fill={Colors.Blue500} />
+                </TouchableOpacity>
+              }
+              {companyData.account_facebook &&
+                <TouchableOpacity
+                  onPress={() => Linking.openURL(companyData.account_facebook as string)}
+                  activeOpacity={.5}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <SvgIcon icon={'facebook'} fill={Colors.Blue500} />
+                </TouchableOpacity>
+              }
+              {companyData.website &&
+                <TouchableOpacity
+                  onPress={() => Linking.openURL(companyData.website as string)}
+                  activeOpacity={.5}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <SvgIcon icon={'internet'} fill={Colors.Blue500} />
+                </TouchableOpacity>
+              }
+            </View>
+            {companyData.languages &&
+              <View style={{ marginTop: 32, marginBottom: 100 }}>
+                <Separator />
+                <Accordion
+                  onPress={() => setLanguagesExpanded(prev => !prev)}
+                  expanded={languagesExpanded}
+                  title={
+                    <Typography variant='h5' weight={languagesExpanded ? 'Bold' : 'Medium'}>
+                      Preferowane języki w komunikacji
+                    </Typography>
+                  }
+                >
+                  {languages.filter(item => companyData.languages?.includes(item.id)).map(({ id, name }) =>
+                    <Typography key={id} style={{ marginHorizontal: 19, color: Colors.Basic600, marginBottom: 16 }}>
+                      {name}
+                    </Typography>
+                  )}
+                </Accordion>
+                <Separator />
+              </View>
+            }
           </>
         }
       </ScrollView>
@@ -227,9 +431,10 @@ const CompanyScreen: React.FC = () => {
 const styles = StyleSheet.create({
   CompanyAmountsContainer: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingHorizontal: 19,
     gap: 8,
-    marginTop: 20
+    marginTop: 20,
   },
   CompanyAmounts: {
     height: 60,
@@ -242,7 +447,14 @@ const styles = StyleSheet.create({
   CategoryHeader: {
     marginTop: 15,
     marginHorizontal: 19,
-  }
+  },
+  SocialMedia: {
+    marginLeft: 16,
+    marginRight: 19,
+    flexDirection: 'row',
+    gap: 24,
+    marginTop: 20,
+  },
 });
 
 export default CompanyScreen;

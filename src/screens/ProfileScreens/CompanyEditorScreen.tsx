@@ -190,8 +190,7 @@ const CompanyEditorScreen: React.FC = () => {
     website: null,
     account_facebook: null,
     account_instagram: null,
-    account_twitter: null,
-    account_youtube: null,
+    account_linkedIn: null,
     job_industry: null,
     languages: null,
     services: null,
@@ -941,17 +940,6 @@ const CompanyEditorScreen: React.FC = () => {
                     </View>
                     {/* quick fix ScrollView onContentSizeChange for DraggableFlatList - constant height wrapper, wtf sht mzfk? */}
                     <View style={{ height: 100, flexDirection: 'row', marginBottom: 9 }}>
-                      {/* <DraggableFlatList
-                        horizontal
-                        showsHorizontalScrollIndicator
-                        contentContainerStyle={{ paddingLeft: 19, paddingVertical: 10 }}
-                        style={{ flex: 1 }}
-                        data={companyPhotos}
-                        onDragEnd={({ data }) => setCompanyPhotos(data)}
-                        keyExtractor={({ path }) => path}
-                        renderItem={props => renderScrollPhotoItem({ ...props, mode: 'photos' })}
-                      /> */}
-
                       <DraggableList
                         horizontal
                         data={companyPhotos}
@@ -961,19 +949,6 @@ const CompanyEditorScreen: React.FC = () => {
                         contentContainerStyle={{ paddingLeft: 19, paddingVertical: 10 }}
                         style={{ flex: 1 }}
                       />
-                      {/* <View style={{ marginHorizontal: 19 }}>
-                        <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 19 }}>
-                          {companyPhotos.map(item =>
-                            <Image
-                              source={{ uri: item.path }}
-                              style={{
-                                width: 100,
-                                height: 100,
-                              }}
-                            />
-                          )}
-                        </View>
-                      </View> */}
                     </View>
                   </View>
 
@@ -1015,12 +990,32 @@ const CompanyEditorScreen: React.FC = () => {
           multiple
           selectionLimit={20}
           initialSelected={companyCertificates as any}
+          imageSettings={{
+            compressionProgress: (progress) => (Math.round(progress * 100)) === 100 ? setCertificatesProgress(null) : setCertificatesProgress(progress),
+          }}
           callback={(images) => setCompanyCertificates(handleMultipleFiles(images))}
           render={(onPress) =>
             <>
-              {!!companyCertificates.length ?
-                <>
-                  <View style={{ backgroundColor: Colors.Basic300, marginBottom: 24 }}>
+              {!!certificatesProgress && certificatesProgress < 100 ?
+
+                <View style={{ height: 118, padding: 20, backgroundColor: Colors.Basic300, marginHorizontal: 19, borderRadius: 4, marginBottom: 24, justifyContent: 'center' }}>
+                  <Typography size={16} weight='SemiBold' style={{ color: Colors.Basic600, textAlign: 'center' }}>
+                    Ładowanie zdjęć: {Math.round(certificatesProgress * 100)}%
+                  </Typography>
+                  <Slider
+                    min={0} max={100} step={1}
+                    value={[Math.round(certificatesProgress * 100)]}
+                  >
+                    <Slider.Track>
+                      <Slider.TrackActive />
+                    </Slider.Track>
+                  </Slider>
+                </View>
+
+                :
+
+                !!companyCertificates.length ?
+                  <View style={{ backgroundColor: Colors.Basic300, marginBottom: 24, marginHorizontal: 19 }}>
                     <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 9 }}>
                       <TouchableOpacity style={{ padding: 10, marginVertical: 10 }} onPress={() => setCompanyCertificates([])}>
                         <Typography variant='h5' weight="Bold" color={Colors.Basic600} style={{ textDecorationLine: 'underline' }}>
@@ -1035,22 +1030,21 @@ const CompanyEditorScreen: React.FC = () => {
                     </View>
                     {/* quick fix ScrollView onContentSizeChange for DraggableFlatList - constant height wrapper, wtf sht mzfk? */}
                     <View style={{ height: 100, flexDirection: 'row', marginBottom: 9 }}>
-                      <DraggableFlatList
+                      <DraggableList
                         horizontal
-                        showsHorizontalScrollIndicator
-                        contentContainerStyle={{ paddingLeft: 19, paddingVertical: 10 }}
-                        style={{ flex: 1 }}
                         data={companyCertificates}
                         onDragEnd={({ data }) => setCompanyCertificates(data)}
                         keyExtractor={({ path }) => path}
-                        renderItem={props => renderScrollPhotoItem({ ...props, mode: 'certificates' })}
+                        renderItem={(props: RenderItemParams<MediaType>) => renderScrollPhotoItem({ ...props, mode: 'photos' })}
+                        contentContainerStyle={{ paddingLeft: 19, paddingVertical: 10 }}
+                        style={{ flex: 1 }}
                       />
                     </View>
                   </View>
-                </>
-                :
-                <>
-                  <TouchableOpacity onPress={() => onPress()}>
+
+                  :
+
+                  <TouchableOpacity onPress={() => onPress()} style={{ marginBottom: 24 }}>
                     <View style={[styles.AddPhotoButton, { height: 118 },]}>
                       <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: -14 }}>
                         <View style={{ flex: 1 }}>
@@ -1068,7 +1062,6 @@ const CompanyEditorScreen: React.FC = () => {
                       </View>
                     </View>
                   </TouchableOpacity>
-                </>
               }
             </>
           }

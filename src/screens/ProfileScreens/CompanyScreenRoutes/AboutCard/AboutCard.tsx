@@ -14,15 +14,15 @@ const ImagesCerts: any[] = [
 ];
 
 const AboutCard: FC<CompanyDataType> = (props) => {
-  const { account_facebook, account_instagram, account_youtube, website, employees_amount, square_footage, full_decription } = props;
-  const socialMediaLinks = [account_facebook, account_instagram, account_youtube, website];
+  const { account_facebook, account_instagram, website, employees_amount, square_footage, full_decription } = props;
+  const socialMediaLinks = [account_facebook, account_instagram, website];
   const socialMediaIcons: IconTypes[] = ['facebook', 'instagram', 'telegram', 'internet'];
   const employeesAndsquare = !!(employees_amount && square_footage);
 
-  const socialMedia: { icon: IconTypes, url: string | null }[] = new Array(socialMediaLinks.length).fill(null).map((_, i) => ({
-    icon: socialMediaIcons[i],
-    url: socialMediaLinks[i]
-  })).filter(el => !!el.url);
+  // const socialMedia: { icon: IconTypes, url: string | null }[] = new Array(socialMediaLinks.length).fill(null).map((_, i) => ({
+  //   icon: socialMediaIcons[i],
+  //   url: socialMediaLinks[i]
+  // })).filter(el => !!el.url);
 
   return (
     <View style={{ backgroundColor: Colors.Basic100, marginTop: 24 }}>
@@ -101,14 +101,14 @@ const AboutCard: FC<CompanyDataType> = (props) => {
           </View>
         )}
       /> */}
-      {!!socialMedia.length && <View style={{ paddingHorizontal: 19 }}>
+      {/* {!!socialMedia.length && <View style={{ paddingHorizontal: 19 }}>
         <Typography variant='h5' weight='Bold'>Social media</Typography>
         <View style={{ flexDirection: "row", marginLeft: -14 }}>
           {socialMedia.map(({ icon, url }) =>
             <Button circular mr='5px' onPress={() => url && Linking.openURL("http://" + url)} icon={<SvgIcon icon={icon} />} />
           )}
         </View>
-      </View>}
+      </View>} */}
     </View >
   );
 };
