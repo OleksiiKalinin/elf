@@ -1,11 +1,9 @@
 import React from 'react';
 import { View } from 'react-native';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import { DragDropContext, Draggable, DraggableProvided, DraggableRubric, DraggableStateSnapshot, DropResult, Droppable } from 'react-beautiful-dnd';
 import { DraggableListProps } from '.';
 import { isString } from 'lodash';
 import { ScrollView } from '../../molecules/ScrollView';
-
-type DraggableProvidedType = { draggableProps: React.JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>; dragHandleProps: React.JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>; innerRef: React.LegacyRef<HTMLDivElement> | undefined; };
 
 const DraggableList: React.FC<DraggableListProps> = ({
 	data,
@@ -16,7 +14,7 @@ const DraggableList: React.FC<DraggableListProps> = ({
 	style,
 }) => {
 
-	const handleDragEnd = (result: { destination: { index: number; }; source: { index: number; }; }) => {
+	const handleDragEnd = (result: DropResult) => {
 		if (!result.destination) {
 			return;
 		}
@@ -28,7 +26,8 @@ const DraggableList: React.FC<DraggableListProps> = ({
 		return onDragEnd({ data: reorderedList });
 	};
 
-	const getRenderItem = (items: any[]) => (provided: DraggableProvidedType, snapshot: { isDragging: boolean; }, rubric: { source: { index: string | number; }; }) => {
+	const getRenderItem = (items: any[]) => (provided: DraggableProvided, snapshot: DraggableStateSnapshot,
+		rubric: DraggableRubric) => {
 
 		const index = isString(rubric.source.index) ? parseInt(rubric.source.index) : rubric.source.index;
 
@@ -59,9 +58,9 @@ const DraggableList: React.FC<DraggableListProps> = ({
 				direction={horizontal ? 'horizontal' : 'vertical'}
 				renderClone={renderElement}
 			>
-				{(provided: any) => (
+				{(provided) => (
 					<View
-						ref={provided.innerRef}
+						ref={provided.innerRef as any}
 						style={{
 							width: '100%',
 							flexDirection: horizontal ? 'row' : 'column',

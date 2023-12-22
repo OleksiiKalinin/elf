@@ -179,7 +179,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
                     <Button
                       circular
                       backgroundColor='transparent'
-                      icon={(typeof icon === 'string' ? <SvgIcon fill={backgroundContent} icon={icon as IconTypes} /> : (typeof icon === 'object' ? icon : undefined)) as any}
+                      icon={(typeof icon === 'string' ? <SvgIcon fill={headerItemsColor ??backgroundContent} icon={icon as IconTypes} /> : (typeof icon === 'object' ? icon : undefined)) as any}
                       onPress={onPress}
                     />
                   </View>))}

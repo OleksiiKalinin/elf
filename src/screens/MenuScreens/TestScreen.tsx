@@ -101,16 +101,16 @@ const TestScreen: React.FC<InitialPropsFromParams<Params>> = () => {
           Job category - mode 2 (initial id)
         </Button>
 
-        {/* <View style={{flexDirection: 'row', flexWrap: 'wrap', flex: 1, height: 1500}}>
+        <View style={{flexDirection: 'row', flexWrap: 'wrap', height: 1500}}>
           {icons.map(item =>
-            <View style={{width: 50, height: 50}}>
+            <View style={{width: 150, height: 150}}>
               <SvgIcon icon={item.name} />
               <Typography>
                 {item.name}
               </Typography>
             </View>
           )}
-        </View> */}
+        </View>
 
       </ScrollView>
     </ScreenHeaderProvider>

@@ -95,6 +95,14 @@ const MainScreen: React.FC = () => {
     if (showHelp && !profileHelpScreenDisplayed) AsyncStorage.setItem('profileHelpScreenDisplayed', 'true');
   }, [showHelp]);
 
+  const goToCompanyScreen = () => {
+    router.push({ stack: 'ProfileStack', screen: 'CompanyScreen' });
+  };
+
+  const goToNoCompanyScreen = () => {
+    router.push({ stack: 'ProfileStack', screen: 'NoCompanyScreen' });
+  };
+
   return (
     <ScreenHeaderProvider
     // actions={[{
@@ -114,7 +122,7 @@ const MainScreen: React.FC = () => {
           arrowRight
           borderTop
           borderBottom
-          onPress={()=> router.push({stack: 'ProfileStack', screen: 'AccountDataScreen'})}
+          onPress={() => router.push({ stack: 'ProfileStack', screen: 'AccountDataScreen' })}
         >
           <View style={styles.ArrowButton}>
             <View style={styles.ButtonIconContainer}>
@@ -139,7 +147,9 @@ const MainScreen: React.FC = () => {
           variant='text'
           arrowRight
           borderBottom
-          onPress={()=> router.push({stack: 'ProfileStack', screen: 'CompanyEditorScreen', params: {editMode: 'true'}})}
+          onPress={() => {
+            userCompany ? goToCompanyScreen() : goToNoCompanyScreen()
+          }}
         >
           <View style={styles.ArrowButton}>
             <View style={styles.ButtonIconContainer}>
@@ -147,6 +157,21 @@ const MainScreen: React.FC = () => {
             </View>
             <Typography weight='SemiBold' variant='h5' style={{ alignSelf: 'center' }}>
               Profil firmy
+            </Typography>
+          </View>
+        </Button>
+        <Button
+          variant='text'
+          arrowRight
+          borderBottom
+          onPress={() => router.push({stack: 'ProfileStack', screen: 'CompanyEditorScreen', params: {editMode: 'true'}})}
+        >
+          <View style={styles.ArrowButton}>
+            <View style={styles.ButtonIconContainer}>
+              <SvgIcon icon='work' />
+            </View>
+            <Typography weight='SemiBold' variant='h5' style={{ alignSelf: 'center' }}>
+              CompanyEditor (test)
             </Typography>
           </View>
         </Button>
@@ -163,7 +188,7 @@ const MainScreen: React.FC = () => {
           variant='text'
           arrowRight
           borderBottom
-          // onPress={()=> router.push({stack: 'ProfileStack', screen: 'PaymentTemporalScreen'})}
+        // onPress={()=> router.push({stack: 'ProfileStack', screen: 'PaymentTemporalScreen'})}
         >
           <View style={styles.ArrowButton}>
             <View style={styles.ButtonIconContainer}>
@@ -199,7 +224,7 @@ const MainScreen: React.FC = () => {
           variant='text'
           arrowRight
           borderBottom
-          onPress={()=> router.push({stack: 'ProfileStack', screen: 'SettingsScreen'})}
+          onPress={() => router.push({ stack: 'ProfileStack', screen: 'SettingsScreen' })}
         >
           <View style={styles.ArrowButton}>
             <View style={styles.ButtonIconContainer}>
