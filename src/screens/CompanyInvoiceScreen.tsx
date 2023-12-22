@@ -4,7 +4,6 @@ import { StyleSheet, View, Image, Dimensions } from 'react-native';
 import Colors from '../colors/Colors';
 import { SceneMap } from 'react-native-tab-view';
 import { nativeStore } from '../store';
-import { advertActionTypes, companyActionTypes } from '../store/actions';
 import AboutCard from './ProfileScreens/CompanyScreenRoutes/AboutCard/AboutCard';
 import OpinionCard from './ProfileScreens/CompanyScreenRoutes/OpinionCard/OpinionCard';
 import { ProfileStackParamList } from '../navigators/ProfileNavigator';

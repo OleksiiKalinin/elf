@@ -11,7 +11,7 @@ import SvgIcon from '../atoms/SvgIcon';
 import { Separator } from 'tamagui';
 // import SvgIcon, { IconTypes } from '../SvgIcon/SvgIcon';
 
-type VariantType = 'primary' | 'secondary' | 'light' | 'info' | 'info_alter' | 'text' | 'disabled' | 'active' | 'white';
+type VariantType = 'primary' | 'secondary' | 'secondarySelected' | 'light' | 'info' | 'info_alter' | 'text' | 'disabled' | 'active' | 'white';
 
 type ButtonProps = {
   variant?: VariantType,
@@ -43,6 +43,12 @@ const variants: { [k in VariantType]: {
     disabledColor: Colors.Basic400,
     contentColor: Colors.Basic900,
     hoverColor: Colors.Basic300,
+  },
+  secondarySelected: {
+    activeColor: Colors.Basic500,
+    disabledColor: Colors.Basic500,
+    contentColor: Colors.Basic900,
+    hoverColor: Colors.Basic400,
   },
   light: {
     activeColor: Colors.Basic200,
@@ -93,7 +99,6 @@ const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   contentWeight = 'CAPS',
   contentVariant = 'main',
-  color = null,
   contentColor = null,
   withLoading = false,
   fullwidth = true,
@@ -112,7 +117,7 @@ const Button: React.FC<ButtonProps> = ({
         height={props.h ?? (arrowRight ? 58 : 50)}
         borderRadius={0}
         bg={props.bg || props.backgroundColor || props.disabled ? variants[variant].disabledColor : variants[variant].activeColor}
-        icon={withLoading ? <Spinner size='large' /> : undefined}
+        icon={props.disabled && withLoading ? <Spinner size='large' /> : undefined}
         iconAfter={arrowRight ? <SvgIcon icon='arrowRightSmall' /> : undefined}
         width={props.w ?? (fullwidth ? '100%' : undefined)}
         focusStyle={{ borderColor: 'none' }}

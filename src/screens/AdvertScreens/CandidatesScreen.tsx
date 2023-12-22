@@ -31,7 +31,7 @@ const CandidatesScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial }
   useEffect(() => {
     (async () => {
       if (!!advert?.candidate_data.length) {
-        const res = await dispatch(advertsServices.getAdvertCandidates(token, advert.candidate_data.map(e => e.candidate_id)));
+        const res = await dispatch(advertsServices.getAdvertCandidates(advert.candidate_data.map(e => e.candidate_id)));
         setCandidates(res as unknown as CandidateDataType[]);
       }
       setLoading(false);

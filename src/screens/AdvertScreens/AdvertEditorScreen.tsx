@@ -10,10 +10,9 @@ import {
 import Colors from '../../colors/Colors';
 // import SmallMap from '../../components/organisms/SmallMap/SmallMap';
 import { nativeStore } from '../../store';
-import { advertActionTypes } from '../../store/actions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { AdvertStackParamList } from '../../navigators/AdvertNavigator';
-import { AddressType, UserAdvertType } from '../../store/reducers/types';
+import { AddressType, NewUserAdvertType, UserAdvertType } from '../../store/reducers/types';
 import { useDispatch } from 'react-redux';
 import advertsServices from '../../services/advertsServices';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
@@ -27,6 +26,8 @@ import { createParam } from 'solito';
 import { useActions } from '../../hooks/useActions';
 import { Separator } from 'tamagui';
 import { InitialPropsFromParams, PartialBy } from '../../hooks/types';
+import useRouter from '../../hooks/useRouter';
+import MapPreview from '../../components/molecules/MapPreview';
 
 /*
 title="Dostosuj listę kandydatów"
@@ -54,20 +55,20 @@ const { useParam } = createParam<Props>();
 
 const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial }) => {
   const dispatch = useTypedDispatch();
-  const { jobIndustries, userCompany, jobSalaryModes, jobSalaryTaxes, jobExperiences, token, userAdverts, windowSizes } = useTypedSelector(state => state.general);
+  const router = useRouter();
+  const { jobIndustries, userCompany, jobSalaryModes, jobSalaryTaxes, jobExperiences, token, userAdverts } = useTypedSelector(state => state.general);
   const currentPositions = jobIndustries.find(({ id }) => id === userCompany?.job_industry)?.job_positions || [];
-  const [advertData, setAdvertData] = useState<PartialBy<UserAdvertType, 'company_id' | 'expiration_time' | 'id' | 'is_active' | 'num_views'>>({
-    job_experience_id: 2,
+  const [advertData, setAdvertData] = useState<NewUserAdvertType>({
+    job_experience_id: null,
     job_position_id: null,
     location: null,
     salary_amount_low: null,
     salary_amount_up: null,
-    salary_tax_type_id: 2,
-    salary_time_type_id: 2,
+    salary_tax_type_id: null,
+    salary_time_type_id: null,
     benefits_ids: [],
     requirements_ids: [],
     duties_ids: [],
-    candidate_data: [],
     description: null,
     job_mode_id: null,
     job_start_id: null,
@@ -79,26 +80,24 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
     working_hour_up: null,
   });
   const [loading, setLoading] = useState<boolean>(false);
+  // ssr fix
+  const [advertExists, setAdvertExists] = useState<boolean>(false);
   const [id] = useParam('id', { initial: idInitial })
-  const [isMainMenuSender] = useParam('isMainMenuSender');
-  const { setSwipeablePanelProps } = useActions();
+  // const [isMainMenuSender] = useParam('isMainMenuSender');
+  // const { setSwipeablePanelProps } = useActions();
 
-
-  // useEffect(() => {
-  //   setSwipeablePanelProps((() => {
-  //     if (subView === 'options') return {
-  // JobCategoryScreen
-  // MapScreen
-  //     }
-  //     return null;
-  //   })());
-  // }, [subView, subViewMode]);
-
+  useEffect(() => {
+    console.log(advertData);
+  }, [advertData]);
 
   useEffect(() => {
     if (id) {
       const advert = userAdverts.find(e => e.id.toString() === id);
-      advert && setAdvertData(advert);
+      if (advert) {
+        const {candidate_data, ...data} = advert;
+        setAdvertExists(true);
+        setAdvertData(data);
+      }
     }
   }, [id, userAdverts]);
 
@@ -116,25 +115,32 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
   };
 
   const createAdvertHandler = async () => {
-    // if (userCompany?.id && advertData.job_position_id && advertData.location) {
-    //   setLoading(true);
-    //   const isOk = await dispatch(advertsServices.createUserAdvert(advertData, token, userCompany?.id, userAdverts));
-    //   setLoading(false);
-    //   if (!!isOk) navigation.navigate('MainScreen');
-    //   else Alert.alert('Błąd', 'Wykorzystałeś 5 darmowych ogłoszeń, kup pakiet!');
-    // } else Alert.alert('Błąd', 'Podaj wszystkie dane!');
+    if (userCompany?.id && advertData.job_position_id && advertData.location) {
+      setLoading(true);
+      const isOk = await dispatch(advertsServices[advertExists ? 'updateUserAdvert' : 'createUserAdvert'](advertData));
+      console.log(!!isOk);
+
+      setLoading(false);
+      if (!!isOk) router.replace({ stack: 'AdvertStack' });
+      else Alert.alert('Błąd', 'Wykorzystałeś 5 darmowych ogłoszeń, kup pakiet!');
+    } else Alert.alert('Błąd', 'Podaj wszystkie dane!');
   }
 
   return (
     <ScreenHeaderProvider
-      title={id ? 'Edytuj ogłoszenie' : 'Nowe ogłoszenie'}
+      title={advertExists ? 'Edytuj ogłoszenie' : 'Nowe ogłoszenie'}
+      backgroundContent={Colors.Basic100}
     >
-      <ScrollView style={{ backgroundColor: Colors.Basic100, flex: 1 }}>
+      <ScrollView>
         <View style={{ marginLeft: 16, marginTop: 32, marginBottom: 16 }}>
           <Typography weight="Bold" size={20}>Opis stanowiska</Typography>
         </View>
         <TouchableOpacity
-          // onPress={() => navigation.navigate('JobScreen', { callback: (id) => changeAdvertDataHandler('job_position_id', id), job_positions: currentPositions })}
+          onPress={() => userCompany?.job_industry && router.push({
+            stack: 'AdvertStack',
+            screen: 'AdvertEditorScreen',
+            params: { subView: 'JobCategoryScreen', mode: 'singlePosition', initialIndustry: userCompany.job_industry, callback: (_, id) => changeAdvertDataHandler('job_position_id', id) }
+          })}
           style={{
             flexDirection: 'row', padding: 19,
             ...(!!Number(advertData.job_position_id) ?
@@ -156,9 +162,9 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           {jobExperiences.map(({ id, name }) => (
             <View style={{ marginRight: 16 }}>
               <Button
-                color={advertData.job_experience_id === id ? Colors.Basic500 : Colors.Basic300}
+                variant={advertData.job_experience_id === id ? 'secondarySelected' : 'secondary'}
+                contentWeight={advertData.job_experience_id === id ? 'Bold' : 'SemiBold'}
                 contentVariant='h5'
-                contentWeight='SemiBold'
                 contentColor={Colors.Basic900}
                 style={{ paddingVertical: 6, paddingHorizontal: 8 }}
                 onPress={() => changeAdvertDataHandler('job_experience_id', id)}
@@ -244,15 +250,14 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
         />
         <Separator /> */}
         <Typography variant='h5' weight='SemiBold' style={{ paddingHorizontal: 16, marginVertical: 16 }}>Stawka</Typography>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingLeft: 16 }}>
+        <ScrollView horizontal contentContainerStyle={{ paddingLeft: 16 }}>
           {jobSalaryModes.map(({ id, name }) => (
             <View style={{ marginRight: 20 }}>
               <Button
                 contentVariant='h5'
+                borderRadius={4}
                 contentWeight={advertData.salary_time_type_id === id ? 'Bold' : 'SemiBold'}
-                contentColor={advertData.salary_time_type_id === id ? Colors.Basic900 : Colors.Basic700}
-                style={{ paddingVertical: 2 }}
-                // containerStyles={advertData.salary_time_type_id === id ? { borderBottomColor: Colors.Basic900, borderBottomWidth: 2 } : {}}
+                variant={advertData.salary_time_type_id === id ? 'secondarySelected' : 'secondary'}
                 onPress={() => changeAdvertDataHandler('salary_time_type_id', id)}
               >
                 {name}
@@ -265,13 +270,12 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
             {jobSalaryTaxes.map(({ id, name }, index) => (
               <View style={{ marginRight: 16, flex: 1 }}>
                 <Button
-                  color={advertData.salary_tax_type_id === id ? Colors.Basic500 : Colors.Basic300}
+                  variant={advertData.salary_tax_type_id === id ? 'secondarySelected' : 'secondary'}
+                  contentWeight={advertData.salary_tax_type_id === id ? 'Bold' : 'SemiBold'}
                   contentVariant='h5'
-                  contentWeight='SemiBold'
                   contentColor={Colors.Basic900}
-                  style={{ paddingVertical: 6 }}
-                  onPress={() => changeAdvertDataHandler('salary_tax_type_id', id)}
                   borderRadius={4}
+                  onPress={() => changeAdvertDataHandler('salary_tax_type_id', id)}
                 >
                   {name}
                 </Button>
@@ -279,12 +283,12 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
             ))}
           </View>
           <View style={{ marginHorizontal: 16, flexDirection: 'row', alignItems: 'center' }}>
-            <View style={{ width: '35%' }}>
+            <View style={{ flex: 1 }}>
               <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>od</Typography>
               <TextField
                 placeholder={advertData.salary_time_type_id === 2 ? '3000' : '20'}
                 placeholderTextColor={Colors.Basic600}
-                containerStyles={{ maxWidth: 200, backgroundColor: Colors.Basic300, borderRadius: 4, paddingHorizontal: 16 }}
+                containerStyles={{ backgroundColor: Colors.Basic300, borderRadius: 4, paddingHorizontal: 16 }}
                 height={44}
                 keyboardType='decimal-pad'
                 right={<Typography variant='h5'>zł</Typography>}
@@ -293,14 +297,14 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
               />
             </View>
             <View style={{ justifyContent: 'center', height: 44, alignSelf: 'flex-end' }}>
-              <Typography weight='Bold' variant='h4' color={Colors.Basic500}>{'  -  '}</Typography>
+              <Typography weight='Bold' variant='h4' color={Colors.Basic500}>{'   -   '}</Typography>
             </View>
-            <View style={{ width: '35%' }}>
+            <View style={{ flex: 1 }}>
               <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>do</Typography>
               <TextField
                 placeholder={advertData.salary_time_type_id === 2 ? '4000' : '30'}
                 placeholderTextColor={Colors.Basic600}
-                containerStyles={{ maxWidth: 200, backgroundColor: Colors.Basic300, borderRadius: 4, paddingHorizontal: 16 }}
+                containerStyles={{ backgroundColor: Colors.Basic300, borderRadius: 4, paddingHorizontal: 16 }}
                 height={44}
                 keyboardType='decimal-pad'
                 right={<Typography variant='h5'>zł</Typography>}
@@ -508,15 +512,19 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
 
 
         <View style={{ marginVertical: 32 }}>
-          {/* <SmallMap
+          <MapPreview
             place={advertData.location?.formattedAddress}
             latitude={advertData.location?.position?.lat}
             longitude={advertData.location?.position?.lng}
-            onPress={() => navigation.navigate('MapScreen', {
-              callback: (address) => changeAdvertDataHandler('location', address),
-              initialAddress: advertData.location
+            onPress={() => router.push({
+              stack: 'AdvertStack', screen: 'AdvertEditorScreen', params: {
+                subView: 'GoogleMapScreen',
+                callback: (address) => changeAdvertDataHandler('location', address),
+                initialAddress: advertData.location,
+                optionsType: 'address'
+              }
             })}
-          /> */}
+          />
         </View>
 
 
@@ -546,8 +554,13 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           )}
         </View> */}
       </ScrollView>
-      <Button variant="primary" onPress={createAdvertHandler} disabled={!token || loading} withLoading={!!token}>
-        {id ? 'Zapisz' : 'Dodaj'}
+      <Button
+        onPress={createAdvertHandler}
+        disabled={loading}
+        withLoading
+        stickyBottom
+      >
+        {advertExists ? 'Zapisz' : 'Dodaj'}
       </Button>
     </ScreenHeaderProvider>
   );

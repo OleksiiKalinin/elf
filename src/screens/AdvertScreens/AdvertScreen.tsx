@@ -7,7 +7,6 @@ import { SceneMap } from 'react-native-tab-view';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 // import AdvertLarge from '../../components/organisms/AdvertLarge/AdvertLarge';
 import { nativeStore } from '../../store';
-import { advertActionTypes } from '../../store/actions';
 import OpinionCard from './AdvertScreenRoutes/OpinionCard/OpinionCard';
 import ResumeCard from './AdvertScreenRoutes/ResumeCard/ResumeCard';
 import { useActions } from '../../hooks/useActions';
@@ -25,7 +24,7 @@ import { InitialPropsFromParams } from '../../hooks/types';
 type Props = NonNullable<AdvertStackParamList['default']['AdvertScreen']>;
 const { useParam } = createParam<Props>();
 
-const AdvertScreen: React.FC<InitialPropsFromParams<Props>> = ({idInitial}) => {
+const AdvertScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial }) => {
   const { userAdverts, userCompany } = useTypedSelector(state => state.general);
   const [tabbarIndex, setTabbarIndex] = React.useState(0);
   const [routes] = React.useState<TabbarRoute[]>([
@@ -37,9 +36,8 @@ const AdvertScreen: React.FC<InitialPropsFromParams<Props>> = ({idInitial}) => {
   const [isPanelActive, setIsPanelActive] = useState(false);
   const [isPanelActive2, setIsPanelActive2] = useState(false);
   const { useLink, push } = useRouter();
-  const [id] = useParam('id', {initial: idInitial})
-  console.log(id);
-  
+  const [id] = useParam('id', { initial: idInitial })
+
   const advert = userAdverts.find(curr => curr.id === Number(id));
 
   // const data = useTypedSelector(state => state.adverts);
@@ -50,7 +48,7 @@ const AdvertScreen: React.FC<InitialPropsFromParams<Props>> = ({idInitial}) => {
       buttons: [
         {
           children: 'Edytuj',
-          onPress: () => push({stack: 'AdvertStack', screen: 'AdvertEditorScreen', params: {id}}),
+          onPress: () => push({ stack: 'AdvertStack', screen: 'AdvertEditorScreen', params: { id } }),
         },
         {
           children: 'Usuń',
@@ -72,7 +70,7 @@ const AdvertScreen: React.FC<InitialPropsFromParams<Props>> = ({idInitial}) => {
           contentColor: Colors.Danger,
           contentVariant: 'h5',
           ...useLink({
-            href: {stack: 'AdvertStack'},
+            href: { stack: 'AdvertStack' },
           }),
           // nativeStore.dispatch({
           //   type: advertActionTypes.REMOVE_ADVERT,
@@ -89,6 +87,7 @@ const AdvertScreen: React.FC<InitialPropsFromParams<Props>> = ({idInitial}) => {
     <ScreenHeaderProvider
       mode='backAction'
       transparent
+      backgroundContent={Colors.Basic100}
     // actions={[
     //   {
     //     icon: <SvgIcon icon="moreVert" />,
@@ -96,7 +95,7 @@ const AdvertScreen: React.FC<InitialPropsFromParams<Props>> = ({idInitial}) => {
     //   },
     // ]}
     >
-      <ScrollView style={{ backgroundColor: Colors.Basic100 }}>
+      <ScrollView>
         {advert ? <AdvertLarge {...advert} /> : <Typography>Nie ma informacji</Typography>}
         <TabbarMenu
           navigationState={{ index: tabbarIndex, routes }}

@@ -10,6 +10,13 @@ export function ScrollView({ disableWindowScroll = false, ...props }: Props) {
         web: disableWindowScroll || props.horizontal ? ScrollViewNative : (View as unknown as typeof ScrollViewNative),
         default: ScrollViewNative,
     })
-    //@ts-ignore
-    return <Component showsVerticalScrollIndicator={Platform.OS === 'web'} {...props} {...(Platform.OS === 'web' && !disableWindowScroll ? {style: {...props.style, ...props.contentContainerStyle}} : {})} />
+
+    return (<Component
+        showsVerticalScrollIndicator={Platform.OS === 'web'}
+        showsHorizontalScrollIndicator={Platform.OS === 'web'}
+        {...props}
+
+        //@ts-ignore
+        {...(Platform.OS === 'web' && (!disableWindowScroll || !props.horizontal) ? { style: { ...props.style, ...props.contentContainerStyle }, contentContainerStyle: undefined } : {})}
+    />);
 }

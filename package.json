@@ -132,7 +132,6 @@
     "@types/color": "^3.0.6",
     "@types/jest": "^29.2.1",
     "@types/react": "^18.0.28",
-    "@types/react-beautiful-dnd": "^13.1.7",
     "@types/react-dom": "^18.0.10",
     "@types/react-facebook-login": "^4.1.9",
     "@types/react-native-push-notification": "^8.1.4",

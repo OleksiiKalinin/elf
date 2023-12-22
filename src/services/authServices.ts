@@ -1,4 +1,4 @@
-import axios, { errorHandler, pythonAdmin } from './index';
+import axios, { CustomRequestException, dynamicHeaders, errorHandler, pythonAdmin } from './index';
 import { Dispatch } from 'react';
 // import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
 import { RegistDataType } from '../screens/AuthScreens/RegistrationScreen';
@@ -6,8 +6,11 @@ import generalActions from '../store/actionCreators/general/actions';
 import { LoginDataType } from '../screens/AuthScreens/LoginScreen';
 import { getTokens, hasPlayServices, signIn } from '../components/organismes/GoogleSignin';
 import generalServices from './generalServices';
+import { AppDispatch, rootState } from '../store';
 
-const registrate = (formData: RegistDataType) => async (dispatch: Dispatch<any>) => {
+const registrate = (formData: RegistDataType) => async (dispatch: AppDispatch, getState: () => rootState) => {
+    const { token } = getState().general;
+
     try {
         dispatch(generalActions.setAppLoading(true));
         const res = await axios.post(`/api-auth/create/`, formData);
@@ -15,18 +18,22 @@ const registrate = (formData: RegistDataType) => async (dispatch: Dispatch<any>)
 
         if (res.data) {
             const { access_token, refresh_token } = res.data as { access_token: string | null, refresh_token: string | null };
-            await axios.post('/employer/create_user/', {}, { headers: { Authorization: `Bearer ${access_token}` } });
+            await axios.post('/employer/create_user/', {}, { headers: dynamicHeaders({token}) });
             await dispatch(generalActions.setToken({ token: access_token, refresh_token }));
             await dispatch(generalServices.getAppData(access_token));
         } else {
-            throw Error('error');
+            throw new (CustomRequestException as any)('unknown error', 400);
         }
+
+        return true;
     } catch (error: any) {
-        await errorHandler(error, dispatch);
+        return await errorHandler({ error, dispatch, getState, caller: registrate.bind(this, formData) });
     }
 };
 
-const login = (formData: LoginDataType) => async (dispatch: Dispatch<any>) => {
+const login = (formData: LoginDataType) => async (dispatch: AppDispatch, getState: () => rootState) => {
+    const { token } = getState().general;
+
     try {
         dispatch(generalActions.setAppLoading(true));
         const res = await axios.post(`/api-auth/token/`, {
@@ -38,15 +45,18 @@ const login = (formData: LoginDataType) => async (dispatch: Dispatch<any>) => {
             await dispatch(generalActions.setToken({ token: access_token, refresh_token }));
             await dispatch(generalServices.getAppData(access_token));
         } else {
-            throw Error('error');
+            throw new (CustomRequestException as any)('unknown error', 400);
         }
 
+        return true;
     } catch (error: any) {
-        await errorHandler(error, dispatch);
+        return await errorHandler({ error, dispatch, getState, caller: login.bind(this, formData) });
     }
 };
 
-const logout = (token: string | null) => async (dispatch: Dispatch<any>) => {
+const logout = () => async (dispatch: AppDispatch, getState: () => rootState) => {
+    const { token } = getState().general;
+
     await dispatch(generalActions.setAppLoading(true));
     //hack
     await axios.post(`/api-auth/invalidate-sessions/`, pythonAdmin, { headers: { Authorization: `Bearer ${token}` } }).catch(() => { }).finally(() => {
@@ -54,25 +64,30 @@ const logout = (token: string | null) => async (dispatch: Dispatch<any>) => {
     });
 };
 
-const deleteAccount = (token: string | null) => async (dispatch: Dispatch<any>) => {
+const deleteAccount = () => async (dispatch: AppDispatch, getState: () => rootState) => {
+    const { token } = getState().general;
+
     await dispatch(generalActions.setAppLoading(true));
     await axios.delete(`/api-auth/delete_account/`, { headers: { Authorization: `Bearer ${token}` } })
     await dispatch(generalActions.LogOut());
 };
 
-const resetPassword = (email: string) => async (dispatch: Dispatch<any>) => {
+const resetPassword = (email: string) => async (dispatch: AppDispatch, getState: () => rootState) => {
+    const { token } = getState().general;
+
     try {
         dispatch(generalActions.setAppLoading(true));
         await axios.post('/api-auth/reset-password/', { ...pythonAdmin, email });
         dispatch(generalActions.setAppLoading(false));
         return true;
     } catch (error: any) {
-        await errorHandler(error, dispatch);
-        return false;
+        return await errorHandler({ error, dispatch, getState, caller: resetPassword.bind(this, email) });
     }
 };
 
-const googleSignin = (initialToken?: string) => async (dispatch: Dispatch<any>) => {
+const googleSignin = (initialToken?: string) => async (dispatch: AppDispatch, getState: () => rootState) => {
+    const { token } = getState().general;
+
     try {
         let token = initialToken;
 
@@ -91,14 +106,16 @@ const googleSignin = (initialToken?: string) => async (dispatch: Dispatch<any>) 
                 backend: 'google-oauth2'
             });
             const { access_token, refresh_token } = data as { access_token: string | null, refresh_token: string | null };
-            await axios.post('/employer/create_user/', {}, { headers: { Authorization: `Bearer ${access_token}` } }).catch(() => { });
+            await axios.post('/employer/create_user/', {}, { headers: dynamicHeaders({token}) }).catch(() => { });
             await dispatch(generalActions.setToken({ token: access_token, refresh_token }));
             await dispatch(generalServices.getAppData(access_token));
         } else {
-            throw new Error('no token');
+            throw new (CustomRequestException as any)('no token', 400);
         }
+
+        return true;
     } catch (error: any) {
-        await errorHandler(error, dispatch);
+        return await errorHandler({ error, dispatch, getState, caller: googleSignin.bind(this, initialToken) });
         // if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         //     // user cancelled the login flow
         // } else if (error.code === statusCodes.IN_PROGRESS) {
@@ -111,7 +128,9 @@ const googleSignin = (initialToken?: string) => async (dispatch: Dispatch<any>) 
     }
 };
 
-const facebookSignin = (accessToken: string | null) => async (dispatch: Dispatch<any>) => {
+const facebookSignin = (accessToken: string | null) => async (dispatch: AppDispatch, getState: () => rootState) => {
+    const { token } = getState().general;
+
     // dispatch(generalActions.setAppLoading(true));
     try {
         if (accessToken) {
@@ -125,10 +144,12 @@ const facebookSignin = (accessToken: string | null) => async (dispatch: Dispatch
             // dispatch(generalActions.setToken({ token: access_token, refresh_token }));
             // await dispatch(generalServices.getAppData(access_token));
         } else {
-            throw new Error('no token');
+            throw new (CustomRequestException as any)('no token', 400);
         }
+
+        return true;
     } catch (error) {
-        await errorHandler(error, dispatch);
+        return await errorHandler({ error, dispatch, getState, caller: facebookSignin.bind(this, accessToken) });
     }
 };
 

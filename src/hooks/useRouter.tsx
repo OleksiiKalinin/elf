@@ -38,7 +38,7 @@ const validateUrl = (props: WithUrlProps): string => {
 
     const exec = (props: any) => {
         const { subView, ...params } = props;
-        componentProps = params;
+        componentProps = { ...params, validated: true };
         newProps.params = { subView };
     }
 
@@ -52,6 +52,13 @@ const validateUrl = (props: WithUrlProps): string => {
             props.params?.subView === 'GoogleMapScreen' ||
             props.params?.subView === 'JobCategoryScreen' ||
             props.params?.subView === 'ItemSelectorScreen'
+        )) ||
+        (props.stack === 'MenuStack' && props.screen === 'TestScreen' && (
+            props.params?.subView === 'JobCategoryScreen'
+        )) ||
+        (props.stack === 'AdvertStack' && props.screen === 'AdvertEditorScreen' && (
+            props.params?.subView === 'JobCategoryScreen' ||
+            props.params?.subView === 'GoogleMapScreen'
         )) ||
         (props.stack === 'ProfileStack' && props.screen === 'CompanyEditorScreen' && (
             props.params?.subView === 'GoogleMapScreen' ||
@@ -88,44 +95,57 @@ export default function useRouter() {
 
     useEffect(() => {
         if (activeId === null || activeId === id.current) {
-            if ((!!prevParams || !!params?.subView) && (prevParams !== params?.subView)) {
+            if (!!componentProps?.validated && (!!prevParams || !!params?.subView) && (prevParams !== params?.subView)) {
                 prevParams = params?.subView;
 
                 if (!!params?.subView) {
                     let Component: FC<any> | null = null;
 
-                    if (params.subView === 'GoogleMapScreen') {
-                        Component = GoogleMapScreen;
-                    } else if (params.subView === 'ChooseAdvertScreen') {
-                        Component = ChooseAdvertScreen;
-                    } else if (params.subView === 'ChooseCandidateScreen') {
-                        Component = ChooseCandidateScreen
-                        // Test
-                    } else if (params.subView === 'JobCategoryScreen') {
-                        Component = JobCategoryScreen
-                    } else if (params.subView === 'ItemSelectorScreen') {
-                        Component = ItemSelectorScreen
-                    } else if (params.subView === 'CompanyInvoiceScreen') {
-                        Component = CompanyInvoiceScreen
-                    } else if (params.subView === 'AddContactPersonsScreen') {
-                        Component = AddContactPersonsScreen
-                    } else if (params.subView === 'CompanyDescriptionScreen') {
-                        Component = CompanyDescriptionScreen
-                    } else {
-                        return;
+                    switch (params.subView) {
+                        case 'GoogleMapScreen':
+                            Component = GoogleMapScreen;
+                            break;
+                        case 'ChooseAdvertScreen':
+                            Component = ChooseAdvertScreen;
+                            break;
+                        case 'ChooseCandidateScreen':
+                            Component = ChooseCandidateScreen;
+                            break;
+                        case 'JobCategoryScreen':
+                            Component = JobCategoryScreen;
+                            break;
+                        case 'ItemSelectorScreen':
+                            Component = ItemSelectorScreen;
+                            break;
+                        case 'CompanyInvoiceScreen':
+                            Component = CompanyInvoiceScreen;
+                            break;
+                        case 'AddContactPersonsScreen':
+                            Component = AddContactPersonsScreen;
+                            break;
+                        case 'CompanyDescriptionScreen':
+                            Component = CompanyDescriptionScreen;
+                            break;
+                        case 'CompanyDescriptionScreen':
+                            Component = CompanyDescriptionScreen;
+                            break;
+                        default:
+                            break;
                     }
 
-                    if (!!componentProps && !!Component) {
+                    if (Component) {
                         activeId = id.current;
+                        const { validated, ...props } = componentProps;
 
                         setSwipeablePanelProps({
                             mode: 'screen',
-                            children: <Component {...componentProps} />
+                            children: <Component {...props} />
                         })
                     } else {
                         setParams({ subView: undefined }, { webBehavior: 'replace' });
                     }
                 } else {
+                    componentProps = null;
                     activeId = null;
                     setSwipeablePanelProps(null);
                 }
@@ -135,9 +155,12 @@ export default function useRouter() {
 
     const backOrReplace = () => {
         if (Platform.OS === 'web') {
-            if ((window as any).prevPage) {
+            const win: any = window;
+
+            if (win.prevPage) {
                 back();
             } else {
+                win.prevPageIsNull = true;
                 const [stack, screen] = currentScreen.split('-');
                 replace(withUrl({ stack: (screen === 'MainScreen' ? 'MenuStack' : stack as any) }));
             }

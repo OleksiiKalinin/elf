@@ -5,7 +5,7 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'RedHatDisplay', sans-serif;
-    scrollbar-color: #bebebe #dfdfdf;
+    scrollbar-color: #7e7e7e #b1b1b1;
     scrollbar-width: thin;
 }
 
@@ -55,28 +55,28 @@ input[type=number] {
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
-    background: #cccccc;
+    background: #b1b1b1;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #b1b1b1;
+    background: #7e7e7e;
     /* border-radius: 10px; */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #919191;
+    background: #6e6e6e;
 }
 
 ::-webkit-scrollbar-thumb:active {
-    background: #6e6e6e;
+    background: #555555;
 }
 
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 30px #665084 inset !important;
-    -webkit-text-fill-color: white !important;
+    -webkit-box-shadow: 0 0 0 30px #dfe4ec inset !important;
+    -webkit-text-fill-color: black !important;
     background-clip: content-box !important;
 }
 

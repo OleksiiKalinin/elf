@@ -34,6 +34,7 @@ const AuthLoginScreen: React.FC = () => {
 
   useEffect(() => {
     const { username, password } = formData;
+    
     setIsDataValid(Boolean(
       validateMail(username) &&
       password.length >= 8

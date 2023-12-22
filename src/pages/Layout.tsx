@@ -27,7 +27,8 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
 
     if (windowExists()) {
       const win: any = window;
-      win.prevPage = win.currPage;
+      win.prevPage = win.prevPageIsNull ? null : win.currPage;
+      win.prevPageIsNull = false;
       win.currPage = router.asPath;
 
       if (win.prevPage) window.sessionStorage.setItem('prevPage', win.prevPage);

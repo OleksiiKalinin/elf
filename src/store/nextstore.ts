@@ -17,4 +17,4 @@ const nextReducer = (state: any, action: any) => {
     }
 };
 
-export const nextStore = createWrapper(() => createStore(nextReducer, applyMiddleware(thunk)), { debug: true });
+export const nextStore = createWrapper(() => createStore(nextReducer, applyMiddleware(thunk)));

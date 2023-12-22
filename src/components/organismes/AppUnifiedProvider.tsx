@@ -73,25 +73,25 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
       let certificates: MediaType[] | null = null;
       let contactPersons: ContactPersonType[] | null = null;
 
-      dispatch(candidatesServices.getCandidateMarks(token, userCompany.id));
-      dispatch(candidatesServices.getCandidateNotes(token, userCompany.id));
+      dispatch(candidatesServices.getCandidateMarks(userCompany.id));
+      dispatch(candidatesServices.getCandidateNotes(userCompany.id));
 
       if (userCompany.logo === undefined || userCompany.photos === undefined || userCompany.certificates === undefined || userCompany.contactPersons === undefined || userCompany.video === undefined) {
         Promise.all([
           ...(userCompany.logo === undefined ? [
-            dispatch(companyServices.getUserCompanyLogo(userCompany.id, token))
+            dispatch(companyServices.getUserCompanyLogo(userCompany.id))
           ] : []),
           ...(userCompany.video === undefined ? [
-            dispatch(companyServices.getUserCompanyVideo(userCompany.id, token))
+            dispatch(companyServices.getUserCompanyVideo(userCompany.id))
           ] : []),
           ...(userCompany.photos === undefined ? [
-            dispatch(companyServices.getUserCompanyPhotos(userCompany.id, token))
+            dispatch(companyServices.getUserCompanyPhotos(userCompany.id))
           ] : []),
           ...(userCompany.certificates === undefined ? [
-            dispatch(companyServices.getUserCompanyCertificates(userCompany.id, token))
+            dispatch(companyServices.getUserCompanyCertificates(userCompany.id))
           ] : []),
           ...(userCompany.contactPersons === undefined ? [
-            dispatch(companyServices.getUserCompanyContactPersons(userCompany.id, token))
+            dispatch(companyServices.getUserCompanyContactPersons(userCompany.id))
           ] : []),
         ]).then((res) => {
           const [getLogo, getVideo, getPhotos, getCertificates, getcompanyContactPersons] = res as any;

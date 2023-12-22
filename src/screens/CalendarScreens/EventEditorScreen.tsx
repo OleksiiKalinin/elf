@@ -110,7 +110,7 @@ const EventEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial 
         end_time: new Date(endDate.toISOString().split('T')[0] + 'T' + endTime.toISOString().split('T')[1]).toISOString(),
         job_offer: selectedAdvert?.id as number,
         job_position: selectedAdvert?.job_position_id as number,
-      }, token, userEvents));
+      }, userEvents));
 
       setLoading(false);
 

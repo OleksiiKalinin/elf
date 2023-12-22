@@ -5,7 +5,6 @@ import { CandidatesStackParamList } from '../../navigators/CandidatesNavigator';
 import Colors from '../../colors/Colors';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { nativeStore } from '../../store';
-import { bookmarkActionTypes } from '../../store/actions';
 import { useActions } from '../../hooks/useActions';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { ScrollView } from '../../components/molecules/ScrollView';

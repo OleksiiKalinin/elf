@@ -1,6 +1,6 @@
 import { SwipeablePanelProps } from "../../../components/organismes/SwipeablePanel";
 import { generalActionTypes } from "../../actions";
-import { CandidateMarkType, CandidateNotesType, CandidatesFiltersType, CompanyDataType, InvoiceType, JobExperienceType, JobIndustryType, JobSalaryModeType, JobSalaryTaxType, MarkDataType, NoteDataType, UserAdvertType, UserDataType, UserEventType, UserQuestionsType, WindowSizesType } from "../../reducers/types";
+import { AppDataType, CandidateMarkType, CandidateNotesType, CandidatesFiltersType, CompanyDataType, InvoiceType, JobExperienceType, JobIndustryType, JobSalaryModeType, JobSalaryTaxType, MarkDataType, NoteDataType, UserAdvertType, UserDataType, UserEventType, UserQuestionsType, WindowSizesType } from "../../reducers/types";
 
 interface setToken {
     type: generalActionTypes.SET_TOKEN,
@@ -101,20 +101,14 @@ interface setCandidatesFilters {
     payload: CandidatesFiltersType | null,
 }
 
-export type AppDataType = {
-    userData: UserDataType | null,
-    userCompany: CompanyDataType | null,
-    jobIndustries: JobIndustryType[],
-    jobSalaryModes: JobSalaryModeType[],
-    jobSalaryTaxes: JobSalaryTaxType[],
-    jobExperiences: JobExperienceType[],
-    userEvents: UserEventType[],
-    marksData: MarkDataType[],
-    notesData: NoteDataType[],
-    userQuestions: UserQuestionsType[],
-    candidatesFilters: CandidatesFiltersType | null,
-    appLoading: boolean,
-};
+interface resetStore {
+    type: generalActionTypes.RESET_STORE
+}
+
+interface setError {
+    type: generalActionTypes.SET_ERROR,
+    payload: string | null,
+}
 
 export type generalReducerAction = 
     setToken |
@@ -136,4 +130,6 @@ export type generalReducerAction =
     setUserInvoices |
     setWindowSizes |
     setUserQuestions |
-    setCandidatesFilters
+    setCandidatesFilters |
+    resetStore |
+    setError

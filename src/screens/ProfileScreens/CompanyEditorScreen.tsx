@@ -17,7 +17,6 @@ import {
 import Colors from '../../colors/Colors';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { nativeStore } from '../../store';
-import { companyActionTypes } from '../../store/actions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 // import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import tip1 from '../../assets/images/tip1.png';
@@ -178,6 +177,7 @@ const CompanyEditorScreen: React.FC = () => {
   const { jobIndustries, token, userCompany, windowSizes } = useTypedSelector(state => state.general);
   const { setSwipeablePanelProps } = useActions();
   const [companyData, setCompanyData] = useState<CompanyDataType>(userCompany || {
+    id: -1,
     short_name: null,
     full_name: null,
     main_address: null,

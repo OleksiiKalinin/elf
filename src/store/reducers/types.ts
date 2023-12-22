@@ -1,5 +1,6 @@
 import { SwipeablePanelProps } from "../../components/organismes/SwipeablePanel";
 import { ScaledSize } from 'react-native';
+import { PartialBy } from "../../hooks/types";
 
 export interface generalReducerState {
     isTabbarVisible: boolean,
@@ -30,6 +31,21 @@ export interface generalReducerState {
 }
 
 export type WindowSizesType = ScaledSize;
+
+export type AppDataType = {
+    userData: generalReducerState['userData'],
+    userCompany: generalReducerState['userCompany'],
+    jobIndustries: generalReducerState['jobIndustries'],
+    jobSalaryModes: generalReducerState['jobSalaryModes'],
+    jobSalaryTaxes: generalReducerState['jobSalaryTaxes'],
+    jobExperiences: generalReducerState['jobExperiences'],
+    userEvents: generalReducerState['userEvents'],
+    marksData: generalReducerState['marksData'],
+    notesData: generalReducerState['notesData'],
+    userQuestions: generalReducerState['userQuestions'],
+    candidatesFilters: generalReducerState['candidatesFilters'],
+    appLoading: generalReducerState['appLoading'],
+};
 
 export interface InvoiceType {
     id: number,
@@ -194,6 +210,8 @@ export interface UserAdvertType {
     }[],
 }
 
+export type NewUserAdvertType = PartialBy<UserAdvertType, 'company_id' | 'expiration_time' | 'id' | 'is_active' | 'num_views' | 'candidate_data'>;
+
 export interface JobIndustryType {
     name: string,
     id: number,
@@ -247,6 +265,7 @@ export interface LanguageType {
 }
 
 export interface CompanyDataType {
+    id: number,
     short_name: string | null,
     full_name: string | null,
     main_address: AddressType | null,
@@ -266,9 +285,7 @@ export interface CompanyDataType {
     video?: MediaType | null,
     photos?: MediaType[] | null,
     certificates?: MediaType[] | null,
-    id?: number,
     contactPersons?: ContactPersonType[] | null,
-    // contactPersons?: ContactPersonType[] | null,
     languages?: number[] | null,
     services?: number[] | null,
 }

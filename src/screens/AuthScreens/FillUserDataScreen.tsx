@@ -28,7 +28,7 @@ const FillUserDataScreen: React.FC = () => {
   const { replace } = useRouter();
 
   useEffect(() => {
-    if (token && userData && userData.email && userData.first_name && userData.last_name) {
+    if (!token || userData && userData.email && userData.first_name && userData.last_name) {
       replace({ stack: 'MenuStack' });
     }
   }, [token, userData]);
@@ -48,7 +48,7 @@ const FillUserDataScreen: React.FC = () => {
       if (email) data.email = email;
       if (first_name) data.first_name = first_name;
       if (last_name) data.last_name = last_name;
-      // const isOk = await dispatch(generalServices.setUserData(data, token, 'post'));
+      // const isOk = await dispatch(generalServices.setUserData(data, 'post'));
       setLoading(false);
       // !!isOk && navigation.navigate('MenuStack', { screen: 'MainScreen' });
     } else setShowTips(true);

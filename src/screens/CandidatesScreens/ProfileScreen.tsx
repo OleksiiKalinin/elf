@@ -12,7 +12,6 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 //   MenuTrigger,
 // } from 'react-native-popup-menu';
 import { nativeStore } from '../../store';
-import { bookmarkActionTypes } from '../../store/actions';
 import ResumeCard from './ProfileScreenRoutes/ResumeCard/ResumeCard';
 import OpinionCard from './ProfileScreenRoutes/OpinionCard/OpinionCard';
 import { useActions } from '../../hooks/useActions';

@@ -75,7 +75,7 @@ const AccountDataScreen: React.FC = () => {
         }
       });
       // if (diff) {
-      //   const isOk = await dispatch(generalServices.setUserData(data, token, 'put'));
+      //   const isOk = await dispatch(generalServices.setUserData(data, 'put'));
       //   if (!!isOk) {
       //     setSwipeablePanelProps({
       //       title: 'Dane zostały zmienione!',

@@ -9,8 +9,7 @@ import { ScrollView } from '../../components/molecules/ScrollView';
 import authServices from '../../services/authServices';
 import SvgIcon, { IconTypes } from '../../components/atoms/SvgIcon';
 import { useGoogleLogin } from '@react-oauth/google';
-import { FacebookSigninButton, facebookSignOut } from '../../components/organismes/FacebookSignin';
-// import { AccessToken, LoginButton } from 'react-native-fbsdk-next';
+import { FacebookSigninButton } from '../../components/organismes/FacebookSignin';
 
 const MainScreen: FC = () => {
   const dispatch = useTypedDispatch();
@@ -68,23 +67,6 @@ const MainScreen: FC = () => {
             </TouchableOpacity>
             }
           />
-          {/* <LoginButton
-          onLoginFinished={
-            (error, result) => {
-              if (error) {
-                console.log("login has error: " + result.error);
-              } else if (result.isCancelled) {
-                console.log("login is cancelled.");
-              } else {
-                AccessToken.getCurrentAccessToken().then(
-                  (data) => {
-                    console.log(data?.accessToken.toString())
-                  }
-                )
-              }
-            }
-          }
-          onLogoutFinished={() => console.log("logout.")}/> */}
           <TouchableOpacity
             onPress={() => googleSignin()}
             style={[styles.SocialButton, { backgroundColor: Colors.White }]}

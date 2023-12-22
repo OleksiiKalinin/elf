@@ -50,6 +50,10 @@ const TextField: FC<TextFieldProps> = ({
         else if (!moveLabelDir && !props.value) moveTextBottom();
     }, [moveLabelDir]);
 
+    useEffect(() => {
+        setMoveLabelDir(prev => !!props.value || prev);
+    }, [props.value]);
+
     const moveTextTop = () => {
         setIsOnTop(true);
         Animated.timing(moveText, {
@@ -79,7 +83,7 @@ const TextField: FC<TextFieldProps> = ({
                 {left && <View style={[styles.Adornment, { paddingRight: 10 }]}>{left}</View>}
                 <View style={[styles.InputWrapper]}>
                     <Animated.View style={[styles.Label, { transform: [{ translateY }] }]}>
-                        <Typography {...(isOnTop ? { color: Colors.Basic600 } : {variant: 'h5'})}>
+                        <Typography {...(isOnTop ? { color: Colors.Basic600 } : {variant: 'h5'})} style={{lineHeight: 16}}>
                             {label}
                         </Typography>
                     </Animated.View>

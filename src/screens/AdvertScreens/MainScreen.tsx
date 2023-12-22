@@ -13,7 +13,6 @@ import { AdvertStackParamList } from '../../navigators/AdvertNavigator';
 import Colors from '../../colors/Colors';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { nativeStore } from '../../store';
-import { advertActionTypes } from '../../store/actions';
 import { useActions } from '../../hooks/useActions';
 import { SceneMap } from 'react-native-tab-view';
 import { useDispatch } from 'react-redux';
@@ -58,23 +57,12 @@ const MainScreen: React.FC = () => {
     }
 
     userAdverts.forEach((advert) => {
-      if (new Date(advert.expiration_time).getTime() < Date.now()) {
-        adverts.expired.push(advert);
-      } else if (advert.is_active) {
-        adverts.active.push(advert);
-        adverts.active.push(advert);
-        adverts.active.push(advert);
-        adverts.active.push(advert);
-        adverts.active.push(advert);
-        adverts.active.push(advert);
-        adverts.active.push(advert);
-        adverts.active.push(advert);
-        adverts.active.push(advert);
-        adverts.active.push(advert);
-        adverts.active.push(advert);
-        adverts.active.push(advert);
-      } else {
+      if (!advert.is_active) {
         adverts.notActive.push(advert);
+      } else if (new Date(advert.expiration_time).getTime() < Date.now()) {
+        adverts.expired.push(advert);
+      } else {
+        adverts.active.push(advert);
       }
     });
 

@@ -4,7 +4,7 @@ import '../../public/global.css';
 
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import { ReactNode, memo, useMemo, useRef } from 'react';
+import { ReactNode, memo, useEffect, useMemo, useRef } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -16,7 +16,9 @@ import { nextStore } from '../store/nextstore';
 import { Layout } from './Layout';
 import AppUnifiedProvider from '../components/organismes/AppUnifiedProvider';
 import { useRouter } from 'next/router';
-import { navigationLinking } from '../navigators/RootNavigator';
+import { WithUrlProps } from '../hooks/withUrl';
+import windowExists from '../hooks/windowExists';
+import getPathnameFromScreen from '../hooks/getPathnameFromScreen';
 
 const insets = {
   top: 0,
@@ -34,10 +36,10 @@ const frame = {
 
 const initialMetrics = { insets, frame };
 
-//always starts with "/" 
-const ROUTES_TO_RETAIN = [
-  '/calendar/EventEditorScreen',
-];
+const ROUTES_TO_RETAIN = ([
+  { stack: 'CalendarStack', screen: 'EventEditorScreen' },
+  // other routes
+] as Omit<WithUrlProps, 'params'>[]).map(({ stack, screen = 'MainScreen' }) => getPathnameFromScreen(stack + '-' + screen));
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
@@ -45,6 +47,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   const [theme, setTheme] = useRootTheme();
 
   const isRetainableRoute = ROUTES_TO_RETAIN.includes(router.asPath);
+
   const splittedRoute = router.asPath.split('/');
 
   if (!splittedRoute[2]) {
@@ -67,7 +70,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         <title>ELF Biznes</title>
         <meta name="description" content="ELF Biznes" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" type="png" href="/favicon.png" />
+        <link rel="icon" type="png" href="/favicon.ico" />
       </Head>
       <Script
         key="tamagui-animations-mount"

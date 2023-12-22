@@ -85,7 +85,7 @@ const MainScreen: React.FC = () => {
   const getUserAdverts = async () => {
     if (token && userCompany?.id) {
       setLoading(true);
-      await dispatch(advertsServices.getUserAdverts(token, userCompany?.id));
+      await dispatch(advertsServices.getUserAdverts(userCompany.id));
     }
   }
 
@@ -95,7 +95,7 @@ const MainScreen: React.FC = () => {
         setLoading(true);
         const candidatesId = Array.from(new Set(userAdverts.reduce<number[]>((prev, curr) => [...prev, ...curr.candidate_data.map(e => e.candidate_id)], [])));
         if (candidatesId.length) {
-          const res = await dispatch(advertsServices.getAdvertCandidates(token, candidatesId));
+          const res = await dispatch(advertsServices.getAdvertCandidates(candidatesId));
           setCandidates(res as unknown as CandidateDataType[]);
         }
       }
