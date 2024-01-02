@@ -1,33 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Image, Dimensions, Platform } from 'react-native';
+import { StyleSheet, View, Image, Platform } from 'react-native';
 import Colors from '../../colors/Colors';
-import { SceneMap } from 'react-native-tab-view';
-import { nativeStore } from '../../store';
-import AboutCard from './CompanyScreenRoutes/AboutCard/AboutCard';
-import OpinionCard from './CompanyScreenRoutes/OpinionCard/OpinionCard';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import { CompanyDataType, MediaType, ContactPersonType, LanguageType } from '../../store/reducers/types';
-import { useDispatch } from 'react-redux';
-import generalServices from '../../services/generalServices';
-import { baseURL } from '../../services';
+import { CompanyDataType, LanguageType } from '../../store/reducers/types';
 import companyServices from '../../services/companyServices';
 import MainDataCard from './CompanyScreenRoutes/MainDataCard/MainDataCard';
 import SvgIcon from '../../components/atoms/SvgIcon';
-import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import ScreenHeaderProvider, { SCREEN_HEADER_HEIGHT } from '../../components/organismes/ScreenHeaderProvider';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import useRouter from '../../hooks/useRouter';
 import { ScrollView } from '../../components/molecules/ScrollView';
 import Carousel from '../../components/organismes/Carousel';
-import TabbarMenu, { TabbarRoute } from '../../components/organismes/TabbarMenu';
 import Typography from '../../components/atoms/Typography';
 import { Separator } from 'tamagui';
 import Accordion from '../../components/molecules/Accordion';
-import Button from '../../components/molecules/Button';
 import { Linking } from "react-native";
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { createParam } from 'solito';
+import { InitialPropsFromParams } from '../../hooks/types';
+import { Snackbar } from 'react-native-paper';
+import Button from '../../components/molecules/Button';
 
 const companyExample: CompanyDataType = {
   id: -1,
@@ -173,18 +167,63 @@ const languages: LanguageType[] = [
   },
 ];
 
+type InitialParams = NonNullable<ProfileStackParamList['default']['CompanyScreen']>;
+
 const { useParam } = createParam<NonNullable<ProfileStackParamList['default']['CompanyScreen']>>();
 
-const CompanyScreen: React.FC = () => {
+const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newProfileInitial }) => {
   const dispatch = useTypedDispatch();
-  const { setSwipeablePanelProps, setUserCompany } = useActions();
-  const { userCompany, token, jobIndustries } = useTypedSelector(state => state.general);
-  const [companyData, setCompanyData] = useState<CompanyDataType | null>(/* userCompany || */ companyExample);
+  const { setSwipeablePanelProps } = useActions();
+  const { userCompany } = useTypedSelector(state => state.general);
+  const [companyData, setCompanyData] = useState<CompanyDataType | null>(userCompany || companyExample);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [servicesExpanded, setServicesExpanded] = useState(false);
   const [languagesExpanded, setLanguagesExpanded] = useState(false);
+  const [carouselHeight, setCarouselHeight] = useState(0);
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const [isHeaderTransparent, setIsHeaderTransparent] = useState(true);
+  const [snackbar, setSnackbar] = React.useState(false);
   const router = useRouter();
+  const { replace } = useRouter();
   const [subView] = useParam('subView');
+  const [newProfile] = useParam('newProfile', { initial: newProfileInitial });
+
+  useEffect(() => {
+    if (newProfile) {
+      setSnackbar(true);
+      replace({
+        stack: 'ProfileStack',
+        screen: 'CompanyScreen',
+        params: undefined,
+      });
+    };
+  }, [newProfile]);
+
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const handleScroll = () => {
+        setScrollPosition(window.scrollY);
+      };
+
+      window.addEventListener('scroll', handleScroll);
+
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+      };
+    };
+  }, []);
+
+  useEffect(() => {
+    if (userCompany) setCompanyData(userCompany);
+  }, [userCompany]);
+
+  useEffect(() => {
+    if (scrollPosition > carouselHeight - SCREEN_HEADER_HEIGHT) {
+      setIsHeaderTransparent(false);
+    } else {
+      setIsHeaderTransparent(true);
+    };
+  }, [carouselHeight, scrollPosition]);
 
   useEffect(() => {
     setSwipeablePanelProps((() => {
@@ -239,10 +278,15 @@ const CompanyScreen: React.FC = () => {
     })());
   }, [subView]);
 
-  /*   useEffect(() => {
-      console.log(JSON.stringify(userCompany, null, 4));
-      if (userCompany) setCompanyData(userCompany);
-    }, [userCompany]); */
+  const handleLayout = (event: { nativeEvent: { layout: { width: number; height: number; }; }; }) => {
+    const { height } = event.nativeEvent.layout;
+    setCarouselHeight(height);
+  };
+
+  const handleScroll = (event: { nativeEvent: { contentOffset: { y: number; }; }; }) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    setScrollPosition(Math.round(offsetY));
+  };
 
   const goToCompanyEditorScreen = () => {
     router.push({
@@ -267,27 +311,41 @@ const CompanyScreen: React.FC = () => {
     });
   };
 
+  const goToPointsScreen = () => {
+    router.push({
+      stack: 'ProfileStack',
+      screen: 'PointsScreen',
+    });
+  };
+
   return (
-    <ScreenHeaderProvider 
+    <ScreenHeaderProvider
       transparent
       actions={userCompany ? [{
         icon: 'threeDots',
         onPress: setOptions,
       }] : []}
-      headerItemsColor={Colors.White}
+      headerItemsColor={isHeaderTransparent ? Colors.White : Colors.Black}
+      backgroundHeader={isHeaderTransparent ? 'rgba(0, 0, 0, .3)' : Colors.White}
     >
-      <ScrollView style={{ backgroundColor: Colors.Basic100, flex: 1 }}>
+      <ScrollView
+        style={styles.ScrollView}
+        onScroll={handleScroll}
+      >
         {companyData &&
           <>
             {companyData.photos?.length &&
               <Carousel
                 data={companyData.photos.map(item => item.path)}
-                style={{ width: '100%', aspectRatio: '3/2', height: undefined }}
+                style={styles.Carousel}
                 renderItem={({ item }) => (
-                  <View style={{ width: '100%', aspectRatio: '3/2', height: undefined, backgroundColor: Colors.Basic500 }}>
+                  <View
+                    style={styles.CarouselImageContainer}
+                    onLayout={handleLayout}
+                  >
                     <Image
                       source={{ uri: item }}
-                      style={{ height: '100%', width: 'auto' }}
+                      style={styles.CarouselImage}
                     />
                   </View>
                 )}
@@ -325,7 +383,7 @@ const CompanyScreen: React.FC = () => {
                 </Typography>
               }
             >
-              <Typography variant='h5' style={{ marginHorizontal: 19, color: Colors.Basic600, marginBottom: 16 }}>
+              <Typography variant='h5' style={styles.AccordionText}>
                 {companyData.full_decription}
               </Typography>
             </Accordion>
@@ -341,7 +399,7 @@ const CompanyScreen: React.FC = () => {
                 }
               >
                 {services.filter(item => companyData.services?.includes(item.id)).map(({ id, name }) =>
-                  <Typography key={id} style={{ marginHorizontal: 19, color: Colors.Basic600, marginBottom: 16 }}>
+                  <Typography key={id} style={styles.AccordionText}>
                     {name}
                   </Typography>
                 )}
@@ -356,13 +414,13 @@ const CompanyScreen: React.FC = () => {
                 </Typography>
                 <Carousel
                   data={companyData.certificates.map(item => item.path)}
-                  style={{ width: '100%', aspectRatio: '3/2', height: undefined, marginTop: 16 }}
+                  style={[styles.Carousel, { marginTop: 16 }]}
                   renderItem={({ item }) => (
-                    <View style={{ width: '100%', aspectRatio: '3/2', height: undefined, backgroundColor: Colors.Basic500 }}>
+                    <View style={styles.CarouselImageContainer}>
                       <Image
                         resizeMode={'contain'}
                         source={{ uri: item }}
-                        style={{ height: '100%', width: 'auto' }}
+                        style={styles.CarouselImage}
                       />
                     </View>
                   )}
@@ -402,7 +460,7 @@ const CompanyScreen: React.FC = () => {
               }
             </View>
             {companyData.languages &&
-              <View style={{ marginTop: 32, marginBottom: 100 }}>
+              <View style={styles.Languages}>
                 <Separator />
                 <Accordion
                   onPress={() => setLanguagesExpanded(prev => !prev)}
@@ -414,7 +472,7 @@ const CompanyScreen: React.FC = () => {
                   }
                 >
                   {languages.filter(item => companyData.languages?.includes(item.id)).map(({ id, name }) =>
-                    <Typography key={id} style={{ marginHorizontal: 19, color: Colors.Basic600, marginBottom: 16 }}>
+                    <Typography key={id} style={styles.AccordionText}>
                       {name}
                     </Typography>
                   )}
@@ -425,11 +483,65 @@ const CompanyScreen: React.FC = () => {
           </>
         }
       </ScrollView>
+      <Snackbar
+        visible={snackbar}
+        duration={5000}
+        onDismiss={() => setSnackbar(false)}
+        wrapperStyle={[
+          styles.SnackbarWrapper,
+          { position: Platform.OS === 'web' ? 'fixed' : 'absolute' },
+        ]}
+        style={styles.Snackbar}>
+        <View style={styles.SnackbarContent}>
+          <View>
+            <Typography size={18} weight={'Bold'} style={{ color: Colors.White50 }}>
+              Stworzone!
+            </Typography>
+            <View style={styles.Points}>
+              <Typography size={24} weight={'Bold'} style={{ color: Colors.White }}>
+                100
+              </Typography>
+              <Typography size={14} weight={'Bold'} style={{ color: Colors.White }}>
+                pkt
+              </Typography>
+            </View>
+          </View>
+          <Button
+            onPress={() => goToPointsScreen()}
+            variant='text'
+            hoverColor='none'
+            style={styles.ExchangePointsButton}
+          >
+            <Typography size={18} weight={'Bold'} style={{ color: Colors.Blue500 }}>
+              Wymień punkty
+            </Typography>
+          </Button>
+        </View>
+      </Snackbar>
     </ScreenHeaderProvider>
   );
 };
 
 const styles = StyleSheet.create({
+  ScrollView: {
+    backgroundColor: Colors.Basic100,
+    flex: 1,
+  },
+  Carousel: {
+    width: '100%',
+    aspectRatio: '3/2',
+    height: undefined,
+  },
+  CarouselImageContainer: {
+    width: '100%',
+    aspectRatio: '3/2',
+    height: undefined,
+    backgroundColor: Colors.Basic500,
+  },
+  CarouselImage: {
+    height: '100%',
+    width: 'auto',
+  },
   CompanyAmountsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -449,12 +561,52 @@ const styles = StyleSheet.create({
     marginTop: 15,
     marginHorizontal: 19,
   },
+  AccordionText: {
+    marginHorizontal: 19,
+    color: Colors.Basic600,
+    marginBottom: 16,
+  },
   SocialMedia: {
     marginLeft: 16,
     marginRight: 19,
     flexDirection: 'row',
     gap: 24,
     marginTop: 20,
+  },
+  Languages: {
+    marginTop: 32,
+    marginBottom: 100,
+  },
+  SnackbarWrapper: {
+    zIndex: 9999999,
+    backgroundColor: 'transparent',
+    maxWidth: 768,
+    height: 70,
+  },
+  Snackbar: {
+    backgroundColor: Colors.Green500,
+    padding: 0,
+    margin: 0,
+    borderRadius: 0,
+    boxShadow: 'none',
+  },
+  SnackbarContent: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: Colors.Green500,
+    transform: 'translateY(-5px)',
+  },
+  Points: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5
+  },
+  ExchangePointsButton: {
+    width: 'auto',
+    alignSelf: 'flex-end',
+    height: 26,
+    marginRight: -19,
   },
 });
 

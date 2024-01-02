@@ -96,7 +96,7 @@ const MainScreen: React.FC = () => {
   }, [showHelp]);
 
   const goToCompanyScreen = () => {
-    router.push({ stack: 'ProfileStack', screen: 'CompanyScreen' });
+    router.push({ stack: 'ProfileStack', screen: 'CompanyScreen', params: undefined });
   };
 
   const goToNoCompanyScreen = () => {

@@ -44,7 +44,7 @@ export type ProfileStackParamList = {
     )
     ,
     NoCompanyScreen: undefined;
-    CompanyScreen: undefined,
+    CompanyScreen: { newProfile?: string, subView?: 'options' } | undefined,
     PackagesScreen: undefined,
     SettingsScreen: undefined,
     AccountDataScreen: undefined,

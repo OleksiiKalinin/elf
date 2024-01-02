@@ -16,6 +16,7 @@ type VariantType = 'primary' | 'secondary' | 'secondarySelected' | 'light' | 'in
 type ButtonProps = {
   variant?: VariantType,
   contentColor?: string,
+  hoverColor?: string,
   contentWeight?: 'CAPS' | 'Black' | 'ExtraBold' | 'Bold' | 'SemiBold' | 'Medium' | 'Regular' | 'Light',
   contentVariant?: 'small' | 'main' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5',
   withLoading?: boolean,
@@ -100,6 +101,7 @@ const Button: React.FC<ButtonProps> = ({
   contentWeight = 'CAPS',
   contentVariant = 'main',
   contentColor = null,
+  hoverColor = null,
   withLoading = false,
   fullwidth = true,
   arrowRight,
@@ -113,7 +115,7 @@ const Button: React.FC<ButtonProps> = ({
     <>
       {borderTop && <Separator borderColor={Colors.Basic300} alignSelf="stretch" />}
       <TamaButton
-        hoverStyle={{ bg: variants[variant].hoverColor }} pressStyle={{ bg: variants[variant].hoverColor, opacity: .5 }}
+        hoverStyle={{ bg: hoverColor || variants[variant].hoverColor }} pressStyle={{ bg: hoverColor || variants[variant].hoverColor, opacity: .5 }}
         height={props.h ?? (arrowRight ? 58 : 50)}
         borderRadius={0}
         bg={props.bg || props.backgroundColor || props.disabled ? variants[variant].disabledColor : variants[variant].activeColor}
