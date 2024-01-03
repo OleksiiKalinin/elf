@@ -22,7 +22,7 @@ export type AddContactPersonsScreenProps = {
 
 const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) => {
   const { companyData, changeCompanyDataHandler, contactPersons: initContactPersons, setContactPersons: changeContactPersonsHandler } = props;
-  const [contactHours, setContactHours] = useState<string>(companyData.contact_hours || '08:00-18:00');
+  // const [contactHours, setContactHours] = useState<string>(companyData.contact_hours || '08:00-18:00');
   const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(initContactPersons);
   const [showTips, setShowTips] = useState<boolean>(false);
   const [showTimepicker, setShowTimepicker] = useState<'start' | 'end' | false>(false);
@@ -30,6 +30,10 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
   const [errorModal, setErrorModal] = useState<string | null>(null);
 
   const { backToRemoveParams } = useRouter();
+
+  useEffect(() => {
+    console.log(contactPersons);
+  }, []);
 
   useEffect(() => {
     setIsDataValid(validateContactPersons());
@@ -63,7 +67,8 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
       email: null,
       link: null,
       mobile_number: null,
-      id: Date.now()
+      id: Date.now(),
+      contact_hours: '08:00-18:00',
     }])
 
     if (isDataValid) {
@@ -102,29 +107,33 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
   const handleConfirm = () => {
     if (isDataValid) {
       changeContactPersonsHandler(contactPersons);
-      changeCompanyDataHandler('contact_hours', contactHours);
+      // changeCompanyDataHandler('contact_hours', contactHours);
       backToRemoveParams();
     } else {
       setShowTips(true);
     };
   };
 
-  const startHours = showTimepicker === 'start' ?
-    parseInt(contactHours.substring(0, 1) === '0' ? contactHours.substring(1, 2) : contactHours.substring(0, 2))
-    :
-    parseInt(contactHours.substring(6, 7) === '0' ? contactHours.substring(7, 8) : contactHours.substring(6, 8));
+  const startHours = (contactHours: string) => {
+    return showTimepicker === 'start' ?
+      parseInt(contactHours.substring(0, 1) === '0' ? contactHours.substring(1, 2) : contactHours.substring(0, 2))
+      :
+      parseInt(contactHours.substring(6, 7) === '0' ? contactHours.substring(7, 8) : contactHours.substring(6, 8));
+  };
 
-  const startMinutes = showTimepicker === 'start' ?
-    parseInt(contactHours.substring(3, 4) === '0' ? contactHours.substring(4, 5) : contactHours.substring(3, 5))
-    :
-    parseInt(contactHours.substring(9, 10) === '0' ? contactHours.substring(10, 11) : contactHours.substring(9, 11));
+  const startMinutes = (contactHours: string) => {
+    return showTimepicker === 'start' ?
+      parseInt(contactHours.substring(3, 4) === '0' ? contactHours.substring(4, 5) : contactHours.substring(3, 5))
+      :
+      parseInt(contactHours.substring(9, 10) === '0' ? contactHours.substring(10, 11) : contactHours.substring(9, 11));
+  }
 
   const urlPattern = /^(http|https):\/\/[^ "]+$/;
 
   return (
     <ScreenHeaderProvider title='Dane do kontaktu'>
       <ScrollView style={styles.ScrollView} contentContainerStyle={{ paddingTop: 25 }}>
-        {contactPersons.map(({ account_facebook, account_instagram, email, mobile_number, id }, index) => (
+        {contactPersons.map(({ account_facebook, account_instagram, email, mobile_number, id, contact_hours }, index) => (
           <View style={styles.ContactPerson} key={id}>
             <View style={styles.ContactPersonHeader}>
               <Typography size={18} weight='Bold' style={{ marginVertical: 10 }}>Osoba {index + 1}</Typography>
@@ -178,6 +187,40 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
                 })}
               />
             </View>
+            <View style={styles.ContactHoursHeader}>
+              <Typography weight="Bold" variant="h5">
+                Godziny kontaktu
+              </Typography>
+            </View>
+            <View style={styles.ContactHoursButtons}>
+              <View style={styles.HourButton}>
+                <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>od</Typography>
+                <Button
+                  contentWeight='SemiBold'
+                  contentVariant='h5'
+                  variant="secondary"
+                  onPress={() => setShowTimepicker('start')}
+                  borderRadius={4}
+                >
+                  {contact_hours?.substring(0, contact_hours.length - 6)}
+                </Button>
+              </View>
+              <View style={{ justifyContent: 'center', height: 100 }}>
+                <Typography weight='Bold' variant='h4' color={Colors.Basic500}>{'  -  '}</Typography>
+              </View>
+              <View style={styles.HourButton}>
+                <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>do</Typography>
+                <Button
+                  contentWeight='SemiBold'
+                  contentVariant='h5'
+                  variant="secondary"
+                  onPress={() => setShowTimepicker('end')}
+                  borderRadius={4}
+                >
+                  {contact_hours?.substring(6)}
+                </Button>
+              </View>
+            </View>
             {index + 1 === contactPersons.length && (email && mobile_number) &&
               <Button
                 variant='text'
@@ -186,70 +229,38 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
                 <Typography color={Colors.Blue500} weight='Bold'>Dodaj kolejną osobę</Typography>
               </Button>
             }
-          </View>))}
-        <View style={styles.ContactHoursHeader}>
-          <Typography weight="Bold" variant="h5">
-            Godziny kontaktu
-          </Typography>
-        </View>
-        <View style={styles.ContactHoursButtons}>
-          <View style={styles.HourButton}>
-            <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>od</Typography>
-            <Button
-              contentWeight='SemiBold'
-              contentVariant='h5'
-              variant="secondary"
-              onPress={() => setShowTimepicker('start')}
-              borderRadius={4}
-            >
-              {contactHours.substring(0, contactHours.length - 6)}
-            </Button>
-          </View>
-          <View style={{ justifyContent: 'center', height: 100 }}>
-            <Typography weight='Bold' variant='h4' color={Colors.Basic500}>{'  -  '}</Typography>
-          </View>
-          <View style={styles.HourButton}>
-            <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>do</Typography>
-            <Button
-              contentWeight='SemiBold'
-              contentVariant='h5'
-              variant="secondary"
-              onPress={() => setShowTimepicker('end')}
-              borderRadius={4}
-            >
-              {contactHours.substring(6)}
-            </Button>
-          </View>
-        </View>
-      </ScrollView>
-      <TimePickerModal
-        visible={!!showTimepicker}
-        onDismiss={() => setShowTimepicker(false)}
-        hours={startHours}
-        minutes={startMinutes}
-        onConfirm={({ hours, minutes }) => {
-          const time = `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
-          if (showTimepicker === 'start') {
-            const newStartTime = new Date(0, 0, 0, hours, minutes)
-            const endTime = new Date(0, 0, 0, parseInt(contactHours.substring(6, 8)), parseInt(contactHours.substring(9, 11)));
-            if (newStartTime >= endTime) {
-              setErrorModal('Godzina początkowa nie może być późniejsza niż godzina końcowa');
-            } else {
-              setContactHours(time + contactHours.substring(5));
-              setShowTimepicker(false);
-            };
-          } else {
-            const newEndTime = new Date(0, 0, 0, hours, minutes)
-            const startTime = new Date(0, 0, 0, parseInt(contactHours.substring(0, 2)), parseInt(contactHours.substring(3, 5)));
-            if (newEndTime <= startTime) {
-              setErrorModal('Godzina końcowa nie może być wcześniejsza niż godzina początkowa');
-            } else {
-              setContactHours(contactHours.substring(0, contactHours.length - 5) + time);
-              setShowTimepicker(false);
+            {contact_hours &&
+              <TimePickerModal
+                visible={!!showTimepicker}
+                onDismiss={() => setShowTimepicker(false)}
+                hours={startHours(contact_hours)}
+                minutes={startMinutes(contact_hours)}
+                onConfirm={({ hours, minutes }) => {
+                  const time = `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+                  if (showTimepicker === 'start') {
+                    const newStartTime = new Date(0, 0, 0, hours, minutes)
+                    const endTime = new Date(0, 0, 0, parseInt(contact_hours?.substring(6, 8)), parseInt(contact_hours?.substring(9, 11)));
+                    if (newStartTime >= endTime) {
+                      setErrorModal('Godzina początkowa nie może być późniejsza niż godzina końcowa');
+                    } else {
+                      editContactPersons('contact_hours', (time + contact_hours.substring(5)), index);
+                      setShowTimepicker(false);
+                    };
+                  } else {
+                    const newEndTime = new Date(0, 0, 0, hours, minutes)
+                    const startTime = new Date(0, 0, 0, parseInt(contact_hours.substring(0, 2)), parseInt(contact_hours.substring(3, 5)));
+                    if (newEndTime <= startTime) {
+                      setErrorModal('Godzina końcowa nie może być wcześniejsza niż godzina początkowa');
+                    } else {
+                      editContactPersons('contact_hours', (contact_hours.substring(0, contact_hours.length - 5) + time), index);
+                      setShowTimepicker(false);
+                    }
+                  }
+                }}
+              />
             }
-          }
-        }}
-      />
+          </View>))}
+      </ScrollView>
       <Modal
         transparent={true}
         visible={!!errorModal}
@@ -295,7 +306,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   ContactHoursHeader: {
-    marginHorizontal: 19,
     marginBottom: 5,
     marginTop: 32,
     flexDirection: 'row'
@@ -303,7 +313,6 @@ const styles = StyleSheet.create({
   ContactHoursButtons: {
     flex: 1,
     flexDirection: 'row',
-    marginHorizontal: 19,
     marginTop: 20,
   },
   HourButton: {

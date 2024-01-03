@@ -184,7 +184,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
   const [isHeaderTransparent, setIsHeaderTransparent] = useState(true);
   const [snackbar, setSnackbar] = React.useState(false);
   const router = useRouter();
-  const { replace } = useRouter();
+  const { replace, backToRemoveParams } = useRouter();
   const [subView] = useParam('subView');
   const [newProfile] = useParam('newProfile', { initial: newProfileInitial });
 
@@ -234,6 +234,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
           {
             children: 'Edytuj',
             onPress: () => goToCompanyEditorScreen(),
+            closeAction: 'props-null',
           },
           {
             children: 'Usuń',
@@ -289,10 +290,10 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
   };
 
   const goToCompanyEditorScreen = () => {
-    router.push({
+    replace({
       stack: 'ProfileStack',
       screen: 'CompanyEditorScreen',
-      params: { editMode: 'false' }
+      params: { editMode: 'true' }
     });
   };
 
@@ -388,25 +389,26 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
               </Typography>
             </Accordion>
             <Separator />
-            <>
-              <Accordion
-                onPress={() => setServicesExpanded(prev => !prev)}
-                expanded={servicesExpanded}
-                title={
-                  <Typography variant='h5' weight={servicesExpanded ? 'Bold' : 'Medium'}>
-                    Usługi
-                  </Typography>
-                }
-              >
-                {services.filter(item => companyData.services?.includes(item.id)).map(({ id, name }) =>
-                  <Typography key={id} style={styles.AccordionText}>
-                    {name}
-                  </Typography>
-                )}
-              </Accordion>
-              <Separator />
-            </>
-
+            {companyData.services &&
+              <>
+                <Accordion
+                  onPress={() => setServicesExpanded(prev => !prev)}
+                  expanded={servicesExpanded}
+                  title={
+                    <Typography variant='h5' weight={servicesExpanded ? 'Bold' : 'Medium'}>
+                      Usługi
+                    </Typography>
+                  }
+                >
+                  {services.filter(item => companyData.services?.includes(item.id)).map(({ id, name }) =>
+                    <Typography key={id} style={styles.AccordionText}>
+                      {name}
+                    </Typography>
+                  )}
+                </Accordion>
+                <Separator />
+              </>
+            }
             {companyData.certificates &&
               <>
                 <Typography variant='h5' weight='Bold' style={[styles.CategoryHeader, { marginTop: 24 }]}>
@@ -427,38 +429,42 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
                 />
               </>
             }
-            <Typography variant='h5' weight='Bold' style={[styles.CategoryHeader, { marginTop: 24 }]}>
-              Social media
-            </Typography>
-            <View style={styles.SocialMedia}>
-              {companyData.account_instagram &&
-                <TouchableOpacity
-                  onPress={() => Linking.openURL(companyData.account_instagram as string)}
-                  activeOpacity={.5}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <SvgIcon icon={'instagram'} fill={Colors.Blue500} />
-                </TouchableOpacity>
-              }
-              {companyData.account_facebook &&
-                <TouchableOpacity
-                  onPress={() => Linking.openURL(companyData.account_facebook as string)}
-                  activeOpacity={.5}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <SvgIcon icon={'facebook'} fill={Colors.Blue500} />
-                </TouchableOpacity>
-              }
-              {companyData.website &&
-                <TouchableOpacity
-                  onPress={() => Linking.openURL(companyData.website as string)}
-                  activeOpacity={.5}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <SvgIcon icon={'internet'} fill={Colors.Blue500} />
-                </TouchableOpacity>
-              }
-            </View>
+            {(companyData.account_instagram || companyData.account_facebook || companyData.account_linkedIn || companyData.website) &&
+              <>
+                <Typography variant='h5' weight='Bold' style={[styles.CategoryHeader, { marginTop: 24 }]}>
+                  Social media
+                </Typography>
+                <View style={styles.SocialMedia}>
+                  {companyData.account_instagram &&
+                    <TouchableOpacity
+                      onPress={() => Linking.openURL(companyData.account_instagram as string)}
+                      activeOpacity={.5}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <SvgIcon icon={'instagram'} fill={Colors.Blue500} />
+                    </TouchableOpacity>
+                  }
+                  {companyData.account_facebook &&
+                    <TouchableOpacity
+                      onPress={() => Linking.openURL(companyData.account_facebook as string)}
+                      activeOpacity={.5}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <SvgIcon icon={'facebook'} fill={Colors.Blue500} />
+                    </TouchableOpacity>
+                  }
+                  {companyData.website &&
+                    <TouchableOpacity
+                      onPress={() => Linking.openURL(companyData.website as string)}
+                      activeOpacity={.5}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <SvgIcon icon={'internet'} fill={Colors.Blue500} />
+                    </TouchableOpacity>
+                  }
+                </View>
+              </>
+            }
             {companyData.languages &&
               <View style={styles.Languages}>
                 <Separator />

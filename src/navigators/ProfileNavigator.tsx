@@ -24,6 +24,7 @@ import { CompanyInvoiceScreenProps } from '../screens/CompanyInvoiceScreen';
 import { GoogleMapScreenProps } from '../screens/GoogleMapScreen';
 import { JobCategoryScreenProps } from '../screens/JobCategoryScreen';
 import { ItemSelectorScreenProps } from '../screens/ItemSelectorScreen';
+import { SocialMediaScreenProps } from '../screens/SocialMediaScreen';
 
 type SubView<T extends keyof ProfileStackParamList['extended']> = { subView: T } & ProfileStackParamList['extended'][T] | { subView?: never };
 
@@ -32,7 +33,7 @@ export type ProfileStackParamList = {
     MainScreen: undefined,
     // PaymentTemporalScreen: undefined,
     CompanyEditorScreen:
-    | { editMode: string }
+    | { editMode?: string }
     & (
       | SubView<'GoogleMapScreen'>
       | SubView<'CompanyInvoiceScreen'>
@@ -41,6 +42,7 @@ export type ProfileStackParamList = {
       | SubView<'AddContactPersonsScreen'>
       | SubView<'CompanyDescriptionScreen'>
       | SubView<'ItemSelectorScreen'>
+      | SubView<'SocialMediaScreen'>
     )
     ,
     NoCompanyScreen: undefined;
@@ -80,6 +82,7 @@ export type ProfileStackParamList = {
     CompanyInvoiceScreen: CompanyInvoiceScreenProps,
     JobCategoryScreen: JobCategoryScreenProps,
     ItemSelectorScreen: ItemSelectorScreenProps,
+    SocialMediaScreen: SocialMediaScreenProps,
   }
 }
 

@@ -1,26 +1,21 @@
-import { CompositeScreenProps, useIsFocused, useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import {
-  Dimensions,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
   View,
   Image,
   Platform,
 } from 'react-native';
-import { SceneMap } from 'react-native-tab-view';
 import Colors from '../../colors/Colors';
-import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useDispatch } from 'react-redux';
 import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Button from '../../components/molecules/Button';
 import SvgIcon from '../../components/atoms/SvgIcon';
 import useRouter from '../../hooks/useRouter';
 import img from '../../assets/images/Barber.png';
+// import NextImage from 'next/image';
 
 const pointCards = [
   { points: 23, type: 'Pakiet Medium', time: 'na tydzień' },
@@ -91,7 +86,14 @@ const NoCompanyScreen: React.FC = () => {
         >
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             {Platform.OS === 'web' ?
-              <img src={require('../../assets/images/Barber.png')} style={{ width: 66, height: 44 }} />
+              <View style={{ width: 66, height: 44 }}>
+                {/* <NextImage
+                  src={img}
+                  width={66}
+                  height={44}
+                  alt='logo'
+                /> */}
+              </View>
 
               :
 

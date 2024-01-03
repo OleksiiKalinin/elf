@@ -203,7 +203,8 @@ const CompanyEditorScreen: React.FC = () => {
     email: null,
     link: null,
     mobile_number: null,
-    id: Date.now()
+    id: Date.now(),
+    contact_hours: '08:00-18:00',
   }]);
   const [displayData, setDisplayData] = useState<{ [k in DisplayDataKeysType]?: boolean }>({
     short_decription: false,
@@ -354,7 +355,6 @@ const CompanyEditorScreen: React.FC = () => {
       stack: 'ProfileStack',
       screen: 'CompanyEditorScreen',
       params: {
-        editMode: editMode || '',
         subView: 'JobCategoryScreen',
         mode: 'industry',
         callback: (industry) => changeCompanyDataHandler('job_industry', industry),
@@ -367,7 +367,6 @@ const CompanyEditorScreen: React.FC = () => {
       stack: 'ProfileStack',
       screen: 'CompanyEditorScreen',
       params: {
-        editMode: editMode || '',
         subView: 'ItemSelectorScreen',
         mode: 'multiple',
         list: services,
@@ -388,7 +387,6 @@ const CompanyEditorScreen: React.FC = () => {
       stack: 'ProfileStack',
       screen: 'CompanyEditorScreen',
       params: {
-        editMode: editMode || '',
         subView: 'AddContactPersonsScreen',
         contactPersons,
         setContactPersons,
@@ -403,7 +401,6 @@ const CompanyEditorScreen: React.FC = () => {
       stack: 'ProfileStack',
       screen: 'CompanyEditorScreen',
       params: {
-        editMode: editMode || '',
         subView: 'CompanyDescriptionScreen',
         callback: (value) => changeCompanyDataHandler('full_decription', value, false),
         description: companyData.full_decription,
@@ -418,7 +415,6 @@ const CompanyEditorScreen: React.FC = () => {
       screen: 'CompanyEditorScreen',
       params: {
         subView: 'CompanyInvoiceScreen',
-        editMode: editMode || '',
         callback: (address, NIP, full_name) => {
           changeCompanyDataHandler('full_name', full_name, false);
           changeCompanyDataHandler('main_address', address);
@@ -436,7 +432,6 @@ const CompanyEditorScreen: React.FC = () => {
       stack: 'ProfileStack',
       screen: 'CompanyEditorScreen',
       params: {
-        editMode: editMode || '',
         subView: 'ItemSelectorScreen',
         mode: 'multiple',
         list: languages,
@@ -448,6 +443,29 @@ const CompanyEditorScreen: React.FC = () => {
         headerProps: { title: 'Preferowane języki' },
         initialSelected: companyData.languages ?? undefined,
         allowReturnEmptyList: true,
+      },
+    });
+  };
+
+  const goToSocialMediaScreen = () => {
+    router.push({
+      stack: 'ProfileStack',
+      screen: 'CompanyEditorScreen',
+      params: {
+        subView: 'SocialMediaScreen',
+        callback: (socialMedia) => setCompanyData(prev => ({
+          ...prev,
+          account_facebook: socialMedia.facebook,
+          account_instagram: socialMedia.instagram,
+          account_linkedIn: socialMedia.linkedIn,
+          website: socialMedia.website,
+        })),
+        initialSocialMedia: {
+          facebook: companyData.account_facebook,
+          instagram: companyData.account_instagram,
+          linkedIn: companyData.account_linkedIn,
+          website: companyData.website,
+        },
       },
     });
   };
@@ -566,7 +584,7 @@ const CompanyEditorScreen: React.FC = () => {
   }, [companyPhotos])
 
   return (
-    <ScreenHeaderProvider {...(editMode === 'true' ? { title: 'Edytuj profil firmy' } : {title: 'Utwórz profil firmy'})}>
+    <ScreenHeaderProvider {...(editMode === 'true' ? { title: 'Edytuj profil firmy' } : { title: 'Utwórz profil firmy' })}>
       <ScrollView style={styles.Content} contentContainerStyle={{ paddingVertical: 20 }}>
         {/* <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingLeft: 20 }}>
           {MainButtons.map(item => (
@@ -1282,17 +1300,47 @@ const CompanyEditorScreen: React.FC = () => {
             </Typography>
           </Button>
         }
-        <View style={{ paddingBottom: 60 }}>
-          <Button
-            variant='text'
-            borderBottom
-            arrowRight
-          >
-            <Typography variant='h5'>
-              Social media
-            </Typography>
-          </Button>
-        </View>
+        {(companyData.account_facebook || companyData.account_instagram || companyData.account_linkedIn || companyData.website) ?
+          <View style={styles.FilledSocialMediaContainer}>
+            <View style={styles.FilledSocialMedia}>
+              <Typography variant='h5' weight='Bold'>
+                Social media
+              </Typography>
+              <Button
+                variant='text'
+                style={{ width: 'auto', padding: 0 }}
+                onPress={() => goToSocialMediaScreen()}
+              >
+                <Typography variant='h5' weight='Bold' color={Colors.Blue500} >
+                  Edytuj
+                </Typography>
+              </Button>
+            </View>
+            <View style={styles.SocialMediaIcons}>
+              <SvgIcon icon={'facebook'} fill={companyData.account_facebook ? Colors.Basic900 : Colors.Basic600} />
+              <SvgIcon icon={'instagram'} fill={companyData.account_instagram ? Colors.Basic900 : Colors.Basic600} />
+              <SvgIcon icon={'instagram'} fill={companyData.account_linkedIn ? Colors.Basic900 : Colors.Basic600} />
+              <SvgIcon icon={'internet'} fill={companyData.website ? Colors.Basic900 : Colors.Basic600} />
+            </View>
+            <Separator marginTop={12} />
+          </View>
+
+          :
+
+          <View style={{ paddingBottom: 60 }}>
+            <Button
+              variant='text'
+              borderBottom
+              arrowRight
+              onPress={() => goToSocialMediaScreen()}
+            >
+              <Typography variant='h5'>
+                Social media
+              </Typography>
+            </Button>
+          </View>
+
+        }
       </ScrollView>
       <Button
         stickyBottom
@@ -1351,6 +1399,21 @@ const styles = StyleSheet.create({
   Optional: {
     color: Colors.Basic600,
     marginLeft: 5
+  },
+  FilledSocialMediaContainer: {
+    marginTop: 18, 
+    paddingBottom: 60 
+  },
+  FilledSocialMedia: {
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    paddingHorizontal: 19,
+  },
+  SocialMediaIcons: {
+    flexDirection: 'row', 
+    gap: 24, 
+    paddingHorizontal: 19,
   },
 });
 

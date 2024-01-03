@@ -275,7 +275,7 @@ export interface CompanyDataType {
     employees_amount: string | null,
     square_footage: string | null,
     contact_hours: string | null,
-    website: string | null,
+    website?: string | null,
     account_facebook?: string | null,
     account_instagram?: string | null,
     account_linkedIn?: string | null,
@@ -312,6 +312,7 @@ export interface ContactPersonType {
     account_youtube: string | null,
     company_id?: number,
     id: number,
+    contact_hours: string | null,
 }
 
 export interface AddressType {
