@@ -279,8 +279,6 @@ export interface CompanyDataType {
     account_facebook?: string | null,
     account_instagram?: string | null,
     account_linkedIn?: string | null,
-    // account_twitter: string | null,
-    // account_youtube: string | null,
     job_industry: number | null,
     logo?: MediaType | null,
     video?: MediaType | null,
@@ -306,13 +304,13 @@ export interface ContactPersonType {
     email: string | null,
     mobile_number: string | null,
     link: string | null,
-    account_facebook: string | null,
-    account_instagram: string | null,
-    account_twitter: string | null,
-    account_youtube: string | null,
     company_id?: number,
     id: number,
     contact_hours: string | null,
+    formsOfContact: {
+        phone: boolean,
+        email: boolean,
+    }
 }
 
 export interface AddressType {

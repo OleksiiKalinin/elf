@@ -196,15 +196,15 @@ const CompanyEditorScreen: React.FC = () => {
     services: null,
   });
   const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(userCompany?.contactPersons || [{
-    account_facebook: null,
-    account_instagram: null,
-    account_twitter: null,
-    account_youtube: null,
     email: null,
     link: null,
     mobile_number: null,
     id: Date.now(),
     contact_hours: '08:00-18:00',
+    formsOfContact: {
+      phone: false,
+      email: false,
+    },
   }]);
   const [displayData, setDisplayData] = useState<{ [k in DisplayDataKeysType]?: boolean }>({
     short_decription: false,
