@@ -1,38 +1,60 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   ScrollView,
   StyleSheet,
   View,
   Image,
-  Platform,
 } from 'react-native';
 import Colors from '../../colors/Colors';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Button from '../../components/molecules/Button';
 import SvgIcon from '../../components/atoms/SvgIcon';
 import useRouter from '../../hooks/useRouter';
-import img from '../../assets/images/Barber.png';
-// import NextImage from 'next/image';
+import { createParam } from 'solito';
+import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
+import { useActions } from '../../hooks/useActions';
 
-const pointCards = [
-  { points: 23, type: 'Pakiet Medium', time: 'na tydzień' },
-  { points: 250, type: 'Promowanie', time: 'na tydzień' },
-  { points: 500, type: 'Pakiet Pro', time: '100%' },
-];
+const { useParam } = createParam<NonNullable<ProfileStackParamList['default']['NoCompanyScreen']>>();
 
 const NoCompanyScreen: React.FC = () => {
-  const { profileHelpScreenDisplayed, token } = useTypedSelector(state => state.general);
-  const [showHelp, setShowHelp] = useState<boolean>(!profileHelpScreenDisplayed);
-  const helpDots = [0, 1, 2];
-  const [helpItemNumber, setHelpItemNumber] = useState<number>(0);
+  const { token } = useTypedSelector(state => state.general);
+  const { replace } = useRouter();
   const router = useRouter();
+  const [subView] = useParam('subView');
+  const { setSwipeablePanelProps } = useActions();
 
   useEffect(() => {
-    if (showHelp && !profileHelpScreenDisplayed) AsyncStorage.setItem('profileHelpScreenDisplayed', 'true');
-  }, [showHelp]);
+    setSwipeablePanelProps((() => {
+      if (subView === 'options') return {
+        children:
+          <View style={styles.Options}>
+            <View style={styles.OptionsTitle}>
+              <Typography size={24} weight='Bold'>
+                Zaloguj się
+              </Typography>
+              <Typography>
+                Czy chcesz zalogować się, żeby korzystać z pełnych usług aplikacji ELF?
+              </Typography>
+            </View>
+          </View>,
+        closeButton: true,
+        buttons: [
+          {
+            children: 'Tak, chcę się zalogować',
+            onPress: () => goToAuthScreen(),
+            closeAction: 'props-null',
+          },
+        ]
+      }
+      return null;
+    })());
+  }, [subView]);
+
+  const goToAuthScreen = () => {
+    replace({ stack: 'AuthStack', screen: 'MainScreen' });
+  };
 
   const goToCompanyEditorScreen = () => {
     router.push({ stack: 'ProfileStack', screen: 'CompanyEditorScreen', params: { editMode: 'false' } });
@@ -42,40 +64,43 @@ const NoCompanyScreen: React.FC = () => {
     router.push({ stack: 'ProfileStack', screen: 'CompanyScreen', params: { newProfile: 'true' } });
   };
 
+  const setOptions = () => {
+    router.push({
+      stack: 'ProfileStack',
+      screen: 'NoCompanyScreen',
+      params: { subView: 'options' }
+    });
+  };
+
   return (
     <ScreenHeaderProvider>
-      <ScrollView style={{ flex: 1, backgroundColor: Colors.Basic100 }} contentContainerStyle={{ paddingVertical: 30 }}>
-        <View style={{ marginHorizontal: 19, backgroundColor: Colors.White, borderRadius: 4, padding: 16, marginBottom: 20, }}>
-          <View style={{ alignItems: 'center', marginBottom: 12 }}>
-            <View style={{
-              width: 31,
-              height: 31,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 31,
-              backgroundColor: Colors.Sea300
-            }}>
+      <ScrollView style={styles.ScrollView} contentContainerStyle={{ paddingVertical: 30 }}>
+        <View style={styles.PointsBanner}>
+          <View style={styles.PointsBannerIconContainer}>
+            <View style={styles.PointsBannerIcon}>
               <SvgIcon icon='bag' />
             </View>
           </View>
           <Typography style={{ marginBottom: 5 }} textAlign='center' color={Colors.Blue500} size={20} weight='Bold'>100 punktów</Typography>
-          <Typography style={{ marginBottom: 5 }} textAlign='center' variant='h5' weight='Bold'>Odbierz i uzupełnij profil swojej firmy</Typography>
-          <Typography textAlign='center'>74% Respondentów deklaruje, że uzupełnione profile bardziej przyciągają ich uwagę.</Typography>
+          <Typography style={{ marginBottom: 5 }} textAlign='center' variant='h5' weight='Bold'>
+            Odbierz i uzupełnij profil swojej firmy
+            </Typography>
+          <Typography textAlign='center'>
+            74% Respondentów deklaruje, że uzupełnione profile bardziej przyciągają ich uwagę.
+          </Typography>
         </View>
-        <View style={{ paddingHorizontal: 19, marginBottom: 34 }}>
+        <View style={styles.AddProfileButton}>
           <Button
-            disabled={!token}
             icon={<SvgIcon icon='createCircleSmall' />}
             borderRadius={4}
             variant='secondary'
             contentWeight='Medium'
             contentVariant='h5'
             style={{ paddingVertical: 5 }}
-            onPress={() => goToCompanyEditorScreen()}
+            onPress={() => token ? goToCompanyEditorScreen() : setOptions()}
           >
             Dodaj profil firmy
           </Button>
-          {!token && <Typography color={Colors.Danger}>Zaloguj się!</Typography>}
         </View>
         <Button
           variant='text'
@@ -85,20 +110,7 @@ const NoCompanyScreen: React.FC = () => {
           onPress={() => goToCompanyScreen()}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            {Platform.OS === 'web' ?
-              <View style={{ width: 66, height: 44 }}>
-                {/* <NextImage
-                  src={img}
-                  width={66}
-                  height={44}
-                  alt='logo'
-                /> */}
-              </View>
-
-              :
-
-              <Image source={require('../../assets/images/Barber.png')} resizeMode='contain' style={{ width: 66, height: 44 }} />
-            }
+            <Image source={require('../../assets/images/Barber.png')} resizeMode='contain' style={{ width: 66, height: 44 }} />
             <View style={{ marginLeft: 10 }}>
               <Typography weight='SemiBold' variant='h5'>Przykładowy profil firmy</Typography>
               <Typography weight='Regular' color={Colors.Basic600}>Marszałkowska 126, Warszawa</Typography>
@@ -111,24 +123,39 @@ const NoCompanyScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  Wrapper: {
-    flex: 1,
-    backgroundColor: Colors.White,
+  ScrollView: {
+    flex: 1, 
+    backgroundColor: Colors.Basic100,
   },
-  helpDot: {
-    width: 8,
-    height: 8,
-    backgroundColor: Colors.Basic900,
-    borderRadius: 10,
-    marginRight: 10
+  PointsBanner: {
+    marginHorizontal: 19, 
+    backgroundColor: Colors.White, 
+    borderRadius: 4, 
+    padding: 16, 
+    marginBottom: 20,
   },
-  pointsCard: {
-    backgroundColor: Colors.Sea300,
-    width: 180,
-    height: 180,
-    marginLeft: 8,
-    paddingTop: 10,
-    justifyContent: 'space-between',
+  PointsBannerIconContainer: {
+    alignItems: 'center', marginBottom: 12
+  },
+  PointsBannerIcon: {
+    width: 31,
+    height: 31,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 31,
+    backgroundColor: Colors.Sea300
+  },
+  AddProfileButton: {
+    paddingHorizontal: 19,
+    marginBottom: 34
+  },
+  Options: {
+    alignItems: 'center', 
+    paddingVertical: 42
+  },
+  OptionsTitle: {
+    maxWidth: 252, 
+    gap: 12,
   },
 });
 

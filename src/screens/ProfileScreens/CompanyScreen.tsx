@@ -22,19 +22,21 @@ import { createParam } from 'solito';
 import { InitialPropsFromParams } from '../../hooks/types';
 import { Snackbar } from 'react-native-paper';
 import Button from '../../components/molecules/Button';
+import { Skeleton, SkeletonContainer } from 'react-native-skeleton-component';
+import SvgUriImage from '../../components/atoms/SvgUriImage';
 
 const companyExample: CompanyDataType = {
   id: -1,
   account_facebook: 'www.google.pl',
   account_instagram: 'www.google.pl',
   account_linkedIn: 'www.google.pl',
-  contact_hours: "08:05-14:25",
   employees_amount: "61-80",
-  full_decription: `Prowadzimy kameralną restaurację w centrum Wrocławia, w której serwujemy oryginalne dania kuchni włoskiej. Przyrządzając je wyłącznie z wysokiej jakości składników, pozwalamy naszym klientom odkrywać wyjątkowe smaki Półwyspu Apenińskiego.
+  description: `Prowadzimy kameralną restaurację w centrum Wrocławia, w której serwujemy oryginalne dania kuchni włoskiej. Przyrządzając je wyłącznie z wysokiej jakości składników, pozwalamy naszym klientom odkrywać wyjątkowe smaki Półwyspu Apenińskiego.
 
   Zatrudniamy 12 wykwalifikowanych pracowników, którzy dbają nie tylko o profesjonalną obsługę, lecz również odpowiednią atmosferę. Oferujemy usługi cateringowe, umożliwiając zamawianie jedzenia za pomocą najpopularniejszych aplikacji kurierskich.
   `,
   full_name: "blablablabla",
+  nip: '777-888-88-11',
   job_industry: 3,
   main_address: {
     adminArea: "Podlaskie",
@@ -72,34 +74,41 @@ const companyExample: CompanyDataType = {
     subAdminArea: "Powiat kamiennogórski",
     subLocality: null
   },
-  short_decription: "null",
   short_name: "Firma testowa",
   square_footage: null,
   website: 'www.google.pl',
+  contactPersons: null,
   languages: [4, 5, 7],
   services: [4, 5, 7],
   photos: [
     {
+      id: 1,
       path: 'https://img.freepik.com/darmowe-zdjecie/biale-wnetrze-niewyrazne-krzeslo_1203-4272.jpg?2&w=740&t=st=1703256759~exp=1703257359~hmac=0625895100579764d94fdd94d98648b7687f3da1582ee9eca8f361465d1a72ed',
     },
     {
+      id: 2,
       path: 'https://img.freepik.com/darmowe-zdjecie/stol-z-kwiatami-w-doniczkach-w-restauracji_181624-24428.jpg?size=626&ext=jpg&uid=R72634302&semt=sph',
     },
     {
+      id: 3,
       path: 'https://img.freepik.com/darmowe-zdjecie/widok-z-boku-kucharz-robi-pyszne-makarony_23-2150690631.jpg?w=740&t=st=1703256778~exp=1703257378~hmac=bbe493ee21e71585841968eadc4956e5b7dcf9797e3d4fe22ce341cf83c14453',
     },
     {
+      id: 4,
       path: 'https://img.freepik.com/darmowe-zdjecie/wnetrze-restauracji_1127-3394.jpg?w=740&t=st=1703256915~exp=1703257515~hmac=b2d67622c95ac2b5120aeb938c2cdb5959a993eb71b3273d3fee992e6ceca9a2',
     },
     {
+      id: 5,
       path: 'https://img.freepik.com/darmowe-zdjecie/widok-z-boku-danie-flambeing-mezczyzna-szefa-kuchni_23-2148763217.jpg?w=740&t=st=1703256916~exp=1703257516~hmac=256216eb4df3a1af764260db0ef4655e86d60f7e35472b91628814b4b78dde9c',
     },
   ],
   certificates: [
     {
+      id: 6,
       path: 'https://img.freepik.com/darmowe-wektory/elegancki-swiadectwo-uznania_23-2147612119.jpg?w=740&t=st=1703257013~exp=1703257613~hmac=13e806aa65fb0f13893d7c55312fb41f43a31bf855197450978c5c15e0f84d96',
     },
     {
+      id: 7,
       path: 'https://img.freepik.com/darmowe-wektory/szablon-certyfikatu_1035-3901.jpg?w=740&t=st=1703257065~exp=1703257665~hmac=0d096cb9f494ed42f182f7b4360eb554f2eb14efc8b3f753a80c0072a4ab29ec',
     },
   ],
@@ -184,9 +193,12 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
   const [isHeaderTransparent, setIsHeaderTransparent] = useState(true);
   const [snackbar, setSnackbar] = React.useState(false);
   const router = useRouter();
-  const { replace, backToRemoveParams } = useRouter();
+  const { replace } = useRouter();
   const [subView] = useParam('subView');
   const [newProfile] = useParam('newProfile', { initial: newProfileInitial });
+
+  const { jobIndustries } = useTypedSelector(state => state.general);
+  const currentIndustry = jobIndustries.find(curr => curr.id === companyData?.job_industry) || null;
 
   useEffect(() => {
     if (newProfile) {
@@ -352,7 +364,23 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
                 )}
               />
             }
-            <MainDataCard {...companyData} />
+            <View style={styles.BasicCompanyData}>
+              <View style={styles.IndustryContainer}>
+                <View style={styles.IndustryLogoContainer}>
+                  <View style={{ position: 'absolute' }}>
+                    <SkeletonContainer animation='wave' speed={600}>
+                      <Skeleton style={styles.Skeleton} />
+                    </SkeletonContainer>
+                  </View>
+                  {currentIndustry?.icon && <SvgUriImage width={34} height={34} src={currentIndustry?.icon} />}
+                </View>
+                <View style={{ flex: 1, marginLeft: 8 }}>
+                  <Typography variant='h5' weight='SemiBold'>{currentIndustry?.name}</Typography>
+                </View>
+              </View>
+              <Typography size={20} weight='Bold'>{companyData?.short_name}</Typography>
+              <Typography color={Colors.Basic600}>{companyData?.other_address?.formattedAddress}</Typography>
+            </View>
             <Typography variant='h5' weight='Bold' style={[styles.CategoryHeader, { marginTop: 40 }]}>
               O firmie
             </Typography>
@@ -385,7 +413,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
               }
             >
               <Typography variant='h5' style={styles.AccordionText}>
-                {companyData.full_decription}
+                {companyData.description}
               </Typography>
             </Accordion>
             <Separator />
@@ -548,6 +576,26 @@ const styles = StyleSheet.create({
     height: '100%',
     width: 'auto',
   },
+
+  BasicCompanyData: {
+    marginTop: 30, paddingHorizontal: 19 
+  },
+  IndustryContainer: {
+    flexDirection: 'row', 
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  IndustryLogoContainer: {
+    width: 34, 
+    height: 34, 
+    position: 'relative' 
+  },
+  Skeleton: {
+    width: 34, 
+    height: 34, 
+    borderRadius: 17 
+  },
+
   CompanyAmountsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { AddressType, CompanyDataType, ContactPersonType } from '../store/reducers/types';
+import { ContactPersonType } from '../store/reducers/types';
 import Typography from '../components/atoms/Typography';
 import TextField from '../components/molecules/TextField';
 import ScreenHeaderProvider from '../components/organismes/ScreenHeaderProvider';
@@ -8,7 +8,6 @@ import Button from '../components/molecules/Button';
 import Colors from '../colors/Colors';
 import useRouter from '../hooks/useRouter';
 import { ScrollView } from '../components/molecules/ScrollView';
-import SvgIcon from '../components/atoms/SvgIcon';
 import TimePickerModal from '../components/modified_modules/react-native-paper-dates/Time/TimePickerModal';
 import validateMail from '../hooks/validateMail';
 import Modal from '../components/atoms/Modal';
@@ -16,28 +15,31 @@ import CheckBox from '../components/atoms/CheckBox';
 import { Separator } from 'tamagui';
 import { isString } from 'lodash';
 
+const emptyPerson = {
+  id: Date.now(),
+  email: null,
+  mobile_number: null,
+  contact_hours: '08:00-18:00',
+  preferredFormsOfContact: {
+      phone: false,
+      email: false,
+  }
+};
+
 export type AddContactPersonsScreenProps = {
-  contactPersons: ContactPersonType[],
-  setContactPersons: React.Dispatch<React.SetStateAction<ContactPersonType[]>>,
-  companyData: CompanyDataType,
-  changeCompanyDataHandler: (name: keyof CompanyDataType, value: string | number | AddressType, replaceSpaces?: boolean) => void
+  contactPersons: ContactPersonType[] | null,
+  setContactPersons: React.Dispatch<React.SetStateAction<ContactPersonType[] | null>>,
 };
 
 const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) => {
-  const { companyData, changeCompanyDataHandler, contactPersons: initContactPersons, setContactPersons: changeContactPersonsHandler } = props;
-  // const [contactHours, setContactHours] = useState<string>(companyData.contact_hours || '08:00-18:00');
-  const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(initContactPersons);
+  const { contactPersons: initContactPersons, setContactPersons: changeContactPersonsHandler } = props;
+  const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(initContactPersons || [emptyPerson]);
   const [showTips, setShowTips] = useState<boolean>(false);
   const [showTimepicker, setShowTimepicker] = useState<'start' | 'end' | false>(false);
   const [isDataValid, setIsDataValid] = useState<boolean>(false);
   const [errorModal, setErrorModal] = useState<string | null>(null);
-
   const { backToRemoveParams } = useRouter();
-
-  useEffect(() => {
-    console.log(contactPersons);
-  }, []);
-
+  
   useEffect(() => {
     setIsDataValid(validateContactPersons());
   }, [contactPersons]);
@@ -48,9 +50,8 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
     for (const contact of array) {
       if (
         contact.email && validateMail(contact.email) &&
-        contact.mobile_number && contact.mobile_number.length === 12 /* &&
-        !contact.account_instagram || (contact.account_instagram && urlPattern.test(contact.account_instagram)) &&
-        !contact.account_facebook || (contact.account_facebook && urlPattern.test(contact.account_facebook)) */
+        contact.mobile_number && contact.mobile_number.length === 12 &&
+        contact.preferredFormsOfContact.email || contact.preferredFormsOfContact.phone
       ) {
         continue;
       } else {
@@ -62,17 +63,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
   };
 
   const addNewContactPerson = () => {
-    setContactPersons(prev => [...prev, {
-      email: null,
-      link: null,
-      mobile_number: null,
-      id: Date.now(),
-      contact_hours: '08:00-18:00',
-      formsOfContact: {
-        phone: false,
-        email: false,
-      },
-    }])
+    setContactPersons(prev => [...prev, emptyPerson])
 
     if (isDataValid) {
       setShowTips(false);
@@ -90,8 +81,8 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
         ];
       } else {
         return contactPersons;
-      }
-    })
+      };
+    });
   };
 
   const deleteContactPerson = (index: number) => {
@@ -103,14 +94,13 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
         ];
       } else {
         return contactPersons;
-      }
-    })
+      };
+    });
   };
 
   const handleConfirm = () => {
     if (isDataValid) {
       changeContactPersonsHandler(contactPersons);
-      // changeCompanyDataHandler('contact_hours', contactHours);
       backToRemoveParams();
     } else {
       setShowTips(true);
@@ -129,14 +119,12 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
       parseInt(contactHours.substring(3, 4) === '0' ? contactHours.substring(4, 5) : contactHours.substring(3, 5))
       :
       parseInt(contactHours.substring(9, 10) === '0' ? contactHours.substring(10, 11) : contactHours.substring(9, 11));
-  }
-
-  const urlPattern = /^(http|https):\/\/[^ "]+$/;
+  };
 
   return (
     <ScreenHeaderProvider title='Dane do kontaktu'>
       <ScrollView style={styles.ScrollView} contentContainerStyle={{ paddingTop: 25 }}>
-        {contactPersons.map(({ email, mobile_number, id, contact_hours, formsOfContact }, index) => (
+        {contactPersons.map(({ email, mobile_number, id, contact_hours, preferredFormsOfContact }, index) => (
           <View style={styles.ContactPerson} key={id}>
             <View style={styles.ContactPersonHeader}>
               <Typography size={18} weight='Bold' style={{ marginVertical: 10 }}>Osoba {index + 1}</Typography>
@@ -168,56 +156,34 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
                 })}
               />
             </View>
-{/*             <View style={{ marginBottom: 20 }}>
-              <TextField
-                left={<SvgIcon icon='instagram' />}
-                label="Instagram"
-                value={account_instagram || ''}
-                onChangeText={text => editContactPersons('account_instagram', text, index)}
-                {...(showTips && account_instagram?.length && !urlPattern.test(account_instagram) && {
-                  bottomText: 'Niepoprawny adres url',
-                })}
-              />
-            </View>
-            <View style={{ marginBottom: 20 }}>
-              <TextField
-                left={<SvgIcon icon='facebook' />}
-                label="Facebook"
-                value={account_facebook || ''}
-                onChangeText={text => editContactPersons('account_facebook', text, index)}
-                {...(showTips && account_facebook?.length && !urlPattern.test(account_facebook) && {
-                  bottomText: 'Niepoprawny adres url',
-                })}
-              />
-            </View> */}
-            <Typography weight="Bold" variant="h5" style={{marginTop: 20}}>
+            <Typography weight="Bold" variant="h5" style={{ marginTop: 20 }}>
               Preferowane formy kontaktu
             </Typography>
-            <View style={{marginTop: 20}}>
+            <View style={{ marginTop: 20 }}>
               <Separator />
               <CheckBox
-                checked={formsOfContact.phone}
-                onCheckedChange={(value) => editContactPersons('formsOfContact', ({...formsOfContact, phone: value}), index,)}
+                checked={preferredFormsOfContact.phone}
+                onCheckedChange={(value) => editContactPersons('preferredFormsOfContact', ({ ...preferredFormsOfContact, phone: value }), index,)}
                 leftTextView={
-                  <Typography size={16} style={{paddingVertical: 19}}>
+                  <Typography size={16} style={{ paddingVertical: 19 }}>
                     Telefon
                   </Typography>
                 }
-                style={{marginTop: 20}}
+                style={{ marginTop: 20 }}
               />
               <Separator />
               <CheckBox
-                checked={formsOfContact.email}
-                onCheckedChange={(value) => editContactPersons('formsOfContact', ({...formsOfContact, email: value}), index,)}
+                checked={preferredFormsOfContact.email}
+                onCheckedChange={(value) => editContactPersons('preferredFormsOfContact', ({ ...preferredFormsOfContact, email: value }), index,)}
                 leftTextView={
-                  <Typography size={16} style={{paddingVertical: 19}}>
+                  <Typography size={16} style={{ paddingVertical: 19 }}>
                     Email
                   </Typography>
                 }
-                style={{marginTop: 20}}
+                style={{ marginTop: 20 }}
               />
               <Separator />
-              {(showTips && formsOfContact.email && formsOfContact.phone) &&
+              {(showTips && (!preferredFormsOfContact.email && !preferredFormsOfContact.phone)) &&
                 <Typography size={12} color={'rgb(237, 9, 91)'}>
                   Zaznacz co najmniej jedno z pól
                 </Typography>

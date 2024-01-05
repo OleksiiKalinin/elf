@@ -261,53 +261,57 @@ export interface JobContractType {
 
 export interface LanguageType {
     name: string,
-    id: number
+    id: number,
+    popular?: boolean,
+}
+
+export interface ServiceType {
+    name: string,
+    id: number,
+    popular?: boolean,
 }
 
 export interface CompanyDataType {
     id: number,
+    job_industry: number | null,
     short_name: string | null,
     full_name: string | null,
+    nip: string | null,
     main_address: AddressType | null,
     other_address: AddressType | null,
-    short_decription: string | null,
-    full_decription: string | null,
+    description: string | null,
     employees_amount: string | null,
     square_footage: string | null,
-    contact_hours: string | null,
+    contactPersons: ContactPersonType[] | null,
+    services?: number[] | null,
     website?: string | null,
     account_facebook?: string | null,
     account_instagram?: string | null,
     account_linkedIn?: string | null,
-    job_industry: number | null,
     logo?: MediaType | null,
     video?: MediaType | null,
     photos?: MediaType[] | null,
     certificates?: MediaType[] | null,
-    contactPersons?: ContactPersonType[] | null,
     languages?: number[] | null,
-    services?: number[] | null,
 }
 
 export type MediaType = {
-    name?: string,
+    id: number,
     company_id?: number,
-    id?: number,
+    name?: string,
     path: string,
     mime?: string,
     order?: number,
-    duration?: number,
     beforePath?: string,
 }
 
 export interface ContactPersonType {
+    id: number,
+    company_id?: number,
     email: string | null,
     mobile_number: string | null,
-    link: string | null,
-    company_id?: number,
-    id: number,
     contact_hours: string | null,
-    formsOfContact: {
+    preferredFormsOfContact: {
         phone: boolean,
         email: boolean,
     }

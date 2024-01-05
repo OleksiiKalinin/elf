@@ -111,9 +111,9 @@ const AdvertLarge: React.FC<UserAdvertType> = props => {
             </Typography>
           </View>
         </View> */}
-        {userCompany?.contact_hours && <Typography weight="Regular" textAlign='center' color={Colors.Basic600}>
+        {/* {userCompany?.contact_hours && <Typography weight="Regular" textAlign='center' color={Colors.Basic600}>
           Kontakt z firmą {userCompany.contact_hours}
-        </Typography>}
+        </Typography>} */}
       </View>
     </View>
   );

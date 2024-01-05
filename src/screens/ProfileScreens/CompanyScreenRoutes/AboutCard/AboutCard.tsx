@@ -14,7 +14,7 @@ const ImagesCerts: any[] = [
 ];
 
 const AboutCard: FC<CompanyDataType> = (props) => {
-  const { account_facebook, account_instagram, website, employees_amount, square_footage, full_decription } = props;
+  const { account_facebook, account_instagram, website, employees_amount, square_footage, description } = props;
   const socialMediaLinks = [account_facebook, account_instagram, website];
   const socialMediaIcons: IconTypes[] = ['facebook', 'instagram', 'telegram', 'internet'];
   const employeesAndsquare = !!(employees_amount && square_footage);
@@ -84,7 +84,7 @@ const AboutCard: FC<CompanyDataType> = (props) => {
       <View style={{ paddingHorizontal: 19 }}>
         <Typography style={{ marginTop: 12, marginBottom: 10 }} variant='h5' weight='Bold'>Opis</Typography>
         <Typography style={{ marginBottom: 12 }} variant="h5" color={Colors.Basic600}>
-          {full_decription}
+          {description}
         </Typography>
       </View>
 

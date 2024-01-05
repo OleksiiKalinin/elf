@@ -178,38 +178,26 @@ const CompanyEditorScreen: React.FC = () => {
   const { setSwipeablePanelProps } = useActions();
   const [companyData, setCompanyData] = useState<CompanyDataType>(userCompany || {
     id: -1,
+    job_industry: null,
     short_name: null,
     full_name: null,
+    nip: null,
     main_address: null,
     other_address: null,
-    short_decription: 'hello hello',
-    full_decription: '',
+    description: '',
     employees_amount: '-',
     square_footage: null,
-    contact_hours: '08:00-18:00',
+    contactPersons: null,
     website: null,
     account_facebook: null,
     account_instagram: null,
     account_linkedIn: null,
-    job_industry: null,
     languages: null,
     services: null,
   });
-  const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(userCompany?.contactPersons || [{
-    email: null,
-    link: null,
-    mobile_number: null,
-    id: Date.now(),
-    contact_hours: '08:00-18:00',
-    formsOfContact: {
-      phone: false,
-      email: false,
-    },
-  }]);
+  const [contactPersons, setContactPersons] = useState<ContactPersonType[] | null>(null);
   const [displayData, setDisplayData] = useState<{ [k in DisplayDataKeysType]?: boolean }>({
-    short_decription: false,
-    full_decription: false,
-    contact_hours: false,
+    description: false,
     square_footage: false,
     employees_amount: false,
     social_media: false,
@@ -227,8 +215,8 @@ const CompanyEditorScreen: React.FC = () => {
   const router = useRouter();
 
   const submitCompanyCreation = async () => {
-    const { other_address, job_industry, short_name, full_decription } = companyData;
-    if (other_address && job_industry && short_name && full_decription) {
+    const { other_address, job_industry, short_name, description } = companyData;
+    if (other_address && job_industry && short_name && description) {
       // setLoading(true);
       // const isOk = await dispatch(companyServices[editMode ?
       //   'editUserCompany' :
@@ -331,7 +319,7 @@ const CompanyEditorScreen: React.FC = () => {
 
     files.forEach((item, i) => {
       newArray.push({
-        id: i,
+        id: Math.random(),
         path: item.path,
         mime: item.mime,
         order: i + 1,
@@ -344,6 +332,7 @@ const CompanyEditorScreen: React.FC = () => {
 
   const handleSingleFile = (files: MediaFileType[]) => {
     return {
+      id: Math.random(),
       name: files[0].name,
       path: files[0].path,
       mime: files[0].mime,
@@ -390,8 +379,6 @@ const CompanyEditorScreen: React.FC = () => {
         subView: 'AddContactPersonsScreen',
         contactPersons,
         setContactPersons,
-        companyData,
-        changeCompanyDataHandler
       },
     });
   };
@@ -402,8 +389,8 @@ const CompanyEditorScreen: React.FC = () => {
       screen: 'CompanyEditorScreen',
       params: {
         subView: 'CompanyDescriptionScreen',
-        callback: (value) => changeCompanyDataHandler('full_decription', value, false),
-        description: companyData.full_decription,
+        callback: (value) => changeCompanyDataHandler('description', value, false),
+        description: companyData.description,
         title: 'Dodaj opis firmy'
       },
     });
@@ -692,15 +679,15 @@ const CompanyEditorScreen: React.FC = () => {
         <View style={{ marginBottom: 24 }}>
           <MapPreview
             label='Lokalizacja*'
-            place={companyData.other_address?.formattedAddress}
+            place={companyData.main_address?.formattedAddress}
             onPress={() => router.push({
               stack: 'ProfileStack',
               screen: 'CompanyEditorScreen',
               params: {
                 editMode: editMode || '',
                 subView: 'GoogleMapScreen',
-                callback: (address) => changeCompanyDataHandler('other_address', address),
-                initialAddress: companyData.other_address
+                callback: (address) => changeCompanyDataHandler('main_address', address),
+                initialAddress: companyData.main_address
               }
             })}
           />
@@ -784,7 +771,7 @@ const CompanyEditorScreen: React.FC = () => {
             </Typography>
           </Button>
         }
-        {contactPersons[0].email ?
+        {contactPersons ?
           <>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 19, height: 58 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
@@ -822,7 +809,7 @@ const CompanyEditorScreen: React.FC = () => {
             </Typography>
           </Button>
         }
-        {companyData.full_decription ?
+        {companyData.description ?
           <>
             <View style={{ paddingHorizontal: 19 }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
@@ -840,7 +827,7 @@ const CompanyEditorScreen: React.FC = () => {
                 </Button>
               </View>
               <Typography color={Colors.Basic600}>
-                {companyData.full_decription}
+                {companyData.description}
               </Typography>
 
             </View>
