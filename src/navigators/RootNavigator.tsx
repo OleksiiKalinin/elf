@@ -15,6 +15,7 @@ import Colors from '../colors/Colors';
 import BottomTabs from '../components/organismes/BottomTabs';
 import { useRouter } from 'solito/router';
 import notificationHandler from '../hooks/notificationHandler';
+import SplashScreen from 'react-native-lottie-splash-screen'
 
 export type RootStackParamList = {
   MenuStack: MenuStackParamList;
@@ -117,7 +118,7 @@ export const screens: React.ComponentProps<typeof RootStack.Screen>[] = [
 ];
 
 const RootNavigator: React.FC = () => {
-  const { isTabbarVisible } = useTypedSelector(state => state.general);
+  const { isTabbarVisible, appLoading } = useTypedSelector(state => state.general);
   const { setCurrentScreen, setIsTabbarVisible } = useActions();
   const tempKeyboardAccess = useRef<boolean>(false);
   const { push } = useRouter();
@@ -133,14 +134,11 @@ const RootNavigator: React.FC = () => {
     }
   }, []);
 
-  /*     useEffect(() => {
-        if (!appLoading) {
-          setTimeout(() => {
-            SplashScreen.hide();
-          }, 100);
-        }
-      }, [appLoading]); */
-
+  useEffect(() => {
+    if (!appLoading) {
+      SplashScreen.hide();
+    }
+  }, [appLoading]);
 
   useEffect(() => {
     if (tempKeyboardAccess.current || isTabbarVisible) {
@@ -171,7 +169,6 @@ const RootNavigator: React.FC = () => {
 
   return (
     <RootStack.Navigator
-      // sceneContainerStyle={{ maxWidth: 768, width: '100%' }}
       backBehavior='history' initialRouteName="MenuStack" screenOptions={{ headerShown: false }}
       tabBar={({ state }) => <BottomTabs routes={state.routes.map(({ name }) => name)} />}
     >
