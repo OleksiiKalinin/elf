@@ -98,8 +98,8 @@ android {
         applicationId "com.elfemployer"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
     }
 
     splits {
@@ -161,6 +161,8 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.28'
 
     implementation project(':react-native-push-notification')
     
