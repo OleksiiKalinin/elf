@@ -55,10 +55,12 @@ const languages: LanguageType[] = [
   {
     id: 1,
     name: 'Polski',
+    isPopular: true,
   },
   {
     id: 2,
     name: 'Angielski',
+    isPopular: true,
   },
   {
     id: 3,
@@ -71,6 +73,7 @@ const languages: LanguageType[] = [
   {
     id: 5,
     name: 'Ukraiński',
+    isPopular: true,
   },
   {
     id: 6,
@@ -79,6 +82,34 @@ const languages: LanguageType[] = [
   {
     id: 7,
     name: 'Niemiecki',
+  },
+  {
+    id: 8,
+    name: 'Rosyjski',
+  },
+  {
+    id: 9,
+    name: 'Szwedzki',
+  },
+  {
+    id: 10,
+    name: 'Duński',
+  },
+  {
+    id: 11,
+    name: 'Norweski',
+  },
+  {
+    id: 12,
+    name: 'Fiński',
+  },
+  {
+    id: 13,
+    name: 'Węgierski',
+  },
+  {
+    id: 14,
+    name: 'Grecki',
   },
 ];
 
@@ -133,38 +164,6 @@ const services: LanguageType[] = [
         </ScrollView>
 */
 
-const socialLinksData: {
-  icon: IconTypes,
-  label: string,
-  value: keyof CompanyDataType,
-}[] = [
-    {
-      icon: 'instagram',
-      label: 'Link do Instagrama',
-      value: 'account_instagram'
-    },
-    {
-      icon: 'facebook',
-      label: 'Link do Facebooka',
-      value: 'account_facebook'
-    },
-    // {
-    //   icon: 'telegram',
-    //   label: 'Link do Youtuba',
-    //   value: 'account_youtube'
-    // },
-    // {
-    //   icon: 'viber',
-    //   label: 'Link do Twittera',
-    //   value: 'account_twitter'
-    // },
-    {
-      icon: 'internet',
-      label: 'Link do strony internetowej',
-      value: 'website'
-    },
-  ];
-
 type DisplayDataKeysType = keyof CompanyDataType | 'contact_persons' | 'social_media';
 
 const { useParam } = createParam<ProfileStackParamList['default']['CompanyEditorScreen']>();
@@ -184,8 +183,8 @@ const CompanyEditorScreen: React.FC = () => {
     nip: null,
     main_address: null,
     other_address: null,
-    description: '',
-    employees_amount: '-',
+    description: null,
+    employees_amount: null,
     square_footage: null,
     contactPersons: null,
     website: null,
@@ -204,13 +203,11 @@ const CompanyEditorScreen: React.FC = () => {
     contact_persons: false,
   });
   const [companyLogo, setCompanyLogo] = useState<MediaType | null>(userCompany?.logo || null);
-  const [companyVideo, setCompanyVideo] = useState<MediaType | null>(userCompany?.video || null);
   const [companyPhotos, setCompanyPhotos] = useState<MediaType[]>(userCompany?.photos || []);
   const [companyCertificates, setCompanyCertificates] = useState<MediaType[]>(userCompany?.certificates || []);
   const [logoProgress, setLogoProgress] = useState<number | null>(null);
   const [photosProgress, setPhotosProgress] = useState<number | null>(null);
   const [certificatesProgress, setCertificatesProgress] = useState<number | null>(null);
-  const [videoProgress, setVideoProgress] = useState<number | null>(null);
   const companyDataRefreshAccess = useRef(true);
   const router = useRouter();
 
@@ -421,11 +418,13 @@ const CompanyEditorScreen: React.FC = () => {
       params: {
         subView: 'ItemSelectorScreen',
         mode: 'multiple',
+        highlightPopularItems: true,
         list: languages,
         callback: (languages) => changeCompanyDataHandler('languages', languages),
         labels: {
           searchLabel: 'Znajdź język',
-          itemsLabel: 'Popularne języki',
+          itemsLabel: 'Pozostałe języki',
+          popularItemsLabel: 'Popularne języki',
         },
         headerProps: { title: 'Preferowane języki' },
         initialSelected: companyData.languages ?? undefined,
@@ -546,7 +545,6 @@ const CompanyEditorScreen: React.FC = () => {
     const index = getIndex();
 
     return (
-      // <ScaleDecorator>
       <TouchableOpacity
         activeOpacity={1} onLongPress={drag} disabled={isActive}
         style={{ opacity: isActive ? 0.5 : 1, marginRight: 19, position: 'relative' }}
@@ -562,7 +560,6 @@ const CompanyEditorScreen: React.FC = () => {
         </View>}
         <Image style={{ width: 80, height: 80, borderRadius: 7 }} source={{ uri: item.path }} />
       </TouchableOpacity>
-      // </ScaleDecorator>
     );
   }, []);
 
@@ -573,17 +570,6 @@ const CompanyEditorScreen: React.FC = () => {
   return (
     <ScreenHeaderProvider {...(editMode === 'true' ? { title: 'Edytuj profil firmy' } : { title: 'Utwórz profil firmy' })}>
       <ScrollView style={styles.Content} contentContainerStyle={{ paddingVertical: 20 }}>
-        {/* <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingLeft: 20 }}>
-          {MainButtons.map(item => (
-            <HorizontalMenuButton
-              variant="validation"
-              name={item.name}
-              star={!item.selected && item.star}
-              selected={item.selected}
-            />
-          ))}
-          <View style={{ width: 60 }}></View>
-        </ScrollView> */}
         <Typography
           size={20}
           weight='Bold'
@@ -601,9 +587,6 @@ const CompanyEditorScreen: React.FC = () => {
         <View style={{ marginHorizontal: 19, marginBottom: 5 }}>
           <Typography weight="Bold" variant="h5">
             Logo firmy{' '}
-            <Typography weight="Bold" variant="h5" color={Colors.Basic600}>
-              (opcjonalne)
-            </Typography>
           </Typography>
         </View>
         <View style={{ marginBottom: 24 }}>
@@ -766,9 +749,6 @@ const CompanyEditorScreen: React.FC = () => {
             <Typography variant='h5'>
               Usługi
             </Typography>
-            <Typography variant='h5' style={styles.Optional}>
-              (opcjonalnie)
-            </Typography>
           </Button>
         }
         {contactPersons ?
@@ -880,9 +860,6 @@ const CompanyEditorScreen: React.FC = () => {
             <Typography variant='h5'>
               Dane do faktury
             </Typography>
-            <Typography variant='h5' style={styles.Optional}>
-              (opcjonalnie)
-            </Typography>
           </Button>
         }
         <Typography
@@ -895,9 +872,6 @@ const CompanyEditorScreen: React.FC = () => {
         <View style={{ marginHorizontal: 19, marginBottom: 5, }}>
           <Typography weight="Bold" variant="h5">
             Zdjęcia firmy{' '}
-            <Typography weight="Bold" variant="h5" color={Colors.Basic600}>
-              (opcjonalne)
-            </Typography>
           </Typography>
         </View>
         <MediaSelector
@@ -984,9 +958,6 @@ const CompanyEditorScreen: React.FC = () => {
         <View style={{ marginLeft: 19, marginBottom: 5 }}>
           <Typography weight="Bold" variant="h5">
             Inne zdjęcia{' '}
-            <Typography weight="Bold" variant="h5" color={Colors.Basic600}>
-              (opcjonalne)
-            </Typography>
           </Typography>
           <Typography weight="Regular" color={Colors.Basic600}>Certyfikaty, dyplomy, wyniki finansowe itp.</Typography>
         </View>
@@ -1072,105 +1043,9 @@ const CompanyEditorScreen: React.FC = () => {
           }
         />
         <Separator marginTop={16} />
-        {/* <View style={{ marginLeft: 19, marginBottom: 5 }}>
-          <Typography weight="Bold" variant="h5">
-            Krótki film{' '}
-            <Typography weight="Bold" variant="h5" color={Colors.Basic600}>
-              (opcjonalne)
-            </Typography>
-          </Typography>
-          <Typography weight="Regular" color={Colors.Basic600}>Przedstawiający i zachęcający do pracy w firmie</Typography>
-        </View>
-        <MediaSelector
-          type='video'
-          callback={(images) => setCompanyVideo(handleSingleFile(images))}
-          videoSettings={{
-            compressionProgress: (progress) => (Math.round(progress * 100)) === 100 ? setVideoProgress(null) : setVideoProgress(progress),
-            minSizeToCompress: 0
-          }}
-          render={(onPress) =>
-            <>
-              {!!videoProgress && videoProgress < 100 ?
-
-                <View style={{ height: 118, padding: 20, backgroundColor: Colors.Basic300, marginHorizontal: 19, borderRadius: 4, marginBottom: 24, justifyContent: 'center' }}>
-                  <Typography size={16} weight='SemiBold' style={{ color: Colors.Basic600, textAlign: 'center' }}>
-                    Ładowanie zdjęć: {Math.round(videoProgress * 100)}%
-                  </Typography>
-                  <Slider
-                    min={0} max={100} step={1}
-                    value={[Math.round(videoProgress * 100)]}
-                  >
-                    <Slider.Track>
-                      <Slider.TrackActive />
-                    </Slider.Track>
-                  </Slider>
-                </View>
-
-                :
-
-                !!companyVideo ?
-                  <View style={{ marginBottom: 24 }}>
-                    <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 9 }}>
-                      <TouchableOpacity style={{ padding: 10, marginBottom: 10 }} onPress={() => setCompanyVideo(null)}>
-                        <Typography variant='h5' weight="Bold" color={Colors.Basic600} style={{ textDecorationLine: 'underline' }}>
-                          Usuń wybrany
-                        </Typography>
-                      </TouchableOpacity>
-                      <TouchableOpacity style={{ padding: 10, marginBottom: 10 }} onPress={() => onPress()}>
-                        <Typography variant='h5' weight="Bold" color={Colors.Blue500} style={{ textDecorationLine: 'underline' }}>
-                          Dodaj ponownie
-                        </Typography>
-                      </TouchableOpacity>
-                    </View>
-                    <Typography style={{ paddingHorizontal: 19 }} variant='h5'>
-                      Nazwa filmu:{' '}
-                      <Typography variant='h5' weight='Bold'>{companyVideo.name}</Typography>
-                    </Typography>
-                  </View>
-
-                  :
-
-                  <TouchableOpacity onPress={() => onPress()} style={{ marginBottom: 24 }}>
-                    <View style={styles.AddPhotoButton}>
-                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <SvgIcon icon="createCircleSmall" fill={Colors.Basic900} />
-                        <Typography variant="h5" weight='Bold'>{'  '}Dodaj film</Typography>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-              }
-            </>
-          }
-        /> */}
-
-        {/* <ButtonArrowSelector
-          text='Usługi'
-          marginTop={false}
-          marginBottom={false}
-          borderTop={false}
-        /> */}
-        {/* <ButtonArrowSelector
-          text='Dane do faktury'
-          marginTop={false}
-          marginBottom={false}
-          borderTop={false}
-          onPress={() => navigation.navigate('CompanyInvoiceScreen', {
-            callback: (address, NIP, full_name) => {
-              changeCompanyDataHandler('full_name', full_name, false);
-              changeCompanyDataHandler('main_address', address);
-            },
-            address: companyData.main_address,
-            full_name: companyData.full_name,
-            NIP: '',
-            title: 'Dodaj dane do faktury'
-          })}
-        /> */}
         <View style={{ marginHorizontal: 19, marginBottom: 5, marginTop: 30 }}>
           <Typography weight="Bold" variant="h5">
             Liczba pracowników{' '}
-            <Typography weight="Bold" variant="h5" color={Colors.Basic600}>
-              (opcjonalne)
-            </Typography>
           </Typography>
         </View>
         <View style={{ marginHorizontal: 19, flexDirection: 'row', alignItems: 'center' }}>
@@ -1206,9 +1081,6 @@ const CompanyEditorScreen: React.FC = () => {
         <View style={{ marginHorizontal: 19, marginBottom: 16, marginTop: 24 }}>
           <Typography weight="Bold" variant="h5">
             Metraż miejsca pracy{' '}
-            <Typography weight="Bold" variant="h5" color={Colors.Basic600}>
-              (opcjonalne)
-            </Typography>
           </Typography>
         </View>
         <View style={{ marginHorizontal: 19, marginBottom: 16 }}>
@@ -1223,27 +1095,6 @@ const CompanyEditorScreen: React.FC = () => {
             onChangeText={(text) => changeCompanyDataHandler('square_footage', text.replace(/^0/, '').replace(/[^0-9]/g, ''))}
           />
         </View>
-        {/* <View style={{ marginHorizontal: 19 }}>
-          <Typography weight="Bold" variant="h5">
-            Social media{' '}
-            <Typography weight="Bold" variant="h5" color={Colors.Basic600}>
-              (opcjonalne)
-            </Typography>
-          </Typography>
-        </View>
-        <Separator marginTop={16}/>
-
-        {socialLinksData.map(({ icon, label, value }) => (
-          <View style={styles.TextField}>
-            <TextField
-              left={<SvgIcon icon={icon} />}
-              label={label}
-              rowStyles={{ alignItems: 'flex-end' }}
-              value={companyData[value] as string || ''}
-              onChangeText={text => changeCompanyDataHandler(value, text)}
-            />
-          </View>
-        ))} */}
         {companyData.languages ?
           <>
             <View style={{ paddingHorizontal: 19 }}>
@@ -1388,18 +1239,18 @@ const styles = StyleSheet.create({
     marginLeft: 5
   },
   FilledSocialMediaContainer: {
-    marginTop: 18, 
-    paddingBottom: 60 
+    marginTop: 18,
+    paddingBottom: 60
   },
   FilledSocialMedia: {
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    alignItems: 'center', 
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 19,
   },
   SocialMediaIcons: {
-    flexDirection: 'row', 
-    gap: 24, 
+    flexDirection: 'row',
+    gap: 24,
     paddingHorizontal: 19,
   },
 });

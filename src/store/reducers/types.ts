@@ -262,13 +262,13 @@ export interface JobContractType {
 export interface LanguageType {
     name: string,
     id: number,
-    popular?: boolean,
+    isPopular?: boolean,
 }
 
 export interface ServiceType {
     name: string,
     id: number,
-    popular?: boolean,
+    isPopular?: boolean,
 }
 
 export interface CompanyDataType {
@@ -279,20 +279,35 @@ export interface CompanyDataType {
     nip: string | null,
     main_address: AddressType | null,
     other_address: AddressType | null,
+    // registrationData: {
+    //     nip: string,
+    //     name: string,
+    //     address: string,
+    // },
     description: string | null,
-    employees_amount: string | null,
-    square_footage: string | null,
     contactPersons: ContactPersonType[] | null,
     services?: number[] | null,
+    logo?: MediaType | null,
+    photos?: MediaType[] | null,
+    certificates?: MediaType[] | null,
+    // images: {
+    //     logo?: MediaType | null,
+    //     photos?: MediaType[] | null,
+    //     certificates?: MediaType[] | null,
+    // },
+    employees_amount?: string | null,
+    square_footage?: string | null,
+    languages?: number[] | null,
     website?: string | null,
     account_facebook?: string | null,
     account_instagram?: string | null,
     account_linkedIn?: string | null,
-    logo?: MediaType | null,
-    video?: MediaType | null,
-    photos?: MediaType[] | null,
-    certificates?: MediaType[] | null,
-    languages?: number[] | null,
+    // socialMedia: {
+    //     website?: string | null,
+    //     account_facebook?: string | null,
+    //     account_instagram?: string | null,
+    //     account_linkedIn?: string | null,
+    // },
 }
 
 export type MediaType = {
