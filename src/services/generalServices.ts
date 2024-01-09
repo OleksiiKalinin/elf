@@ -73,6 +73,11 @@ const getAppData = (token: generalReducerState['token']) => async (dispatch: App
                 location: convertToFrontEndAddress(event.location)
             })) || [],
             jobIndustries: appData?.job_industry_and_position || [],
+            jobModes: appData?.job_mode || [],
+            jobContractTypes: appData?.type_of_contract || [],
+            jobTrials: appData?.trial_type || [],
+            jobTrialTimes: appData?.trial_time || [],
+            jobStartFrom: appData?.job_start || [],
             jobSalaryModes: appData?.salary_time_type || [],
             jobSalaryTaxes: appData?.salary_tax_type || [],
             jobExperiences: appData?.experience || [],

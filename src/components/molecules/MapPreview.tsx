@@ -7,7 +7,7 @@ import {
     View,
 } from 'react-native';
 import MapView, { MapMarker, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import SvgIcon from '../atoms/SvgIcon';
+import SvgIcon, { IconTypes } from '../atoms/SvgIcon';
 import Typography from '../atoms/Typography';
 import Colors from '../../colors/Colors';
 
@@ -25,9 +25,10 @@ type MapPreviewProps = {
     longitude?: number;
     label?: string;
     hideMap?: boolean;
+    rightIcon?: IconTypes;
 };
 
-const MapPreview: React.FC<MapPreviewProps> = ({ latitude, longitude, onPress, place, label, hideMap }) => {
+const MapPreview: React.FC<MapPreviewProps> = ({ latitude, longitude, onPress, place, label, hideMap, rightIcon = 'arrowRight' }) => {
     return (
         <View>
             <TouchableOpacity activeOpacity={.9} onPress={onPress}>
@@ -37,14 +38,14 @@ const MapPreview: React.FC<MapPreviewProps> = ({ latitude, longitude, onPress, p
                     </View>
                     <View style={{ flex: 1, paddingHorizontal: 14, borderLeftWidth: 1, borderColor: Colors.Basic300, }}>
                         <Typography color={Colors.Basic600} variant='h5'>
-                            {label || 'Lokalizacja'}
+                            {label || 'Lokalizacja*'}
                         </Typography>
                         <Typography weight='SemiBold' variant='h5'>
                             {place || 'Wybierz adres'}
                         </Typography>
                     </View>
                     <View style={styles.mapIcon}>
-                        <SvgIcon icon="arrowRight" />
+                        <SvgIcon icon={rightIcon} />
                     </View>
                 </View>
             </TouchableOpacity>

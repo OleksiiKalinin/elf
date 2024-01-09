@@ -16,6 +16,7 @@ import { pl, registerTranslation as datePickerLocaleConfig } from '../modified_m
 import { GoogleSigninProvider, googleSignOut } from './GoogleSignin';
 import { ConfigureParams } from '@react-native-google-signin/google-signin';
 import LoadingScreen from '../atoms/LoadingScreen';
+import useRouter from '../../hooks/useRouter';
 
 calendarLocaleConfig();
 geocoder.fallbackToGoogle('AIzaSyCuD83IZtlNNM3sxn9Hac4YSOXkRZurb9c');
@@ -29,10 +30,9 @@ export const googleSigninConfig: ConfigureParams & { webClientId: string } = {
 
 const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { setWindowSizes } = useActions();
-  const appDataLoaded = useRef<boolean>(false);
-  const prevToken = useRef<string | null>('default');
+  const router = useRouter();
   const dispatch = useTypedDispatch();
-  const { token, userCompany, appLoading } = useTypedSelector(state => state.general);
+  const { token, userCompany, appLoading, userData } = useTypedSelector(state => state.general);
   const { setToken, setUserCompany } = useActions();
   // ssr huck
   const [ssrWindowSizes, setSsrWindowSizes] = useState<any>(Platform.OS === 'web' ? {} : Dimensions.get('window'));
@@ -76,11 +76,17 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
       dispatch(candidatesServices.getCandidateMarks(userCompany.id));
       dispatch(candidatesServices.getCandidateNotes(userCompany.id));
 
+      if (userCompany.logo === undefined || userCompany.photos === undefined || userCompany.certificates === undefined || userCompany.contactPersons === undefined
+        //  || userCompany.video === undefined
+      ) {
       if (userCompany.logo === undefined || userCompany.photos === undefined || userCompany.certificates === undefined || userCompany.contactPersons === undefined /* || userCompany.video === undefined */) {
         Promise.all([
           ...(userCompany.logo === undefined ? [
             dispatch(companyServices.getUserCompanyLogo(userCompany.id))
           ] : []),
+          // ...(userCompany.video === undefined ? [
+          //   dispatch(companyServices.getUserCompanyVideo(userCompany.id))
+          // ] : []),
           // ...(userCompany.video === undefined ? [
           //   dispatch(companyServices.getUserCompanyVideo(userCompany.id))
           // ] : []),
@@ -94,17 +100,23 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
             dispatch(companyServices.getUserCompanyContactPersons(userCompany.id))
           ] : []),
         ]).then((res) => {
-          const [getLogo, getVideo, getPhotos, getCertificates, getcompanyContactPersons] = res as any;
+          const [getLogo,
+            // getVideo, 
+            getPhotos, getCertificates, getcompanyContactPersons] = res as any;
           if (getLogo) logo = getLogo;
-          if (getVideo) video = getVideo;
+          // if (getVideo) video = getVideo;
           if (getPhotos && getPhotos.length) photos = getPhotos;
           if (getCertificates && getCertificates.length) certificates = getCertificates;
           if (getcompanyContactPersons && getcompanyContactPersons.length) contactPersons = getcompanyContactPersons;
-          setUserCompany({ ...userCompany, logo, /* video, */ photos, certificates, contactPersons });
+          setUserCompany({ ...userCompany, logo, video, photos, certificates, contactPersons });
         }).catch(() => { });
       }
     }
   }, [userCompany, token]);
+
+  if (userData && !(userData.email && userData.first_name && userData.last_name)) {
+    router.replace({ stack: 'AuthStack', screen: 'FillUserDataScreen' });
+  }
 
   return (
     <GoogleSigninProvider>

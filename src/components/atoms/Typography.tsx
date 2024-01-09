@@ -2,7 +2,7 @@ import React from 'react';
 import { Text } from 'react-native';
 import Colors from '../../colors/Colors';
 
-type TypographyProps = {
+export type TypographyProps = {
     children: React.ReactNode,
     variant?: 'small' | 'main' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5',
     weight?: 'CAPS' | 'Black' | 'ExtraBold' | 'Bold' | 'SemiBold' | 'Medium' | 'Regular' | 'Light'

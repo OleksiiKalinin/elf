@@ -15,6 +15,11 @@ export interface generalReducerState {
     swipeablePanelProps: SwipeablePanelProps | null,
     userData: UserDataType | null,
     jobIndustries: JobIndustryType[],
+    jobModes: JobModeType[],
+    jobTrials: JobTrialType[],
+    jobContractTypes: JobContractType[],
+    jobTrialTimes: JobTrialTimesType[],
+    jobStartFrom: JobStartFromType[],
     jobSalaryModes: JobSalaryModeType[],
     jobSalaryTaxes: JobSalaryTaxType[],
     jobExperiences: JobExperienceType[],
@@ -36,6 +41,11 @@ export type AppDataType = {
     userData: generalReducerState['userData'],
     userCompany: generalReducerState['userCompany'],
     jobIndustries: generalReducerState['jobIndustries'],
+    jobModes: generalReducerState['jobModes'],
+    jobContractTypes: generalReducerState['jobContractTypes'],
+    jobStartFrom: generalReducerState['jobStartFrom'],
+    jobTrials: generalReducerState['jobTrials'],
+    jobTrialTimes: generalReducerState['jobTrialTimes'],
     jobSalaryModes: generalReducerState['jobSalaryModes'],
     jobSalaryTaxes: generalReducerState['jobSalaryTaxes'],
     jobExperiences: generalReducerState['jobExperiences'],
@@ -224,7 +234,27 @@ export interface JobExperienceType {
     id: number
 }
 
+export interface JobModeType {
+    name: string,
+    id: number
+}
+
 export interface JobSalaryModeType {
+    name: string,
+    id: number
+}
+
+export interface JobTrialTimesType {
+    name: string,
+    id: number
+}
+
+export interface JobTrialType {
+    name: string,
+    id: number
+}
+
+export interface JobStartFromType {
     name: string,
     id: number
 }
