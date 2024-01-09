@@ -76,14 +76,14 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
       dispatch(candidatesServices.getCandidateMarks(userCompany.id));
       dispatch(candidatesServices.getCandidateNotes(userCompany.id));
 
-      if (userCompany.logo === undefined || userCompany.photos === undefined || userCompany.certificates === undefined || userCompany.contactPersons === undefined || userCompany.video === undefined) {
+      if (userCompany.logo === undefined || userCompany.photos === undefined || userCompany.certificates === undefined || userCompany.contactPersons === undefined /* || userCompany.video === undefined */) {
         Promise.all([
           ...(userCompany.logo === undefined ? [
             dispatch(companyServices.getUserCompanyLogo(userCompany.id))
           ] : []),
-          ...(userCompany.video === undefined ? [
-            dispatch(companyServices.getUserCompanyVideo(userCompany.id))
-          ] : []),
+          // ...(userCompany.video === undefined ? [
+          //   dispatch(companyServices.getUserCompanyVideo(userCompany.id))
+          // ] : []),
           ...(userCompany.photos === undefined ? [
             dispatch(companyServices.getUserCompanyPhotos(userCompany.id))
           ] : []),
@@ -100,7 +100,7 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
           if (getPhotos && getPhotos.length) photos = getPhotos;
           if (getCertificates && getCertificates.length) certificates = getCertificates;
           if (getcompanyContactPersons && getcompanyContactPersons.length) contactPersons = getcompanyContactPersons;
-          setUserCompany({ ...userCompany, logo, video, photos, certificates, contactPersons });
+          setUserCompany({ ...userCompany, logo, /* video, */ photos, certificates, contactPersons });
         }).catch(() => { });
       }
     }
