@@ -30,7 +30,7 @@ const companyExample: CompanyDataType = {
   account_facebook: 'www.google.pl',
   account_instagram: 'www.google.pl',
   account_linkedIn: 'www.google.pl',
-  employees_amount: "61-80",
+  employees_amount: '15',
   description: `Prowadzimy kameralną restaurację w centrum Wrocławia, w której serwujemy oryginalne dania kuchni włoskiej. Przyrządzając je wyłącznie z wysokiej jakości składników, pozwalamy naszym klientom odkrywać wyjątkowe smaki Półwyspu Apenińskiego.
 
   Zatrudniamy 12 wykwalifikowanych pracowników, którzy dbają nie tylko o profesjonalną obsługę, lecz również odpowiednią atmosferę. Oferujemy usługi cateringowe, umożliwiając zamawianie jedzenia za pomocą najpopularniejszych aplikacji kurierskich.
@@ -75,7 +75,7 @@ const companyExample: CompanyDataType = {
     subLocality: null
   },
   short_name: "Firma testowa",
-  square_footage: null,
+  square_footage: '50 - 100',
   website: 'www.google.pl',
   contactPersons: null,
   languages: [4, 5, 7],
@@ -381,28 +381,36 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
               <Typography size={20} weight='Bold'>{companyData?.short_name}</Typography>
               <Typography color={Colors.Basic600}>{companyData?.other_address?.formattedAddress}</Typography>
             </View>
-            <Typography variant='h5' weight='Bold' style={[styles.CategoryHeader, { marginTop: 40 }]}>
-              O firmie
-            </Typography>
-            <View style={styles.CompanyAmountsContainer}>
-              <View style={styles.CompanyAmounts}>
-                <Typography size={20} weight='Bold' textAlign='center'>
-                  {companyData.employees_amount}
+            {(companyData.employees_amount || companyData.square_footage) &&
+              <>
+                <Typography variant='h5' weight='Bold' style={[styles.CategoryHeader, { marginTop: 40 }]}>
+                  O firmie
                 </Typography>
-                <Typography textAlign='center'>
-                  Liczba pracowników
-                </Typography>
-              </View>
-              <View style={styles.CompanyAmounts}>
-                <Typography size={20} weight='Bold' textAlign='center'>
-                  {companyData.employees_amount}
-                </Typography>
-                <Typography textAlign='center'>
-                  Metraż miejsca pracy
-                </Typography>
-              </View>
-            </View>
-            <Separator marginTop={16} />
+                <View style={styles.CompanyAmountsContainer}>
+                  {companyData.employees_amount &&
+                    <View style={styles.CompanyAmounts}>
+                      <Typography size={20} weight='Bold' textAlign='center'>
+                        {companyData.employees_amount}
+                      </Typography>
+                      <Typography textAlign='center'>
+                        Liczba pracowników
+                      </Typography>
+                    </View>
+                  }
+                  {companyData.square_footage &&
+                    <View style={styles.CompanyAmounts}>
+                      <Typography size={20} weight='Bold' textAlign='center'>
+                        {companyData.square_footage} m²
+                      </Typography>
+                      <Typography textAlign='center'>
+                        Metraż miejsca pracy
+                      </Typography>
+                    </View>
+                  }
+                </View>
+              </>
+            }
+            <Separator marginTop={(companyData.employees_amount || companyData.square_footage)? 16 : 30} />
             <Accordion
               onPress={() => setDescriptionExpanded(prev => !prev)}
               expanded={descriptionExpanded}
@@ -578,22 +586,22 @@ const styles = StyleSheet.create({
   },
 
   BasicCompanyData: {
-    marginTop: 30, paddingHorizontal: 19 
+    marginTop: 30, paddingHorizontal: 19
   },
   IndustryContainer: {
-    flexDirection: 'row', 
+    flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 14,
   },
   IndustryLogoContainer: {
-    width: 34, 
-    height: 34, 
-    position: 'relative' 
+    width: 34,
+    height: 34,
+    position: 'relative'
   },
   Skeleton: {
-    width: 34, 
-    height: 34, 
-    borderRadius: 17 
+    width: 34,
+    height: 34,
+    borderRadius: 17
   },
 
   CompanyAmountsContainer: {

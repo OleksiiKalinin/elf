@@ -21,24 +21,20 @@ const FillUserDataScreen: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [showTips, setShowTips] = useState<boolean>(false);
   const [isDataValid, setIsDataValid] = useState<boolean>(false);
-  const [email, setEmail] = useState<string>('');
-  const [first_name, setFirstName] = useState<string>('');
-  const [last_name, setLastName] = useState<string>('');
   const { userData, token } = useTypedSelector(state => state.general);
+  const [email, setEmail] = useState<string>(userData?.email || '');
+  const [first_name, setFirstName] = useState<string>(userData?.first_name || '');
+  const [last_name, setLastName] = useState<string>(userData?.last_name || '');
   const { replace } = useRouter();
 
-  useEffect(() => {
-    if (!token || userData && userData.email && userData.first_name && userData.last_name) {
-      replace({ stack: 'MenuStack' });
-    }
-  }, [token, userData]);
+  // useEffect(() => {
+  //   if (!token || userData && userData.email && userData.first_name && userData.last_name) {
+  //     replace({ stack: 'MenuStack' });
+  //   }
+  // }, [token, userData]);
 
   useEffect(() => {
-    setIsDataValid(Boolean(
-      (!!userData?.email || validateMail(email)) &&
-      (!!userData?.first_name || first_name) &&
-      (!!userData?.last_name || last_name)
-    ))
+    setIsDataValid(validateMail(email) && !!first_name && !!last_name);
   }, [email, first_name, last_name]);
 
   const fillDataHandler = async () => {
@@ -48,62 +44,66 @@ const FillUserDataScreen: React.FC = () => {
       if (email) data.email = email;
       if (first_name) data.first_name = first_name;
       if (last_name) data.last_name = last_name;
-      // const isOk = await dispatch(generalServices.setUserData(data, 'post'));
+      const isOk = await dispatch(generalServices.setUserData(data, 'put'));
       setLoading(false);
-      // !!isOk && navigation.navigate('MenuStack', { screen: 'MainScreen' });
+      if (!!isOk) {
+        replace({ stack: 'MenuStack' });
+      }
     } else setShowTips(true);
   }
 
-  return !!token && userData && !(userData.email && userData.first_name && userData.last_name) ? (
-    <ScreenHeaderProvider>
-      <View style={styles.Wrapper}>
-        <ScrollView contentContainerStyle={{ flex: 1, margin: 24 }} keyboardShouldPersistTaps='always'>
-          <View style={{ marginBottom: 12 }}>
-            <Typography variant='h4' weight='Bold'>Uzupełnij brakujące dane konta</Typography>
-          </View>
-          <View style={{ marginBottom: 12 }}>
-            <Typography color={Colors.Basic600}>W przeciwnym przypadku nie będą Ci dostępne większość funkcji aplikacji.</Typography>
-          </View>
-          {!!!userData?.email && <View>
-            <TextField
-              label='Email'
-              textContentType='emailAddress'
-              keyboardType='email-address'
-              value={email}
-              onChangeText={setEmail}
-              {...(showTips && !validateMail(email) && { bottomText: 'Niepoprawny email' })}
-            />
-          </View>}
-          {!!!userData?.first_name && <View>
-            <TextField
-              label='Imię'
-              value={first_name}
-              onChangeText={setFirstName}
-              {...(showTips && !first_name && { bottomText: 'Nie zostało podane imię' })}
-            />
-          </View>}
-          {!!!userData?.last_name && <View>
-            <TextField
-              label='Nazwisko'
-              value={last_name}
-              onChangeText={setLastName}
-              {...(showTips && !last_name && { bottomText: 'Nie zostało podane nazwisko' })}
-            />
-          </View>}
-        </ScrollView>
-        <View>
-          <Button withLoading disabled={loading} onPress={fillDataHandler}>Potwierdź</Button>
+  return (
+    <ScreenHeaderProvider
+      mode='mainTitle'
+      backgroundContent={Colors.Basic200}
+    >
+      <ScrollView contentContainerStyle={{ flex: 1, margin: 24 }} keyboardShouldPersistTaps='always'>
+        <View style={{ marginBottom: 12 }}>
+          <Typography variant='h4' weight='Bold'>Uzupełnij brakujące dane konta</Typography>
         </View>
-      </View>
+        <View style={{ marginBottom: 12 }}>
+          <Typography color={Colors.Basic600}>W przeciwnym przypadku nie będą Ci dostępne większość funkcji aplikacji.</Typography>
+        </View>
+        {!!!userData?.email && <View style={{ marginBottom: 10 }}>
+          <TextField
+            label='Email'
+            textContentType='emailAddress'
+            keyboardType='email-address'
+            value={email}
+            onChangeText={setEmail}
+            {...(showTips && !validateMail(email) && { bottomText: 'Niepoprawny email' })}
+          />
+        </View>}
+        {!!!userData?.first_name && <View style={{ marginBottom: 10 }}>
+          <TextField
+            label='Imię'
+            value={first_name}
+            onChangeText={setFirstName}
+            {...(showTips && !first_name && { bottomText: 'Nie zostało podane imię' })}
+          />
+        </View>}
+        {!!!userData?.last_name && <View style={{ marginBottom: 10 }}>
+          <TextField
+            label='Nazwisko'
+            value={last_name}
+            onChangeText={setLastName}
+            {...(showTips && !last_name && { bottomText: 'Nie zostało podane nazwisko' })}
+          />
+        </View>}
+      </ScrollView>
+      <Button
+        withLoading
+        disabled={loading}
+        onPress={fillDataHandler}
+        stickyBottom
+      >
+        Potwierdź
+      </Button>
     </ScreenHeaderProvider>
-  ) : <Typography>hi</Typography>
+  )
 }
 
 const styles = StyleSheet.create({
-  Wrapper: {
-    flex: 1,
-    backgroundColor: Colors.Basic200,
-  },
 });
 
 export default FillUserDataScreen;

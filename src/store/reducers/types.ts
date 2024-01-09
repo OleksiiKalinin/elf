@@ -15,6 +15,11 @@ export interface generalReducerState {
     swipeablePanelProps: SwipeablePanelProps | null,
     userData: UserDataType | null,
     jobIndustries: JobIndustryType[],
+    jobModes: JobModeType[],
+    jobTrials: JobTrialType[],
+    jobContractTypes: JobContractType[],
+    jobTrialTimes: JobTrialTimesType[],
+    jobStartFrom: JobStartFromType[],
     jobSalaryModes: JobSalaryModeType[],
     jobSalaryTaxes: JobSalaryTaxType[],
     jobExperiences: JobExperienceType[],
@@ -36,6 +41,11 @@ export type AppDataType = {
     userData: generalReducerState['userData'],
     userCompany: generalReducerState['userCompany'],
     jobIndustries: generalReducerState['jobIndustries'],
+    jobModes: generalReducerState['jobModes'],
+    jobContractTypes: generalReducerState['jobContractTypes'],
+    jobStartFrom: generalReducerState['jobStartFrom'],
+    jobTrials: generalReducerState['jobTrials'],
+    jobTrialTimes: generalReducerState['jobTrialTimes'],
     jobSalaryModes: generalReducerState['jobSalaryModes'],
     jobSalaryTaxes: generalReducerState['jobSalaryTaxes'],
     jobExperiences: generalReducerState['jobExperiences'],
@@ -224,7 +234,27 @@ export interface JobExperienceType {
     id: number
 }
 
+export interface JobModeType {
+    name: string,
+    id: number
+}
+
 export interface JobSalaryModeType {
+    name: string,
+    id: number
+}
+
+export interface JobTrialTimesType {
+    name: string,
+    id: number
+}
+
+export interface JobTrialType {
+    name: string,
+    id: number
+}
+
+export interface JobStartFromType {
     name: string,
     id: number
 }
@@ -262,13 +292,13 @@ export interface JobContractType {
 export interface LanguageType {
     name: string,
     id: number,
-    popular?: boolean,
+    isPopular?: boolean,
 }
 
 export interface ServiceType {
     name: string,
     id: number,
-    popular?: boolean,
+    isPopular?: boolean,
 }
 
 export interface CompanyDataType {
@@ -279,20 +309,35 @@ export interface CompanyDataType {
     nip: string | null,
     main_address: AddressType | null,
     other_address: AddressType | null,
+    // registrationData: {
+    //     nip: string,
+    //     name: string,
+    //     address: string,
+    // },
     description: string | null,
-    employees_amount: string | null,
-    square_footage: string | null,
     contactPersons: ContactPersonType[] | null,
     services?: number[] | null,
+    logo?: MediaType | null,
+    photos?: MediaType[] | null,
+    certificates?: MediaType[] | null,
+    // images: {
+    //     logo?: MediaType | null,
+    //     photos?: MediaType[] | null,
+    //     certificates?: MediaType[] | null,
+    // },
+    employees_amount?: string | null,
+    square_footage?: string | null,
+    languages?: number[] | null,
     website?: string | null,
     account_facebook?: string | null,
     account_instagram?: string | null,
     account_linkedIn?: string | null,
-    logo?: MediaType | null,
-    video?: MediaType | null,
-    photos?: MediaType[] | null,
-    certificates?: MediaType[] | null,
-    languages?: number[] | null,
+    // socialMedia: {
+    //     website?: string | null,
+    //     account_facebook?: string | null,
+    //     account_instagram?: string | null,
+    //     account_linkedIn?: string | null,
+    // },
 }
 
 export type MediaType = {

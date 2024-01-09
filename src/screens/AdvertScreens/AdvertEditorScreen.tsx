@@ -28,6 +28,10 @@ import { Separator } from 'tamagui';
 import { InitialPropsFromParams, PartialBy } from '../../hooks/types';
 import useRouter from '../../hooks/useRouter';
 import MapPreview from '../../components/molecules/MapPreview';
+import getJobPositionsFrom from '../../hooks/getJobPositionsFrom';
+import Accordion from '../../components/molecules/Accordion';
+import { isNumber } from 'lodash';
+import CheckBox from '../../components/atoms/CheckBox';
 
 /*
 title="Dostosuj listę kandydatów"
@@ -56,15 +60,15 @@ const { useParam } = createParam<Props>();
 const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial }) => {
   const dispatch = useTypedDispatch();
   const router = useRouter();
-  const { jobIndustries, userCompany, jobSalaryModes, jobSalaryTaxes, jobExperiences, token, userAdverts } = useTypedSelector(state => state.general);
-  const currentPositions = jobIndustries.find(({ id }) => id === userCompany?.job_industry)?.job_positions || [];
+  const { jobIndustries, userCompany, jobSalaryModes, jobSalaryTaxes, jobStartFrom, jobTrials, jobModes, jobContractTypes, jobTrialTimes, jobExperiences, token, userAdverts } = useTypedSelector(state => state.general);
+  const currentPositions = userCompany?.job_industry ? getJobPositionsFrom(jobIndustries, userCompany.job_industry) : [];
   const [advertData, setAdvertData] = useState<NewUserAdvertType>({
     job_experience_id: null,
     job_position_id: null,
     location: null,
     salary_amount_low: null,
     salary_amount_up: null,
-    salary_tax_type_id: null,
+    salary_tax_type_id: 2,
     salary_time_type_id: null,
     benefits_ids: [],
     requirements_ids: [],
@@ -75,11 +79,12 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
     known_language_id: null,
     trial_time_id: null,
     trial_type_id: null,
-    working_hour_down: null,
     type_of_contract_id: null,
     working_hour_up: null,
+    working_hour_down: null,
   });
   const [loading, setLoading] = useState<boolean>(false);
+  const [woCV, setwoCV] = useState<boolean>(false);
   // ssr fix
   const [advertExists, setAdvertExists] = useState<boolean>(false);
   const [id] = useParam('id', { initial: idInitial })
@@ -94,7 +99,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
     if (id) {
       const advert = userAdverts.find(e => e.id.toString() === id);
       if (advert) {
-        const {candidate_data, ...data} = advert;
+        const { candidate_data, ...data } = advert;
         setAdvertExists(true);
         setAdvertData(data);
       }
@@ -132,9 +137,10 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
       backgroundContent={Colors.Basic100}
     >
       <ScrollView>
-        <View style={{ marginLeft: 16, marginTop: 32, marginBottom: 16 }}>
-          <Typography weight="Bold" size={20}>Opis stanowiska</Typography>
+        <View style={{ marginLeft: 19, marginTop: 32, marginBottom: 16 }}>
+          <Typography weight="Bold" size={20}>Podstawowe</Typography>
         </View>
+        {!isNumber(advertData.job_position_id) && <Separator />}
         <TouchableOpacity
           onPress={() => userCompany?.job_industry && router.push({
             stack: 'AdvertStack',
@@ -143,232 +149,382 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           })}
           style={{
             flexDirection: 'row', padding: 19,
-            ...(!!Number(advertData.job_position_id) ?
-              { backgroundColor: Colors.White } :
-              { borderColor: Colors.Basic300, borderTopWidth: 1, borderBottomWidth: 1 }
-            )
+            ...(isNumber(advertData.job_position_id) ? { backgroundColor: Colors.White } : {})
           }}
         >
           <View style={{ flex: 1, justifyContent: 'center' }}>
-            <Typography variant='h5' weight='SemiBold'>{currentPositions.find(curr => curr.id === advertData.job_position_id)?.name || 'Wybierz stanowisko'}</Typography>
+            <Typography variant='h4' weight='SemiBold'>{currentPositions.find(curr => curr.id === advertData.job_position_id)?.name || 'Wybierz stanowisko*'}</Typography>
           </View>
           <View style={{ justifyContent: 'center' }}>
-            {/* <SvgIcon icon={!!Number(companyData.job_industry) ? 'crossBig' : 'arrowRightSmall'} fill={Colors.Basic500} /> */}
             <SvgIcon icon={'arrowRightSmall'} fill={Colors.Basic500} />
           </View>
         </TouchableOpacity>
-        <Typography variant='h5' weight='SemiBold' style={{ paddingHorizontal: 16, marginVertical: 16 }}>Doświadczenie*</Typography>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingLeft: 16 }}>
-          {jobExperiences.map(({ id, name }) => (
-            <View style={{ marginRight: 16 }}>
+        {!isNumber(advertData.job_position_id) && <Separator />}
+        <View style={{ marginBottom: 24 }}>
+          <MapPreview
+            hideMap
+            rightIcon='arrowRightSmall'
+            place={advertData.location?.formattedAddress}
+            latitude={advertData.location?.position?.lat}
+            longitude={advertData.location?.position?.lng}
+            onPress={() => router.push({
+              stack: 'AdvertStack', screen: 'AdvertEditorScreen', params: {
+                subView: 'GoogleMapScreen',
+                callback: (address) => changeAdvertDataHandler('location', address),
+                initialAddress: advertData.location,
+                optionsType: 'address'
+              }
+            })}
+          />
+          <Separator />
+        </View>
+        <Separator />
+        <Accordion
+          title={<View style={{ flexDirection: "row", alignItems: 'center' }}>
+            <Typography>Doświadczenie*</Typography>
+            {isNumber(advertData.job_experience_id) && <View style={{ marginLeft: 10 }}>
+              <SvgIcon icon='doneCircleGreen' />
+            </View>}
+          </View>}
+        >
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingLeft: 19, marginBottom: 24 }}>
+            {jobExperiences.map(({ id, name }) => (
+              <View style={{ marginRight: 19 }}>
+                <Button
+                  size='medium'
+                  variant={advertData.job_experience_id === id ? 'secondarySelected' : 'secondary'}
+                  contentWeight={advertData.job_experience_id === id ? 'Bold' : 'SemiBold'}
+                  contentVariant='h5'
+                  contentColor={Colors.Basic900}
+                  style={{ paddingVertical: 6, paddingHorizontal: 8 }}
+                  onPress={() => changeAdvertDataHandler('job_experience_id', id)}
+                  borderRadius={4}
+                >
+                  {name}
+                </Button>
+              </View>
+            ))}
+          </ScrollView>
+        </Accordion>
+        <Separator />
+        <Accordion
+          title={<View style={{ flexDirection: "row", alignItems: 'center' }}>
+            <Typography>Tryb pracy*</Typography>
+            {isNumber(advertData.job_mode_id) && <View style={{ marginLeft: 10 }}>
+              <SvgIcon icon='doneCircleGreen' />
+            </View>}
+          </View>}
+        >
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingLeft: 19, marginBottom: 24 }}>
+            {jobModes.map(({ id, name }) => (
+              <View style={{ marginRight: 16 }}>
+                <Button
+                  size='medium'
+                  variant={advertData.job_mode_id === id ? 'secondarySelected' : 'secondary'}
+                  contentWeight={advertData.job_mode_id === id ? 'Bold' : 'SemiBold'}
+                  contentVariant='h5'
+                  contentColor={Colors.Basic900}
+                  style={{ paddingVertical: 6, paddingHorizontal: 8 }}
+                  onPress={() => changeAdvertDataHandler('job_mode_id', id)}
+                  borderRadius={4}
+                >
+                  {name}
+                </Button>
+              </View>
+            ))}
+          </ScrollView>
+        </Accordion>
+        <Separator />
+        <Accordion
+          title={<View style={{ flexDirection: "row", alignItems: 'center' }}>
+            <Typography>Termin rozpoczęcia pracy*</Typography>
+            {isNumber(advertData.job_start_id) && <View style={{ marginLeft: 10 }}>
+              <SvgIcon icon='doneCircleGreen' />
+            </View>}
+          </View>}
+        >
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingLeft: 19, marginBottom: 24 }}>
+            {jobStartFrom.map(({ id, name }) => (
+              <View style={{ marginRight: 16 }}>
+                <Button
+                  size='medium'
+                  variant={advertData.job_start_id === id ? 'secondarySelected' : 'secondary'}
+                  contentWeight={advertData.job_start_id === id ? 'Bold' : 'SemiBold'}
+                  contentVariant='h5'
+                  contentColor={Colors.Basic900}
+                  style={{ paddingVertical: 6, paddingHorizontal: 8 }}
+                  onPress={() => changeAdvertDataHandler('job_start_id', id)}
+                  borderRadius={4}
+                >
+                  {name}
+                </Button>
+              </View>
+            ))}
+          </ScrollView>
+        </Accordion>
+        <Separator />
+        <Accordion
+          title={<View style={{ flexDirection: "row", alignItems: 'center' }}>
+            <Typography>Stawka*</Typography>
+            {/* {isNumber(advertData.job_start_id) && <View style={{ marginLeft: 10 }}>
+              <SvgIcon icon='doneCircleGreen' />
+            </View>} */}
+          </View>}
+        >
+          <View style={{ marginBottom: 24 }}>
+            <ScrollView horizontal contentContainerStyle={{ paddingLeft: 19 }}>
+              {jobSalaryModes.map(({ id, name }) => (
+                <View style={{ marginRight: 20 }}>
+                  <Button
+                    borderRadius={2.5}
+                    size='small'
+                    paddingHorizontal={0}
+                    contentVariant='h5'
+                    contentColor={Colors.Basic900}
+                    contentWeight={advertData.salary_time_type_id === id ? 'Bold' : 'SemiBold'}
+                    variant='text'
+                    borderBottomWidth={4}
+                    borderBottomColor={advertData.salary_time_type_id === id ? Colors.Basic900 : 'transparent'}
+                    onPress={() => changeAdvertDataHandler('salary_time_type_id', id)}
+                  >
+                    {name}
+                  </Button>
+                </View>
+              ))}
+            </ScrollView>
+            {(advertData.salary_time_type_id === 2 || advertData.salary_time_type_id === 3) && <>
+              <View style={{ paddingLeft: 19, marginVertical: 16, flexDirection: 'row' }}>
+                {jobSalaryTaxes.map(({ id, name }, index) => (
+                  <View style={{ marginRight: 16, flex: 1, maxWidth: 150 }}>
+                    <Button
+                      size='medium'
+                      variant={advertData.salary_tax_type_id === id ? 'secondarySelected' : 'secondary'}
+                      contentWeight={advertData.salary_tax_type_id === id ? 'Bold' : 'SemiBold'}
+                      contentVariant='h5'
+                      contentColor={Colors.Basic900}
+                      borderRadius={4}
+                      onPress={() => changeAdvertDataHandler('salary_tax_type_id', id)}
+                    >
+                      {name}
+                    </Button>
+                  </View>
+                ))}
+              </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 19, maxWidth: 320 }}>
+                <View style={{ flex: 1 }}>
+                  <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>od</Typography>
+                  <TextField
+                    placeholder={advertData.salary_time_type_id === 2 ? '3000' : '20'}
+                    placeholderTextColor={Colors.Basic600}
+                    containerStyles={{ backgroundColor: Colors.Basic300, borderRadius: 4, paddingHorizontal: 16 }}
+                    height={44}
+                    keyboardType='decimal-pad'
+                    right={<Typography variant='h5'>zł</Typography>}
+                    value={advertData.salary_amount_low || ''}
+                    onChangeText={value => changeAdvertDataHandler('salary_amount_low', value)}
+                  />
+                </View>
+                <View style={{ justifyContent: 'center', height: 44, alignSelf: 'flex-end' }}>
+                  <Typography weight='Bold' variant='h4' color={Colors.Basic500}>{'   -   '}</Typography>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>do</Typography>
+                  <TextField
+                    placeholder={advertData.salary_time_type_id === 2 ? '4000' : '30'}
+                    placeholderTextColor={Colors.Basic600}
+                    containerStyles={{ backgroundColor: Colors.Basic300, borderRadius: 4, paddingHorizontal: 16 }}
+                    height={44}
+                    keyboardType='decimal-pad'
+                    right={<Typography variant='h5'>zł</Typography>}
+                    value={advertData.salary_amount_up || ''}
+                    onChangeText={value => changeAdvertDataHandler('salary_amount_up', value)}
+                  />
+                </View>
+              </View>
+            </>}
+          </View>
+        </Accordion>
+        <Separator />
+
+        <View style={{ marginLeft: 19, marginTop: 32, marginBottom: 16 }}>
+          <Typography weight="Bold" size={20}>Dodatkowe</Typography>
+        </View>
+
+        <Separator />
+        <Accordion
+          title={<View style={{ flexDirection: "row", alignItems: 'center' }}>
+            <Typography>Okres próbny</Typography>
+            {isNumber(advertData.trial_type_id) && <View style={{ marginLeft: 10 }}>
+              <SvgIcon icon='doneCircleGreen' />
+            </View>}
+          </View>}
+        >
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingLeft: 19, marginBottom: 24 }}>
+            {jobTrials.map(({ id, name }) => (
+              <View style={{ marginRight: 20 }}>
+                <Button
+                  borderRadius={2.5}
+                  size='small'
+                  paddingHorizontal={0}
+                  contentVariant='h5'
+                  contentColor={Colors.Basic900}
+                  contentWeight={advertData.trial_type_id === id ? 'Bold' : 'SemiBold'}
+                  variant='text'
+                  borderBottomWidth={4}
+                  borderBottomColor={advertData.trial_type_id === id ? Colors.Basic900 : 'transparent'}
+                  onPress={() => changeAdvertDataHandler('trial_type_id', id)}
+                >
+                  {name}
+                </Button>
+              </View>
+            ))}
+          </ScrollView>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingLeft: 19, marginBottom: 24 }}>
+            {jobTrialTimes.map(({ id, name }) => (
+              <View style={{ marginRight: 16 }}>
+                <Button
+                  size='medium'
+                  variant={advertData.trial_time_id === id ? 'secondarySelected' : 'secondary'}
+                  contentWeight={advertData.trial_time_id === id ? 'Bold' : 'SemiBold'}
+                  contentVariant='h5'
+                  contentColor={Colors.Basic900}
+                  style={{ paddingVertical: 6, paddingHorizontal: 8 }}
+                  onPress={() => changeAdvertDataHandler('trial_time_id', id)}
+                  borderRadius={4}
+                >
+                  {name}
+                </Button>
+              </View>
+            ))}
+          </ScrollView>
+        </Accordion>
+        <Separator />
+        <Accordion
+          title={<View style={{ flexDirection: "row", alignItems: 'center' }}>
+            <Typography>Rodzaj umowy</Typography>
+            {isNumber(advertData.type_of_contract_id) && <View style={{ marginLeft: 10 }}>
+              <SvgIcon icon='doneCircleGreen' />
+            </View>}
+          </View>}
+        >
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingLeft: 19, marginBottom: 24 }}>
+            {jobContractTypes.map(({ id, name }) => (
+              <View style={{ marginRight: 16 }}>
+                <Button
+                  size='medium'
+                  variant={advertData.type_of_contract_id === id ? 'secondarySelected' : 'secondary'}
+                  contentWeight={advertData.type_of_contract_id === id ? 'Bold' : 'SemiBold'}
+                  contentVariant='h5'
+                  contentColor={Colors.Basic900}
+                  style={{ paddingVertical: 6, paddingHorizontal: 8 }}
+                  onPress={() => changeAdvertDataHandler('type_of_contract_id', id)}
+                  borderRadius={4}
+                >
+                  {name}
+                </Button>
+              </View>
+            ))}
+          </ScrollView>
+        </Accordion>
+        <Separator />
+        {/* <Accordion
+          title={<View style={{ flexDirection: "row", alignItems: 'center' }}>
+            <Typography>Rodzaj umowy</Typography>
+            {isNumber(advertData.type_of_contract_id) && <View style={{ marginLeft: 10 }}>
+              <SvgIcon icon='doneCircleGreen' />
+            </View>}
+          </View>}
+        >
+          <View style={styles.ContactHoursButtons}>
+            <View style={styles.HourButton}>
+              <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>od</Typography>
               <Button
-                variant={advertData.job_experience_id === id ? 'secondarySelected' : 'secondary'}
-                contentWeight={advertData.job_experience_id === id ? 'Bold' : 'SemiBold'}
+                contentWeight='SemiBold'
                 contentVariant='h5'
-                contentColor={Colors.Basic900}
-                style={{ paddingVertical: 6, paddingHorizontal: 8 }}
-                onPress={() => changeAdvertDataHandler('job_experience_id', id)}
+                variant="secondary"
+                onPress={() => setShowTimepicker('start')}
                 borderRadius={4}
               >
-                {name}
+                {contact_hours?.substring(0, contact_hours.length - 6)}
               </Button>
             </View>
-          ))}
-        </ScrollView>
+            <View style={{ justifyContent: 'center', height: 100 }}>
+              <Typography weight='Bold' variant='h4' color={Colors.Basic500}>{'  -  '}</Typography>
+            </View>
+            <View style={styles.HourButton}>
+              <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>do</Typography>
+              <Button
+                contentWeight='SemiBold'
+                contentVariant='h5'
+                variant="secondary"
+                onPress={() => setShowTimepicker('end')}
+                borderRadius={4}
+              >
+                {contact_hours?.substring(6)}
+              </Button>
+            </View>
+          </View>
+        </Accordion> */}
+        <Separator />
 
-        {/* <HorizontalSelector
-          title={'Tryb pracy'}
-          buttons={Workload.map((item, index) => (
-            <HorizontalMenuButton
-              selected={selectedWorkload === index ? true : false}
-              name={item}
-              onPress={() =>
-                selectedWorkload !== index
-                  ? setSelectedWorkload(index)
-                  : setSelectedWorkload(null)
-              }
-            />
-          ))}
-        />
+        <View style={{ paddingHorizontal: 19 }}>
+          <CheckBox
+            checked={woCV}
+            onCheckedChange={checked => setwoCV(!!checked)}
+            leftTextView={
+              <Typography style={{ paddingVertical: 20 }}>
+                Bez CV
+              </Typography>
+            }
+            style={{ marginTop: 20 }}
+          />
+        </View>
+        <Separator style={{ marginBottom: 15 }} />
+        {/* <Accordion
+          title={<View style={{ flexDirection: "row", alignItems: 'center' }}>
+            <Typography>Godziny pracy</Typography>
+          </View>}
+        >
+          
+        </Accordion>
+        <Separator /> */}
+
+        {/* 
         <CheckBox
           leftText='Praca zmianowa'
           checked={shiftJob}
           onCheckedChange={(checked) => setShiftJob(checked)}
-          style={{ padding: 16 }}
+          style={{ padding: 19 }}
         />
         <Separator />
         <CheckBox
           leftText='Praca w weekendy'
           checked={weekendJob}
           onCheckedChange={(checked) => setWeekendJob(checked)}
-          style={{ padding: 16 }}
+          style={{ padding: 19 }}
         />
         <Separator />
         <CheckBox
           leftText='Elastyczny czas pracy'
           checked={flexibleTime}
           onCheckedChange={(checked) => setFlexibleTime(checked)}
-          style={{ padding: 16 }}
+          style={{ padding: 19 }}
         />
         <Separator />
         <CheckBox
           leftText='Możliwość pracy zdalnej'
           checked={withoutResume}
           onCheckedChange={(checked) => setWithoutResume(checked)}
-          style={{ padding: 16 }}
+          style={{ padding: 19 }}
         />
         <Separator />
-        <View>
-          <View style={{ margin: 16 }}>
-            <Typography weight="Bold" size={20}>Godziny pracy</Typography>
-          </View>
-          <View
-            style={{
-              margin: 20,
-              marginTop: 50,
-              justifyContent: 'center',
-              flexDirection: 'row',
-            }}>
-            <Typography>do poprawy</Typography>
-          </View>
-        </View>
-
-        <HorizontalSelector
-          title={'Termin rozpoczęcia pracy'}
-          star={false}
-          buttons={workStartTime.map((item, index) => (
-            <HorizontalMenuButton
-              selected={selectedWorkStartTime === index ? true : false}
-              name={item}
-              onPress={() =>
-                selectedWorkStartTime !== index
-                  ? setSelectedWorkStartTime(index)
-                  : setSelectedWorkStartTime(null)
-              }
-            />
-          ))}
-        />
-        <Separator /> */}
-        <Typography variant='h5' weight='SemiBold' style={{ paddingHorizontal: 16, marginVertical: 16 }}>Stawka</Typography>
-        <ScrollView horizontal contentContainerStyle={{ paddingLeft: 16 }}>
-          {jobSalaryModes.map(({ id, name }) => (
-            <View style={{ marginRight: 20 }}>
-              <Button
-                contentVariant='h5'
-                borderRadius={4}
-                contentWeight={advertData.salary_time_type_id === id ? 'Bold' : 'SemiBold'}
-                variant={advertData.salary_time_type_id === id ? 'secondarySelected' : 'secondary'}
-                onPress={() => changeAdvertDataHandler('salary_time_type_id', id)}
-              >
-                {name}
-              </Button>
-            </View>
-          ))}
-        </ScrollView>
-        {advertData.salary_time_type_id !== 1 && <>
-          <View style={{ paddingLeft: 16, marginVertical: 16, flexDirection: 'row' }}>
-            {jobSalaryTaxes.map(({ id, name }, index) => (
-              <View style={{ marginRight: 16, flex: 1 }}>
-                <Button
-                  variant={advertData.salary_tax_type_id === id ? 'secondarySelected' : 'secondary'}
-                  contentWeight={advertData.salary_tax_type_id === id ? 'Bold' : 'SemiBold'}
-                  contentVariant='h5'
-                  contentColor={Colors.Basic900}
-                  borderRadius={4}
-                  onPress={() => changeAdvertDataHandler('salary_tax_type_id', id)}
-                >
-                  {name}
-                </Button>
-              </View>
-            ))}
-          </View>
-          <View style={{ marginHorizontal: 16, flexDirection: 'row', alignItems: 'center' }}>
-            <View style={{ flex: 1 }}>
-              <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>od</Typography>
-              <TextField
-                placeholder={advertData.salary_time_type_id === 2 ? '3000' : '20'}
-                placeholderTextColor={Colors.Basic600}
-                containerStyles={{ backgroundColor: Colors.Basic300, borderRadius: 4, paddingHorizontal: 16 }}
-                height={44}
-                keyboardType='decimal-pad'
-                right={<Typography variant='h5'>zł</Typography>}
-                value={advertData.salary_amount_low || ''}
-                onChangeText={value => changeAdvertDataHandler('salary_amount_low', value)}
-              />
-            </View>
-            <View style={{ justifyContent: 'center', height: 44, alignSelf: 'flex-end' }}>
-              <Typography weight='Bold' variant='h4' color={Colors.Basic500}>{'   -   '}</Typography>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>do</Typography>
-              <TextField
-                placeholder={advertData.salary_time_type_id === 2 ? '4000' : '30'}
-                placeholderTextColor={Colors.Basic600}
-                containerStyles={{ backgroundColor: Colors.Basic300, borderRadius: 4, paddingHorizontal: 16 }}
-                height={44}
-                keyboardType='decimal-pad'
-                right={<Typography variant='h5'>zł</Typography>}
-                value={advertData.salary_amount_up || ''}
-                onChangeText={value => changeAdvertDataHandler('salary_amount_up', value)}
-              />
-            </View>
-          </View>
-        </>}
+        
+ */}
 
 
-        {/* <HorizontalSelector
-          title={'Rodzaj umowy'}
-          buttons={ContractTypes.map((item, index) => (
-            <HorizontalMenuButton
-              selected={selectedContractType === index ? true : false}
-              name={item}
-              onPress={() =>
-                selectedContractType !== index
-                  ? setSelectedContractType(index)
-                  : setSelectedContractType(null)
-              }
-            />
-          ))}
-        />
 
-        <HorizontalSelector
-          title={'Okres próbny'}
-          star={false}
-          buttons={probationType.map((item, index) => (
-            <View>
-              <HorizontalMenuButton
-                selected={selectedProbationType === index ? true : false}
-                name={item}
-                style={{ width: windowSizes.width / 3 }}
-                variant={'underline'}
-                onPress={() =>
-                  selectedProbationType !== index
-                    ? setSelectedProbationType(index)
-                    : setSelectedProbationType(null)
-                }
-              />
-            </View>
-          ))}
-          content={
-            selectedProbationType !== 0 &&
-            probationTime.map((item, index) => (
-              <HorizontalMenuButton
-                selected={selectedProbationTime === index ? true : false}
-                name={item}
-                onPress={() =>
-                  selectedProbationTime !== index
-                    ? setSelectedProbationTime(index)
-                    : setSelectedProbationTime(null)
-                }
-              />
-            ))
-          }
-        />
-        <Separator />
+        {/* 
 
-        <View style={{ marginLeft: 16, marginTop: 4, marginBottom: 16 }}>
-          <Typography weight="Bold" size={20}>Dodatkowo</Typography>
-        </View>
 
         <ButtonArrowSelector
           onPress={() =>
@@ -478,54 +634,39 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           leftText='Osoby z Ukrainy 🇺🇦'
           checked={forUkraine}
           onCheckedChange={(checked) => setForUkraine(checked)}
-          style={{ padding: 16 }}
+          style={{ padding: 19 }}
         />
         <Separator />
         <CheckBox
           leftText='Без знання польської мови 🇺🇦'
           checked={noPolish}
           onCheckedChange={(checked) => setNoPolish(checked)}
-          style={{ padding: 16 }}
+          style={{ padding: 19 }}
         />
         <Separator />
         <CheckBox
           leftText='Bez CV'
           checked={withoutResume}
           onCheckedChange={(checked) => setWithoutResume(checked)}
-          style={{ padding: 16 }}
+          style={{ padding: 19 }}
         />
         <Separator />
         <CheckBox
           leftText='Prawo jazdy'
           checked={drivingLicense}
           onCheckedChange={(checked) => setDrivingLicense(checked)}
-          style={{ padding: 16 }}
+          style={{ padding: 19 }}
         />
         <Separator />
         <CheckBox
           leftText='Rekrutacja online'
           checked={onlineRecruitment}
           onCheckedChange={(checked) => setOnlineRecruitment(checked)}
-          style={{ padding: 16 }}
+          style={{ padding: 19 }}
         /> */}
 
 
 
-        <View style={{ marginVertical: 32 }}>
-          <MapPreview
-            place={advertData.location?.formattedAddress}
-            latitude={advertData.location?.position?.lat}
-            longitude={advertData.location?.position?.lng}
-            onPress={() => router.push({
-              stack: 'AdvertStack', screen: 'AdvertEditorScreen', params: {
-                subView: 'GoogleMapScreen',
-                callback: (address) => changeAdvertDataHandler('location', address),
-                initialAddress: advertData.location,
-                optionsType: 'address'
-              }
-            })}
-          />
-        </View>
 
 
 
@@ -596,7 +737,16 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.Basic300,
     borderRadius: 4,
     textAlign: "center"
-  }
+  },
+  ContactHoursButtons: {
+    flex: 1,
+    flexDirection: 'row',
+    marginTop: 20,
+  },
+  HourButton: {
+    width: '35%',
+    maxWidth: 200
+  },
 });
 
 export default AdvertEditorScreen;

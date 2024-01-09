@@ -5,7 +5,7 @@ import Colors from '../../colors/Colors';
 // import Typography from '../../atoms/Typography/Typography';
 // import AnimatedColorView from 'react-native-animated-colors';
 import { Button as TamaButton, Spinner } from 'tamagui';
-import Typography from '../atoms/Typography';
+import Typography, { TypographyProps } from '../atoms/Typography';
 import { ArrowRight } from '@tamagui/lucide-icons';
 import SvgIcon from '../atoms/SvgIcon';
 import { Separator } from 'tamagui';
@@ -17,15 +17,16 @@ type ButtonProps = {
   variant?: VariantType,
   contentColor?: string,
   hoverColor?: string,
-  contentWeight?: 'CAPS' | 'Black' | 'ExtraBold' | 'Bold' | 'SemiBold' | 'Medium' | 'Regular' | 'Light',
-  contentVariant?: 'small' | 'main' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5',
+  contentWeight?: TypographyProps['weight'],
+  contentVariant?: TypographyProps['variant'],
   withLoading?: boolean,
   fullwidth?: boolean,
   borderTop?: boolean,
   borderBottom?: boolean,
   arrowRight?: boolean,
   stickyBottom?: boolean,
-} & React.ComponentProps<typeof TamaButton>;
+  size?: 'small' | 'medium' | 'large',
+} & Omit<React.ComponentProps<typeof TamaButton>, 'size'>;
 
 const variants: { [k in VariantType]: {
   activeColor: string,
@@ -95,6 +96,12 @@ const variants: { [k in VariantType]: {
   },
 }
 
+const sizes: { [k in NonNullable<ButtonProps['size']>]: number } = {
+  small: 30,
+  medium: 44,
+  large: 50,
+}
+
 const Button: React.FC<ButtonProps> = ({
   children,
   variant = 'primary',
@@ -108,6 +115,7 @@ const Button: React.FC<ButtonProps> = ({
   borderTop,
   borderBottom,
   stickyBottom,
+  size = 'large',
   ...props
 }) => {
 
@@ -115,8 +123,8 @@ const Button: React.FC<ButtonProps> = ({
     <>
       {borderTop && <Separator borderColor={Colors.Basic300} alignSelf="stretch" />}
       <TamaButton
-        hoverStyle={{ bg: hoverColor || variants[variant].hoverColor }} pressStyle={{ bg: hoverColor || variants[variant].hoverColor, opacity: .5 }}
-        height={props.h ?? (arrowRight ? 58 : 50)}
+        hoverStyle={{ bg: hoverColor || variants[variant].hoverColor, borderBottomColor: props.borderBottomColor }} pressStyle={{ bg: hoverColor || variants[variant].hoverColor, opacity: .5 }}
+        height={props.h ?? sizes[size] + (arrowRight ? 8 : 0)}
         borderRadius={0}
         bg={props.bg || props.backgroundColor || props.disabled ? variants[variant].disabledColor : variants[variant].activeColor}
         icon={props.disabled && withLoading ? <Spinner size='large' /> : undefined}

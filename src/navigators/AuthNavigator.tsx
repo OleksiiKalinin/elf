@@ -35,12 +35,10 @@ const AuthNavigator: React.FC = () => {
 
     return (
         <AuthStack.Navigator initialRouteName="MainScreen" screenOptions={{ headerShown: false }}>
-            {!token && <>
-                <AuthStack.Screen name="MainScreen" component={MainScreen} />
-                <AuthStack.Screen name="LoginScreen" component={LoginScreen} />
-                <AuthStack.Screen name="RegistrationScreen" component={RegistrationScreen} />
-                <AuthStack.Screen name="RememberPasswordScreen" component={RememberPasswordScreen} />
-            </>}
+            <AuthStack.Screen name="MainScreen" component={MainScreen} />
+            <AuthStack.Screen name="LoginScreen" component={LoginScreen} />
+            <AuthStack.Screen name="RegistrationScreen" component={RegistrationScreen} />
+            <AuthStack.Screen name="RememberPasswordScreen" component={RememberPasswordScreen} />
             <AuthStack.Screen name="FillUserDataScreen" component={FillUserDataScreen} />
         </AuthStack.Navigator>
     );

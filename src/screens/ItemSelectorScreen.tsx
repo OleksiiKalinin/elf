@@ -15,15 +15,41 @@ export type ItemSelectorScreenProps =
   ({
     mode: 'single';
     callback: (id: number) => void,
-  } | {
-    mode: 'multiple';
-    callback: (id: number[]) => void,
-  }) & {
-    list: { id: number; name: string; icon?: string }[],
+    highlightPopularItems?: true,
     labels: {
       searchLabel: string,
       itemsLabel: string,
-    };
+      popularItemsLabel?: string,
+    },
+  } | {
+    mode: 'single';
+    callback: (id: number) => void,
+    highlightPopularItems?: false,
+    labels: {
+      searchLabel: string,
+      itemsLabel: string,
+      popularItemsLabel?: never,
+    },
+  } | {
+    mode: 'multiple';
+    callback: (id: number[]) => void,
+    highlightPopularItems?: true,
+    labels: {
+      searchLabel: string,
+      itemsLabel: string,
+      popularItemsLabel: string,
+    },
+  } | {
+    mode: 'multiple';
+    callback: (id: number[]) => void,
+    highlightPopularItems?: false,
+    labels: {
+      searchLabel: string,
+      itemsLabel: string,
+      popularItemsLabel?: never,
+    },
+  }) & {
+    list: { id: number; name: string; icon?: string, isPopular?: boolean }[],
     headerProps?: Omit<React.ComponentProps<typeof ScreenHeaderProvider>, 'children'>,
     render?: (id: number, name: string, i: number, icon?: string, initialSelected?: number[]) => JSX.Element,
     initialSelected?: number[],
@@ -41,6 +67,7 @@ const ItemSelectorScreen: React.FC<ItemSelectorScreenProps> = ({
   subViewMode = true,
   initialSelected,
   allowReturnEmptyList = false,
+  highlightPopularItems = false,
 }) => {
   const [search, setSearch] = useState<string>('');
   const [selectedItems, setSelectedItems] = useState<number[]>(initialSelected ? mode === 'multiple' ? initialSelected : [] : []);
@@ -74,6 +101,67 @@ const ItemSelectorScreen: React.FC<ItemSelectorScreenProps> = ({
     };
   };
 
+  const listOfItems = (list: { id: number; name: string; icon?: string, isPopular?: boolean }[], label: string) => {
+
+    const filteredList = list.filter(({ name }) =>
+      name.toLowerCase().includes(search.toLowerCase()),
+    );
+
+    return (
+      <>
+        {!!filteredList.length &&
+          <Typography color={Colors.Basic600} style={styles.ItemsLabel}>
+            {label}
+          </Typography>
+        }
+        {filteredList.map(({ id, name, icon }, i) => (
+          mode === 'single' ?
+            render ?
+              <Fragment key={id}>
+                {render(id, name, i, icon, initialSelected)}
+              </Fragment>
+
+              :
+
+              <Button
+                key={id}
+                arrowRight
+                borderTop={i === 0}
+                borderBottom
+                variant='text'
+                style={{ paddingVertical: 19 }}
+                onPress={() => handleSelectedItems(id)}
+              >
+                <Typography size={16}>{name}</Typography>
+              </Button>
+
+            :
+
+            <Fragment key={id}>
+              {i === 0 && <Separator />}
+              <View style={{ paddingHorizontal: 19 }}>
+                <CheckBox
+
+                  checked={selectedItems.includes(id)}
+                  onCheckedChange={() => handleSelectedItems(id)}
+                  leftTextView={
+                    render ?
+                      render(id, name, i, icon)
+
+                      :
+
+                      <Typography style={styles.CheckBoxText} size={16}>{name}</Typography>
+                  }
+                  style={styles.CheckBox}
+                />
+              </View>
+              <Separator />
+            </Fragment>
+        ))}
+      </>
+    )
+  };
+
   const content = (
     <View style={styles.Wrapper}>
       <View style={styles.Textfield}>
@@ -102,60 +190,26 @@ const ItemSelectorScreen: React.FC<ItemSelectorScreenProps> = ({
           }
         />
       </View>
-      <Typography color={Colors.Basic600} style={styles.ItemsLabel}>
-        {labels.itemsLabel}
-      </Typography>
       <ScrollView style={{ flex: 1 }}>
-        {list
-          .filter(({ name }) =>
-            name.toLowerCase().includes(search.toLowerCase()),
-          )
-          .map(({ id, name, icon }, i) => (
-            mode === 'single' ?
+        <View style={styles.List}>
+          {(highlightPopularItems && labels.popularItemsLabel) ?
+            <>
+              <View>
+                {listOfItems(list.filter(item => item.isPopular), labels.popularItemsLabel)}
+              </View>
+              <View>
+                {listOfItems(list.filter(item => !item.isPopular), labels.itemsLabel)}
+              </View>
+            </>
 
-              render ?
-                <Fragment key={id}>
-                  {render(id, name, i, icon, initialSelected)}
-                </Fragment>
+            :
 
-                :
+            <View>
+              {listOfItems(list, labels.itemsLabel)}
+            </View>
+          }
+        </View>
 
-                <Button
-                  key={id}
-                  arrowRight
-                  borderTop={i === 0}
-                  borderBottom
-                  variant='text'
-                  style={{ paddingVertical: 19 }}
-                  onPress={() => handleSelectedItems(id)}
-                // disabled={initialSelected ? id === initialSelected[0] : false}
-                >
-                  <Typography size={16}>{name}</Typography>
-                </Button>
-
-              :
-
-              <Fragment key={id}>
-                {i === 0 && <Separator />}
-                <View style={{ paddingHorizontal: 19 }}>
-                  <CheckBox
-
-                    checked={selectedItems.includes(id)}
-                    onCheckedChange={() => handleSelectedItems(id)}
-                    leftTextView={
-                      render ?
-                        render(id, name, i, icon)
-
-                        :
-
-                        <Typography style={styles.CheckBoxText} size={16}>{name}</Typography>
-                    }
-                    style={styles.CheckBox}
-                  />
-                </View>
-                <Separator />
-              </Fragment>
-          ))}
       </ScrollView>
       {mode === 'multiple' && (
         <Button
@@ -188,6 +242,10 @@ const styles = StyleSheet.create({
   Textfield: {
     marginVertical: 16,
     marginHorizontal: 19,
+  },
+  List: {
+    marginTop: 24,
+    gap: 24
   },
   CheckBox: {
     marginTop: 20,

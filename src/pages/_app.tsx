@@ -17,7 +17,6 @@ import { Layout } from './Layout';
 import AppUnifiedProvider from '../components/organismes/AppUnifiedProvider';
 import { useRouter } from 'next/router';
 import { WithUrlProps } from '../hooks/withUrl';
-import windowExists from '../hooks/windowExists';
 import getPathnameFromScreen from '../hooks/getPathnameFromScreen';
 
 const insets = {
