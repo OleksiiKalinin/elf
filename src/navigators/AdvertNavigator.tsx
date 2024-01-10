@@ -1,12 +1,14 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MainScreen from '../screens/AdvertScreens/MainScreen';
-import AdvertEditorScreen from '../screens/AdvertScreens/AdvertEditorScreen';
+import AdvertEditorScreen, { AdvertEditorStepType } from '../screens/AdvertScreens/AdvertEditorScreen';
 import AdvertScreen from '../screens/AdvertScreens/AdvertScreen';
 import CandidatesScreen from '../screens/AdvertScreens/CandidatesScreen';
 import { PathConfigMap } from '@react-navigation/native';
 import { JobCategoryScreenProps } from '../screens/JobCategoryScreen';
 import { GoogleMapScreenProps } from '../screens/GoogleMapScreen';
+import { ItemSelectorScreenProps } from '../screens/ItemSelectorScreen';
+import { CompanyDescriptionScreenProps } from '../screens/CompanyDescriptionScreen';
 
 type SubView<T extends keyof AdvertStackParamList['extended']> = ({ subView: T } & AdvertStackParamList['extended'][T]) | { subView?: never };
 
@@ -21,16 +23,21 @@ export type AdvertStackParamList = {
     | undefined
     | {
       id?: string,
+      step?: AdvertEditorStepType,
       isMainMenuSender?: 'true' | 'false',
     } & (
       | SubView<'GoogleMapScreen'>
       | SubView<'JobCategoryScreen'>
+      | SubView<'ItemSelectorScreen'>
+      | SubView<'CompanyDescriptionScreen'>
     ),
     CandidatesScreen: { id: string },
   },
   extended: {
     GoogleMapScreen: GoogleMapScreenProps,
     JobCategoryScreen: JobCategoryScreenProps,
+    ItemSelectorScreen: ItemSelectorScreenProps,
+    CompanyDescriptionScreen: CompanyDescriptionScreenProps,
   }
 };
 

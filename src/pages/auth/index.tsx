@@ -8,7 +8,7 @@ const index = () => {
     const { replace } = useRouter();
 
     useEffect(() => {
-        if (token) replace({ stack: 'AuthStack', screen: 'FillUserDataScreen' });
+        if (token) replace({ stack: 'MenuStack' });
     }, [token]);
 
     return <Screen />;

@@ -24,7 +24,7 @@ import Colors from '../../colors/Colors';
 const LogoWidth = 120;
 
 const AdvertLarge: React.FC<UserAdvertType> = props => {
-  const { benefits_ids, company_id, description, duties_ids, expiration_time, job_experience_id, job_mode_id, job_position_id, job_start_id, known_language_id, location, requirements_ids, salary_amount_low, salary_amount_up, salary_tax_type_id, salary_time_type_id, trial_time_id, trial_type_id, type_of_contract_id, working_hour_down, working_hour_up, id } = props;
+  const { benefits_ids, company_id, description, duties_ids, expiration_time, job_experience_id, job_mode_id, job_position_id, job_start_id, known_languages_id, location, requirements_ids, salary_amount_low, salary_amount_up, salary_tax_type_id, salary_time_type_id, trial_time_id, trial_type_id, type_of_contract_id, working_hour_down, working_hour_up, id } = props;
   const { jobIndustries, userCompany, jobSalaryTaxes } = useTypedSelector(state => state.general);
 
   return (

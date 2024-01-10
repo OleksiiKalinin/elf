@@ -27,11 +27,11 @@ const FillUserDataScreen: React.FC = () => {
   const [last_name, setLastName] = useState<string>(userData?.last_name || '');
   const { replace } = useRouter();
 
-  // useEffect(() => {
-  //   if (!token || userData && userData.email && userData.first_name && userData.last_name) {
-  //     replace({ stack: 'MenuStack' });
-  //   }
-  // }, [token, userData]);
+  useEffect(() => {
+    if (!token || userData && userData.email && userData.first_name && userData.last_name) {
+      replace({ stack: 'MenuStack' });
+    }
+  }, [token, userData]);
 
   useEffect(() => {
     setIsDataValid(validateMail(email) && !!first_name && !!last_name);

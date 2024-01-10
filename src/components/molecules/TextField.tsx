@@ -126,7 +126,7 @@ const TextField: FC<TextFieldProps> = ({
             style={[styles.Input, inputStyles, { lineHeight: lineHeight }, (autoGrow && Platform.OS === 'web') ? { overflow: 'hidden' } : {}]}
             onFocus={() => setMoveLabelDir(true)}
             onBlur={() => !activeLabel && setMoveLabelDir(false)}
-            blurOnSubmit
+            blurOnSubmit={!props.multiline}
             selectionColor={Colors.TextDark}
             ref={inputRef}
             textAlignVertical={props.multiline ? 'top' : 'center'}

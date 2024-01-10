@@ -45,7 +45,7 @@ import { Separator } from 'tamagui';
 import DraggableList from '../../components/organismes/DraggableList';
 import style from '../../components/modified_modules/react-native-calendars/src/calendar/header/style';
 
-const languages: LanguageType[] = [
+export const languages: LanguageType[] = [
   {
     id: 1,
     name: 'Polski',

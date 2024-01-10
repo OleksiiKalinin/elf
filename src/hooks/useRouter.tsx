@@ -59,6 +59,8 @@ const validateUrl = (props: WithUrlProps): string => {
         )) ||
         (props.stack === 'AdvertStack' && props.screen === 'AdvertEditorScreen' && (
             props.params?.subView === 'JobCategoryScreen' ||
+            props.params?.subView === 'ItemSelectorScreen' ||
+            props.params?.subView === 'CompanyDescriptionScreen' ||
             props.params?.subView === 'GoogleMapScreen'
         )) ||
         (props.stack === 'ProfileStack' && props.screen === 'CompanyEditorScreen' && (

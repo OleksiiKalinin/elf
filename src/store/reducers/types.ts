@@ -210,7 +210,7 @@ export interface UserAdvertType {
     salary_tax_type_id: number | null,
     salary_time_type_id: number | null,
     type_of_contract_id: number | null,
-    known_language_id: number | null,
+    known_languages_id: number[],
     requirements_ids: number[],
     benefits_ids: number[],
     duties_ids: number[],

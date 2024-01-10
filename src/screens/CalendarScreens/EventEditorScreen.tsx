@@ -31,8 +31,10 @@ import MapPreview from '../../components/molecules/MapPreview';
 import { InitialPropsFromParams } from '../../hooks/types';
 // import CandidateCard from '../../components/organisms/CandidateCard/CandidateCard';
 
+const START_END_MINUTES_SPACE = 30;
+
 const normalizeTimeForPicker = (mode: 'start' | 'end'): Date => {
-  const now = Date.now()// - new Date().getTimezoneOffset()*60*1000;
+  const now = Date.now();
   const date = new Date(now);
   const minutes = date.getMinutes();
   let calcMinutes = minutes;
@@ -45,7 +47,7 @@ const normalizeTimeForPicker = (mode: 'start' | 'end'): Date => {
       now + //now
       ((calcMinutes - 1 - minutes) * 60 * 1000) + //diff rounded by 5
       10 * 60 * 1000 + //start and end time 10 minutes to future
-      (mode === 'end' ? 30 * 60 * 1000 : 0) //end time 30 minutes to future
+      (mode === 'end' ? START_END_MINUTES_SPACE * 60 * 1000 : 0) //end time 30 minutes to future
     ) / (60 * 1000)) * (60 * 1000) //round to minutes
   );
 }
@@ -63,17 +65,17 @@ const EventEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial 
   const [eventType, setEventType] = useState<'meeting' | 'call'>('meeting');
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date>(new Date());
-  const [showTimepicker, setShowTimepicker] = useState<'start' | 'end' | false>(false);
-  const [showCalendar, setShowCalendar] = useState<'start' | 'end' | false>(false);
   const [startTime, setStartTime] = useState<Date>(normalizeTimeForPicker('start'));
   const [endTime, setEndTime] = useState<Date>(normalizeTimeForPicker('end'));
-  const [displayStartHours, displayStartMinutes] = [startTime.getHours(), startTime.getMinutes()];
-  const [displayEndHours, displayEndMinutes] = [endTime.getHours(), endTime.getMinutes()];
+  const [showTimepicker, setShowTimepicker] = useState<'start' | 'end' | false>(false);
+  const [showCalendar, setShowCalendar] = useState<'start' | 'end' | false>(false);
   const [selectedAdvert, setSelectedAdvert] = useState<UserAdvertType | null>(null);
   const [selectedCandidate, setSelectedCandidate] = useState<CandidateDataType | null>(null);
   const [location, setLocation] = useState<AddressType | null>(null);
-
   const { setSwipeablePanelProps } = useActions();
+  
+  const [displayStartHours, displayStartMinutes] = [startTime.getHours(), startTime.getMinutes()];
+  const [displayEndHours, displayEndMinutes] = [endTime.getHours(), endTime.getMinutes()];
 
   // useEffect(() => {
   //   if (!isFocused && route.params?.isMainMenuSender) {
@@ -88,7 +90,17 @@ const EventEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial 
   // }, [selectedPersons]);
 
   useEffect(() => {
-    if (startTime.getTime() > endTime.getTime()) setEndTime(new Date(startTime.getTime() + 30 * 60 * 1000));
+    if (startTime.getTime() > endTime.getTime()) {
+      let minutesOffset = START_END_MINUTES_SPACE;
+      const newDate = new Date(startTime.getTime() + minutesOffset * 60 * 1000);
+      const [newHours, newMinutes] = [newDate.getHours(), newDate.getMinutes()];
+
+      if (startTime.getHours() === 23 && newHours === 0) {
+        minutesOffset = START_END_MINUTES_SPACE - newMinutes - 1;
+      }
+
+      setEndTime(new Date(startTime.getTime() + minutesOffset * 60 * 1000));
+    }
   }, [startTime, endTime]);
 
   useEffect(() => {
