@@ -82,6 +82,15 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
 
   useEffect(() => {
     if (pickerActive) {
+      let initialSelectedWithBeforePath;
+
+      if(initialSelected){
+        initialSelectedWithBeforePath = initialSelected.map((file) => ({
+          ...file,
+          beforePath: file.beforePath || 'server',
+        }));
+      };
+
       setSwipeablePanelProps({
         mode: 'screen',
         children:
@@ -92,7 +101,7 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
               callback={handleFiles}
               onClose={() => setPickerActive(false)}
               selectionLimit={multiple ? (selectionLimit || undefined) : 1}
-              initialSelected={initialSelected || undefined}
+              initialSelected={initialSelectedWithBeforePath}
             />
 
             :
@@ -102,7 +111,7 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
               callback={handleFiles}
               onClose={() => setPickerActive(false)}
               selectionLimit={multiple ? (selectionLimit || undefined) : 1}
-              initialSelected={initialSelected || undefined}
+              initialSelected={initialSelectedWithBeforePath}
               maxAllowedFileSize={megabytesToBytes(maxAllowedFileSize)}
             />
       });

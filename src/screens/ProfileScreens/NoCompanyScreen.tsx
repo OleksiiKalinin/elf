@@ -53,15 +53,26 @@ const NoCompanyScreen: React.FC = () => {
   }, [subView]);
 
   const goToAuthScreen = () => {
-    replace({ stack: 'AuthStack', screen: 'MainScreen' });
+    replace({ 
+      stack: 'AuthStack', 
+      screen: 'MainScreen' 
+    });
   };
 
   const goToCompanyEditorScreen = () => {
-    router.push({ stack: 'ProfileStack', screen: 'CompanyEditorScreen', params: { editMode: 'false' } });
+    router.push({
+      stack: 'ProfileStack',
+      screen: 'CompanyEditorScreen',
+      params: undefined
+    });
   };
 
   const goToCompanyScreen = () => {
-    router.push({ stack: 'ProfileStack', screen: 'CompanyScreen', params: { newProfile: 'true' } });
+    router.push({
+      stack: 'ProfileStack',
+      screen: 'CompanyScreen',
+      params: { newProfile: 'true' }
+    });
   };
 
   const setOptions = () => {
@@ -84,7 +95,7 @@ const NoCompanyScreen: React.FC = () => {
           <Typography style={{ marginBottom: 5 }} textAlign='center' color={Colors.Blue500} size={20} weight='Bold'>100 punktów</Typography>
           <Typography style={{ marginBottom: 5 }} textAlign='center' variant='h5' weight='Bold'>
             Odbierz i uzupełnij profil swojej firmy
-            </Typography>
+          </Typography>
           <Typography textAlign='center'>
             74% Respondentów deklaruje, że uzupełnione profile bardziej przyciągają ich uwagę.
           </Typography>
@@ -124,14 +135,14 @@ const NoCompanyScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   ScrollView: {
-    flex: 1, 
+    flex: 1,
     backgroundColor: Colors.Basic100,
   },
   PointsBanner: {
-    marginHorizontal: 19, 
-    backgroundColor: Colors.White, 
-    borderRadius: 4, 
-    padding: 16, 
+    marginHorizontal: 19,
+    backgroundColor: Colors.White,
+    borderRadius: 4,
+    padding: 16,
     marginBottom: 20,
   },
   PointsBannerIconContainer: {
@@ -150,11 +161,11 @@ const styles = StyleSheet.create({
     marginBottom: 34
   },
   Options: {
-    alignItems: 'center', 
+    alignItems: 'center',
     paddingVertical: 42
   },
   OptionsTitle: {
-    maxWidth: 252, 
+    maxWidth: 252,
     gap: 12,
   },
 });

@@ -164,7 +164,7 @@ const MainScreen: React.FC = () => {
           variant='text'
           arrowRight
           borderBottom
-          onPress={() => router.push({stack: 'ProfileStack', screen: 'CompanyEditorScreen', params: {editMode: 'true'}})}
+          onPress={() => router.push({stack: 'ProfileStack', screen: 'CompanyEditorScreen', params: undefined})}
         >
           <View style={styles.ArrowButton}>
             <View style={styles.ButtonIconContainer}>

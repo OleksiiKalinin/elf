@@ -214,6 +214,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
       beforePath: item.node.image.beforePath
     }));
 
+    console.log('Media picker:', transformedArray);
     callback(transformedArray);
   };
 

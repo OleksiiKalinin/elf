@@ -305,7 +305,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
     replace({
       stack: 'ProfileStack',
       screen: 'CompanyEditorScreen',
-      params: { editMode: 'true' }
+      params: undefined,
     });
   };
 
@@ -410,21 +410,25 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
                 </View>
               </>
             }
-            <Separator marginTop={(companyData.employees_amount || companyData.square_footage)? 16 : 30} />
-            <Accordion
-              onPress={() => setDescriptionExpanded(prev => !prev)}
-              expanded={descriptionExpanded}
-              title={
-                <Typography variant='h5' weight={descriptionExpanded ? 'Bold' : 'Medium'}>
-                  Opis firmy
-                </Typography>
-              }
-            >
-              <Typography variant='h5' style={styles.AccordionText}>
-                {companyData.description}
-              </Typography>
-            </Accordion>
-            <Separator />
+            <Separator marginTop={(companyData.employees_amount || companyData.square_footage) ? 16 : 30} />
+            {companyData.description &&
+              <>
+                <Accordion
+                  onPress={() => setDescriptionExpanded(prev => !prev)}
+                  expanded={descriptionExpanded}
+                  title={
+                    <Typography variant='h5' weight={descriptionExpanded ? 'Bold' : 'Medium'}>
+                      Opis firmy
+                    </Typography>
+                  }
+                >
+                  <Typography variant='h5' style={styles.AccordionText}>
+                    {companyData.description}
+                  </Typography>
+                </Accordion>
+                <Separator />
+              </>
+            }
             {companyData.services &&
               <>
                 <Accordion
