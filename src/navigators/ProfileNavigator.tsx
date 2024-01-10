@@ -33,7 +33,6 @@ export type ProfileStackParamList = {
     MainScreen: undefined,
     // PaymentTemporalScreen: undefined,
     CompanyEditorScreen:
-    | { editMode?: string }
     & (
       | SubView<'GoogleMapScreen'>
       | SubView<'CompanyInvoiceScreen'>
@@ -43,7 +42,7 @@ export type ProfileStackParamList = {
       | SubView<'CompanyDescriptionScreen'>
       | SubView<'ItemSelectorScreen'>
       | SubView<'SocialMediaScreen'>
-    )
+    ) | undefined
     ,
     NoCompanyScreen: undefined;
     CompanyScreen: { newProfile?: string, subView?: 'options' } | undefined,

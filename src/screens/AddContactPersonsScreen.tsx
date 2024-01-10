@@ -184,7 +184,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
               />
               <Separator />
               {(showTips && (!preferredFormsOfContact.email && !preferredFormsOfContact.phone)) &&
-                <Typography size={12} color={'rgb(237, 9, 91)'}>
+                <Typography size={12} color={Colors.Danger}>
                   Zaznacz co najmniej jedno z pól
                 </Typography>
               }
@@ -207,7 +207,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
                   {contact_hours?.substring(0, contact_hours.length - 6)}
                 </Button>
               </View>
-              <View style={{ justifyContent: 'center', height: 100 }}>
+              <View style={{ justifyContent: 'center', height: 100, width: 30, alignItems: 'center' }}>
                 <Typography weight='Bold' variant='h4' color={Colors.Basic500}>{'  -  '}</Typography>
               </View>
               <View style={styles.HourButton}>
