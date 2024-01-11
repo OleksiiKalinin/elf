@@ -69,7 +69,7 @@ const DraggableList: React.FC<DraggableListProps> = ({
 						{...provided.droppableProps}
 					>
 						{data.map((item: any, index) => (
-							<Draggable key={item.id} draggableId={item.id.toString()} index={index}>
+							<Draggable key={index} draggableId={index.toString()} index={index}>
 								{renderElement}
 							</Draggable>
 						))}

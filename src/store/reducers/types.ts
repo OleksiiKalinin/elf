@@ -341,7 +341,7 @@ export interface CompanyDataType {
 }
 
 export type MediaType = {
-    id: number,
+    id?: number,
     company_id?: number,
     name?: string,
     path: string,
