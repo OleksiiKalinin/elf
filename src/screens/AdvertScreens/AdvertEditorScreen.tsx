@@ -35,8 +35,41 @@ import CheckBox from '../../components/atoms/CheckBox';
 import { TimePickerModal } from '../../components/modified_modules/react-native-paper-dates/Time/TimePickerModal';
 import { languages } from '../ProfileScreens/CompanyEditorScreen';
 
+const packageTypes = [
+  { id: 1, price: 50, type: 'Standard' },
+  { id: 2, price: 80, type: 'Comfort' },
+  { id: 3, price: 99, type: 'Pro' },
+];
+
+const packageTimes = [
+  '1 tydzień - 80 zł',
+  '2 tygodnie - 130zł',
+  '1 miesiąc - 230zł',
+  'Abonament miesięczny 200zł',
+];
+
+const packages = [
+  {
+    active: [
+      'Tworzenie dowolnej liczby profilów firm',
+      'Promowanie ogłoszeń na liście 10 firm z okolicy (do 15 km)',
+      'Możliwość dodania dowolnej liczby ogłoszeń',
+      'Promocja Twoich ogłoszeń na social media',
+    ],
+    nonactive: ['Wiedza', 'Promowanie', 'Porównywanie kandydatów'],
+  },
+];
+
 const stepsOrder = ['fillData', 'paymentPlan', 'paymentMethods', 'summary', 'result'] as const;
 export type AdvertEditorStepType = typeof stepsOrder[number];
+
+const headers: { [k in AdvertEditorStepType]: string } = {
+  fillData: 'Nowe ogłoszenie - dane',
+  paymentPlan: 'Nowe ogłoszenie - wybierz plan',
+  paymentMethods: 'Nowe ogłoszenie - metoda płatności',
+  summary: 'Nowe ogłoszenie - podsumowanie',
+  result: 'Nowe ogłoszenie - opublikowane!',
+}
 
 type Props = NonNullable<AdvertStackParamList['default']['AdvertEditorScreen']>;
 const { useParam } = createParam<Props>();
@@ -44,7 +77,7 @@ const { useParam } = createParam<Props>();
 const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial, stepInitial }) => {
   const dispatch = useTypedDispatch();
   const router = useRouter();
-  const { jobIndustries, userCompany, jobSalaryModes, jobSalaryTaxes, jobStartFrom, jobTrials, jobModes, jobContractTypes, jobTrialTimes, jobExperiences, token, userAdverts } = useTypedSelector(state => state.general);
+  const { jobIndustries, userCompany, jobSalaryModes, jobSalaryTaxes, jobStartFrom, jobTrials, jobModes, jobContractTypes, jobTrialTimes, jobExperiences, windowSizes, userAdverts } = useTypedSelector(state => state.general);
   const currentPositions = userCompany?.job_industry ? getJobPositionsFrom(jobIndustries, userCompany.job_industry) : [];
   const [stepInitialParam, setStepInitialParam] = useParam('step', { initial: stepInitial });
   const [step, setStep] = useState<AdvertEditorStepType | null>(null);
@@ -79,6 +112,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
   const [id] = useParam('id', { initial: idInitial })
   const [showTimepicker, setShowTimepicker] = useState<'start' | 'end' | false>(false);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
+  const [selectedPaymentPlan, setSelectedPaymentPlan] = useState<number | null>(null);
   // const [isMainMenuSender] = useParam('isMainMenuSender');
   // const { setSwipeablePanelProps } = useActions();
 
@@ -122,16 +156,27 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
     }));
   };
 
-  const createAdvertHandler = async () => {
-    if (userCompany?.id && advertData.job_position_id && advertData.location) {
-      setLoading(true);
-      const isOk = await dispatch(advertsServices[advertExists ? 'updateUserAdvert' : 'createUserAdvert'](advertData));
-      console.log(!!isOk);
+  const submitHandler = async () => {
+    if (step) {
+      const nextStep = stepsOrder[stepsOrder.indexOf(step) + 1];
 
-      setLoading(false);
-      if (!!isOk) router.replace({ stack: 'AdvertStack' });
-      else Alert.alert('Błąd', 'Wykorzystałeś 5 darmowych ogłoszeń, kup pakiet!');
-    } else Alert.alert('Błąd', 'Podaj wszystkie dane!');
+      if (nextStep) {
+        setStepInitialParam(nextStep, { webBehavior: 'push' });
+      } else {
+
+      }
+
+
+      // if (userCompany?.id && advertData.job_position_id && advertData.location) {
+      //   setLoading(true);
+      //   const isOk = await dispatch(advertsServices[advertExists ? 'updateUserAdvert' : 'createUserAdvert'](advertData));
+      //   console.log(!!isOk);
+
+      //   setLoading(false);
+      //   if (!!isOk) router.replace({ stack: 'AdvertStack' });
+      //   else Alert.alert('Błąd', 'Wykorzystałeś 5 darmowych ogłoszeń, kup pakiet!');
+      // } else Alert.alert('Błąd', 'Podaj wszystkie dane!');
+    }
   }
 
   const goToSelectLanguagesScreen = () => {
@@ -169,9 +214,9 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
     });
   };
 
-  return !userCompany ? <Typography>Nie masz firmy</Typography> : (
+  return userCompany && step && (
     <ScreenHeaderProvider
-      title={advertExists ? 'Edytuj ogłoszenie' : 'Nowe ogłoszenie'}
+      title={advertExists ? 'Edytuj ogłoszenie' : headers[step]}
       backgroundContent={Colors.Basic100}
     >
       <ScrollView contentContainerStyle={{ paddingBottom: 30 }}>
@@ -708,9 +753,68 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           </View>
           <Separator />
         </>}
+        {step === 'paymentPlan' && <>
+          <ScrollView horizontal showsHorizontalScrollIndicator contentContainerStyle={{ paddingLeft: 20 }}>
+            {packageTypes.map((item) =>
+              <View style={{ maxWidth: 320, width: windowSizes.width - 70, marginVertical: 20, marginRight: 20, backgroundColor: Colors.Basic200 }}>
+                <Typography variant="h2" weight="Bold" style={{ marginLeft: 19 }}>
+                  {item.price}zł <Typography variant="main"> tydzień</Typography>
+                </Typography>
+                <Typography style={{ marginLeft: 19, marginBottom: 6 }}>
+                  {item.type}
+                </Typography>
+                <View style={{ paddingVertical: 8, paddingHorizontal: 19 }}>
+                  {packages[0].active.map(item => (
+                    <View style={{ flexDirection: 'row', marginVertical: 8 }}>
+                      <SvgIcon icon="check" style={{ alignSelf: 'center' }} />
+                      <Typography variant="small" style={{ paddingLeft: 11, alignSelf: 'center', flex: 1 }}>
+                        {item}
+                      </Typography>
+                    </View>
+                  ))}
+                  {packages[0].nonactive.map(item => (
+                    <View style={{ flexDirection: 'row', marginVertical: 8 }}>
+                      <SvgIcon icon="closeX" style={{ alignSelf: 'center' }} />
+                      <Typography variant="small" style={{ paddingLeft: 11, alignSelf: 'center', flex: 1 }} color={Colors.Basic600}>
+                        {item}
+                      </Typography>
+                    </View>
+                  ))}
+                </View>
+                {selectedPaymentPlan === item.id ?
+                  <Button
+                    size='medium'
+                    variant='secondarySelected'
+                    icon={<SvgIcon icon='check' />}
+                    onPress={() => setSelectedPaymentPlan(null)}
+                  >
+                    Wybrano
+                  </Button>
+                  :
+                  <Button
+                    size='medium'
+                    variant='secondary'
+                    onPress={() => setSelectedPaymentPlan(item.id)}
+                  >
+                    Wybierz
+                  </Button>
+                }
+              </View>
+            )}
+          </ScrollView>
+        </>}
+        {step === 'paymentMethods' && <>
+          <Typography>paymentMethods</Typography>
+        </>}
+        {step === 'summary' && <>
+          <Typography>summary</Typography>
+        </>}
+        {step === 'result' && <>
+          <Typography>result</Typography>
+        </>}
       </ScrollView>
       <Button
-        onPress={createAdvertHandler}
+        onPress={submitHandler}
         disabled={loading}
         withLoading
         stickyBottom

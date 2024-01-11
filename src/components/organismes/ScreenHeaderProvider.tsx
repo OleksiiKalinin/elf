@@ -151,7 +151,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
                 icon={<SvgIcon icon='arrowLeft' fill={headerItemsColor} />}
                 onPress={callback ? callback : (!!swipeablePanelProps ? backToRemoveParams : back)}
               />
-              <Typography variant="h4" weight="Bold" style={{ alignSelf: 'center', color: headerItemsColor }}>
+              <Typography variant="h4" weight="Bold" style={{ alignSelf: 'center', color: headerItemsColor, paddingRight: 15 }}>
                 {title || currentTitle}
               </Typography>
             </View>
@@ -166,7 +166,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
               {alterTitle ?
                 alterTitle
                 :
-                <Typography variant="h4" weight="Bold" style={{ paddingLeft: mainTitlePosition === 'center' ? 0 : 15 }}>
+                <Typography variant="h4" weight="Bold" style={{ paddingHorizontal: mainTitlePosition === 'center' ? 0 : 15 }}>
                   {title || currentTitle}
                 </Typography>}
             </View>

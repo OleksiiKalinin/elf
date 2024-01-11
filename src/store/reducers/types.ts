@@ -31,8 +31,9 @@ export interface generalReducerState {
     marksData: MarkDataType[],
     notesData: NoteDataType[],
     userInvoices: InvoiceType[],
-    userQuestions: UserQuestionsType[];
-    candidatesFilters: CandidatesFiltersType | null;
+    userQuestions: UserQuestionsType[],
+    candidatesFilters: CandidatesFiltersType | null,
+    error: string | null,
 }
 
 export type WindowSizesType = ScaledSize;

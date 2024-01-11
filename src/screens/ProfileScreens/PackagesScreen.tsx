@@ -42,7 +42,7 @@ const PackagesScreen: FC = () => {
     return (
         <ScreenHeaderProvider>
             <ScrollView style={{ backgroundColor: Colors.White }}>
-                <ScrollView disableWindowScroll showsHorizontalScrollIndicator horizontal contentContainerStyle={{ paddingLeft: 20 }}>
+                <ScrollView contentContainerStyle={{ paddingLeft: 20 }}>
                     {packageTypes.map((item) =>
                         <View style={{ maxWidth: 320, width: windowSizes.width - 100, marginVertical: 20, marginRight: 20, backgroundColor: Colors.Basic100 }}>
                             <Typography variant="h2" weight="Bold" style={{ marginLeft: 19 }}>

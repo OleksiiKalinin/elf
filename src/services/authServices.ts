@@ -9,7 +9,7 @@ import generalServices from './generalServices';
 import { AppDispatch, rootState } from '../store';
 
 const registrate = (formData: RegistDataType) => async (dispatch: AppDispatch, getState: () => rootState) => {
-    const { token } = getState().general;
+    const { } = getState().general;
 
     try {
         dispatch(generalActions.setAppLoading(true));
@@ -18,7 +18,7 @@ const registrate = (formData: RegistDataType) => async (dispatch: AppDispatch, g
 
         if (res.data) {
             const { access_token, refresh_token } = res.data as { access_token: string | null, refresh_token: string | null };
-            await axios.post('/employer/create_user/', {}, { headers: dynamicHeaders({token}) });
+            await axios.post('/employer/create_user/', {}, { headers: dynamicHeaders({token: access_token}) });
             await dispatch(generalActions.setToken({ token: access_token, refresh_token }));
             await dispatch(generalServices.getAppData(access_token));
         } else {
@@ -32,7 +32,7 @@ const registrate = (formData: RegistDataType) => async (dispatch: AppDispatch, g
 };
 
 const login = (formData: LoginDataType) => async (dispatch: AppDispatch, getState: () => rootState) => {
-    const { token } = getState().general;
+    const {  } = getState().general;
 
     try {
         dispatch(generalActions.setAppLoading(true));
@@ -73,7 +73,7 @@ const deleteAccount = () => async (dispatch: AppDispatch, getState: () => rootSt
 };
 
 const resetPassword = (email: string) => async (dispatch: AppDispatch, getState: () => rootState) => {
-    const { token } = getState().general;
+    const {  } = getState().general;
 
     try {
         dispatch(generalActions.setAppLoading(true));
@@ -86,7 +86,7 @@ const resetPassword = (email: string) => async (dispatch: AppDispatch, getState:
 };
 
 const googleSignin = (initialToken?: string) => async (dispatch: AppDispatch, getState: () => rootState) => {
-    const { token } = getState().general;
+    const {  } = getState().general;
 
     try {
         let token = initialToken;
@@ -129,7 +129,7 @@ const googleSignin = (initialToken?: string) => async (dispatch: AppDispatch, ge
 };
 
 const facebookSignin = (accessToken: string | null) => async (dispatch: AppDispatch, getState: () => rootState) => {
-    const { token } = getState().general;
+    const {  } = getState().general;
 
     // dispatch(generalActions.setAppLoading(true));
     try {

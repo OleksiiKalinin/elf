@@ -4,7 +4,7 @@ import { Dimensions, Platform } from 'react-native';
 import { useActions } from '../../hooks/useActions';
 import geocoder from 'react-native-geocoder-reborn';
 import { MenuProvider } from 'react-native-popup-menu';
-import { PaperProvider, MD3LightTheme, configureFonts } from 'react-native-paper';
+import { PaperProvider, MD3LightTheme, configureFonts, Snackbar } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
@@ -17,6 +17,7 @@ import { GoogleSigninProvider, googleSignOut } from './GoogleSignin';
 import { ConfigureParams } from '@react-native-google-signin/google-signin';
 import LoadingScreen from '../atoms/LoadingScreen';
 import useRouter from '../../hooks/useRouter';
+import Colors from '../../colors/Colors';
 
 calendarLocaleConfig();
 geocoder.fallbackToGoogle('AIzaSyCuD83IZtlNNM3sxn9Hac4YSOXkRZurb9c');
@@ -32,8 +33,8 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { setWindowSizes } = useActions();
   const router = useRouter();
   const dispatch = useTypedDispatch();
-  const { token, userCompany, appLoading, userData } = useTypedSelector(state => state.general);
-  const { setToken, setUserCompany } = useActions();
+  const { token, userCompany, appLoading, userData, error } = useTypedSelector(state => state.general);
+  const { setToken, setUserCompany, setError } = useActions();
   // ssr huck
   const [ssrWindowSizes, setSsrWindowSizes] = useState<any>(Platform.OS === 'web' ? {} : Dimensions.get('window'));
 
@@ -127,6 +128,20 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
         }}>
           {appLoading && <LoadingScreen />}
           {children}
+          <Snackbar
+            visible={!!error}
+            onDismiss={() => setError(null)}
+            duration={4000}
+            wrapperStyle={{
+              alignItems: 'center',
+            }}
+            style={{
+              backgroundColor: Colors.Danger,
+              maxWidth: 350,
+            }}
+          >
+            {error}
+          </Snackbar>
         </PaperProvider>
       </MenuProvider >
     </GoogleSigninProvider>

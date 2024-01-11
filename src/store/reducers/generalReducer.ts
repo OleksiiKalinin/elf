@@ -38,6 +38,7 @@ const initialState: generalReducerState = {
     windowSizes: Dimensions.get('window'),
     userQuestions: [],
     candidatesFilters: null,
+    error: null,
 }
 
 export const generalReducer = (state = initialState, action: generalReducerAction): generalReducerState => {
@@ -72,6 +73,8 @@ export const generalReducer = (state = initialState, action: generalReducerActio
             return { ...state, isTabbarVisible: action.payload };
         case generalActionTypes.SET_APP_LOADING:
             return { ...state, appLoading: action.payload };
+        case generalActionTypes.SET_ERROR:
+            return { ...state, error: action.payload };
         case generalActionTypes.SET_IS_MAIN_MENU_FLAT_LIST:
             AsyncStorage.setItem('isMainMenuFlatList', Number(action.payload).toString());
             return { ...state, isMainMenuFlatList: action.payload };

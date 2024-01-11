@@ -13,6 +13,7 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import Button from '../../components/molecules/Button';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { ScrollView } from '../../components/molecules/ScrollView';
+import useRouter from '../../hooks/useRouter';
 
 export type RegistDataType = {
   email: string,
@@ -26,6 +27,7 @@ export type RegistDataType = {
 
 const AuthRegistrateScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
+  const router = useRouter();
   const [formData, setFormData] = useState<RegistDataType>({
     email: '',
     first_name: '',
@@ -59,7 +61,10 @@ const AuthRegistrateScreen: React.FC = () => {
   const registrateHandler = async () => {
     if (isDataValid) {
       setLoading(true);
-      await dispatch(authServices.registrate({ ...formData, mobile_number: formData.mobile_number?.length === 12 ? formData.mobile_number : null }));
+      const isOk = await dispatch(authServices.registrate({ ...formData, mobile_number: formData.mobile_number?.length === 12 ? formData.mobile_number : null }));
+      if (!!isOk) {
+        router.replace({ stack: 'MenuStack' });
+      }
       setLoading(false);
     } else setShowTips(true);
   }

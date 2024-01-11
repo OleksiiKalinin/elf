@@ -91,6 +91,8 @@ const getAppData = (token: generalReducerState['token']) => async (dispatch: App
     }).catch(async error => {
         await errorHandler({ error, dispatch, getState, caller: (token) => getAppData(token) });
     })
+    dispatch(generalActions.setAppLoading(false));
+
     return isOk;
 };
 

@@ -101,8 +101,10 @@ export const errorHandler = async (props: {
     } else if (response?.status === 500 && !invisibleFatalError) {
         Alert.alert(fatalErrorMessage['pl']);
         await dispatch(generalActions.resetStore());
+        dispatch(generalActions.setAppLoading(false));
         return false;
     }
+    dispatch(generalActions.setAppLoading(false));
 
     if (showError && !(invisibleError || invisibleFatalError)) {
         const details = response?.data;
@@ -118,6 +120,7 @@ export const errorHandler = async (props: {
                 message = details;
             }
         }
+        
         await dispatch(generalActions.setError(message));
         return returnDefaulValue;
     }

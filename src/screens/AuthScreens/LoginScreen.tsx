@@ -13,6 +13,7 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import Button from '../../components/molecules/Button';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { ScrollView } from '../../components/molecules/ScrollView';
+import useRouter from '../../hooks/useRouter';
 
 type inputs = 'username' | 'password';
 
@@ -23,6 +24,7 @@ export type LoginDataType = {
 
 const AuthLoginScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
+  const router = useRouter();
   const [formData, setFormData] = useState<LoginDataType>({ username: '', password: '' });
   const [loading, setLoading] = useState<boolean>(false);
   const [showTips, setShowTips] = useState<boolean>(false);
@@ -34,7 +36,7 @@ const AuthLoginScreen: React.FC = () => {
 
   useEffect(() => {
     const { username, password } = formData;
-    
+
     setIsDataValid(Boolean(
       validateMail(username) &&
       password.length >= 8
@@ -45,7 +47,11 @@ const AuthLoginScreen: React.FC = () => {
     if (isDataValid) {
       Keyboard.dismiss();
       setLoading(true);
-      await dispatch(authServices.login(formData));
+      const isOk = await dispatch(authServices.login(formData));
+      if (!!isOk) {
+        router.replace({ stack: 'MenuStack' });
+      }
+
       setLoading(false);
     } else setShowTips(true);
   }
@@ -77,7 +83,7 @@ const AuthLoginScreen: React.FC = () => {
           />
         </View>
         <View style={[styles.margin, { alignItems: 'flex-start' }]}>
-          <Typography color={Colors.Link} style={{ borderBottomWidth: 1, borderBottomColor: Colors.Link }} variant='small' 
+          <Typography color={Colors.Link} style={{ borderBottomWidth: 1, borderBottomColor: Colors.Link }} variant='small'
           // onPress={() => navigation.navigate('RememberPasswordScreen')}
           >Nie pamiętam hasła</Typography>
         </View>
@@ -88,7 +94,7 @@ const AuthLoginScreen: React.FC = () => {
           <Typography textAlign='center' weight='SemiBold' variant='h4'>Nie masz konta? Zarejestruj się.</Typography>
         </View>
         <View style={{ marginBottom: 12 }}>
-          <Button variant='secondary' 
+          <Button variant='secondary'
           // onPress={() => navigation.navigate('RegistrationScreen')}
           >Zarejestruj się</Button>
         </View>
