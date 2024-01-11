@@ -3,6 +3,7 @@ export type MediaFileType = {
   path: string,
   beforePath?: string,
   name?: string,
+  id?: number,
 };
   
 export type MediaSelectorProps = ({

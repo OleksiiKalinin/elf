@@ -136,7 +136,7 @@ const CompanyEditorScreen: React.FC = () => {
     description: null,
     employees_amount: null,
     square_footage: null,
-    contactPersons: null,
+    contactPersons: [],
     website: null,
     account_facebook: null,
     account_instagram: null,
@@ -157,7 +157,6 @@ const CompanyEditorScreen: React.FC = () => {
   const [errorModal, setErrorModal] = useState<null | string>(null);
   const [showTips, setShowTips] = useState<boolean>(false);
 
-  const companyDataRefreshAccess = useRef(true);
   const router = useRouter();
   const { replace } = useRouter();
   const companyPhotosLimit = 20;
@@ -176,7 +175,7 @@ const CompanyEditorScreen: React.FC = () => {
     console.log(companyData.employees_amount);
   }, [companyData]);
 
-  const validateDate = () => {
+  const validateData = () => {
     const { short_name, logo, other_address, job_industry, services, contactPersons, description, full_name, main_address, nip, employees_amount } = companyData;
     if (
       !(
@@ -184,9 +183,9 @@ const CompanyEditorScreen: React.FC = () => {
         && logo
         && other_address
         && job_industry
-        && services
-        && contactPersons
-        && description
+        // && services
+        // && contactPersons
+        // && description
         // && (full_name && main_address && nip)
       )
     ) {
@@ -205,7 +204,8 @@ const CompanyEditorScreen: React.FC = () => {
   };
 
   const submitCompanyData = async () => {
-    // if (validateDate()) {
+    // console.log('test')
+    // if (validateData()) {
     //   console.log('test')
     //   setLoading(true);
     //   const isOk = await dispatch(companyServices[editMode ?
@@ -214,7 +214,7 @@ const CompanyEditorScreen: React.FC = () => {
     //   ]({
     //     companyData: { ...companyData, employees_amount: companyData.employees_amount?.split('-').filter(el => el).length === 2 ? companyData.employees_amount : null },
     //     companyLogo, companyPhotos, companyCertificates, contactPersons, oldCompanyData: userCompany || companyData
-    //   }, token)
+    //   })
     //   );
     //   setLoading(false);
     //   if (!!isOk) goToCompanyScreen();
@@ -258,7 +258,7 @@ const CompanyEditorScreen: React.FC = () => {
 
     files.forEach((item, i) => {
       newArray.push({
-        id: Math.floor(Math.random() * (1000000 - 1)),
+        id: item.id,
         path: item.path,
         mime: item.mime,
         order: i + 1,
@@ -426,25 +426,9 @@ const CompanyEditorScreen: React.FC = () => {
     });
   };
 
-  // useEffect(() => {
-  //   console.log(JSON.stringify(companyData, null, 4));
-  //   if (companyDataRefreshAccess.current) {
-  //     // if (companyData.main_address && !companyData.other_address) {
-  //     //   changeCompanyDataHandler('other_address', companyData.main_address);
-  //     //   companyDataRefreshAccess.current = false;
-  //     // }
-  //     // if (companyData.short_name && !companyData.full_name) {
-  //     //   changeCompanyDataHandler('full_name', companyData.short_name, false);
-  //     //   companyDataRefreshAccess.current = false;
-  //     // }
-  //   } else {
-  //     companyDataRefreshAccess.current = true;
-  //   }
-  // }, [companyData]);
-
-  // useEffect(() => {
-  //   console.log(JSON.stringify(companyLogo, null, 4));
-  // }, [companyLogo]);
+  useEffect(() => {
+    console.log(companyPhotos);
+  }, [companyPhotos]);
 
   const renderScrollPhotoItem = useCallback(({ item, drag, isActive, getIndex, mode }: RenderItemParams<MediaType> & { mode: 'photos' | 'certificates' }) => {
     const index = getIndex();
@@ -750,7 +734,7 @@ const CompanyEditorScreen: React.FC = () => {
                     {companyData.description}
                   </Typography>
 
-                  {((!descriptionExpanded && descriptionHeight > 56) || descriptionExpanded && descriptionHeight !== 57) &&
+                  {((!descriptionExpanded && descriptionHeight > 53) || descriptionExpanded && descriptionHeight !== 54) &&
                     <Button
                       variant='text'
                       onPress={() => setDescriptionExpanded(prev => !prev)}

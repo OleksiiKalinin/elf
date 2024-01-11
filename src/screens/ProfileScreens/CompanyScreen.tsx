@@ -77,7 +77,7 @@ const companyExample: CompanyDataType = {
   short_name: "Firma testowa",
   square_footage: '50 - 100',
   website: 'www.google.pl',
-  contactPersons: null,
+  contactPersons: [],
   languages: [4, 5, 7],
   services: [4, 5, 7],
   photos: [
@@ -349,6 +349,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
           <>
             {companyData.photos?.length &&
               <Carousel
+                innerPagination
                 data={companyData.photos.map(item => item.path)}
                 style={styles.Carousel}
                 renderItem={({ item }) => (
@@ -455,6 +456,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
                   Certyfikaty
                 </Typography>
                 <Carousel
+                  innerPagination
                   data={companyData.certificates.map(item => item.path)}
                   style={[styles.Carousel, { marginTop: 16 }]}
                   renderItem={({ item }) => (
@@ -607,7 +609,6 @@ const styles = StyleSheet.create({
     height: 34,
     borderRadius: 17
   },
-
   CompanyAmountsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',

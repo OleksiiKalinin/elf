@@ -58,6 +58,7 @@ export const errorHandler = async (props: {
     const response = error?.response;
     let showError = true;
 
+    console.log(JSON.stringify(error, null, 4))
     if (response) {
         console.log(JSON.stringify(response, null, 4));
     } else {
