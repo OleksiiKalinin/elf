@@ -144,7 +144,7 @@ const CompanyEditorScreen: React.FC = () => {
     languages: null,
     services: null,
   });
-  const [contactPersons, setContactPersons] = useState<ContactPersonType[] | null>(null);
+  const [contactPersons, setContactPersons] = useState<ContactPersonType[]>([]);
   const [companyLogo, setCompanyLogo] = useState<MediaType | null>(userCompany?.logo || null);
   const [companyPhotos, setCompanyPhotos] = useState<MediaType[]>(userCompany?.photos || []);
   const [companyCertificates, setCompanyCertificates] = useState<MediaType[]>(userCompany?.certificates || []);
@@ -163,28 +163,25 @@ const CompanyEditorScreen: React.FC = () => {
   const companyCertificatesLimit = 20;
 
   useLayoutEffect(() => {
+    console.log(userCompany);
     if (userCompany) {
       setEditMode(true);
     };
-    if (!token) {
-      goToAuthScreen();
-    };
-  }, []);
-
-  useEffect(() => {
-    console.log(companyData.employees_amount);
-  }, [companyData]);
+    // if (!token) {  
+    //   goToAuthScreen();
+    // };
+  }, [userCompany]);
 
   const validateData = () => {
     const { short_name, logo, other_address, job_industry, services, contactPersons, description, full_name, main_address, nip, employees_amount } = companyData;
     if (
       !(
         (short_name && short_name.length > 2 && short_name.length <= 100)
-        && logo
         && other_address
         && job_industry
+        && job_industry
         // && services
-        // && contactPersons
+        // && contactPersons.lenght
         // && description
         // && (full_name && main_address && nip)
       )
@@ -204,23 +201,21 @@ const CompanyEditorScreen: React.FC = () => {
   };
 
   const submitCompanyData = async () => {
-    // console.log('test')
-    // if (validateData()) {
-    //   console.log('test')
-    //   setLoading(true);
-    //   const isOk = await dispatch(companyServices[editMode ?
-    //     'editUserCompany' :
-    //     'createUserCompany'
-    //   ]({
-    //     companyData: { ...companyData, employees_amount: companyData.employees_amount?.split('-').filter(el => el).length === 2 ? companyData.employees_amount : null },
-    //     companyLogo, companyPhotos, companyCertificates, contactPersons, oldCompanyData: userCompany || companyData
-    //   })
-    //   );
-    //   setLoading(false);
-    //   if (!!isOk) goToCompanyScreen();
-    // } else {
-    //   setShowTips(true);
-    // }
+    if (validateData()) {
+      setLoading(true);
+      const isOk = await dispatch(companyServices[editMode ?
+        'editUserCompany' :
+        'createUserCompany'
+      ]({
+        companyData: { ...companyData, employees_amount: companyData.employees_amount?.split('-').filter(el => el).length === 2 ? companyData.employees_amount : null },
+        companyLogo, companyPhotos, companyCertificates, contactPersons, oldCompanyData: userCompany || companyData
+      })
+      );
+      setLoading(false);
+      // if (!!isOk) goToCompanyScreen();
+    } else {
+      setShowTips(true);
+    }
   };
 
   const changeCompanyDataHandler = (name: keyof CompanyDataType, value: string | number | number[] | AddressType | null, replaceSpaces: boolean = true) => {
@@ -261,7 +256,7 @@ const CompanyEditorScreen: React.FC = () => {
         id: item.id,
         path: item.path,
         mime: item.mime,
-        order: i + 1,
+        order: i,
         beforePath: item.beforePath,
       })
     });
@@ -276,6 +271,21 @@ const CompanyEditorScreen: React.FC = () => {
       path: files[0].path,
       mime: files[0].mime,
     };
+  };
+
+  const updateOrder = (files: MediaType[]) => {
+    const newArray: MediaType[] = [];
+
+    files.forEach((item, i) => {
+      newArray.push({
+        ...item,
+        order: i,
+      })
+    });
+
+    console.log('update order:', newArray);
+
+    return newArray
   };
 
   const selectedServices = useMemo(() => {
@@ -460,10 +470,6 @@ const CompanyEditorScreen: React.FC = () => {
       </TouchableOpacity>
     );
   }, []);
-
-  useEffect(() => {
-    console.log('Zdjęcia firmy:', companyPhotos);
-  }, [companyPhotos]);
 
   return (
     <>
@@ -670,7 +676,7 @@ const CompanyEditorScreen: React.FC = () => {
                 </Typography>
               </Button>
             }
-            {contactPersons ?
+            {contactPersons.length ?
               <>
                 <View style={styles.ContactPersonsFilled}>
                   <View style={styles.ContactPersonsFilledTitle}>
@@ -765,7 +771,7 @@ const CompanyEditorScreen: React.FC = () => {
                 </Typography>
               </Button>
             }
-            {companyData.full_name ?
+            {(companyData.full_name && companyData.nip && companyData.main_address) ?
               <>
                 <View style={styles.ContactPersonsFilled}>
                   <View style={styles.ContactPersonsFilledTitle}>
@@ -823,7 +829,7 @@ const CompanyEditorScreen: React.FC = () => {
               imageSettings={{
                 compressionProgress: (progress) => (Math.round(progress * 100)) === 100 ? setPhotosProgress(null) : setPhotosProgress(progress),
               }}
-              callback={(images) => setCompanyPhotos(handleMultipleFiles(images))}
+              callback={(images) => setCompanyPhotos(images)}
               render={(onPress) =>
                 <>
                   {!!photosProgress && photosProgress < 100 ?
@@ -870,8 +876,13 @@ const CompanyEditorScreen: React.FC = () => {
                         <View style={styles.DraggableImagesContainer}>
                           <DraggableList
                             horizontal
-                            data={companyPhotos}
-                            onDragEnd={({ data }) => setCompanyPhotos(data)}
+                            data={companyPhotos.sort((a, b) => {
+                              const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
+                              const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
+                            
+                              return orderA - orderB;
+                            })}
+                            onDragEnd={({ data }) => setCompanyPhotos(updateOrder(data))}
                             keyExtractor={({ path }) => path}
                             renderItem={(props: RenderItemParams<MediaType>) => renderScrollPhotoItem({ ...props, mode: 'photos' })}
                             contentContainerStyle={styles.DraggableImagesContent}

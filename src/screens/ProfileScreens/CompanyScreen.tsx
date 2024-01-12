@@ -201,6 +201,10 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
   const currentIndustry = jobIndustries.find(curr => curr.id === companyData?.job_industry) || null;
 
   useEffect(() => {
+    console.log(companyData?.photos);
+  }, [companyData]);
+
+  useEffect(() => {
     if (newProfile) {
       setSnackbar(true);
       replace({
@@ -347,7 +351,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
       >
         {companyData &&
           <>
-            {companyData.photos?.length &&
+            {/* {companyData.photos?.length &&
               <Carousel
                 innerPagination
                 data={companyData.photos.map(item => item.path)}
@@ -364,7 +368,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
                   </View>
                 )}
               />
-            }
+            } */}
             <View style={styles.BasicCompanyData}>
               <View style={styles.IndustryContainer}>
                 <View style={styles.IndustryLogoContainer}>

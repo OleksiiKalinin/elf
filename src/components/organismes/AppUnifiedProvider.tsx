@@ -72,7 +72,7 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
       let video: MediaType | null = null;
       let photos: MediaType[] | null = null;
       let certificates: MediaType[] | null = null;
-      let contactPersons: ContactPersonType[] | null = null;
+      let contactPersons: ContactPersonType[] = [];
 
       dispatch(candidatesServices.getCandidateMarks(userCompany.id));
       dispatch(candidatesServices.getCandidateNotes(userCompany.id));

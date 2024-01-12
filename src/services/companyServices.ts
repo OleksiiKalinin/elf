@@ -5,11 +5,13 @@ import { CompanyDataType, MediaType, ContactPersonType } from "../store/reducers
 import Lodash from 'lodash';
 import { convertToBackEndAddress } from "../hooks/convertAddress";
 import { AppDispatch, rootState } from "../store";
+import { Platform } from "react-native";
+import { Base64ToBlob } from "../functions/fileFunctions";
 
 const createUserCompany = (props: {
     companyData: CompanyDataType,
     companyLogo: MediaType | null,
-    companyVideo: MediaType | null,
+    // companyVideo: MediaType | null,
     companyPhotos: MediaType[],
     companyCertificates: MediaType[],
     contactPersons: ContactPersonType[]
@@ -108,14 +110,14 @@ const editUserCompany = (props: {
     oldCompanyData: CompanyDataType,
     companyData: CompanyDataType,
     companyLogo: MediaType | null,
-    companyVideo: MediaType | null,
+    // companyVideo: MediaType | null,
     companyPhotos: MediaType[],
     companyCertificates: MediaType[],
     contactPersons: ContactPersonType[]
 }) => async (dispatch: AppDispatch, getState: () => rootState) => {
     const { token } = getState().general;
     try {
-        let { companyCertificates, companyData: newCompanyData, oldCompanyData, companyLogo, companyVideo, companyPhotos, contactPersons: companyContactPersons } = props;
+        let { companyCertificates, companyData: newCompanyData, oldCompanyData, companyLogo, /* companyVideo, */ companyPhotos, contactPersons: companyContactPersons } = props;
         if (oldCompanyData.id) {
             {
                 const { photos, certificates, id, logo, contactPersons, ...newMainCompanyData } = newCompanyData;
@@ -129,33 +131,39 @@ const editUserCompany = (props: {
                     if (res.data) newCompanyData = { ...newCompanyData, ...res.data };
                 }
             }
-            // if (!Lodash.isEqual(oldCompanyData.logo, companyLogo)) {
-            //     const companyLogoFormData = new FormData();
-            //     companyLogoFormData.append("file_location", {
-            //         uri: companyLogo?.path,
-            //         name: companyLogo?.path.slice(companyLogo?.path.lastIndexOf('/') + 1),
-            //         type: companyLogo?.mime || 'image/jpeg'
-            //     });
-            //     companyLogoFormData.append("company_id", newCompanyData.id);
+            if (!Lodash.isEqual(oldCompanyData.logo, companyLogo)) {
+                const companyLogoFormData = new FormData();
+                if (Platform.OS === 'web' && companyLogo?.path) {
+                    companyLogoFormData.append("file_location", Base64ToBlob(companyLogo.path));
+                } else {
+                    // @ts-ignore
+                    companyLogoFormData.append("file_location", {
+                        uri: companyLogo?.path,
+                        name: companyLogo?.path.slice(companyLogo?.path.lastIndexOf('/') + 1),
+                        type: companyLogo?.mime || 'image/jpeg'
+                    }); 
+                }
+                // @ts-ignore
+                companyLogoFormData.append("company_id", newCompanyData.id);
 
-            //     let resLogo = null;
-            //     if (!oldCompanyData.logo && !!companyLogo) {
-            //         const { data } = await axios.post(`/employer/company_logo/`, companyLogoFormData, {
-            //             headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
-            //             transformRequest: () => companyLogoFormData
-            //         });
-            //         resLogo = data;
-            //     } else if (!!oldCompanyData.logo && !!companyLogo) {
-            //         const { data } = await axios.put(`/employer/company_logo/${oldCompanyData.logo?.id}/`, companyLogoFormData, {
-            //             headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
-            //             transformRequest: () => companyLogoFormData
-            //         });
-            //         resLogo = data;
-            //     } else {
-            //         await axios.delete(`/employer/company_logo/${oldCompanyData.logo?.id}/`, { headers: dynamicHeaders({ token }) }).catch(() => { });
-            //     }
-            //     newCompanyData.logo = resLogo ? { ...resLogo, path: baseURL + resLogo.file_location } : null;
-            // }
+                let resLogo = null;
+                if (!oldCompanyData.logo && !!companyLogo) {
+                    const { data } = await axios.post(`/employer/company_logo/`, companyLogoFormData, {
+                        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
+                        transformRequest: () => companyLogoFormData
+                    });
+                    resLogo = data;
+                } else if (!!oldCompanyData.logo && !!companyLogo) {
+                    const { data } = await axios.put(`/employer/company_logo/${oldCompanyData.logo?.id}/`, companyLogoFormData, {
+                        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
+                        transformRequest: () => companyLogoFormData
+                    });
+                    resLogo = data;
+                } else {
+                    await axios.delete(`/employer/company_logo/${oldCompanyData.logo?.id}/`, { headers: dynamicHeaders({ token }) }).catch(() => { });
+                }
+                newCompanyData.logo = resLogo ? { ...resLogo, path: baseURL + resLogo.file_location } : null;
+            }
             // if (!Lodash.isEqual(oldCompanyData.video, companyVideo)) {
             //     const companyVideoFormData = new FormData();
             //     companyVideoFormData.append("file_location", {
@@ -184,60 +192,53 @@ const editUserCompany = (props: {
             //     newCompanyData.video = resVideo ? { ...resVideo, path: baseURL + resVideo.file_location } : null;
             // }
 
-            // if (!Lodash.isEqual(oldCompanyData.photos, companyPhotos)) {
-            //     const companyPhotosFormData = new FormData();
-            //     const forPushArray = companyPhotos.reduce<MediaType[]>((prev, curr, order) => {
-            //         if (!curr.id) return [...prev, Object.assign({ order }, curr)];
-            //         else return prev;
-            //     }, []);
-            //     const forDeleteArray = oldCompanyData.photos?.reduce<number[]>((prev, curr) => {
-            //         if (curr.id && !companyPhotos.find(el => el.id === curr.id)) return [...prev, curr.id];
-            //         else return prev;
-            //     }, []) || [];
-            //     const orderData = companyPhotos.reduce<{ id: number, order: number }[]>((prev, { id }, order) => id ? [...prev, { id, order }] : prev, []);
+            if (!Lodash.isEqual(oldCompanyData.photos, companyPhotos)) {
+                const companyPhotosFormData = new FormData();
+                const forPushArray = companyPhotos.reduce<MediaType[]>((prev, curr, order) => {
+                    if (!curr.id) return [...prev, Object.assign({ order }, curr)];
+                    else return prev;
+                }, []);
+                const forDeleteArray = oldCompanyData.photos?.reduce<number[]>((prev, curr) => {
+                    if (curr.id && !companyPhotos.find(el => el.id === curr.id)) return [...prev, curr.id];
+                    else return prev;
+                }, []) || [];
+                const orderData = companyPhotos.reduce<{ id: number, order: number }[]>((prev, { id }, order) => id ? [...prev, { id, order }] : prev, []);
 
-            //     function DataURIToBlob(dataURI: string) {
-            //         const splitDataURI = dataURI.split(',')
-            //         const byteString = splitDataURI[0].indexOf('base64') >= 0 ? atob(splitDataURI[1]) : decodeURI(splitDataURI[1])
-            //         const mimeString = splitDataURI[0].split(':')[1].split(';')[0]
+                forPushArray.forEach(({ path, mime }) => {
+                    if (Platform.OS === 'web' && path) {
+                        companyPhotosFormData.append("images", Base64ToBlob(path));
+                    } else {
+                        // @ts-ignore
+                        companyPhotosFormData.append("images", {
+                            uri: path,
+                            name: path.slice(path.lastIndexOf('/') + 1),
+                            type: mime || 'image/jpeg'
+                        }); 
+                    }
+                })
+                console.log(forPushArray);
+                companyPhotosFormData.append("order_list", JSON.stringify(forPushArray.map(({ order }) => order)));
+                // @ts-ignore
+                companyPhotosFormData.append("company_id", oldCompanyData.id);
 
-            //         const ia = new Uint8Array(byteString.length)
-            //         for (let i = 0; i < byteString.length; i++)
-            //             ia[i] = byteString.charCodeAt(i)
+                await Promise.all([
+                    ...(forPushArray.length ? [axios.post(`/employer/company_photos/`, companyPhotosFormData, {
+                        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
+                        transformRequest: () => companyPhotosFormData
+                    })] : []),
+                    ...(forDeleteArray.map(id =>
+                        axios.delete(`/employer/company_photos/${id}/`, { headers: dynamicHeaders({ token }) }).catch(() => { })
+                    )),
+                    ...(orderData.length ? [axios.post(`/employer/company_photos/${oldCompanyData.id}/order/`, orderData, { headers: dynamicHeaders({ token }) })] : []),
+                ]).then(async () => {
+                    // @ts-ignore
+                    dispatch(newCompanyData.photos = await getUserCompanyPhotos(oldCompanyData.id as number))
+                })
+            }
 
-            //         return new Blob([ia], { type: mimeString })
-            //     };
-
-            //     forPushArray.forEach(({ path, mime }) => {
-            //         companyPhotosFormData.append("images", {
-            //             // uri: path,
-            //             uri: DataURIToBlob(path),
-            //             name: path.slice(path.lastIndexOf('/') + 1),
-            //             type: mime || 'image/jpeg',
-            //         });
-            //     });
-            //     companyPhotosFormData.append("order_list", JSON.stringify(forPushArray.map(({ order }) => order)));
-            //     companyPhotosFormData.append("company_id", oldCompanyData.id);
-
-            //     console.log(companyPhotosFormData);
-
-            //     await Promise.all([
-            //         ...(forPushArray.length ? [axios.post(`/employer/company_photos/`, companyPhotosFormData, {
-            //             headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
-            //             transformRequest: () => companyPhotosFormData
-            //         })] : []),
-            //         ...(forDeleteArray.map(id =>
-            //             axios.delete(`/employer/company_photos/${id}/`, { headers: dynamicHeaders({ token }) }).catch(() => { })
-            //         )),
-            //         ...(orderData.length ? [axios.post(`/employer/company_photos/${oldCompanyData.id}/order/`, orderData, { headers: dynamicHeaders({ token }) })] : []),
-            //     ]).then(async () => {
-            //         newCompanyData.photos = await dispatch(getUserCompanyPhotos(oldCompanyData.id as number));
-            //     })
-            // }
-
-            /*/////////////!!!!!!!!!!!!!!!!!!!
-            edit certificates and contact persons
-            //////////////!!!!!!!!!!!!!!!!!!!*/
+            //         /*/////////////!!!!!!!!!!!!!!!!!!!
+            //         edit certificates and contact persons
+            //         //////////////!!!!!!!!!!!!!!!!!!!*/
 
             await dispatch(generalActions.setUserCompany(newCompanyData));
         }

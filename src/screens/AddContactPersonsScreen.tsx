@@ -15,7 +15,7 @@ import CheckBox from '../components/atoms/CheckBox';
 import { Separator } from 'tamagui';
 import { isString } from 'lodash';
 
-const emptyPerson = {
+const emptyPerson: ContactPersonType  = {
   id: Date.now(),
   email: null,
   mobile_number: null,
@@ -27,13 +27,13 @@ const emptyPerson = {
 };
 
 export type AddContactPersonsScreenProps = {
-  contactPersons: ContactPersonType[] | null,
-  setContactPersons: React.Dispatch<React.SetStateAction<ContactPersonType[] | null>>,
+  contactPersons: ContactPersonType[],
+  setContactPersons: React.Dispatch<React.SetStateAction<ContactPersonType[]>>,
 };
 
 const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) => {
   const { contactPersons: initContactPersons, setContactPersons: changeContactPersonsHandler } = props;
-  const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(initContactPersons || [emptyPerson]);
+  const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(initContactPersons.length ?  initContactPersons : [emptyPerson]);
   const [showTips, setShowTips] = useState<boolean>(false);
   const [showTimepicker, setShowTimepicker] = useState<'start' | 'end' | false>(false);
   const [isDataValid, setIsDataValid] = useState<boolean>(false);

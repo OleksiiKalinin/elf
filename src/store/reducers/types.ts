@@ -316,7 +316,7 @@ export interface CompanyDataType {
     //     address: string,
     // },
     description: string | null,
-    contactPersons: ContactPersonType[] | null,
+    contactPersons: ContactPersonType[],
     services?: number[] | null,
     logo?: MediaType | null,
     photos?: MediaType[] | null,
