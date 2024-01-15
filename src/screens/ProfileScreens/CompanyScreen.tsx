@@ -184,7 +184,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
   const dispatch = useTypedDispatch();
   const { setSwipeablePanelProps } = useActions();
   const { userCompany } = useTypedSelector(state => state.general);
-  const [companyData, setCompanyData] = useState<CompanyDataType | null>(userCompany || companyExample);
+  const [companyData, setCompanyData] = useState<CompanyDataType | null>( /* || companyExample */);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [servicesExpanded, setServicesExpanded] = useState(false);
   const [languagesExpanded, setLanguagesExpanded] = useState(false);
@@ -201,8 +201,8 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
   const currentIndustry = jobIndustries.find(curr => curr.id === companyData?.job_industry) || null;
 
   useEffect(() => {
-    console.log(companyData?.photos);
-  }, [companyData]);
+    if (userCompany) setCompanyData(userCompany);
+  }, [userCompany]);
 
   useEffect(() => {
     if (newProfile) {
@@ -228,10 +228,6 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
       };
     };
   }, []);
-
-  useEffect(() => {
-    if (userCompany) setCompanyData(userCompany);
-  }, [userCompany]);
 
   useEffect(() => {
     if (scrollPosition > carouselHeight - SCREEN_HEADER_HEIGHT) {
@@ -276,7 +272,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
                             buttons: [
                               {
                                 children: 'OK',
-                                onPress: () => { }
+                                onPress: () => goToNoCompanyScreen()
                               }
                             ]
                           });
@@ -349,12 +345,12 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
         style={styles.ScrollView}
         onScroll={handleScroll}
       >
-        {companyData &&
+        {!!companyData &&
           <>
-            {/* {companyData.photos?.length &&
+            {companyData.photos?.length &&
               <Carousel
                 innerPagination
-                data={companyData.photos.map(item => item.path)}
+                data={companyData.photos.sort((a, b) => (a.order || 0) - (b.order || 0)).map(item => item.path)}
                 style={styles.Carousel}
                 renderItem={({ item }) => (
                   <View
@@ -368,7 +364,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
                   </View>
                 )}
               />
-            } */}
+            }
             <View style={styles.BasicCompanyData}>
               <View style={styles.IndustryContainer}>
                 <View style={styles.IndustryLogoContainer}>
@@ -386,7 +382,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
               <Typography size={20} weight='Bold'>{companyData?.short_name}</Typography>
               <Typography color={Colors.Basic600}>{companyData?.other_address?.formattedAddress}</Typography>
             </View>
-            {(companyData.employees_amount || companyData.square_footage) &&
+            {!!(companyData.employees_amount || companyData.square_footage) &&
               <>
                 <Typography variant='h5' weight='Bold' style={[styles.CategoryHeader, { marginTop: 40 }]}>
                   O firmie
@@ -416,7 +412,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
               </>
             }
             <Separator marginTop={(companyData.employees_amount || companyData.square_footage) ? 16 : 30} />
-            {companyData.description &&
+            {!!companyData.description &&
               <>
                 <Accordion
                   onPress={() => setDescriptionExpanded(prev => !prev)}
@@ -434,7 +430,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
                 <Separator />
               </>
             }
-            {companyData.services &&
+            {!!companyData.services &&
               <>
                 <Accordion
                   onPress={() => setServicesExpanded(prev => !prev)}
@@ -454,14 +450,14 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
                 <Separator />
               </>
             }
-            {companyData.certificates &&
+            {!!companyData.certificates?.length &&
               <>
                 <Typography variant='h5' weight='Bold' style={[styles.CategoryHeader, { marginTop: 24 }]}>
                   Certyfikaty
                 </Typography>
                 <Carousel
                   innerPagination
-                  data={companyData.certificates.map(item => item.path)}
+                  data={companyData.certificates.sort((a, b) => (a.order || 0) - (b.order || 0)).map(item => item.path)}
                   style={[styles.Carousel, { marginTop: 16 }]}
                   renderItem={({ item }) => (
                     <View style={styles.CarouselImageContainer}>

@@ -46,6 +46,7 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
   const {bitrate, maxSize, minSizeToCompress, maxAllowedFileSize, compressionProgress } = mergedVideoSettings;
 
   useEffect(() => {
+    console.log(files)
     const handleCallback = async () => {
       if (files) {
         if (type === 'image') {

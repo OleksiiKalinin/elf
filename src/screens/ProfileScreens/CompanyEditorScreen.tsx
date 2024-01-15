@@ -11,7 +11,7 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { AddressType, CompanyDataType, MediaType, ContactPersonType, LanguageType } from '../../store/reducers/types';
 import { RenderItemParams } from 'react-native-draggable-flatlist';
 import companyServices from '../../services/companyServices';
-import { isArray } from 'lodash';
+import { isArray, isNumber } from 'lodash';
 import SvgIcon from '../../components/atoms/SvgIcon';
 import Typography from '../../components/atoms/Typography';
 import TextField from '../../components/molecules/TextField';
@@ -144,7 +144,7 @@ const CompanyEditorScreen: React.FC = () => {
     languages: null,
     services: null,
   });
-  const [contactPersons, setContactPersons] = useState<ContactPersonType[]>([]);
+  const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(companyData.contactPersons || []);
   const [companyLogo, setCompanyLogo] = useState<MediaType | null>(userCompany?.logo || null);
   const [companyPhotos, setCompanyPhotos] = useState<MediaType[]>(userCompany?.photos || []);
   const [companyCertificates, setCompanyCertificates] = useState<MediaType[]>(userCompany?.certificates || []);
@@ -162,8 +162,12 @@ const CompanyEditorScreen: React.FC = () => {
   const companyPhotosLimit = 20;
   const companyCertificatesLimit = 20;
 
+  useEffect(() => {
+    console.log(companyCertificates);
+  }, [companyCertificates]);
+
   useLayoutEffect(() => {
-    console.log(userCompany);
+    // console.log(userCompany);
     if (userCompany) {
       setEditMode(true);
     };
@@ -178,8 +182,7 @@ const CompanyEditorScreen: React.FC = () => {
       !(
         (short_name && short_name.length > 2 && short_name.length <= 100)
         && other_address
-        && job_industry
-        && job_industry
+        && isNumber(job_industry)
         // && services
         // && contactPersons.lenght
         // && description
@@ -194,6 +197,15 @@ const CompanyEditorScreen: React.FC = () => {
       )
     ) {
       setErrorModal('Wypełnij poprawnie dodatkowe pola lub zostaw je puste');
+      return false;
+    } else if (
+      !(
+        !isNumber(logoProgress)
+        && !isNumber(photosProgress)
+        && !isNumber(certificatesProgress)
+      )
+    ) {
+      setErrorModal('Trwa ładowanie zdjęć');
       return false;
     } else {
       return true;
@@ -212,7 +224,7 @@ const CompanyEditorScreen: React.FC = () => {
       })
       );
       setLoading(false);
-      // if (!!isOk) goToCompanyScreen();
+      if (!!isOk) goToCompanyScreen();
     } else {
       setShowTips(true);
     }
@@ -436,10 +448,6 @@ const CompanyEditorScreen: React.FC = () => {
     });
   };
 
-  useEffect(() => {
-    console.log(companyPhotos);
-  }, [companyPhotos]);
-
   const renderScrollPhotoItem = useCallback(({ item, drag, isActive, getIndex, mode }: RenderItemParams<MediaType> & { mode: 'photos' | 'certificates' }) => {
     const index = getIndex();
 
@@ -585,14 +593,14 @@ const CompanyEditorScreen: React.FC = () => {
             <View style={{ marginBottom: 24 }}>
               <MapPreview
                 label='Lokalizacja*'
-                place={companyData.main_address?.formattedAddress}
+                place={companyData.other_address?.formattedAddress}
                 onPress={() => router.push({
                   stack: 'ProfileStack',
                   screen: 'CompanyEditorScreen',
                   params: {
                     subView: 'GoogleMapScreen',
-                    callback: (address) => changeCompanyDataHandler('main_address', address),
-                    initialAddress: companyData.main_address
+                    callback: (address) => changeCompanyDataHandler('other_address', address),
+                    initialAddress: companyData.other_address
                   }
                 })}
               />
@@ -829,7 +837,7 @@ const CompanyEditorScreen: React.FC = () => {
               imageSettings={{
                 compressionProgress: (progress) => (Math.round(progress * 100)) === 100 ? setPhotosProgress(null) : setPhotosProgress(progress),
               }}
-              callback={(images) => setCompanyPhotos(images)}
+              callback={(images) => setCompanyPhotos(handleMultipleFiles(images))}
               render={(onPress) =>
                 <>
                   {!!photosProgress && photosProgress < 100 ?
@@ -978,8 +986,13 @@ const CompanyEditorScreen: React.FC = () => {
                         <View style={styles.DraggableImagesContainer}>
                           <DraggableList
                             horizontal
-                            data={companyCertificates}
-                            onDragEnd={({ data }) => setCompanyCertificates(data)}
+                            data={companyCertificates.sort((a, b) => {
+                              const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
+                              const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
+                            
+                              return orderA - orderB;
+                            })}
+                            onDragEnd={({ data }) => setCompanyCertificates(updateOrder(data))}
                             keyExtractor={({ path }) => path}
                             renderItem={(props: RenderItemParams<MediaType>) => renderScrollPhotoItem({ ...props, mode: 'photos' })}
                             contentContainerStyle={styles.DraggableImagesContent}

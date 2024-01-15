@@ -16,7 +16,6 @@ import { Separator } from 'tamagui';
 import { isString } from 'lodash';
 
 const emptyPerson: ContactPersonType  = {
-  id: Date.now(),
   email: null,
   mobile_number: null,
   contact_hours: '08:00-18:00',
@@ -33,7 +32,11 @@ export type AddContactPersonsScreenProps = {
 
 const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) => {
   const { contactPersons: initContactPersons, setContactPersons: changeContactPersonsHandler } = props;
-  const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(initContactPersons.length ?  initContactPersons : [emptyPerson]);
+  const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(initContactPersons.length ?  [...initContactPersons].sort((a, b) => {
+    const orderA = a.id ?? Number.MAX_SAFE_INTEGER;
+    const orderB = b.id ?? Number.MAX_SAFE_INTEGER;
+    return orderA - orderB;
+  }) : [emptyPerson]);
   const [showTips, setShowTips] = useState<boolean>(false);
   const [showTimepicker, setShowTimepicker] = useState<'start' | 'end' | false>(false);
   const [isDataValid, setIsDataValid] = useState<boolean>(false);
@@ -50,8 +53,8 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
     for (const contact of array) {
       if (
         contact.email && validateMail(contact.email) &&
-        contact.mobile_number && contact.mobile_number.length === 12 &&
-        contact.preferredFormsOfContact.email || contact.preferredFormsOfContact.phone
+        contact.mobile_number && contact.mobile_number.length === 12 /* && */
+        // contact.preferredFormsOfContact.email || contact.preferredFormsOfContact.phone
       ) {
         continue;
       } else {
@@ -156,7 +159,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
                 })}
               />
             </View>
-            <Typography weight="Bold" variant="h5" style={{ marginTop: 20 }}>
+            {/* <Typography weight="Bold" variant="h5" style={{ marginTop: 20 }}>
               Preferowane formy kontaktu
             </Typography>
             <View style={{ marginTop: 20 }}>
@@ -188,7 +191,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
                   Zaznacz co najmniej jedno z pól
                 </Typography>
               }
-            </View>
+            </View> */}
             <View style={styles.ContactHoursHeader}>
               <Typography weight="Bold" variant="h5">
                 Godziny kontaktu

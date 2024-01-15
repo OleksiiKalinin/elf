@@ -352,7 +352,7 @@ export type MediaType = {
 }
 
 export interface ContactPersonType {
-    id: number,
+    id?: number,
     company_id?: number,
     email: string | null,
     mobile_number: string | null,

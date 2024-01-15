@@ -124,7 +124,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
       if (initialSelected && initialSelected.length > 0) {
         const transformTestFile = (item: MediaFileType): PhotoIdentifier => ({
           node: {
-            id: '',
+            id: item.id as any,
             type: item.mime,
             group_name: [],
             image: {
@@ -209,6 +209,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
 
   const handleConfirm = () => {
     const transformedArray: MediaFileType[] = selectedFiles.map(item => ({
+      id: item.node.id as any,
       mime: item.node.type,
       path: item.node.image.uri,
       beforePath: item.node.image.beforePath
