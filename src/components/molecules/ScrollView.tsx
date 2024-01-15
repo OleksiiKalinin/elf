@@ -15,7 +15,7 @@ export function ScrollView({ disableWindowScroll = false, ...props }: Props) {
         showsVerticalScrollIndicator={Platform.OS === 'web'}
         showsHorizontalScrollIndicator={Platform.OS === 'web'}
         {...props}
-
+        
         //@ts-ignore
         {...(Platform.OS === 'web' && (!disableWindowScroll || !props.horizontal) ? { style: { ...props.style, ...props.contentContainerStyle }, contentContainerStyle: undefined } : {})}
     />);
