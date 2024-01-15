@@ -27,7 +27,7 @@ const CompanyDescriptionScreen: React.FC<CompanyDescriptionScreenProps> = (props
 
   const handleConfirm = () => {
     if(value.length >= minChars){
-      callback(value);
+      callback(value.trim());
       backToRemoveParams();
     } else {
       setShowTips(true);

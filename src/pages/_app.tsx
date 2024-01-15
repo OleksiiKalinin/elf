@@ -4,7 +4,7 @@ import '../../public/global.css';
 
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import { ReactNode, memo, useEffect, useMemo, useRef } from 'react';
+import { ReactNode, memo, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -18,6 +18,11 @@ import AppUnifiedProvider from '../components/organismes/AppUnifiedProvider';
 import { useRouter } from 'next/router';
 import { WithUrlProps } from '../hooks/withUrl';
 import getPathnameFromScreen from '../hooks/getPathnameFromScreen';
+import Lottie from "lottie-react";
+import windowExists from '../hooks/windowExists';
+import splashScreenLogo from "../../android/app/src/main/res/raw/loading_logo.json";
+import splashScreenBG from "../../android/app/src/main/res/raw/loading_bg.json";
+import { useTypedSelector } from '../hooks/useTypedSelector';
 
 const insets = {
   top: 0,
@@ -42,6 +47,7 @@ const ROUTES_TO_RETAIN = ([
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
+  const { appLoading } = useTypedSelector(s => s.general);
   const retainedComponents = useRef<{ [k: string]: { component: ReactNode } }>({});
   const [theme, setTheme] = useRootTheme();
 
@@ -82,6 +88,27 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
       {/* don't touch googleapis */}
       <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCuD83IZtlNNM3sxn9Hac4YSOXkRZurb9c&libraries=places&language=pl&region=pl"></script>
       {/* don't touch googleapis */}
+
+      {appLoading && <View
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 10000000000,
+          alignItems: 'center',
+          justifyContent: 'center',
+          //@ts-ignore
+          background: 'linear-gradient(188deg, #311374 -0.09%, #0C0E2C 98.73%)',
+        }}
+      >
+        <Lottie
+          animationData={splashScreenLogo}
+          loop
+        />
+      </View>}
+
 
       <NextThemeProvider enableSystem={false} onChangeTheme={setTheme}>
         <TamaguiProvider

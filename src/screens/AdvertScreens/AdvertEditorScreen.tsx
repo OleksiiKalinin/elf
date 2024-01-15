@@ -35,6 +35,8 @@ import CheckBox from '../../components/atoms/CheckBox';
 import { TimePickerModal } from '../../components/modified_modules/react-native-paper-dates/Time/TimePickerModal';
 import { languages } from '../ProfileScreens/CompanyEditorScreen';
 
+const MaxPlanCardWidth = 310;
+
 const packageTypes = [
   { id: 1, price: 50, type: 'Standard' },
   { id: 2, price: 80, type: 'Comfort' },
@@ -71,8 +73,40 @@ const headers: { [k in AdvertEditorStepType]: string } = {
   result: 'Nowe ogłoszenie - opublikowane!',
 }
 
+const submitButtonText: { [k in AdvertEditorStepType]: string } = {
+  fillData: 'Dalej',
+  paymentPlan: 'Dalej',
+  paymentMethods: 'Podsumowanie',
+  summary: 'Płacę',
+  result: 'Na Główną',
+}
+
 type Props = NonNullable<AdvertStackParamList['default']['AdvertEditorScreen']>;
 const { useParam } = createParam<Props>();
+
+const salarySetsByContractType: {
+  [k: string]: {
+    salary_tax_type_id: number,
+    salary_time_type_id: number,
+  }
+} = {
+  2: {
+    salary_tax_type_id: 2,
+    salary_time_type_id: 2
+  },
+  3: {
+    salary_tax_type_id: 1,
+    salary_time_type_id: 3
+  },
+  4: {
+    salary_tax_type_id: 2,
+    salary_time_type_id: 3
+  },
+  5: {
+    salary_tax_type_id: 2,
+    salary_time_type_id: 2
+  },
+}
 
 const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial, stepInitial }) => {
   const dispatch = useTypedDispatch();
@@ -82,13 +116,26 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
   const [stepInitialParam, setStepInitialParam] = useParam('step', { initial: stepInitial });
   const [step, setStep] = useState<AdvertEditorStepType | null>(null);
   const [advertData, setAdvertData] = useState<NewUserAdvertType>({
-    job_experience_id: null,
-    job_position_id: null,
-    location: null,
+    //_start to remove
     salary_amount_low: null,
     salary_amount_up: null,
     salary_tax_type_id: 2,
     salary_time_type_id: null,
+    type_of_contract_id: null,
+    //_end to remove
+    salary: [
+      {
+        id: Math.random(),
+        salary_amount_low: null,
+        salary_amount_up: null,
+        salary_tax_type_id: null,
+        salary_time_type_id: null,
+        type_of_contract_id: 1,
+      }
+    ],
+    job_experience_id: null,
+    job_position_id: null,
+    location: null,
     benefits_ids: [],
     requirements_ids: [],
     duties_ids: [],
@@ -101,7 +148,6 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
     job_start_id: null,
     trial_time_id: null,
     trial_type_id: null,
-    type_of_contract_id: null,
     working_hour_down: '08:00',
     working_hour_up: '16:00',
   });
@@ -156,14 +202,42 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
     }));
   };
 
-  const submitHandler = async () => {
+  const changeAdvertSalaryHandler = (id: number, name: keyof UserAdvertType['salary'][number], value: string | number | null) => {
+    setAdvertData(prev => {
+      const index = prev.salary.findIndex(e => e.id === id);
+      console.log(index, value);
+
+      if (index === -1) return prev;
+
+      const set = name === 'type_of_contract_id' && value ? salarySetsByContractType[value] || {} : {};
+
+      return {
+        ...prev,
+        salary: [
+          ...prev.salary.slice(0, index),
+          {
+            ...prev.salary[index],
+            ...set,
+            [name]: (typeof value === 'string') ?
+              value.replace(/\s/g, '')
+              :
+              value
+          },
+          ...prev.salary.slice(index + 1)
+        ]
+      }
+    });
+  };
+
+  const submitHandler = async (createAdvertForce: boolean = false) => {
     if (step) {
-      const nextStep = stepsOrder[stepsOrder.indexOf(step) + 1];
+      const order = stepsOrder.indexOf(step);
+      const nextStep = order >= 0 ? stepsOrder[order + 1] : undefined;
 
       if (nextStep) {
         setStepInitialParam(nextStep, { webBehavior: 'push' });
       } else {
-
+        router.replace({ stack: 'AdvertStack' })
       }
 
 
@@ -356,76 +430,113 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
             </View>}
           >
             <View style={{ marginBottom: 24 }}>
-              <ScrollView horizontal contentContainerStyle={{ paddingLeft: 19 }}>
-                {jobSalaryModes.map(({ id, name }) => (
-                  <View style={{ marginRight: 20 }}>
-                    <Button
-                      borderRadius={2.5}
-                      size='small'
-                      paddingHorizontal={0}
-                      contentVariant='h5'
-                      contentColor={Colors.Basic900}
-                      contentWeight={advertData.salary_time_type_id === id ? 'Bold' : 'SemiBold'}
-                      variant='text'
-                      borderBottomWidth={4}
-                      borderBottomColor={advertData.salary_time_type_id === id ? Colors.Basic900 : 'transparent'}
-                      onPress={() => changeAdvertDataHandler('salary_time_type_id', id)}
-                    >
-                      {name}
-                    </Button>
-                  </View>
-                ))}
-              </ScrollView>
-              {(advertData.salary_time_type_id === 2 || advertData.salary_time_type_id === 3) && <>
-                <View style={{ paddingLeft: 19, marginVertical: 16, flexDirection: 'row' }}>
-                  {jobSalaryTaxes.map(({ id, name }, index) => (
-                    <View style={{ marginRight: 16, flex: 1, maxWidth: 150 }}>
+              {advertData.salary.map(({ id: salary_id, salary_amount_low, salary_amount_up, salary_tax_type_id, salary_time_type_id, type_of_contract_id }) => (<Fragment key={salary_id}>
+                <ScrollView horizontal contentContainerStyle={{ paddingLeft: 19, marginBottom: 7, paddingBottom: 7 }}>
+                  {jobContractTypes.map(({ id, name }) => (
+                    <View style={{ marginRight: 16 }}>
                       <Button
                         size='medium'
-                        variant={advertData.salary_tax_type_id === id ? 'secondarySelected' : 'secondary'}
-                        contentWeight={advertData.salary_tax_type_id === id ? 'Bold' : 'SemiBold'}
+                        variant={type_of_contract_id === id ? 'secondarySelected' : 'secondary'}
+                        contentWeight={type_of_contract_id === id ? 'Bold' : 'SemiBold'}
                         contentVariant='h5'
                         contentColor={Colors.Basic900}
+                        style={{ paddingVertical: 6, paddingHorizontal: 8 }}
+                        onPress={() => changeAdvertSalaryHandler(salary_id, 'type_of_contract_id', id)}
                         borderRadius={4}
-                        onPress={() => changeAdvertDataHandler('salary_tax_type_id', id)}
                       >
                         {name}
                       </Button>
                     </View>
                   ))}
-                </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 19, maxWidth: 320 }}>
-                  <View style={{ flex: 1 }}>
-                    <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>od</Typography>
-                    <TextField
-                      placeholder={advertData.salary_time_type_id === 2 ? '3000' : '20'}
-                      placeholderTextColor={Colors.Basic600}
-                      containerStyles={{ backgroundColor: Colors.Basic300, borderRadius: 4, paddingHorizontal: 16 }}
-                      height={44}
-                      keyboardType='decimal-pad'
-                      right={<Typography variant='h5'>zł</Typography>}
-                      value={advertData.salary_amount_low || ''}
-                      onChangeText={value => changeAdvertDataHandler('salary_amount_low', value)}
-                    />
+                </ScrollView>
+                {salary_time_type_id && salary_tax_type_id && <View style={{ paddingLeft: 19, alignItems: 'flex-start', marginBottom: 10 }}>
+                  <Button
+                    borderRadius={2.5}
+                    size='small'
+                    paddingHorizontal={0}
+                    contentVariant='h5'
+                    contentColor={Colors.Basic900}
+                    contentWeight='Bold'
+                    variant='text'
+                    borderBottomWidth={4}
+                    borderBottomColor={Colors.Basic900}
+                    disabled
+                    fullwidth={false}
+                  >
+                    {jobSalaryModes.find(({ id }) => id === salary_time_type_id)?.name}{' - '}{jobSalaryTaxes.find(({ id }) => id === salary_tax_type_id)?.name}
+                  </Button>
+                </View>}
+                {/* {Number(type_of_contract_id) > 1 && <ScrollView horizontal contentContainerStyle={{ paddingLeft: 19 }}>
+                  {jobSalaryModes.map(({ id, name }) => (
+                    <View style={{ marginRight: 20 }}>
+                      <Button
+                        borderRadius={2.5}
+                        size='small'
+                        paddingHorizontal={0}
+                        contentVariant='h5'
+                        contentColor={Colors.Basic900}
+                        contentWeight={salary_time_type_id === id ? 'Bold' : 'SemiBold'}
+                        variant='text'
+                        borderBottomWidth={4}
+                        borderBottomColor={salary_time_type_id === id ? Colors.Basic900 : 'transparent'}
+                        onPress={() => changeAdvertSalaryHandler(salary_id, 'salary_time_type_id', id)}
+                      >
+                        {name}
+                      </Button>
+                    </View>
+                  ))}
+                </ScrollView>} */}
+                {(salary_time_type_id === 2 || salary_time_type_id === 3) && <>
+                  {/* <View style={{ paddingLeft: 19, marginVertical: 16, flexDirection: 'row' }}>
+                    {jobSalaryTaxes.map(({ id, name }, index) => (
+                      <View style={{ marginRight: 16, flex: 1, maxWidth: 150 }}>
+                        <Button
+                          size='medium'
+                          variant={salary_tax_type_id === id ? 'secondarySelected' : 'secondary'}
+                          contentWeight={salary_tax_type_id === id ? 'Bold' : 'SemiBold'}
+                          contentVariant='h5'
+                          contentColor={Colors.Basic900}
+                          borderRadius={4}
+                          onPress={() => changeAdvertSalaryHandler(salary_id, 'salary_tax_type_id', id)}
+                        >
+                          {name}
+                        </Button>
+                      </View>
+                    ))}
+                  </View> */}
+                  <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 19, maxWidth: 320 }}>
+                    <View style={{ flex: 1 }}>
+                      <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>od</Typography>
+                      <TextField
+                        placeholder={salary_time_type_id === 2 ? '3000' : '20'}
+                        placeholderTextColor={Colors.Basic600}
+                        containerStyles={{ backgroundColor: Colors.Basic300, borderRadius: 4, paddingHorizontal: 16 }}
+                        height={44}
+                        keyboardType='decimal-pad'
+                        right={<Typography variant='h5'>zł</Typography>}
+                        value={salary_amount_low || ''}
+                        onChangeText={value => changeAdvertSalaryHandler(salary_id, 'salary_amount_low', value)}
+                      />
+                    </View>
+                    <View style={{ justifyContent: 'center', height: 44, alignSelf: 'flex-end' }}>
+                      <Typography weight='Bold' variant='h4' color={Colors.Basic500}>{'   -   '}</Typography>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>do</Typography>
+                      <TextField
+                        placeholder={salary_time_type_id === 2 ? '4000' : '30'}
+                        placeholderTextColor={Colors.Basic600}
+                        containerStyles={{ backgroundColor: Colors.Basic300, borderRadius: 4, paddingHorizontal: 16 }}
+                        height={44}
+                        keyboardType='decimal-pad'
+                        right={<Typography variant='h5'>zł</Typography>}
+                        value={salary_amount_up || ''}
+                        onChangeText={value => changeAdvertSalaryHandler(salary_id, 'salary_amount_up', value)}
+                      />
+                    </View>
                   </View>
-                  <View style={{ justifyContent: 'center', height: 44, alignSelf: 'flex-end' }}>
-                    <Typography weight='Bold' variant='h4' color={Colors.Basic500}>{'   -   '}</Typography>
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>do</Typography>
-                    <TextField
-                      placeholder={advertData.salary_time_type_id === 2 ? '4000' : '30'}
-                      placeholderTextColor={Colors.Basic600}
-                      containerStyles={{ backgroundColor: Colors.Basic300, borderRadius: 4, paddingHorizontal: 16 }}
-                      height={44}
-                      keyboardType='decimal-pad'
-                      right={<Typography variant='h5'>zł</Typography>}
-                      value={advertData.salary_amount_up || ''}
-                      onChangeText={value => changeAdvertDataHandler('salary_amount_up', value)}
-                    />
-                  </View>
-                </View>
-              </>}
+                </>}
+              </Fragment>))}
             </View>
           </Accordion>
           <Separator />
@@ -530,7 +641,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
             </ScrollView>
           </Accordion>
           <Separator />
-          <Accordion
+          {/* <Accordion
             title={<View style={{ flexDirection: "row", alignItems: 'center' }}>
               <Typography variant='h5'>Rodzaj umowy</Typography>
               {isNumber(advertData.type_of_contract_id) && <View style={{ marginLeft: 10 }}>
@@ -557,7 +668,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
               ))}
             </ScrollView>
           </Accordion>
-          <Separator />
+          <Separator /> */}
           <Accordion
             title={<View style={{ flexDirection: "row", alignItems: 'center' }}>
               <Typography variant='h5'>Godziny pracy</Typography>
@@ -756,7 +867,13 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
         {step === 'paymentPlan' && <>
           <ScrollView horizontal showsHorizontalScrollIndicator contentContainerStyle={{ paddingLeft: 20 }}>
             {packageTypes.map((item) =>
-              <View style={{ maxWidth: 320, width: windowSizes.width - 70, marginVertical: 20, marginRight: 20, backgroundColor: Colors.Basic200 }}>
+              <View style={{
+                maxWidth: MaxPlanCardWidth - (windowSizes.width > MaxPlanCardWidth * 2 ? 40 : 0),
+                width: windowSizes.width - 70,
+                marginVertical: 20,
+                marginRight: 20,
+                backgroundColor: Colors.Basic200
+              }}>
                 <Typography variant="h2" weight="Bold" style={{ marginLeft: 19 }}>
                   {item.price}zł <Typography variant="main"> tydzień</Typography>
                 </Typography>
@@ -804,22 +921,40 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           </ScrollView>
         </>}
         {step === 'paymentMethods' && <>
-          <Typography>paymentMethods</Typography>
+          <Typography>BLIK</Typography>
+          <Typography>DZIK</Typography>
+          <Typography>KLIK</Typography>
         </>}
         {step === 'summary' && <>
-          <Typography>summary</Typography>
+          <View style={{ padding: 16 }}>
+            <Typography variant='h4'>
+              {currentPositions.find(e => e.id === advertData.job_position_id)?.name}
+            </Typography>
+            <Typography>bla bla bla</Typography>
+          </View>
+          <Button
+            onPress={() => submitHandler()}
+            disabled={loading}
+            withLoading
+            stickyBottom
+          >
+            Zapłać później
+          </Button>
+          <Typography variant='small' color={Colors.Basic600} style={{ paddingHorizontal: 16, paddingVertical: 5 }}>
+            Ogłoszenie będzie zapisane na koncie, ale nie będzie widoczne dla kandydatów.
+          </Typography>
         </>}
         {step === 'result' && <>
           <Typography>result</Typography>
         </>}
       </ScrollView>
       <Button
-        onPress={submitHandler}
+        onPress={() => submitHandler()}
         disabled={loading}
         withLoading
         stickyBottom
       >
-        {advertExists ? 'Zapisz' : 'Dalej'}
+        {advertExists ? 'Zapisz' : submitButtonText[step]}
       </Button>
     </ScreenHeaderProvider>
   );
