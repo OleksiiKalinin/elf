@@ -143,7 +143,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
           {mode === 'backAction' && (
             <View style={{ flex: 1, height: '100%', alignItems: 'flex-start', flexDirection: 'row' }}>
               <Button
-                bg='transparent'
+                variant='text'
                 p={0}
                 alignItems='center'
                 width={50}
