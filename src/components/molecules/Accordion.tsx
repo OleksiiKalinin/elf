@@ -24,7 +24,8 @@ const Accordion: React.FC<AccordionProps> = ({ initialExpanded, title, children,
       onPress={()=> setExpanded(prev=> !prev)}
       expanded={expanded}
       title={isString(title) ? <Typography variant='h5'>{title}</Typography> : title}
-      style={[{ backgroundColor: Colors.Basic100, height: 58, paddingRight: 19, paddingLeft: 2 }, style]}
+      style={[{ backgroundColor: Colors.Basic100, height: 58, paddingRight: 19, paddingLeft: 2 , justifyContent: 'center'}, style]}
+      titleStyle={{}}
       right={({ isExpanded }) => (
         <SvgIcon
           icon="arrowRightSmall"
