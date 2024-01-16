@@ -45,7 +45,6 @@ export const screensTitles: ScreensTitlesType = {
     CookieScreen: 'Pliki Cookies',
     EditPaymentScreen: 'Płatności',
     HelpCenterScreen: 'Centrum pomocy',
-    LanguageScreen: 'Preferowane języki',
     MethodsScreen: 'Wykorzystywane metody',
     NotificationScreen: 'Powiadomienia',
     PaymentScreen: 'Płatności',

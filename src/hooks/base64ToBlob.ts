@@ -1,4 +1,4 @@
-export const Base64ToBlob = (dataURI: string) => {
+export default function base64ToBlob(dataURI: string){
   const splitDataURI = dataURI.split(',')
   const byteString = splitDataURI[0].indexOf('base64') >= 0 ? atob(splitDataURI[1]) : decodeURI(splitDataURI[1])
   const mimeString = splitDataURI[0].split(':')[1].split(';')[0]

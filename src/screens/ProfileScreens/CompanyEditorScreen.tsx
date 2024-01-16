@@ -1,5 +1,6 @@
 import {
   Image,
+  Platform,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -27,6 +28,7 @@ import MapPreview from '../../components/molecules/MapPreview';
 import { Separator } from 'tamagui';
 import DraggableList from '../../components/organismes/DraggableList';
 import Modal from '../../components/atoms/Modal';
+import { Snackbar } from 'react-native-paper';
 
 export const languages: LanguageType[] = [
   {
@@ -121,6 +123,41 @@ const services: LanguageType[] = [
   },
 ];
 
+const employeesAmount: LanguageType[] = [
+  {
+    id: 1,
+    name: '1 - 5',
+  },
+  {
+    id: 2,
+    name: '5 - 20',
+  },
+  {
+    id: 3,
+    name: '20 - 50',
+  },
+  {
+    id: 4,
+    name: '50 - 100',
+  },
+  {
+    id: 5,
+    name: '100 - 500',
+  },
+  {
+    id: 6,
+    name: '500 - 1000',
+  },
+  {
+    id: 7,
+    name: '1000 - 5000',
+  },
+  {
+    id: 8,
+    name: '5000+',
+  },
+];
+
 const CompanyEditorScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const [loading, setLoading] = useState<boolean>(false);
@@ -154,7 +191,7 @@ const CompanyEditorScreen: React.FC = () => {
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [descriptionHeight, setDescriptionHeight] = useState(0);
   const [editMode, setEditMode] = useState(false);
-  const [errorModal, setErrorModal] = useState<null | string>(null);
+  const [error, setError] = useState<null | string>(null);
   const [showTips, setShowTips] = useState<boolean>(false);
 
   const router = useRouter();
@@ -162,23 +199,35 @@ const CompanyEditorScreen: React.FC = () => {
   const companyPhotosLimit = 20;
   const companyCertificatesLimit = 20;
 
-  useEffect(() => {
-    console.log(companyCertificates);
-  }, [companyCertificates]);
-
   useLayoutEffect(() => {
-    // console.log(userCompany);
     if (userCompany) {
       setEditMode(true);
+      setCompanyData(userCompany);
+      setCompanyLogo(userCompany?.logo || null);
+      setCompanyPhotos(userCompany?.photos || []);
+      setCompanyCertificates(userCompany?.certificates || []);
+      setContactPersons(userCompany?.contactPersons || []);
     };
-    // if (!token) {  
-    //   goToAuthScreen();
-    // };
-  }, [userCompany]);
+    const timer = setTimeout(() => {
+      if (!token) {  
+        goToAuthScreen();
+      };
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [userCompany, token]);
 
   const validateData = () => {
     const { short_name, logo, other_address, job_industry, services, contactPersons, description, full_name, main_address, nip, employees_amount } = companyData;
     if (
+      !(
+        !isNumber(logoProgress)
+        && !isNumber(photosProgress)
+        && !isNumber(certificatesProgress)
+      )
+    ) {
+      setError('Trwa ładowanie zdjęć');
+      return false;
+    } else if (
       !(
         (short_name && short_name.length > 2 && short_name.length <= 100)
         && other_address
@@ -186,26 +235,16 @@ const CompanyEditorScreen: React.FC = () => {
         // && services
         // && contactPersons.lenght
         // && description
-        // && (full_name && main_address && nip)
       )
     ) {
-      setErrorModal('Wypełnij wszystkie obowiązkowe pola!');
+      setError('Wypełnij wszystkie obowiązkowe pola!');
       return false;
     } else if (
       !(
-        (!employees_amount || (employees_amount && (parseInt(employees_amount?.split('-')[0]) <= parseInt(employees_amount?.split('-')[1])) && parseInt(employees_amount?.split('-')[0]) && parseInt(employees_amount?.split('-')[1])))
+        !(isNumber(employees_amount) || null)
       )
     ) {
-      setErrorModal('Wypełnij poprawnie dodatkowe pola lub zostaw je puste');
-      return false;
-    } else if (
-      !(
-        !isNumber(logoProgress)
-        && !isNumber(photosProgress)
-        && !isNumber(certificatesProgress)
-      )
-    ) {
-      setErrorModal('Trwa ładowanie zdjęć');
+      setError('Wypełnij poprawnie dodatkowe pola lub pozostaw je puste');
       return false;
     } else {
       return true;
@@ -219,8 +258,7 @@ const CompanyEditorScreen: React.FC = () => {
         'editUserCompany' :
         'createUserCompany'
       ]({
-        companyData: { ...companyData, employees_amount: companyData.employees_amount?.split('-').filter(el => el).length === 2 ? companyData.employees_amount : null },
-        companyLogo, companyPhotos, companyCertificates, contactPersons, oldCompanyData: userCompany || companyData
+        companyData, companyLogo, companyPhotos, companyCertificates, contactPersons, oldCompanyData: userCompany || companyData
       })
       );
       setLoading(false);
@@ -308,6 +346,10 @@ const CompanyEditorScreen: React.FC = () => {
     return languages.filter(item => companyData.languages?.includes(item.id));
   }, [companyData.languages, languages]);
 
+  const selectedEmployeesAmount = useMemo(() => {
+    return employeesAmount.find(item => companyData.employees_amount === item.id);
+  }, [companyData.employees_amount, employeesAmount]);
+
   const handleDescriptionLayout = (event: { nativeEvent: { layout: { width: number; height: number; }; }; }) => {
     const { height } = event.nativeEvent.layout;
     setDescriptionHeight(height);
@@ -386,6 +428,26 @@ const CompanyEditorScreen: React.FC = () => {
         title: 'Dodaj dane do faktury'
       }
     })
+  };
+
+  const goToSelectEmployeesAmountScreen = () => {
+    router.push({
+      stack: 'ProfileStack',
+      screen: 'CompanyEditorScreen',
+      params: {
+        subView: 'ItemSelectorScreen',
+        mode: 'single',
+        list: employeesAmount,
+        callback: (employeesAmount) => changeCompanyDataHandler('employees_amount', employeesAmount),
+        labels: {
+          searchLabel: 'Znajdź ilość pracowników',
+          itemsLabel: 'Ilość pracowników',
+        },
+        headerProps: { title: 'Ilość pracowników' },
+        initialSelected: [companyData.employees_amount as number] ?? undefined,
+        allowReturnEmptyList: true,
+      },
+    });
   };
 
   const goToSelectLanguagesScreen = () => {
@@ -499,95 +561,6 @@ const CompanyEditorScreen: React.FC = () => {
                 {...(showTips && (!companyData.short_name || companyData.short_name?.length < 3 || companyData.short_name.length > 100) && {
                   bottomText: 'Nazwa firmy musi zawierać od 3 do 100 znaków',
                 })}
-              />
-            </View>
-            <View style={styles.CompanyLogoTitle}>
-              <Typography weight="Bold" variant="h5">
-                Logo firmy{' '}
-              </Typography>
-              {!companyData.logo &&
-                <Typography style={{ color: Colors.Red }}>
-                  *
-                </Typography>
-              }
-            </View>
-            <View style={styles.CompanyLogo}>
-              <MediaSelector
-                type='image'
-                crop
-                cropResolution={{
-                  width: 500,
-                  height: 500,
-                }}
-                imageSettings={{
-                  compressionProgress: (progress) => (Math.round(progress * 100)) === 100 ? setLogoProgress(null) : setLogoProgress(progress),
-                }}
-                callback={(images) => setCompanyLogo(handleSingleFile(images))}
-                render={(onPress) =>
-                  <>
-                    {(!!logoProgress && (logoProgress < 100)) ?
-
-                      <View style={styles.LoadingImages}>
-                        <Typography size={16} weight='SemiBold' style={styles.LoadingImagesText}>
-                          Ładowanie zdjęć: {Math.round(logoProgress * 100)}%
-                        </Typography>
-                        <Slider
-                          min={0}
-                          max={100}
-                          step={1}
-                          value={[Math.round(logoProgress * 100)]}
-                        >
-                          <Slider.Track>
-                            <Slider.TrackActive />
-                          </Slider.Track>
-                        </Slider>
-                      </View>
-
-                      :
-
-                      !!companyLogo ?
-                        <View style={styles.LoadedImages}>
-                          <View style={styles.LoadedImagesButtons}>
-                            <TouchableOpacity
-                              style={styles.LoadedImagesButton}
-                              onPress={() => setCompanyLogo(null)}
-                            >
-                              <Typography variant='h5' weight="Bold" style={styles.DeleteImagesButton}>
-                                Usuń wybrane
-                              </Typography>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                              style={styles.LoadedImagesButton}
-                              onPress={() => onPress()}
-                            >
-                              <Typography variant='h5' weight="Bold" style={styles.AddMoreImages}>
-                                Dodaj ponownie
-                              </Typography>
-                            </TouchableOpacity>
-                          </View>
-                          <View style={styles.LoadedLogoContainer}>
-                            <Image
-                              style={styles.LoadedLogo}
-                              source={{ uri: companyLogo.path }}
-                            />
-                          </View>
-                        </View>
-
-                        :
-
-                        <TouchableOpacity onPress={() => onPress()}>
-                          <View style={styles.ImageLoaderContent}>
-                            <View style={styles.AddImageText}>
-                              <SvgIcon icon="createCircleSmall" fill={Colors.Basic900} />
-                              <Typography variant="h5" weight='Bold'>
-                                {'  '}Dodaj logo
-                              </Typography>
-                            </View>
-                          </View>
-                        </TouchableOpacity>
-                    }
-                  </>
-                }
               />
             </View>
             <View style={{ marginBottom: 24 }}>
@@ -812,9 +785,6 @@ const CompanyEditorScreen: React.FC = () => {
                 <Typography variant='h5'>
                   Dane do faktury
                 </Typography>
-                <Typography style={{ color: Colors.Red }}>
-                  *
-                </Typography>
               </Button>
             }
             <Typography
@@ -824,6 +794,95 @@ const CompanyEditorScreen: React.FC = () => {
             >
               Dodatkowe
             </Typography>
+            <View style={styles.CompanyLogoTitle}>
+              <Typography weight="Bold" variant="h5">
+                Logo firmy{' '}
+              </Typography>
+              {!companyData.logo &&
+                <Typography style={{ color: Colors.Red }}>
+                  *
+                </Typography>
+              }
+            </View>
+            <View style={styles.CompanyLogo}>
+              <MediaSelector
+                type='image'
+                crop
+                cropResolution={{
+                  width: 500,
+                  height: 500,
+                }}
+                imageSettings={{
+                  compressionProgress: (progress) => (Math.round(progress * 100)) === 100 ? setLogoProgress(null) : setLogoProgress(progress),
+                }}
+                callback={(images) => setCompanyLogo(handleSingleFile(images))}
+                render={(onPress) =>
+                  <>
+                    {(!!logoProgress && (logoProgress < 100)) ?
+
+                      <View style={styles.LoadingImages}>
+                        <Typography size={16} weight='SemiBold' style={styles.LoadingImagesText}>
+                          Ładowanie zdjęć: {Math.round(logoProgress * 100)}%
+                        </Typography>
+                        <Slider
+                          min={0}
+                          max={100}
+                          step={1}
+                          value={[Math.round(logoProgress * 100)]}
+                        >
+                          <Slider.Track>
+                            <Slider.TrackActive />
+                          </Slider.Track>
+                        </Slider>
+                      </View>
+
+                      :
+
+                      !!companyLogo ?
+                        <View style={styles.LoadedImages}>
+                          <View style={styles.LoadedImagesButtons}>
+                            <TouchableOpacity
+                              style={styles.LoadedImagesButton}
+                              onPress={() => setCompanyLogo(null)}
+                            >
+                              <Typography variant='h5' weight="Bold" style={styles.DeleteImagesButton}>
+                                Usuń wybrane
+                              </Typography>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              style={styles.LoadedImagesButton}
+                              onPress={() => onPress()}
+                            >
+                              <Typography variant='h5' weight="Bold" style={styles.AddMoreImages}>
+                                Dodaj ponownie
+                              </Typography>
+                            </TouchableOpacity>
+                          </View>
+                          <View style={styles.LoadedLogoContainer}>
+                            <Image
+                              style={styles.LoadedLogo}
+                              source={{ uri: companyLogo.path }}
+                            />
+                          </View>
+                        </View>
+
+                        :
+
+                        <TouchableOpacity onPress={() => onPress()}>
+                          <View style={styles.ImageLoaderContent}>
+                            <View style={styles.AddImageText}>
+                              <SvgIcon icon="createCircleSmall" fill={Colors.Basic900} />
+                              <Typography variant="h5" weight='Bold'>
+                                {'  '}Dodaj logo
+                              </Typography>
+                            </View>
+                          </View>
+                        </TouchableOpacity>
+                    }
+                  </>
+                }
+              />
+            </View>
             <View style={styles.ImagesTitle}>
               <Typography weight="Bold" variant="h5">
                 Zdjęcia firmy{' '}
@@ -887,7 +946,7 @@ const CompanyEditorScreen: React.FC = () => {
                             data={companyPhotos.sort((a, b) => {
                               const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
                               const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
-                            
+
                               return orderA - orderB;
                             })}
                             onDragEnd={({ data }) => setCompanyPhotos(updateOrder(data))}
@@ -989,7 +1048,7 @@ const CompanyEditorScreen: React.FC = () => {
                             data={companyCertificates.sort((a, b) => {
                               const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
                               const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
-                            
+
                               return orderA - orderB;
                             })}
                             onDragEnd={({ data }) => setCompanyCertificates(updateOrder(data))}
@@ -1028,59 +1087,6 @@ const CompanyEditorScreen: React.FC = () => {
               }
             />
             <Separator marginTop={16} />
-            <View style={styles.CompanyAmountTitle}>
-              <Typography weight="Bold" variant="h5">
-                Liczba pracowników{' '}
-              </Typography>
-            </View>
-            <View style={styles.CompanyAmount}>
-              <View style={styles.CompanyAmountLabel}>
-                <Typography style={styles.CompanyAmountLabelText} variant='h5' weight='SemiBold'>
-                  od
-                </Typography>
-                <TextField
-                  placeholder='0'
-                  maxLength={5}
-                  placeholderTextColor={Colors.Basic600}
-                  containerStyles={styles.CompanyAmountTextField}
-                  height={44}
-                  keyboardType='decimal-pad'
-                  value={companyData.employees_amount?.split('-')[0]}
-                  onChangeText={(number) => setCompanyData(prev => ({ ...prev, employees_amount: `${number.replace(/^0/, '').replace(/[^0-9]/g, '')}-${prev.employees_amount?.split('-')[1]}` }))}
-                />
-              </View>
-              <View style={styles.TextFieldHyper}>
-                <Typography weight='Bold' variant='h4' color={Colors.Basic500}>
-                  {'  -  '}
-                </Typography>
-              </View>
-              <View style={styles.CompanyAmountLabel}>
-                <Typography style={styles.CompanyAmountLabelText} variant='h5' weight='SemiBold'>
-                  do
-                </Typography>
-                <TextField
-                  placeholder='0'
-                  maxLength={5}
-                  placeholderTextColor={Colors.Basic600}
-                  containerStyles={styles.CompanyAmountTextField}
-                  height={44}
-                  keyboardType='decimal-pad'
-                  value={companyData.employees_amount?.split('-')[1]}
-                  onChangeText={(number) => setCompanyData(prev => ({ ...prev, employees_amount: `${prev.employees_amount?.split('-')[0]}-${number.replace(/^0/, '').replace(/[^0-9]/g, '')}` }))}
-                />
-              </View>
-            </View>
-            {(showTips && companyData.employees_amount && (parseInt(companyData.employees_amount?.split('-')[0]) > parseInt(companyData.employees_amount?.split('-')[1]))) &&
-              <Typography size={12} color={Colors.Danger} style={{ marginHorizontal: 19, marginTop: 5 }}>
-                Wartość pierwszego pola nie może być większa od drugiego!
-              </Typography>
-            }
-            {(showTips && companyData.employees_amount && companyData.employees_amount !== '-' && (!parseInt(companyData.employees_amount?.split('-')[0]) || !parseInt(companyData.employees_amount?.split('-')[1]))) &&
-              <Typography size={12} color={Colors.Danger} style={{ marginHorizontal: 19, marginTop: 5 }}>
-                Dwa pola muszą zostać uzupełnione lub pozostać puste!
-              </Typography>
-            }
-            <Separator marginTop={16} />
             <View style={styles.SquareFootageTitle}>
               <Typography weight="Bold" variant="h5">
                 Metraż miejsca pracy{' '}
@@ -1099,6 +1105,44 @@ const CompanyEditorScreen: React.FC = () => {
                 onChangeText={(text) => changeCompanyDataHandler('square_footage', text.replace(/^0/, '').replace(/[^0-9]/g, ''))}
               />
             </View>
+            {companyData.employees_amount ?
+              <>
+                <View style={styles.SelectedItemsContainer}>
+                  <View style={styles.SelectedItemsHeader}>
+                    <Typography variant='h5' weight='Bold'>
+                      Liczba pracowników
+                    </Typography>
+                    <Button
+                      variant='text'
+                      style={{ width: 'auto', padding: 0 }}
+                      onPress={() => goToSelectEmployeesAmountScreen()}
+                    >
+                      <Typography variant='h5' weight='Bold' style={styles.EditButtonText}>
+                        Edytuj
+                      </Typography>
+                    </Button>
+                  </View>
+                  <Typography style={styles.SelectedItems}>
+                    {selectedEmployeesAmount?.name}
+                  </Typography>
+                </View>
+                <Separator marginTop={12} />
+              </>
+
+              :
+
+              <Button
+                variant='text'
+                borderTop
+                borderBottom
+                arrowRight
+                onPress={() => goToSelectEmployeesAmountScreen()}
+              >
+                <Typography variant='h5'>
+                  Liczba pracowników
+                </Typography>
+              </Button>
+            }
             {companyData.languages ?
               <>
                 <View style={styles.SelectedItemsContainer}>
@@ -1132,7 +1176,6 @@ const CompanyEditorScreen: React.FC = () => {
 
               <Button
                 variant='text'
-                borderTop
                 borderBottom
                 arrowRight
                 onPress={() => goToSelectLanguagesScreen()}
@@ -1191,7 +1234,7 @@ const CompanyEditorScreen: React.FC = () => {
           >
             {editMode ? 'Zaktualizuj' : 'Utwórz'}
           </Button>
-          <Modal
+          {/* <Modal
             transparent={true}
             visible={!!errorModal}
             onClose={() => setErrorModal(null)}
@@ -1210,7 +1253,23 @@ const CompanyEditorScreen: React.FC = () => {
                 </Button>
               </View>
             </View>
-          </Modal>
+          </Modal> */}
+          <Snackbar
+            visible={!!error}
+            onDismiss={() => setError(null)}
+            duration={4000}
+            wrapperStyle={{
+              maxWidth: 768,
+              alignItems: 'center',
+              position: Platform.OS === 'web' ? 'fixed' : 'absolute',
+            }}
+            style={{
+              backgroundColor: Colors.Danger,
+              maxWidth: 500,
+            }}
+          >
+            {error}
+          </Snackbar>
         </ScreenHeaderProvider>
       }
     </>
@@ -1228,8 +1287,8 @@ const styles = StyleSheet.create({
   },
   CompanyLogoTitle: {
     marginHorizontal: 19,
-    marginBottom: 5,
     flexDirection: 'row',
+    marginBottom: 5,
   },
   CompanyLogo: {
     marginBottom: 24

@@ -6,7 +6,6 @@ import Lodash from 'lodash';
 import { convertToBackEndAddress } from "../hooks/convertAddress";
 import { AppDispatch, rootState } from "../store";
 import { Platform } from "react-native";
-import { Base64ToBlob } from "../functions/fileFunctions";
 
 const createUserCompany = (props: {
   companyData: CompanyDataType,
@@ -38,7 +37,7 @@ const createUserCompany = (props: {
 
       if (companyLogo) {
         if (Platform.OS === 'web' && companyLogo?.path) {
-          companyLogoFormData.append("file_location", Base64ToBlob(companyLogo.path));
+          companyLogoFormData.append("file_location", base64ToBlob(companyLogo.path));
         } else {
           // @ts-ignore
           companyLogoFormData.append("file_location", {
@@ -73,7 +72,7 @@ const createUserCompany = (props: {
       if (companyPhotos.length) {
         companyPhotos.forEach(({ path, mime }) => {
           if (Platform.OS === 'web') {
-            companyPhotosFormData.append("images", Base64ToBlob(path));
+            companyPhotosFormData.append("images", base64ToBlob(path));
           } else {
             // @ts-ignore
             companyPhotosFormData.append("images", {
@@ -95,7 +94,7 @@ const createUserCompany = (props: {
       if (companyCertificates.length) {
         companyCertificates.forEach(({ path, mime }) => {
           if (Platform.OS === 'web') {
-            companyCertificatesFormData.append("file_location", Base64ToBlob(path));
+            companyCertificatesFormData.append("file_location", base64ToBlob(path));
           } else {
             // @ts-ignore
             companyCertificatesFormData.append("file_location", {
@@ -153,7 +152,7 @@ const editUserCompany = (props: {
       if (!Lodash.isEqual(oldCompanyData.logo, companyLogo)) {
         const companyLogoFormData = new FormData();
         if (Platform.OS === 'web' && companyLogo?.path) {
-          companyLogoFormData.append("file_location", Base64ToBlob(companyLogo.path));
+          companyLogoFormData.append("file_location", base64ToBlob(companyLogo.path));
         } else {
           // @ts-ignore
           companyLogoFormData.append("file_location", {
@@ -225,7 +224,7 @@ const editUserCompany = (props: {
 
         forPushArray.forEach(({ path, mime }) => {
           if (Platform.OS === 'web' && path) {
-            companyPhotosFormData.append("images", Base64ToBlob(path));
+            companyPhotosFormData.append("images", base64ToBlob(path));
           } else {
             // @ts-ignore
             companyPhotosFormData.append("images", {
@@ -272,7 +271,7 @@ const editUserCompany = (props: {
 
         forPushArray.forEach(({ path, mime }) => {
           if (Platform.OS === 'web' && path) {
-            companyCertificatesFormData.append("file_location", Base64ToBlob(path));
+            companyCertificatesFormData.append("file_location", base64ToBlob(path));
           } else {
             // @ts-ignore
             companyCertificatesFormData.append("file_location", {
@@ -408,4 +407,8 @@ export default {
   getUserCompanyCertificates,
   getUserCompanyContactPersons,
   deleteUserCompany,
+}
+
+function base64ToBlob(path: string): string | Blob {
+  throw new Error("Function not implemented.");
 }

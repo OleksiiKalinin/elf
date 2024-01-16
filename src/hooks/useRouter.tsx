@@ -19,6 +19,7 @@ import CompanyInvoiceScreen from "../screens/CompanyInvoiceScreen";
 import AddContactPersonsScreen from "../screens/AddContactPersonsScreen";
 import CompanyDescriptionScreen from "../screens/CompanyDescriptionScreen";
 import SocialMediaScreen from "../screens/SocialMediaScreen";
+import ChangePasswordScreen from "../screens/ChangePasswordScreen";
 
 export type SubViewType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? AllScreens<T, keyof RootStackParamList[T]['default']> : never;
 type AllScreens<T extends keyof RootStackParamList, K extends keyof RootStackParamList[T]['default'] = keyof RootStackParamList[T]['default']> = K extends K ? AllParams<RootStackParamList[T]['default'][K]> : never;
@@ -71,6 +72,9 @@ const validateUrl = (props: WithUrlProps): string => {
             props.params?.subView === 'CompanyDescriptionScreen' ||
             props.params?.subView === 'ItemSelectorScreen' ||
             props.params?.subView === 'SocialMediaScreen'
+        )) ||
+        (props.stack === 'ProfileStack' && props.screen === 'AccountDataScreen' && (
+            props.params?.subView === 'ChangePasswordScreen'
         )) ||
         false //something else
     ) {
@@ -135,6 +139,9 @@ export default function useRouter() {
                             break;
                         case 'SocialMediaScreen':
                             Component = SocialMediaScreen;
+                            break;
+                        case 'ChangePasswordScreen':
+                            Component = ChangePasswordScreen;
                             break;
                         default:
                             break;

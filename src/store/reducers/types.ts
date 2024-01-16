@@ -334,7 +334,7 @@ export interface CompanyDataType {
     //     photos?: MediaType[] | null,
     //     certificates?: MediaType[] | null,
     // },
-    employees_amount?: string | null,
+    employees_amount?: number | null,
     square_footage?: string | null,
     languages?: number[] | null,
     website?: string | null,

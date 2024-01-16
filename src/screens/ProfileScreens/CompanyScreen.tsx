@@ -6,7 +6,6 @@ import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { CompanyDataType, LanguageType } from '../../store/reducers/types';
 import companyServices from '../../services/companyServices';
-import MainDataCard from './CompanyScreenRoutes/MainDataCard/MainDataCard';
 import SvgIcon from '../../components/atoms/SvgIcon';
 import ScreenHeaderProvider, { SCREEN_HEADER_HEIGHT } from '../../components/organismes/ScreenHeaderProvider';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
@@ -30,7 +29,7 @@ const companyExample: CompanyDataType = {
   account_facebook: 'www.google.pl',
   account_instagram: 'www.google.pl',
   account_linkedIn: 'www.google.pl',
-  employees_amount: '15',
+  employees_amount: 3,
   description: `Prowadzimy kameralną restaurację w centrum Wrocławia, w której serwujemy oryginalne dania kuchni włoskiej. Przyrządzając je wyłącznie z wysokiej jakości składników, pozwalamy naszym klientom odkrywać wyjątkowe smaki Półwyspu Apenińskiego.
 
   Zatrudniamy 12 wykwalifikowanych pracowników, którzy dbają nie tylko o profesjonalną obsługę, lecz również odpowiednią atmosferę. Oferujemy usługi cateringowe, umożliwiając zamawianie jedzenia za pomocą najpopularniejszych aplikacji kurierskich.
@@ -38,6 +37,10 @@ const companyExample: CompanyDataType = {
   full_name: "blablablabla",
   nip: '777-888-88-11',
   job_industry: 3,
+  logo: {
+    id: 1,
+    path: 'https://i.etsystatic.com/11979725/r/il/2af489/1431674872/il_fullxfull.1431674872_d74y.jpg',
+  },
   main_address: {
     adminArea: "Podlaskie",
     country: "Polska",
@@ -176,6 +179,41 @@ const languages: LanguageType[] = [
   },
 ];
 
+const employeesAmount: LanguageType[] = [
+  {
+    id: 1,
+    name: '1 - 5',
+  },
+  {
+    id: 2,
+    name: '5 - 20',
+  },
+  {
+    id: 3,
+    name: '20 - 50',
+  },
+  {
+    id: 4,
+    name: '50 - 100',
+  },
+  {
+    id: 5,
+    name: '100 - 500',
+  },
+  {
+    id: 6,
+    name: '500 - 1000',
+  },
+  {
+    id: 7,
+    name: '1000 - 5000',
+  },
+  {
+    id: 8,
+    name: '5000+',
+  },
+];
+
 type InitialParams = NonNullable<ProfileStackParamList['default']['CompanyScreen']>;
 
 const { useParam } = createParam<NonNullable<ProfileStackParamList['default']['CompanyScreen']>>();
@@ -184,7 +222,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
   const dispatch = useTypedDispatch();
   const { setSwipeablePanelProps } = useActions();
   const { userCompany } = useTypedSelector(state => state.general);
-  const [companyData, setCompanyData] = useState<CompanyDataType | null>( /* || companyExample */);
+  const [companyData, setCompanyData] = useState<CompanyDataType | null>(companyExample);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [servicesExpanded, setServicesExpanded] = useState(false);
   const [languagesExpanded, setLanguagesExpanded] = useState(false);
@@ -301,6 +339,10 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
     setScrollPosition(Math.round(offsetY));
   };
 
+  const filteredEmployeesAmount = employeesAmount.find(item => companyData?.employees_amount === item.id);
+
+  const basicLogo = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBRo59C4lpyB_h0LvmiSSZjOrgSMAwaz-mRw&usqp=CAU';
+
   const goToCompanyEditorScreen = () => {
     replace({
       stack: 'ProfileStack',
@@ -366,21 +408,26 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
               />
             }
             <View style={styles.BasicCompanyData}>
+              <Image source={{ uri: companyData.logo?.path ?? basicLogo }} style={styles.CompanyLogo} />
+              <Typography size={20} weight='Bold' style={{ marginTop: 15 }}>{companyData?.short_name}</Typography>
               <View style={styles.IndustryContainer}>
-                <View style={styles.IndustryLogoContainer}>
+                {/* <View style={styles.IndustryLogoContainer}>
                   <View style={{ position: 'absolute' }}>
                     <SkeletonContainer animation='wave' speed={600}>
                       <Skeleton style={styles.Skeleton} />
                     </SkeletonContainer>
                   </View>
                   {currentIndustry?.icon && <SvgUriImage width={34} height={34} src={currentIndustry?.icon} />}
-                </View>
-                <View style={{ flex: 1, marginLeft: 8 }}>
-                  <Typography variant='h5' weight='SemiBold'>{currentIndustry?.name}</Typography>
+                </View> */}
+                <View style={{ flex: 1, /* marginLeft: 8  */ }}>
+                  <Typography color={Colors.Basic600} variant='h5' weight='SemiBold'>
+                    {currentIndustry?.name}
+                  </Typography>
                 </View>
               </View>
-              <Typography size={20} weight='Bold'>{companyData?.short_name}</Typography>
-              <Typography color={Colors.Basic600}>{companyData?.other_address?.formattedAddress}</Typography>
+              <Typography color={Colors.Basic600}>
+                {companyData?.other_address?.formattedAddress}
+              </Typography>
             </View>
             {!!(companyData.employees_amount || companyData.square_footage) &&
               <>
@@ -391,7 +438,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
                   {companyData.employees_amount &&
                     <View style={styles.CompanyAmounts}>
                       <Typography size={20} weight='Bold' textAlign='center'>
-                        {companyData.employees_amount}
+                        {filteredEmployeesAmount?.name}
                       </Typography>
                       <Typography textAlign='center'>
                         Liczba pracowników
@@ -530,6 +577,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
             }
           </>
         }
+        <View style={{height: 100}}/>
       </ScrollView>
       <Snackbar
         visible={snackbar}
@@ -590,14 +638,18 @@ const styles = StyleSheet.create({
     height: '100%',
     width: 'auto',
   },
-
   BasicCompanyData: {
     marginTop: 30, paddingHorizontal: 19
+  },
+  CompanyLogo: {
+    width: 100,
+    height: 100,
+    borderRadius: 4,
   },
   IndustryContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: 10,
   },
   IndustryLogoContainer: {
     width: 34,
@@ -642,7 +694,6 @@ const styles = StyleSheet.create({
   },
   Languages: {
     marginTop: 32,
-    marginBottom: 100,
   },
   SnackbarWrapper: {
     zIndex: 9999999,

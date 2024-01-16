@@ -10,7 +10,6 @@ import NotificationScreen from '../screens/ProfileScreens/NotificationScreen';
 import PrivacyScreen from '../screens/ProfileScreens/PrivacyScreen';
 import PointsScreen from '../screens/ProfileScreens/PointsScreen';
 import CompanyEditorScreen from '../screens/ProfileScreens/CompanyEditorScreen';
-import LanguageScreen from '../screens/ProfileScreens/LanguageScreen';
 import MethodsScreen from '../screens/ProfileScreens/MethodsScreen';
 import ToolsScreen from '../screens/ProfileScreens/ToolsScreen';
 import { AddressType, CompanyDataType, ContactPersonType } from '../store/reducers/types';
@@ -48,14 +47,13 @@ export type ProfileStackParamList = {
     CompanyScreen: { newProfile?: string, subView?: 'options' } | undefined,
     PackagesScreen: undefined,
     SettingsScreen: undefined,
-    AccountDataScreen: undefined,
+    AccountDataScreen: SubView<'ChangePasswordScreeen'> | undefined,
     PaymentScreen: undefined,
     EditPaymentScreen: undefined,
     AddPaymentScreen: undefined,
     NotificationScreen: undefined,
     PrivacyScreen: undefined,
     PointsScreen: undefined,
-    LanguageScreen: undefined,
     MethodsScreen: undefined,
     ToolsScreen: undefined,
     // ?????
@@ -82,6 +80,7 @@ export type ProfileStackParamList = {
     JobCategoryScreen: JobCategoryScreenProps,
     ItemSelectorScreen: ItemSelectorScreenProps,
     SocialMediaScreen: SocialMediaScreenProps,
+    ChangePasswordScreeen: any,
   }
 }
 
@@ -92,7 +91,6 @@ export const ProfileStackLinking: PathConfigMap<ProfileStackParamList['default']
   AddPaymentScreen: 'AddPaymentScreen',
   CompanyScreen: 'CompanyScreen',
   EditPaymentScreen: 'EditPaymentScreen',
-  LanguageScreen: 'LanguageScreen',
   MethodsScreen: 'MethodsScreen',
   NoCompanyScreen: 'NoCompanyScreen',
   NotificationScreen: 'NotificationScreen',
@@ -140,7 +138,6 @@ const ProfileNavigator: React.FC = () => {
       <ProfileStack.Screen name="NotificationScreen" component={NotificationScreen} />
       <ProfileStack.Screen name="PrivacyScreen" component={PrivacyScreen} />
       <ProfileStack.Screen name="PointsScreen" component={PointsScreen} />
-      <ProfileStack.Screen name="LanguageScreen" component={LanguageScreen} />
       <ProfileStack.Screen name="MethodsScreen" component={MethodsScreen} />
       <ProfileStack.Screen name="ToolsScreen" component={ToolsScreen} />
       {/* <ProfileStack.Screen name="SendingOffers" component={SendingOffers} />

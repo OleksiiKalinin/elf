@@ -134,6 +134,8 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
             duration={4000}
             wrapperStyle={{
               alignItems: 'center',
+              maxWidth: 768,
+              position: Platform.OS === 'web' ? 'fixed' : 'absolute',
             }}
             style={{
               backgroundColor: Colors.Danger,

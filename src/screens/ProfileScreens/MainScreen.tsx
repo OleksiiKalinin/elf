@@ -96,11 +96,18 @@ const MainScreen: React.FC = () => {
   }, [showHelp]);
 
   const goToCompanyScreen = () => {
-    router.push({ stack: 'ProfileStack', screen: 'CompanyScreen', params: undefined });
+    router.push({
+      stack: 'ProfileStack',
+      screen: 'CompanyScreen',
+      params: undefined
+    });
   };
 
   const goToNoCompanyScreen = () => {
-    router.push({ stack: 'ProfileStack', screen: 'NoCompanyScreen' });
+    router.push({
+      stack: 'ProfileStack',
+      screen: 'NoCompanyScreen'
+    });
   };
 
   return (
@@ -157,21 +164,6 @@ const MainScreen: React.FC = () => {
             </View>
             <Typography weight='SemiBold' variant='h5' style={{ alignSelf: 'center' }}>
               Profil firmy
-            </Typography>
-          </View>
-        </Button>
-        <Button
-          variant='text'
-          arrowRight
-          borderBottom
-          onPress={() => router.push({stack: 'ProfileStack', screen: 'CompanyEditorScreen', params: undefined})}
-        >
-          <View style={styles.ArrowButton}>
-            <View style={styles.ButtonIconContainer}>
-              <SvgIcon icon='work' />
-            </View>
-            <Typography weight='SemiBold' variant='h5' style={{ alignSelf: 'center' }}>
-              CompanyEditor (test)
             </Typography>
           </View>
         </Button>

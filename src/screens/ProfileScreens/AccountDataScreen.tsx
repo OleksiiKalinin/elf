@@ -15,6 +15,8 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import Button from '../../components/molecules/Button';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { ScrollView } from '../../components/molecules/ScrollView';
+import useRouter from '../../hooks/useRouter';
+import Typography from '../../components/atoms/Typography';
 
 export type RegistDataType = {
   email: string,
@@ -43,6 +45,8 @@ const AccountDataScreen: React.FC = () => {
   const [showTips, setShowTips] = useState<boolean>(false);
   const [isDataValid, setIsDataValid] = useState<boolean>(false);
   const [displayChangePassword, setDisplayChangePassword] = useState<boolean>(false);
+
+  const router = useRouter();
 
   const changeFormDataHandler = (name: keyof RegistDataType, text: string | boolean) => {
     setFormData(prev => ({ ...prev, [name]: typeof text === 'string' ? text.replace(/\s/g, '') : text }));
@@ -91,6 +95,16 @@ const AccountDataScreen: React.FC = () => {
     } else setShowTips(true);
   }
 
+  const goToChangePasswordScreen = () => {
+    router.push({
+      stack: 'ProfileStack',
+      screen: 'AccountDataScreen',
+      params: {
+        subView: 'ChangePasswordScreen',
+      }
+    });
+  };
+
   return (
     <ScreenHeaderProvider {...(!userData ? { title: 'Przykładowe dane' } : {})}>
       <View style={styles.Wrapper}>
@@ -136,6 +150,16 @@ const AccountDataScreen: React.FC = () => {
               {...(showTips && !(formData.mobile_number?.length === 0 || formData.mobile_number?.length === 3 || formData.mobile_number?.length === 12) && { bottomText: 'Niepoprawny numer telefonu' })}
             />
           </View>
+          <Button
+            variant='text'
+            borderBottom
+            arrowRight
+            onPress={() => goToChangePasswordScreen()}
+          >
+            <Typography variant='h5'>
+              Zmień hasło
+            </Typography>
+          </Button>
           {/* {!!userData && <View style={{ flexDirection: 'row' }}>
             <TouchableOpacity style={{ padding: 10, marginLeft: -10 }} onPress={() => setDisplayChangePassword(prev => !prev)}>
               <Typography variant='h5' weight="SemiBold" color={displayChangePassword ? Colors.Blue500 : Colors.Basic600} style={{ textDecorationLine: 'underline' }}>
@@ -191,10 +215,10 @@ const styles = StyleSheet.create({
   },
   Content: {
     flex: 1,
-    paddingHorizontal: 24,
   },
   margin: {
     marginVertical: 12,
+    marginHorizontal: 19
   },
 })
 
