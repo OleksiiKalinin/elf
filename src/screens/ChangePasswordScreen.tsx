@@ -1,50 +1,49 @@
-import React, { useEffect, useState } from 'react';
-import { View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
-import { ContactPersonType } from '../store/reducers/types';
-import Typography from '../components/atoms/Typography';
+import React, { useState } from 'react';
+import { View, StyleSheet, Platform } from 'react-native';
 import TextField from '../components/molecules/TextField';
 import ScreenHeaderProvider from '../components/organismes/ScreenHeaderProvider';
 import Button from '../components/molecules/Button';
 import Colors from '../colors/Colors';
 import useRouter from '../hooks/useRouter';
 import { ScrollView } from '../components/molecules/ScrollView';
-import TimePickerModal from '../components/modified_modules/react-native-paper-dates/Time/TimePickerModal';
-import validateMail from '../hooks/validateMail';
-import Modal from '../components/atoms/Modal';
-import CheckBox from '../components/atoms/CheckBox';
-import { Separator } from 'tamagui';
-import { isString } from 'lodash';
 import { useTypedDispatch } from '../hooks/useTypedDispatch';
 import authServices from '../services/authServices';
 import { useTypedSelector } from '../hooks/useTypedSelector';
 import { Snackbar } from 'react-native-paper';
 
-export type PasswordType = {
-  oldPassword: string,
-  password: string,
+type PasswordType = {
+  currentPassword: string,
+  newPassword: string,
   confirmPassword: string,
-}
+};
 
-const ChangePasswordScreen: React.FC = () => {
+export type ChangePasswordScreenProps = {
+  callback: () => void,
+};
+
+const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = ({ callback }) => {
   const dispatch = useTypedDispatch();
-  const { userData, token } = useTypedSelector(state => state.general);
-  const [showTips, setShowTips] = useState<boolean>(false);
-  const [showTimepicker, setShowTimepicker] = useState<'start' | 'end' | false>(false);
-  const [errorModal, setErrorModal] = useState<string | null>(null);
   const { backToRemoveParams } = useRouter();
+  const { userData } = useTypedSelector(state => state.general);
+  const [showTips, setShowTips] = useState<boolean>(false);
   const [error, setError] = useState<null | string>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<PasswordType>({
-    oldPassword: '',
-    password: '',
+    currentPassword: '',
+    newPassword: '',
     confirmPassword: '',
   });
 
+  const changeFormDataHandler = (name: keyof PasswordType, text: string) => {
+    setFormData(prev => ({ ...prev, [name]: text.replace(/\s/g, '') }));
+  };
+
   const validateData = () => {
-    const { password, confirmPassword } = formData;
-    if(
-      password.length >= 8
-      && (password === confirmPassword)
-    ){
+    const { newPassword, confirmPassword } = formData;
+    if (
+      newPassword.length >= 8
+      && (newPassword === confirmPassword)
+    ) {
       return true;
     } else {
       setShowTips(true);
@@ -53,21 +52,24 @@ const ChangePasswordScreen: React.FC = () => {
     };
   };
 
-  const changeFormDataHandler = (name: keyof PasswordType, text: string) => {
-    setFormData(prev => ({ ...prev, [name]: text.replace(/\s/g, '') }));
-  };
-
   const handleConfirm = async () => {
-    const { oldPassword, password } = formData;
+    setLoading(true);
+    const { currentPassword, newPassword } = formData;
     if (validateData()) {
-      const validOldPassword = await dispatch(authServices.login({ username: userData?.email as string, password: formData.oldPassword }));
-      if(validOldPassword && oldPassword === password){
-        setError('Nowe hasło musi się różnić od poprzedniego!');
-      } else if (validOldPassword && oldPassword !== password){
-        alert('Zmieniono hasło');
+      const validCurrentPassword = await dispatch(authServices.checkPassword({ username: userData?.email as string, password: formData.currentPassword }));
+      if (validCurrentPassword && currentPassword !== newPassword) {
+        callback();
+        backToRemoveParams();
+      } else if (validCurrentPassword && currentPassword === newPassword) {
+        setError('Nowe hasło musi się różnić od obecnego');
+        setLoading(false);
+      } else if (!validCurrentPassword) {
+        setError('Niepoprawne aktualne hasło');
+        setLoading(false);
       };
     } else {
       setShowTips(true);
+      setLoading(false);
     };
   };
 
@@ -76,23 +78,23 @@ const ChangePasswordScreen: React.FC = () => {
       <ScrollView style={styles.ScrollView} contentContainerStyle={{ paddingTop: 25 }}>
         <View style={styles.TextField}>
           <TextField
-            label='Obecne hasło'
+            label='Aktualne hasło'
             textContentType='password'
             secureTextEntry
-            value={formData.oldPassword}
-            onChangeText={text => changeFormDataHandler('oldPassword', text)}
-            {...(showTips && formData.password.length < 8 && { bottomText: 'Niepoprawne hasło' })}
+            value={formData.currentPassword}
+            onChangeText={text => changeFormDataHandler('currentPassword', text)}
+            {...(showTips && formData.currentPassword.length < 8 && { bottomText: 'Niepoprawne hasło' })}
           />
         </View>
         <View style={styles.TextField}>
           <TextField
-            label='Hasło'
+            label='Nowe hasło'
             textContentType='password'
             secureTextEntry
-            value={formData.password}
-            onChangeText={text => changeFormDataHandler('password', text)}
-            onPressIn={() => console.log(formData.password)}
-            {...(showTips && formData.password.length < 8 && { bottomText: 'Hasło powinno zawierac min. 8 znaków' })}
+            value={formData.newPassword}
+            onChangeText={text => changeFormDataHandler('newPassword', text)}
+            onPressIn={() => console.log(formData.newPassword)}
+            {...(showTips && formData.newPassword.length < 8 && { bottomText: 'Hasło powinno zawierac min. 8 znaków' })}
           />
         </View>
         <View style={styles.TextField}>
@@ -102,14 +104,17 @@ const ChangePasswordScreen: React.FC = () => {
             secureTextEntry
             value={formData.confirmPassword}
             onChangeText={text => changeFormDataHandler('confirmPassword', text)}
-            {...(showTips && (!formData.confirmPassword || (formData.password !== formData.confirmPassword)) && { bottomText: 'Niepoprawnie powtórzone hasło' })}
+            {...(showTips && (!formData.confirmPassword || (formData.newPassword !== formData.confirmPassword)) && { bottomText: 'Niepoprawnie powtórzone hasło' })}
           />
         </View>
       </ScrollView>
-
       <View>
-        <Button onPress={() => handleConfirm()}>
-          Potwierdź
+        <Button
+          onPress={() => handleConfirm()}
+          disabled={loading}
+          withLoading
+        >
+          Zaktualizuj
         </Button>
       </View>
       <Snackbar
@@ -138,7 +143,8 @@ const styles = StyleSheet.create({
     flex: 1
   },
   TextField: {
-    marginHorizontal: 19
+    marginVertical: 12,
+    marginHorizontal: 19,
   }
 });
 

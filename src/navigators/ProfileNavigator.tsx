@@ -24,6 +24,7 @@ import { GoogleMapScreenProps } from '../screens/GoogleMapScreen';
 import { JobCategoryScreenProps } from '../screens/JobCategoryScreen';
 import { ItemSelectorScreenProps } from '../screens/ItemSelectorScreen';
 import { SocialMediaScreenProps } from '../screens/SocialMediaScreen';
+import { ChangePasswordScreenProps } from '../screens/ChangePasswordScreen';
 
 type SubView<T extends keyof ProfileStackParamList['extended']> = { subView: T } & ProfileStackParamList['extended'][T] | { subView?: never };
 
@@ -47,7 +48,11 @@ export type ProfileStackParamList = {
     CompanyScreen: { newProfile?: string, subView?: 'options' } | undefined,
     PackagesScreen: undefined,
     SettingsScreen: undefined,
-    AccountDataScreen: SubView<'ChangePasswordScreeen'> | undefined,
+    AccountDataScreen:
+    { subView?: 'options' }
+    | SubView<'ChangePasswordScreen'>
+    | undefined
+    ,
     PaymentScreen: undefined,
     EditPaymentScreen: undefined,
     AddPaymentScreen: undefined,
@@ -80,7 +85,7 @@ export type ProfileStackParamList = {
     JobCategoryScreen: JobCategoryScreenProps,
     ItemSelectorScreen: ItemSelectorScreenProps,
     SocialMediaScreen: SocialMediaScreenProps,
-    ChangePasswordScreeen: any,
+    ChangePasswordScreen: ChangePasswordScreenProps,
   }
 }
 

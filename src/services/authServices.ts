@@ -72,6 +72,25 @@ const deleteAccount = () => async (dispatch: AppDispatch, getState: () => rootSt
     await dispatch(generalActions.LogOut());
 };
 
+const checkPassword = (formData: LoginDataType) => async (dispatch: AppDispatch, getState: () => rootState) => {
+    const {  } = getState().general;
+
+    try {
+        const res = await axios.post(`/api-auth/token/`, {
+            ...pythonAdmin, ...formData,
+            'grant_type': 'password',
+        });
+        if (res.data) {
+            return true;
+        } else {
+            return false;
+        };
+    } catch (error: any) {
+        console.log(error)
+        // return await errorHandler({ error, dispatch, getState, caller: login.bind(this, formData) });
+    }
+};
+
 const resetPassword = (email: string) => async (dispatch: AppDispatch, getState: () => rootState) => {
     const {  } = getState().general;
 
@@ -161,4 +180,5 @@ export default {
     facebookSignin,
     resetPassword,
     deleteAccount,
+    checkPassword,
 };
