@@ -22,6 +22,7 @@ const transpilePackages = [
   'react-native-vector-icons',
   'expo-linear-gradient',
   'react-native-shadow-2',
+  'react-native-web-webview',
 ];
 
 const plugins = [
@@ -67,7 +68,18 @@ module.exports = function () {
       config.resolve.alias = {
         ...(config.resolve.alias || {}),
         'react-native-maps': 'react-native-web-maps',
-      }
+        'react-native-webview': 'react-native-web-webview',
+      };
+
+      config.module.rules.push({
+        test: /postMock.html$/,
+        use: {
+          loader: 'file-loader',
+          options: {
+            name: '[name].[ext]',
+          },
+        },
+      })
 
       return config;
     },

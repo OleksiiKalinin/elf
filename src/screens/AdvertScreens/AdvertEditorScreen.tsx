@@ -3,6 +3,7 @@ import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   Dimensions,
+  Platform,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -15,7 +16,7 @@ import { AdvertStackParamList } from '../../navigators/AdvertNavigator';
 import { AddressType, NewUserAdvertType, UserAdvertType } from '../../store/reducers/types';
 import { useDispatch } from 'react-redux';
 import advertsServices from '../../services/advertsServices';
-import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
+import ScreenHeaderProvider, { SCREEN_HEADER_HEIGHT } from '../../components/organismes/ScreenHeaderProvider';
 import { ScrollView } from '../../components/molecules/ScrollView';
 import Typography from '../../components/atoms/Typography';
 import SvgIcon from '../../components/atoms/SvgIcon';
@@ -36,6 +37,7 @@ import { TimePickerModal } from '../../components/modified_modules/react-native-
 import { languages } from '../ProfileScreens/CompanyEditorScreen';
 import AdvertLarge from '../../components/organismes/AdvertLarge';
 import MainDataCard from '../ProfileScreens/CompanyScreenRoutes/MainDataCard/MainDataCard';
+import { WebView } from 'react-native-webview';
 
 const MaxPlanCardWidth = 310;
 
@@ -64,7 +66,7 @@ const packages = [
   },
 ];
 
-const stepsOrder = ['fillData', 'paymentPlan', 'paymentMethods', 'summary', 'result'] as const;
+const stepsOrder = ['fillData', 'paymentPlan', 'paymentMethods', 'summary', 'payment', 'test', 'result'] as const;
 export type AdvertEditorStepType = typeof stepsOrder[number];
 
 const headers: { [k in AdvertEditorStepType]: string } = {
@@ -72,6 +74,8 @@ const headers: { [k in AdvertEditorStepType]: string } = {
   paymentPlan: 'Nowe ogłoszenie - wybierz plan',
   paymentMethods: 'Nowe ogłoszenie - metoda płatności',
   summary: 'Nowe ogłoszenie - podsumowanie',
+  payment: 'Nowe ogłoszenie - bramka płatności',
+  test: '',
   result: 'Nowe ogłoszenie - opublikowane!',
 }
 
@@ -80,6 +84,8 @@ const submitButtonText: { [k in AdvertEditorStepType]: string } = {
   paymentPlan: 'Dalej',
   paymentMethods: 'Podsumowanie',
   summary: 'Akceptuję i płacę',
+  payment: '',
+  test: '',
   result: 'Na Główną',
 }
 
@@ -377,10 +383,17 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
 
   return userCompany && step && (
     <ScreenHeaderProvider
-      title={advertExists ? 'Edytuj ogłoszenie' : headers[step]}
+      // title={advertExists ? 'Edytuj ogłoszenie' : headers[step]}
+      title={headers[step]}
       backgroundContent={Colors.Basic100}
+      staticContentHeightOnWeb={step === 'payment'}
     >
-      <ScrollView contentContainerStyle={{ paddingBottom: 30 }}>
+      <ScrollView
+        contentContainerStyle={{
+          paddingBottom: step === 'payment' ? 0 : 30,
+          height: step === 'payment' && Platform.OS === 'web' ? '100%' : undefined
+        }}
+      >
         {step === 'fillData' && <>
           <View style={{ marginLeft: 19, marginTop: 32, marginBottom: 16 }}>
             <Typography weight="Bold" size={20}>Podstawowe</Typography>
@@ -599,7 +612,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                     </View>
                   </>}
                 </View>
-                {(index < thisArray.length - 1) && <View style={{marginHorizontal: 19, marginBottom: 10, marginTop: -6}}>
+                {(index < thisArray.length - 1) && <View style={{ marginHorizontal: 19, marginBottom: 10, marginTop: -6 }}>
                   <Typography color={Colors.Basic600} weight='SemiBold' textAlign='center'>{'-lub-'}</Typography>
                 </View>}
               </>))}
@@ -938,66 +951,64 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           </View>
           <Separator />
         </>}
-        {
-          step === 'paymentPlan' && <>
-            <ScrollView horizontal showsHorizontalScrollIndicator contentContainerStyle={{ paddingLeft: 20 }}>
-              {packageTypes.map((item) =>
-                <View style={{
-                  maxWidth: MaxPlanCardWidth - (windowSizes.width > MaxPlanCardWidth * 2 ? 40 : 0),
-                  width: windowSizes.width - 70,
-                  marginVertical: 20,
-                  marginRight: 20,
-                  backgroundColor: Colors.Basic200
-                }}>
-                  <Typography variant="h2" weight="Bold" style={{ marginLeft: 19 }}>
-                    {item.price}zł <Typography variant="main"> tydzień</Typography>
-                  </Typography>
-                  <Typography style={{ marginLeft: 19, marginBottom: 6 }}>
-                    {item.type}
-                  </Typography>
-                  <View style={{ paddingVertical: 8, paddingHorizontal: 19 }}>
-                    {packages[0].active.map(item => (
-                      <View style={{ flexDirection: 'row', marginVertical: 8 }}>
-                        <SvgIcon icon="check" style={{ alignSelf: 'center' }} />
-                        <Typography variant="small" style={{ paddingLeft: 11, alignSelf: 'center', flex: 1 }}>
-                          {item}
-                        </Typography>
-                      </View>
-                    ))}
-                    {packages[0].nonactive.map(item => (
-                      <View style={{ flexDirection: 'row', marginVertical: 8 }}>
-                        <SvgIcon icon="closeX" style={{ alignSelf: 'center' }} />
-                        <Typography variant="small" style={{ paddingLeft: 11, alignSelf: 'center', flex: 1 }} color={Colors.Basic600}>
-                          {item}
-                        </Typography>
-                      </View>
-                    ))}
-                  </View>
-                  {selectedPaymentPlan === item.id ?
-                    <Button
-                      size='medium'
-                      variant='secondarySelected'
-                      icon={<SvgIcon icon='check' />}
-                      onPress={() => setSelectedPaymentPlan(null)}
-                    >
-                      Wybrano
-                    </Button>
-                    :
-                    <Button
-                      size='medium'
-                      variant='secondary'
-                      onPress={() => setSelectedPaymentPlan(item.id)}
-                    >
-                      Wybierz
-                    </Button>
-                  }
+        {step === 'paymentPlan' && <>
+          <ScrollView horizontal showsHorizontalScrollIndicator contentContainerStyle={{ paddingLeft: 20 }}>
+            {packageTypes.map((item) =>
+              <View style={{
+                maxWidth: MaxPlanCardWidth - (windowSizes.width > MaxPlanCardWidth * 2 ? 40 : 0),
+                width: windowSizes.width - 70,
+                marginVertical: 20,
+                marginRight: 20,
+                backgroundColor: Colors.Basic200
+              }}>
+                <Typography variant="h2" weight="Bold" style={{ marginLeft: 19 }}>
+                  {item.price}zł <Typography variant="main"> tydzień</Typography>
+                </Typography>
+                <Typography style={{ marginLeft: 19, marginBottom: 6 }}>
+                  {item.type}
+                </Typography>
+                <View style={{ paddingVertical: 8, paddingHorizontal: 19 }}>
+                  {packages[0].active.map(item => (
+                    <View style={{ flexDirection: 'row', marginVertical: 8 }}>
+                      <SvgIcon icon="check" style={{ alignSelf: 'center' }} />
+                      <Typography variant="small" style={{ paddingLeft: 11, alignSelf: 'center', flex: 1 }}>
+                        {item}
+                      </Typography>
+                    </View>
+                  ))}
+                  {packages[0].nonactive.map(item => (
+                    <View style={{ flexDirection: 'row', marginVertical: 8 }}>
+                      <SvgIcon icon="closeX" style={{ alignSelf: 'center' }} />
+                      <Typography variant="small" style={{ paddingLeft: 11, alignSelf: 'center', flex: 1 }} color={Colors.Basic600}>
+                        {item}
+                      </Typography>
+                    </View>
+                  ))}
                 </View>
-              )}
-            </ScrollView>
-          </>
-        }
-        {
-          step === 'paymentMethods' && <View style={{ padding: 19, alignItems: 'flex-start' }}>
+                {selectedPaymentPlan === item.id ?
+                  <Button
+                    size='medium'
+                    variant='secondarySelected'
+                    icon={<SvgIcon icon='check' />}
+                    onPress={() => setSelectedPaymentPlan(null)}
+                  >
+                    Wybrano
+                  </Button>
+                  :
+                  <Button
+                    size='medium'
+                    variant='secondary'
+                    onPress={() => setSelectedPaymentPlan(item.id)}
+                  >
+                    Wybierz
+                  </Button>
+                }
+              </View>
+            )}
+          </ScrollView>
+        </>}
+        {step === 'paymentMethods' && (
+          <View style={{ padding: 19, alignItems: 'flex-start' }}>
             {['BLIK', 'DZIK', 'KLIK'].map((e) => (
               <Button
                 size='medium'
@@ -1011,60 +1022,95 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
               </Button>
             ))}
           </View>
-        }
-        {
-          step === 'summary' && <>
-            <View style={{ padding: 19 }}>
-              {selectedPaymentPlan && <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Typography>{'Pakiet: '}</Typography>
-                <Typography variant='h5' weight='SemiBold'>{packageTypes[selectedPaymentPlan].type}</Typography>
-                <Typography weight='Bold'>{'  '}{packageTypes[selectedPaymentPlan].price}{' zł'}</Typography>
-              </View>}
-              {selectedPaymentMethod && <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
-                <Typography>{'Metoda płatności: '}</Typography>
-                <Typography variant='h5' weight='SemiBold'>{selectedPaymentMethod}</Typography>
-              </View>}
-              <View style={{ alignItems: 'flex-start' }}>
-                <Button
-                  onPress={() => submitHandler(true)}
-                  disabled={loading}
-                  variant='secondary'
-                  size='medium'
-                  withLoading
-                  stickyBottom
-                  fullwidth={false}
-                  borderRadius={4}
-                >
-                  Zapłać później*
-                </Button>
-              </View>
-              <Typography variant='small' color={Colors.Basic600} style={{ paddingVertical: 5 }}>
-                *Ogłoszenie będzie zapisane na koncie, ale nie będzie widoczne dla kandydatów. (Zakładka "W edycji")
-              </Typography>
+        )}
+        {step === 'summary' && <>
+          <View style={{ padding: 19 }}>
+            {selectedPaymentPlan && <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Typography>{'Pakiet: '}</Typography>
+              <Typography variant='h5' weight='SemiBold'>{packageTypes[selectedPaymentPlan].type}</Typography>
+              <Typography weight='Bold'>{'  '}{packageTypes[selectedPaymentPlan].price}{' zł'}</Typography>
+            </View>}
+            {selectedPaymentMethod && <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+              <Typography>{'Metoda płatności: '}</Typography>
+              <Typography variant='h5' weight='SemiBold'>{selectedPaymentMethod}</Typography>
+            </View>}
+            <View style={{ alignItems: 'flex-start' }}>
+              <Button
+                onPress={() => submitHandler(true)}
+                disabled={loading}
+                variant='secondary'
+                size='medium'
+                withLoading
+                stickyBottom
+                fullwidth={false}
+                borderRadius={4}
+              >
+                Zapłać później*
+              </Button>
             </View>
-            <Accordion
-              title='Podgląd ogłoszenia'
-              style={{ backgroundColor: Colors.Basic200, height: 50 }}
-            >
-              <AdvertLarge {...advertData} />
-            </Accordion>
-            {/* <MainDataCard {...userCompany} /> */}
-          </>
-        }
-        {
-          step === 'result' && <>
-            <Typography>result</Typography>
-          </>
-        }
-      </ScrollView >
-      <Button
+            <Typography variant='small' color={Colors.Basic600} style={{ paddingVertical: 5 }}>
+              *Ogłoszenie będzie zapisane na koncie, ale nie będzie widoczne dla kandydatów. (Zakładka "W edycji")
+            </Typography>
+          </View>
+          <Accordion
+            title='Podgląd ogłoszenia'
+            style={{ backgroundColor: Colors.Basic200, height: 50 }}
+          >
+            <AdvertLarge {...advertData} />
+          </Accordion>
+          {/* <MainDataCard {...userCompany} /> */}
+        </>}
+        {step === 'payment' && <>
+          <WebView
+            // onLoadStart={() => console.log(Date.now(), 'onLoadStart')}
+            // onLoadEnd={() => console.log(Date.now(), 'onLoadEnd')}
+            // onLoad={(e) => console.log('onLoad', (e.target as any).contentWindow.location)}
+            source={{ uri: 'http://localhost:3000/adverts/AdvertEditorScreen?step=test' }}
+            style={{ width: '100%', height: '100%' }}
+            onMessage={(e) => console.log(typeof e.nativeEvent.data === 'string')}
+            // onMessage={(e) => console.log(JSON.parse(e.nativeEvent.data || '{}').isOk)}
+          // style={{ width: Math.min(windowSizes.width, 768), height: windowSizes.height - SCREEN_HEADER_HEIGHT }}
+          />
+        </>}
+        {step === 'test' && <>
+          <Typography>thank you for payment</Typography>
+          <Button
+            onPress={() => {
+              var payloadStr = JSON.stringify({
+                isOk: true,
+                haha: false
+              });
+
+              if ((window as any).ReactNativeWebView?.postMessage) {
+                (window as any).ReactNativeWebView.postMessage(payloadStr);
+              } else if (window.parent?.postMessage) {
+                window.parent.postMessage(payloadStr, '*');
+              } else if (window.postMessage) {
+                window.postMessage(payloadStr, '*');
+              }
+            }}
+          >dalej</Button>
+        </>}
+        {step === 'result' && <>
+          <Typography>result</Typography>
+        </>}
+      </ScrollView>
+      {!!submitButtonText[step] && <Button
+        onPress={() => submitHandler()}
+        disabled={loading}
+        withLoading
+        stickyBottom
+      >
+        {submitButtonText[step]}
+      </Button>}
+      {/* <Button
         onPress={() => submitHandler()}
         disabled={loading}
         withLoading
         stickyBottom
       >
         {advertExists ? 'Zapisz' : submitButtonText[step]}
-      </Button>
+      </Button> */}
     </ScreenHeaderProvider >
   );
 };
