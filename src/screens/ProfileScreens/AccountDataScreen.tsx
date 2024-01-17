@@ -1,10 +1,7 @@
-import { Linking, StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import React, { Children, useEffect, useState } from 'react'
-import { AuthStackParamList } from '../../navigators/AuthNavigator';
-import { CompositeScreenProps, useRoute } from '@react-navigation/native';
+import { StyleSheet, View, Platform } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import Colors from '../../colors/Colors';
 import authServices from '../../services/authServices';
-import { useDispatch } from 'react-redux';
 import validateMail from '../../hooks/validateMail';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
@@ -16,55 +13,100 @@ import Button from '../../components/molecules/Button';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { ScrollView } from '../../components/molecules/ScrollView';
 import useRouter from '../../hooks/useRouter';
-import Typography from '../../components/atoms/Typography';
+import { Snackbar } from 'react-native-paper';
+import { createParam } from 'solito';
 
 export type RegistDataType = {
   email: string,
   first_name: string,
   last_name: string,
   mobile_number: string | null,
-  password: string,
-  new_password: string,
-  confirmNewPassword: string,
 }
+
+const { useParam } = createParam<NonNullable<ProfileStackParamList['default']['AccountDataScreen']>>();
 
 const AccountDataScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const { userData, token } = useTypedSelector(state => state.general);
   const { setSwipeablePanelProps } = useActions();
+  const [subView] = useParam('subView');
+  const router = useRouter();
   const [formData, setFormData] = useState<RegistDataType>({
     email: userData ? userData.email : 'twoj_email@elf.pl',
     first_name: userData ? userData.first_name : 'Kochany',
     last_name: userData ? userData.last_name : 'Użytkownik',
     mobile_number: userData ? userData.mobile_number : '123456789',
-    password: '',
-    new_password: '',
-    confirmNewPassword: ''
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [showTips, setShowTips] = useState<boolean>(false);
   const [isDataValid, setIsDataValid] = useState<boolean>(false);
-  const [displayChangePassword, setDisplayChangePassword] = useState<boolean>(false);
-
-  const router = useRouter();
+  const [snackbar, setSnackbar] = useState<{ type: 'success' | 'error', text: string | null }>({
+    type: 'error',
+    text: null,
+  });
 
   const changeFormDataHandler = (name: keyof RegistDataType, text: string | boolean) => {
     setFormData(prev => ({ ...prev, [name]: typeof text === 'string' ? text.replace(/\s/g, '') : text }));
-  }
+  };
 
   useEffect(() => {
-    const { email, first_name, last_name, mobile_number, password, confirmNewPassword, new_password } = formData;
+    const { email, first_name, last_name, mobile_number } = formData;
     setIsDataValid(Boolean(
       validateMail(email) &&
       first_name &&
       last_name &&
-      (displayChangePassword ? (
-        (mobile_number?.length === 0 || formData.mobile_number?.length === 3 || mobile_number?.length === 12) &&
-        password.length >= 8 &&
-        (new_password === confirmNewPassword)
-      ) : true)
+      (mobile_number?.length === 0 || formData.mobile_number?.length === 3 || mobile_number?.length === 12)
     ))
-  }, [formData, displayChangePassword]);
+  }, [formData]);
+
+  useEffect(() => {
+    if (subView !== 'ChangePasswordScreen') {
+      setSwipeablePanelProps((() => {
+        if (subView === 'options') return {
+          title: 'Co robimy tym razem?',
+          closeButton: true,
+          buttons: [
+            {
+              children: 'Zmień hasło',
+              onPress: () => goToChangePasswordScreen(),
+              closeAction: 'props-null',
+            },
+            {
+              children: 'Usuń konto',
+              contentVariant: 'h5',
+              contentColor: Colors.Danger,
+              closeAction: 'none',
+              onPress: () => setSwipeablePanelProps({
+                title: 'Na pewno chcesz usunąć konto?',
+                closeButton: true,
+                buttons: [
+                  {
+                    children: 'TAK',
+                    contentColor: Colors.Danger,
+                    onPress: async () => {
+                      await dispatch(authServices.deleteAccount());
+                      setSwipeablePanelProps({
+                        title: 'Twoje konto zostało usunięte!',
+                        closeButton: false,
+                        buttons: [
+                          {
+                            children: 'OK',
+                            contentColor: Colors.Basic600,
+                            onPress: () => goHomeScreen(),
+                          }
+                        ]
+                      })
+                    }
+                  }
+                ]
+              })
+            },
+          ]
+        }
+        return null;
+      })());
+    }
+  }, [subView]);
 
   const changeHandler = async () => {
     if (isDataValid) {
@@ -78,22 +120,36 @@ const AccountDataScreen: React.FC = () => {
           diff = true;
         }
       });
-      // if (diff) {
-      //   const isOk = await dispatch(generalServices.setUserData(data, 'put'));
-      //   if (!!isOk) {
-      //     setSwipeablePanelProps({
-      //       title: 'Dane zostały zmienione!',
-      //       closeButton: false,
-      //       buttons: [{
-      //         children: 'OK',
-      //         onPress: () => { }
-      //       }]
-      //     })
-      //   }
-      // }
-      // setLoading(false);
+      if (diff) {
+        const isOk = await dispatch(generalServices.setUserData(data, 'put'));
+        if (!!isOk) {
+          setSwipeablePanelProps({
+            title: 'Dane zostały zmienione!',
+            closeButton: false,
+            buttons: [{
+              children: 'OK',
+              onPress: () => goToProfile()
+            }]
+          })
+        };
+      } else {
+        goToProfile();
+      };
+      setLoading(false);
     } else setShowTips(true);
   }
+
+  const changePasswordSnackbar = () => {
+    setSnackbar({ type: 'success', text: 'Zmieniono hasło' });
+  };
+
+  const setOptions = () => {
+    router.push({
+      stack: 'ProfileStack',
+      screen: 'AccountDataScreen',
+      params: { subView: 'options' }
+    });
+  };
 
   const goToChangePasswordScreen = () => {
     router.push({
@@ -101,15 +157,38 @@ const AccountDataScreen: React.FC = () => {
       screen: 'AccountDataScreen',
       params: {
         subView: 'ChangePasswordScreen',
+        callback: changePasswordSnackbar,
       }
     });
   };
 
+  const goToProfile = () => {
+    router.push({
+      stack: 'ProfileStack',
+      screen: 'MainScreen',
+      params: undefined,
+    });
+  };
+
+  const goHomeScreen = () => {
+    router.push({
+      stack: 'MenuStack',
+      screen: 'MainScreen',
+      params: undefined,
+    });
+  };
+
   return (
-    <ScreenHeaderProvider {...(!userData ? { title: 'Przykładowe dane' } : {})}>
+    <ScreenHeaderProvider
+      actions={[{
+        icon: 'threeDots',
+        onPress: setOptions,
+      }]}
+      {...(!userData ? { title: 'Przykładowe dane' } : {})}
+    >
       <View style={styles.Wrapper}>
         <ScrollView style={styles.Content}>
-          <View style={[styles.margin, { marginTop: 45 }]}>
+          <View style={[styles.TextField, { marginTop: 45 }]}>
             <TextField
               label='Email'
               value={formData.email}
@@ -120,7 +199,7 @@ const AccountDataScreen: React.FC = () => {
               caretHidden
             />
           </View>
-          <View style={styles.margin}>
+          <View style={styles.TextField}>
             <TextField
               label='Imię'
               textContentType='name'
@@ -129,7 +208,7 @@ const AccountDataScreen: React.FC = () => {
               {...(showTips && !formData.first_name && { bottomText: 'Nie zostało podane imię' })}
             />
           </View>
-          <View style={styles.margin}>
+          <View style={styles.TextField}>
             <TextField
               label='Nazwisko'
               textContentType='name'
@@ -138,7 +217,7 @@ const AccountDataScreen: React.FC = () => {
               {...(showTips && !formData.last_name && { bottomText: 'Nie zostało podane nazwisko' })}
             />
           </View>
-          <View style={styles.margin}>
+          <View style={styles.TextField}>
             <TextField
               label='Telefon (opcjonalne)'
               textContentType='telephoneNumber'
@@ -150,63 +229,34 @@ const AccountDataScreen: React.FC = () => {
               {...(showTips && !(formData.mobile_number?.length === 0 || formData.mobile_number?.length === 3 || formData.mobile_number?.length === 12) && { bottomText: 'Niepoprawny numer telefonu' })}
             />
           </View>
-          <Button
-            variant='text'
-            borderBottom
-            arrowRight
-            onPress={() => goToChangePasswordScreen()}
-          >
-            <Typography variant='h5'>
-              Zmień hasło
-            </Typography>
-          </Button>
-          {/* {!!userData && <View style={{ flexDirection: 'row' }}>
-            <TouchableOpacity style={{ padding: 10, marginLeft: -10 }} onPress={() => setDisplayChangePassword(prev => !prev)}>
-              <Typography variant='h5' weight="SemiBold" color={displayChangePassword ? Colors.Blue500 : Colors.Basic600} style={{ textDecorationLine: 'underline' }}>
-                {displayChangePassword ? 'Nie zmieniaj hasło' : 'Zmień hasło'}
-              </Typography>
-            </TouchableOpacity>
-          </View>}
-          {displayChangePassword && <>
-            <View style={styles.margin}>
-              <TextField
-                label='Aktualne hasło'
-                textContentType='password'
-                secureTextEntry
-                value={formData.password}
-                onChangeText={text => changeFormDataHandler('password', text)}
-                {...(showTips && formData.password.length < 8 && { bottomText: 'Niepoprawne hasło' })}
-              />
-            </View>
-            <View style={styles.margin}>
-              <TextField
-                label='Nowe hasło'
-                textContentType='password'
-                secureTextEntry
-                value={formData.new_password}
-                onChangeText={text => changeFormDataHandler('new_password', text)}
-                {...(showTips && formData.new_password.length < 8 && { bottomText: 'Niepoprawne hasło' })}
-              />
-            </View>
-            <View style={styles.margin}>
-              <TextField
-                label='Powtórz nowe hasło'
-                textContentType='password'
-                secureTextEntry
-                value={formData.confirmNewPassword}
-                onChangeText={text => changeFormDataHandler('confirmNewPassword', text)}
-                {...(showTips && (!formData.confirmNewPassword || (formData.new_password !== formData.confirmNewPassword)) && { bottomText: 'Niepoprawnie powtórzone hasło' })}
-              />
-            </View>
-          </>} */}
         </ScrollView>
         <View>
-          <Button withLoading={!!token} disabled={!token || loading} onPress={changeHandler}>Zaktualizuj</Button>
+          <Button
+            withLoading={!!token}
+            disabled={!token || loading}
+            onPress={changeHandler}>Zaktualizuj
+          </Button>
         </View>
       </View>
+      <Snackbar
+        visible={!!snackbar.text}
+        onDismiss={() => setSnackbar(prev => ({ ...prev, text: null }))}
+        duration={4000}
+        wrapperStyle={{
+          maxWidth: 768,
+          alignItems: 'center',
+          position: Platform.OS === 'web' ? 'fixed' : 'absolute',
+        }}
+        style={{
+          backgroundColor: snackbar.type === 'error' ? Colors.Danger : Colors.SuccessDark,
+          maxWidth: 500,
+        }}
+      >
+        {snackbar.text}
+      </Snackbar>
     </ScreenHeaderProvider>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   Wrapper: {
@@ -216,7 +266,7 @@ const styles = StyleSheet.create({
   Content: {
     flex: 1,
   },
-  margin: {
+  TextField: {
     marginVertical: 12,
     marginHorizontal: 19
   },

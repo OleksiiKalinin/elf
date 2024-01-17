@@ -129,7 +129,7 @@ const MainScreen: React.FC = () => {
           arrowRight
           borderTop
           borderBottom
-          onPress={() => router.push({ stack: 'ProfileStack', screen: 'AccountDataScreen' })}
+          onPress={() => router.push({ stack: 'ProfileStack', screen: 'AccountDataScreen', params: undefined })}
         >
           <View style={styles.ArrowButton}>
             <View style={styles.ButtonIconContainer}>
@@ -191,6 +191,21 @@ const MainScreen: React.FC = () => {
             </Typography>
           </View>
         </Button>
+        <Button
+          variant='text'
+          arrowRight
+          borderBottom
+          onPress={() => router.push({ stack: 'ProfileStack', screen: 'SettingsScreen' })}
+        >
+          <View style={styles.ArrowButton}>
+            <View style={styles.ButtonIconContainer}>
+              <SvgIcon icon='settings' />
+            </View>
+            <Typography weight='SemiBold' variant='h5' style={{ alignSelf: 'center' }}>
+              Ustawienia
+            </Typography>
+          </View>
+        </Button>
         {!!token && <View style={{ flex: 1, marginVertical: 20, alignItems: 'center', justifyContent: 'flex-end' }}>
           <TouchableOpacity onPress={logoutHandler}>
             <Typography color={Colors.Danger} variant="h4" weight='SemiBold' style={{ textDecorationLine: 'underline', textAlign: 'center', }}>
@@ -212,21 +227,7 @@ const MainScreen: React.FC = () => {
           marginBottom={false}
           marginTop={false}
         /> */}
-        <Button
-          variant='text'
-          arrowRight
-          borderBottom
-          onPress={() => router.push({ stack: 'ProfileStack', screen: 'SettingsScreen' })}
-        >
-          <View style={styles.ArrowButton}>
-            <View style={styles.ButtonIconContainer}>
-              <SvgIcon icon='settings' />
-            </View>
-            <Typography weight='SemiBold' variant='h5' style={{ alignSelf: 'center' }}>
-              Ustawienia
-            </Typography>
-          </View>
-        </Button>
+ 
         {/* <View style={{ marginTop: 32, paddingLeft: 19 }}>
           <Typography weight='Bold' size={20}>Twoje punkty</Typography>
         </View>

@@ -1,111 +1,103 @@
-import { Linking, StyleSheet, Text, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { CompositeScreenProps, useIsFocused, useRoute } from '@react-navigation/native';
+import { StyleSheet, View } from 'react-native';
+import React, { useState } from 'react';
 import Colors from '../../colors/Colors';
-import { useActions } from '../../hooks/useActions';
-import { useTypedSelector } from '../../hooks/useTypedSelector';
 import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
-import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import Switch from '../../components/atoms/Switch';
 import { ScrollView } from '../../components/molecules/ScrollView';
+import { Separator } from 'tamagui';
 
 const NotificationScreen: React.FC = () => {
   const notifications = [
     {
+      id: 1,
       name: 'Wiadomości',
-      content:
-        'Otrzymuj powiadomienia za każdym razem, gdy dostaniesz nową wiadomość.',
+      content: 'Otrzymuj powiadomienia za każdym razem, gdy dostaniesz nową wiadomość.',
     },
     {
+      id: 2,
       name: 'Kalendarz',
-      content:
-        'Powiadomimy Cię o umówionych spotkaniach oraz ich modyfikacjach.',
+      content: 'Powiadomimy Cię o umówionych spotkaniach oraz ich modyfikacjach.',
     },
     {
+      id: 3,
       name: 'Statusy kandydatów',
       content: 'Damy Ci znać, gdy status kandydata ulegnie zmianie.',
     },
     {
+      id: 4,
       name: 'Inne oferty',
       content: 'Bądź na bieżąco z konkurencyjnymi ofertami pracy w pobliżu.',
     },
     {
+      id: 5,
       name: 'Wiedza',
-      content:
-        'Otrzymuj komunikaty dotyczące publikacji nowych artykułów, materiałów i informacji w bazie wiedzy.',
+      content: 'Otrzymuj komunikaty dotyczące publikacji nowych artykułów, materiałów i informacji w bazie wiedzy.',
     },
     {
+      id: 6,
       name: 'Aplikacje',
       content: 'Nie przegap nowych aplikacji na Twoje oferty pracy.',
     },
   ];
 
-  const [holdNotifies, setHoldNotifies] = useState(false);
-  const [turnAll, setTurnAll] = useState(false);
+  const [selectedNotifications, setSelectedNotifications] = useState(notifications.map(notification => notification.id));
 
-  const [switchState, setSwitchState] = useState([
-    false,
-    false,
-    false,
-    true,
-    false,
-    true,
-  ]);
-
-  // console.log(switchState);
+  const handleSelectedItems = (id: number) => {
+    const mySet = new Set([...selectedNotifications]);
+    if (mySet.has(id)) {
+      mySet.delete(id);
+    } else {
+      mySet.add(id);
+    }
+    setSelectedNotifications([...mySet]);
+  };
 
   return (
     <ScreenHeaderProvider>
       <View style={styles.Wrapper}>
         <ScrollView style={styles.Content}>
-          <View
-            style={[
-              styles.notificationItem,
-              { marginTop: 33, borderTopWidth: 1 },
-            ]}>
-            <Typography>Wstrzymaj wszystkie</Typography>
-            <Switch isOn={holdNotifies} onToggle={() => holdNotifies ? setHoldNotifies(false) : (setHoldNotifies(true))} />
+          <Separator />
+          <View style={[styles.notificationItem]}>
+            <Typography variant='h5' weight='Bold'>
+              Wstrzymaj wszystkie
+            </Typography>
+            <Switch
+              isOn={!selectedNotifications.length}
+              onToggle={(isOn) => isOn ? setSelectedNotifications([]) : setSelectedNotifications(notifications.map(notification => notification.id))}
+            />
           </View>
-
-          <View
-            style={[
-              styles.notificationItem,
-              { marginBottom: 25, borderTopWidth: 1 },
-            ]}>
-            <Typography>Wyłącz/Włącz wszystkie</Typography>
-            <Switch disabled={holdNotifies} isOn={turnAll} onToggle={() => turnAll ? (setTurnAll(false), setSwitchState([false, false, false, false, false, false])) : (setTurnAll(true), setSwitchState([true, true, true, true, true, true]))} />
-          </View>
-
-          <View
-            style={{ borderBottomWidth: 1, borderColor: Colors.Basic300 }}></View>
-          {notifications.map((item, index) => (
-            <View style={styles.notificationItem}>
-              <View style={{ width: '80%' }}>
-                <Typography>{item.name}</Typography>
-                <Typography variant="small" color={Colors.Basic600}>
-                  {item.content}
-                </Typography>
-              </View>
-              <Switch
-                disabled={holdNotifies}
-                isOn={switchState[index]}
-                onToggle={() =>
-                  setSwitchState(prevState => {
-                    const newState = [...prevState];
-                    newState[index] === true ? newState[index] = false : newState[index] = true;
-                    return newState;
-                  })
+          <Separator />
+          <View style={{ marginTop: 30 }}>
+            {notifications.map((item, index) => (
+              <>
+                {index === 0 &&
+                  <Separator />
                 }
-              />
-            </View>
-          ))}
+                <View style={styles.notificationItem}>
+                  <View style={{ width: '80%' }}>
+                    <Typography variant='h5' weight='Bold'>
+                      {item.name}
+                    </Typography>
+                    <Typography variant="small" color={Colors.Basic600}>
+                      {item.content}
+                    </Typography>
+                  </View>
+                  <Switch
+                    key={index}
+                    isOn={selectedNotifications.includes(item.id)}
+                    onToggle={() => handleSelectedItems(item.id)}
+                  />
+                </View>
+                <Separator />
+              </>
+            ))}
+          </View>
           <View
             style={{
-              borderBottomWidth: 1,
-              borderColor: Colors.Basic300,
               marginBottom: 50,
-            }}></View>
+            }}>
+          </View>
         </ScrollView>
       </View>
     </ScreenHeaderProvider>
@@ -119,6 +111,7 @@ const styles = StyleSheet.create({
   },
   Content: {
     flex: 1,
+    marginTop: 50,
   },
   notificationItem: {
     flexDirection: 'row',
@@ -126,8 +119,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingTop: 16,
     paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderColor: Colors.Basic300,
   },
 });
 
