@@ -26,6 +26,7 @@ export interface generalReducerState {
     userCompany: CompanyDataType | null,
     userAdverts: UserAdvertType[],
     userEvents: UserEventType[],
+    userSettings: UserSettingsType | null,
     candidateNotes: CandidateNotesType[],
     candidateMarks: CandidateMarkType[],
     marksData: MarkDataType[],
@@ -406,4 +407,9 @@ export interface UserQuestionsType {
     id: string,
     name: string,
     list: QuestionsCategoryType[]
+}
+
+export interface UserSettingsType {
+    notifications: number[],
+    cookies: number[],
 }

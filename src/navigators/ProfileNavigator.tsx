@@ -25,6 +25,7 @@ import { JobCategoryScreenProps } from '../screens/JobCategoryScreen';
 import { ItemSelectorScreenProps } from '../screens/ItemSelectorScreen';
 import { SocialMediaScreenProps } from '../screens/SocialMediaScreen';
 import { ChangePasswordScreenProps } from '../screens/ChangePasswordScreen';
+import CookieScreen from '../screens/ProfileScreens/CookieScreen';
 
 type SubView<T extends keyof ProfileStackParamList['extended']> = { subView: T } & ProfileStackParamList['extended'][T] | { subView?: never };
 
@@ -105,6 +106,7 @@ export const ProfileStackLinking: PathConfigMap<ProfileStackParamList['default']
   PrivacyScreen: 'PrivacyScreen',
   SettingsScreen: 'SettingsScreen',
   ToolsScreen: 'ToolsScreen',
+  CookieScreen: 'CookieScreen',
   //?????
   // PaymentMethods: 'PaymentMethods',
   // PaymentTemporalScreen: 'PaymentTemporalScreen',
@@ -113,7 +115,7 @@ export const ProfileStackLinking: PathConfigMap<ProfileStackParamList['default']
   // AddAdvert: 'AddAdvert',
   // AddCall: 'AddCall',
   // AddEvent: 'AddEvent',
-  // CookieScreen: 'CookieScreen',
+
   // CreateCompanyProfile: 'CreateCompanyProfile',
   // HelpCenterScreen: 'HelpCenterScreen',
   // Register: 'Register',
@@ -145,12 +147,12 @@ const ProfileNavigator: React.FC = () => {
       <ProfileStack.Screen name="PointsScreen" component={PointsScreen} />
       <ProfileStack.Screen name="MethodsScreen" component={MethodsScreen} />
       <ProfileStack.Screen name="ToolsScreen" component={ToolsScreen} />
+      <ProfileStack.Screen name="CookieScreen" component={CookieScreen} />
       {/* <ProfileStack.Screen name="SendingOffers" component={SendingOffers} />
       <ProfileStack.Screen name="RODO" component={RODO} />
       <ProfileStack.Screen name="ShareCamera" component={ShareCamera} />
       <ProfileStack.Screen name="ShareContacts" component={ShareContacts} />
       <ProfileStack.Screen name="ShareLocation" component={ShareLocation} />
-      <ProfileStack.Screen name="CookieScreen" component={CookieScreen} />
       <ProfileStack.Screen name="HelpCenterScreen" component={HelpCenterScreen} />
       <ProfileStack.Screen name="CreateCompanyProfile" component={CreateCompanyProfile} />
       <ProfileStack.Screen name="AddAdvert" component={AddAdvert} />
