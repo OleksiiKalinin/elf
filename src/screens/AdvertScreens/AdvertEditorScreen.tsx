@@ -66,7 +66,7 @@ const packages = [
   },
 ];
 
-const stepsOrder = ['fillData', 'paymentPlan', 'paymentMethods', 'summary', 'payment', 'test', 'result'] as const;
+const stepsOrder = ['fillData', 'paymentPlan', 'paymentMethods', 'summary', 'payment', 'result'] as const;
 export type AdvertEditorStepType = typeof stepsOrder[number];
 
 const headers: { [k in AdvertEditorStepType]: string } = {
@@ -75,7 +75,6 @@ const headers: { [k in AdvertEditorStepType]: string } = {
   paymentMethods: 'Nowe ogłoszenie - metoda płatności',
   summary: 'Nowe ogłoszenie - podsumowanie',
   payment: 'Nowe ogłoszenie - bramka płatności',
-  test: '',
   result: 'Nowe ogłoszenie - opublikowane!',
 }
 
@@ -85,7 +84,6 @@ const submitButtonText: { [k in AdvertEditorStepType]: string } = {
   paymentMethods: 'Podsumowanie',
   summary: 'Akceptuję i płacę',
   payment: '',
-  test: '',
   result: 'Na Główną',
 }
 
@@ -112,6 +110,9 @@ const salarySetsByContractType: {
   4: [{
     salary_tax_type_id: 2,
     salary_time_type_id: 3
+  }, {
+    salary_tax_type_id: 2,
+    salary_time_type_id: 2
   }],
   5: [{
     salary_tax_type_id: 2,
@@ -386,7 +387,10 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
       // title={advertExists ? 'Edytuj ogłoszenie' : headers[step]}
       title={headers[step]}
       backgroundContent={Colors.Basic100}
-      staticContentHeightOnWeb={step === 'payment'}
+      {...(step === 'payment' && {
+        mode: 'mainTitle',
+        staticContentHeightOnWeb: true,
+      })}
     >
       <ScrollView
         contentContainerStyle={{
@@ -820,7 +824,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                   <TouchableOpacity
                     onPress={() => goToSelectLanguagesScreen()}
                   >
-                    <Typography variant='h5' weight='Bold' color={Colors.Blue500} >
+                    <Typography variant='h5' weight='Bold' color={Colors.Blue500}>
                       Edytuj
                     </Typography>
                   </TouchableOpacity>
@@ -1065,31 +1069,21 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
             // onLoadStart={() => console.log(Date.now(), 'onLoadStart')}
             // onLoadEnd={() => console.log(Date.now(), 'onLoadEnd')}
             // onLoad={(e) => console.log('onLoad', (e.target as any).contentWindow.location)}
-            source={{ uri: 'http://localhost:3000/adverts/AdvertEditorScreen?step=test' }}
+            source={{ uri: 'http://localhost:3000/adverts/PaymentReturnScreen' }}
             style={{ width: '100%', height: '100%' }}
-            onMessage={(e) => console.log(typeof e.nativeEvent.data === 'string')}
-            // onMessage={(e) => console.log(JSON.parse(e.nativeEvent.data || '{}').isOk)}
-          // style={{ width: Math.min(windowSizes.width, 768), height: windowSizes.height - SCREEN_HEADER_HEIGHT }}
-          />
-        </>}
-        {step === 'test' && <>
-          <Typography>thank you for payment</Typography>
-          <Button
-            onPress={() => {
-              var payloadStr = JSON.stringify({
-                isOk: true,
-                haha: false
-              });
-
-              if ((window as any).ReactNativeWebView?.postMessage) {
-                (window as any).ReactNativeWebView.postMessage(payloadStr);
-              } else if (window.parent?.postMessage) {
-                window.parent.postMessage(payloadStr, '*');
-              } else if (window.postMessage) {
-                window.postMessage(payloadStr, '*');
+            onMessage={(e) => {
+              console.log(e.nativeEvent.data);
+              if (typeof e.nativeEvent.data === 'string') {
+                const data = JSON.parse(e.nativeEvent.data || '{}');
+                if (data.isOk) {
+                  setStepInitialParam('result', { webBehavior: 'replace' });
+                }
               }
             }}
-          >dalej</Button>
+            // onMessage={(e) => console.log(typeof e.nativeEvent.data === 'string')}
+          // onMessage={(e) => console.log(JSON.parse(e.nativeEvent.data || '{}').isOk)}
+          // style={{ width: Math.min(windowSizes.width, 768), height: windowSizes.height - SCREEN_HEADER_HEIGHT }}
+          />
         </>}
         {step === 'result' && <>
           <Typography>result</Typography>

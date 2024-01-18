@@ -51,6 +51,8 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   const retainedComponents = useRef<{ [k: string]: { component: ReactNode } }>({});
   const [theme, setTheme] = useRootTheme();
 
+  const noLayoutPage = Component.displayName === 'PaymentReturnScreen';
+
   const isRetainableRoute = ROUTES_TO_RETAIN.includes(router.asPath);
 
   const splittedRoute = router.asPath.split('/');
@@ -86,10 +88,10 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         }}
       />
       {/* don't touch googleapis */}
-      <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCuD83IZtlNNM3sxn9Hac4YSOXkRZurb9c&libraries=places&language=pl&region=pl"></script>
+      {!noLayoutPage && <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCuD83IZtlNNM3sxn9Hac4YSOXkRZurb9c&libraries=places&language=pl&region=pl"></script>}
       {/* don't touch googleapis */}
 
-      {appLoading && <View
+      {appLoading && !noLayoutPage && <View
         style={{
           position: 'fixed',
           top: 0,
@@ -122,23 +124,29 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
             style={styles.safeAreaProvider}
           >
             <GestureHandlerRootView style={styles.container}>
-              <AppUnifiedProvider>
-                <Layout>
-                  {/* __start Retained Components */}
-                  <View style={{ display: isRetainableRoute ? 'flex' : 'none', width: '100%', height: '100%' }}>
-                    {Object.entries(retainedComponents.current).map(([key, value]) => (
-                      <View
-                        key={key}
-                        style={{ display: router.asPath === key ? 'flex' : 'none', width: '100%', height: '100%' }}
-                      >
-                        {value.component}
-                      </View>
-                    ))}
-                  </View>
-                  {/* __end Retained Components */}
-                  {!isRetainableRoute && <Component {...pageProps} />}
+              {noLayoutPage ?
+                <Layout hideControls>
+                  <Component {...pageProps} />
                 </Layout>
-              </AppUnifiedProvider>
+                :
+                <AppUnifiedProvider>
+                  <Layout>
+                    {/* __start Retained Components */}
+                    <View style={{ display: isRetainableRoute ? 'flex' : 'none', width: '100%', height: '100%' }}>
+                      {Object.entries(retainedComponents.current).map(([key, value]) => (
+                        <View
+                          key={key}
+                          style={{ display: router.asPath === key ? 'flex' : 'none', width: '100%', height: '100%' }}
+                        >
+                          {value.component}
+                        </View>
+                      ))}
+                    </View>
+                    {/* __end Retained Components */}
+                    {!isRetainableRoute && <Component {...pageProps} />}
+                  </Layout>
+                </AppUnifiedProvider>
+              }
             </GestureHandlerRootView>
           </SafeAreaProvider>
         </TamaguiProvider>

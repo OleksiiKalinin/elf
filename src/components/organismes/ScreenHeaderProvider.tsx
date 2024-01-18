@@ -71,6 +71,7 @@ export const screensTitles: ScreensTitlesType = {
     AdvertScreen: '',
     AdvertEditorScreen: '',
     CandidatesScreen: '',
+    PaymentReturnScreen: '',
   },
   MenuStack: {
     MainScreen: 'Menu główne',
@@ -98,6 +99,7 @@ type ScreenHeaderProviderProps = {
   }[];
   otherActions?: ReactNode,
   transparent?: boolean;
+  hide?: boolean;
   staticContentHeightOnWeb?: boolean;
   callback?: () => void;
   headerItemsColor?: ColorValue,
@@ -115,6 +117,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   actions = null,
   otherActions = null,
   transparent = false,
+  hide = false,
   staticContentHeightOnWeb = false,
   alterTitle = null,
   callback,
@@ -127,7 +130,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   const [stack, screen] = currentScreen.split('-');
   // @ts-ignore
   const currentTitle: string = screensTitles[stack][screen] || '';
-  const HeaderSpace = transparent ? 0 : SCREEN_HEADER_HEIGHT;
+  const HeaderSpace = transparent || hide ? 0 : SCREEN_HEADER_HEIGHT;
   const BottomSpace = isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0;
   const StaticHeightForWeb = windowSizes.height - HeaderSpace - BottomSpace;
 
@@ -138,7 +141,12 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
       alignItems: 'center',
     }}>
       <View style={{ maxWidth: 768, width: '100%', flex: 1 }}>
-        <View style={[styles.Header, { backgroundColor: transparent && backgroundHeader ? backgroundHeader : transparent ? 'transparent' : Colors.White }]}>
+        <View
+          style={[styles.Header, {
+            backgroundColor: transparent && backgroundHeader ? backgroundHeader : (transparent ? 'transparent' : Colors.White),
+            display: hide ? 'none' : 'flex',
+          }]}
+        >
           {mode === 'backAction' && (
             <View style={{ flex: 1, height: '100%', alignItems: 'flex-start', flexDirection: 'row' }}>
               <Button
@@ -178,7 +186,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
                     <Button
                       circular
                       backgroundColor='transparent'
-                      icon={(typeof icon === 'string' ? <SvgIcon fill={headerItemsColor ??backgroundContent} icon={icon as IconTypes} /> : (typeof icon === 'object' ? icon : undefined)) as any}
+                      icon={(typeof icon === 'string' ? <SvgIcon fill={headerItemsColor ?? backgroundContent} icon={icon as IconTypes} /> : (typeof icon === 'object' ? icon : undefined)) as any}
                       onPress={onPress}
                     />
                   </View>))}

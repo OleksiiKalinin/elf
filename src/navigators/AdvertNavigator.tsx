@@ -9,6 +9,7 @@ import { JobCategoryScreenProps } from '../screens/JobCategoryScreen';
 import { GoogleMapScreenProps } from '../screens/GoogleMapScreen';
 import { ItemSelectorScreenProps } from '../screens/ItemSelectorScreen';
 import { CompanyDescriptionScreenProps } from '../screens/CompanyDescriptionScreen';
+import PaymentReturnScreen from '../screens/AdvertScreens/PaymentReturnScreen';
 
 type SubView<T extends keyof AdvertStackParamList['extended']> = ({ subView: T } & AdvertStackParamList['extended'][T]) | { subView?: never };
 
@@ -31,6 +32,7 @@ export type AdvertStackParamList = {
       | SubView<'ItemSelectorScreen'>
       | SubView<'CompanyDescriptionScreen'>
     ),
+    PaymentReturnScreen: undefined,
     CandidatesScreen: { id: string },
   },
   extended: {
@@ -46,6 +48,7 @@ export const AdvertStackLinking: PathConfigMap<AdvertStackParamList['default']> 
   AdvertScreen: 'AdvertScreen',
   AdvertEditorScreen: 'AdvertEditorScreen',
   CandidatesScreen: 'CandidatesScreen',
+  PaymentReturnScreen: 'PaymentReturnScreen',
 }
 
 const AdvertStack = createNativeStackNavigator<AdvertStackParamList['default']>();
@@ -57,6 +60,7 @@ const AdvertNavigator: React.FC = () => {
       <AdvertStack.Screen name="AdvertEditorScreen" component={AdvertEditorScreen} />
       <AdvertStack.Screen name="AdvertScreen" component={AdvertScreen} />
       <AdvertStack.Screen name="CandidatesScreen" component={CandidatesScreen} />
+      <AdvertStack.Screen name="PaymentReturnScreen" component={PaymentReturnScreen} />
     </AdvertStack.Navigator>
   );
 };

@@ -17,7 +17,7 @@ if (windowExists()) {
   win.currPage = window.sessionStorage.getItem('currPage');
 }
 
-export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
+export const Layout: FC<{ children: ReactNode, hideControls?: boolean }> = ({ children, hideControls: hideControls = false }) => {
   const { isTabbarVisible } = useTypedSelector(s => s.general);
   const { setCurrentScreen, setSwipeablePanelProps } = useActions();
   const router = useRouter();
@@ -38,15 +38,17 @@ export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
 
   return (
     <>
-      <View style={{ paddingBottom: isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0, minHeight: '100vh', backgroundColor: '#e3e3e3' /*useColorScheme() === 'dark' ? '#3c3c3c' : '#e3e3e3'*/, alignItems: 'center' }}>
+      <View style={{ paddingBottom: !hideControls && isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0, minHeight: '100vh', backgroundColor: '#e3e3e3' /*useColorScheme() === 'dark' ? '#3c3c3c' : '#e3e3e3'*/, alignItems: 'center' }}>
         <View style={{ height: '100%', maxWidth: 768, width: '100%', flex: 1 }}>
           {children}
         </View>
       </View>
-      <View style={styles.BottomTabs}>
-        <BottomTabs routes={Object.keys(navigationLinking.config?.screens || {})} />
-      </View>
-      <SwipeablePanel />
+      {!hideControls && <>
+        <View style={styles.BottomTabs}>
+          <BottomTabs routes={Object.keys(navigationLinking.config?.screens || {})} />
+        </View>
+        <SwipeablePanel />
+      </>}
     </>
   );
 };
