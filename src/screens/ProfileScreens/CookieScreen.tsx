@@ -9,23 +9,25 @@ import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { ScrollView } from '../../components/molecules/ScrollView';
+import Button from '../../components/molecules/Button';
+
+const notifications = [
+  {
+    name: 'Funkcjonalne pliki cookie',
+    content:
+      'Funkcjonalne pliki cookie sprawiają, że aplikacja jest wygodniejsza w nawigacji, a niektóre z jej obszarów - spersonalizowane.  Jeżeli je wyłączysz, nie będziemy w stanie zapewnić prawidłowego wykonania wszystkich usług, Funkcjonalne pliki cookie są ustawiane przez nas lub zewnętrznych dostawców.',
+  },
+  {
+    name: 'Pliki cookie social media',
+    content:
+      'Pliki cookie powiązane z social media są ustawiane przez portale społecznościowe. Aplikacja potrzebuje tych plików, aby użytkownicy mogli kontaktować się np. przez Facebook Messenger i udostępniać treści na zewnątrz (m.in. oferty pracy).',
+  },
+];
 
 const CookieScreen: React.FC = () => {
-  const notifications = [
-    {
-      name: 'Funkcjonalne pliki cookie',
-      content:
-        'Funkcjonalne pliki cookie sprawiają, że aplikacja jest wygodniejsza w nawigacji, a niektóre z jej obszarów - spersonalizowane.  Jeżeli je wyłączysz, nie będziemy w stanie zapewnić prawidłowego wykonania wszystkich usług, Funkcjonalne pliki cookie są ustawiane przez nas lub zewnętrznych dostawców.',
-    },
-    {
-      name: 'Pliki cookie social media',
-      content:
-        'Pliki cookie powiązane z social media są ustawiane przez portale społecznościowe. Aplikacja potrzebuje tych plików, aby użytkownicy mogli kontaktować się np. przez Facebook Messenger i udostępniać treści na zewnątrz (m.in. oferty pracy).',
-    },
-  ];
-
   const [acceptAll, setAcceptAll] = useState(false);
   const [acceptNecessary, setAcceptNecessary] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [switchState, setSwitchState] = useState([
     false,
@@ -43,7 +45,6 @@ const CookieScreen: React.FC = () => {
 
   return (
     <ScreenHeaderProvider>
-      <View style={styles.Wrapper}>
         <ScrollView style={styles.Content}>
 
           <Typography color={Colors.Basic700} style={{ marginHorizontal: 19, marginVertical: 12 }}>
@@ -102,7 +103,14 @@ const CookieScreen: React.FC = () => {
               marginBottom: 50,
             }}></View>
         </ScrollView>
-      </View>
+        <Button
+        stickyBottom
+        withLoading
+        disabled={loading}
+        /* onPress={() => changeHandler()} */
+      >
+        Zaktualizuj
+      </Button>
     </ScreenHeaderProvider>
   );
 };

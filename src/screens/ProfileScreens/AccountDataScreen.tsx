@@ -185,8 +185,8 @@ const AccountDataScreen: React.FC = () => {
         onPress: setOptions,
       }]}
       {...(!userData ? { title: 'Przykładowe dane' } : {})}
+      backgroundContent={Colors.Basic100}
     >
-      <View style={styles.Wrapper}>
         <ScrollView style={styles.Content}>
           <View style={[styles.TextField, { marginTop: 45 }]}>
             <TextField
@@ -230,14 +230,12 @@ const AccountDataScreen: React.FC = () => {
             />
           </View>
         </ScrollView>
-        <View>
           <Button
+            stickyBottom
             withLoading={!!token}
             disabled={!token || loading}
             onPress={changeHandler}>Zaktualizuj
           </Button>
-        </View>
-      </View>
       <Snackbar
         visible={!!snackbar.text}
         onDismiss={() => setSnackbar(prev => ({ ...prev, text: null }))}

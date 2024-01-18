@@ -29,6 +29,8 @@ import { Separator } from 'tamagui';
 import DraggableList from '../../components/organismes/DraggableList';
 import Modal from '../../components/atoms/Modal';
 import { Snackbar } from 'react-native-paper';
+import { Gift, Check } from '@tamagui/lucide-icons'
+
 
 export const languages: LanguageType[] = [
   {
@@ -230,14 +232,14 @@ const CompanyEditorScreen: React.FC = () => {
     } else if (
       !(
         (short_name && short_name.length > 2 && short_name.length <= 100)
-        && other_address
-        && isNumber(job_industry)
+        // && other_address
+        // && isNumber(job_industry)
         // && services
         // && contactPersons.lenght
         // && description
       )
     ) {
-      setError('Wypełnij wszystkie obowiązkowe pola!');
+      setError('Wypełnij wszystkie obowiązkowe pola z gwiazdką!');
       return false;
     } else if (
       !(
@@ -545,6 +547,74 @@ const CompanyEditorScreen: React.FC = () => {
     <>
       {token &&
         <ScreenHeaderProvider title={editMode ? 'Edytuj profil firmy' : 'Utwórz profil firmy'}>
+          {/* <View style={{backgroundColor: Colors.White, position: Platform.select({web: 'sticky' as any}), top: 50, zIndex: 100000}}>
+          <Separator />
+            <View style={{flexDirection: 'row', paddingVertical: 10,}}>
+            <View style={{flexDirection: 'row', flex: 1, marginLeft: 19}}>
+            <View style={{flex: 1}}>
+            <Slider
+              min={0}
+              max={100}
+              step={1}
+              value={[100]}
+            >
+              <Slider.Track >
+                <Slider.TrackActive backgroundColor={Colors.Green500}/>
+              </Slider.Track>
+            </Slider>
+            </View>
+            <View style={{width: 50, alignItems: 'center'}}>
+            <Check/>
+            </View>
+          </View>
+          <View style={{flexDirection: 'row', flex: 1}}>
+            <View style={{flex: 1}}>
+            <Slider
+              min={0}
+              max={100}
+              step={1}
+              value={[70]}
+            >
+              <Slider.Track >
+                <Slider.TrackActive backgroundColor={Colors.Green500}/>
+              </Slider.Track>
+            </Slider>
+            </View>
+            <View style={{width: 50, alignItems: 'center'}}>
+              <Gift color={Colors.Basic500}/>
+            </View>
+          </View>
+            </View>
+          </View> */}
+
+          <View style={{backgroundColor: Colors.White, position: Platform.select({web: 'sticky' as any}), top: 50, zIndex: 100000, paddingLeft: 19 }}>
+            <Separator />
+            <View style={{flexDirection: 'row', paddingVertical: 10 }}>
+              <View style={{flexDirection: 'row', flex: 1}}>
+                  <View style={{flexDirection: 'row', gap: 5, width: '100%', alignItems: 'center'}}>
+                  {[true, true, true, true, true, true,].map(item=> 
+                    <View style={{height: 4, borderRadius: 50, backgroundColor: item ? Colors.Green500 : Colors.Basic400, flex: 1}}/>
+                  )}
+                  <View style={{minWidth: 50, alignItems: 'center'}}>
+                  <Check />
+                </View>
+                  </View>
+                  
+              </View>
+              <View style={{flexDirection: 'row', flex: 1}}>
+              <View style={{flexDirection: 'row', gap: 5, width: '100%', alignItems: 'center'}}>
+                  {[true, true, true, false, false, false].map(item=> 
+                    <View style={{height: 4, borderRadius: 50, backgroundColor: item ? Colors.Green500 : Colors.Basic400, flex: 1}}/>
+                  )}
+                  <View style={{minWidth: 50, alignItems: 'center'}}>
+                  <Gift color={Colors.Basic500}/>
+                </View>
+                  </View>
+                  
+              </View>
+            </View>
+          </View>
+
           <ScrollView style={styles.Content} contentContainerStyle={{ paddingVertical: 20 }}>
             <Typography
               size={20}
@@ -1053,7 +1123,7 @@ const CompanyEditorScreen: React.FC = () => {
                             })}
                             onDragEnd={({ data }) => setCompanyCertificates(updateOrder(data))}
                             keyExtractor={({ path }) => path}
-                            renderItem={(props: RenderItemParams<MediaType>) => renderScrollPhotoItem({ ...props, mode: 'photos' })}
+                            renderItem={(props: RenderItemParams<MediaType>) => renderScrollPhotoItem({ ...props, mode: 'certificates' })}
                             contentContainerStyle={styles.DraggableImagesContent}
                             style={styles.DraggableImages}
                           />

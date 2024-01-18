@@ -30,6 +30,7 @@ const initialState: generalReducerState = {
     userCompany: null,
     userAdverts: [],
     userEvents: [],
+    userSettings: null,
     candidateNotes: [],
     candidateMarks: [],
     marksData: [],
@@ -88,6 +89,10 @@ export const generalReducer = (state = initialState, action: generalReducerActio
             return { ...state, userQuestions: action.payload };
         case generalActionTypes.SET_CANDIDATES_FILTERS:
             return { ...state, candidatesFilters: action.payload };
+        case generalActionTypes.SET_CANDIDATES_FILTERS:
+            return { ...state, candidatesFilters: action.payload };
+        case generalActionTypes.SET_USER_SETTINGS:
+            return { ...state, userSettings: action.payload };
         case generalActionTypes.LOG_OUT:
             AsyncStorage.multiRemove(['token', 'refresh_token']);
             googleSignOut();

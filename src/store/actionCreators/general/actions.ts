@@ -1,6 +1,6 @@
 import { SwipeablePanelProps } from "../../../components/organismes/SwipeablePanel";
 import { generalActionTypes } from "../../actions";
-import { AppDataType, CandidateMarkType, CandidateNotesType, CandidatesFiltersType, CompanyDataType, InvoiceType, JobIndustryType, UserAdvertType, UserDataType, UserEventType, UserQuestionsType, WindowSizesType } from "../../reducers/types";
+import { AppDataType, CandidateMarkType, CandidateNotesType, CandidatesFiltersType, CompanyDataType, InvoiceType, JobIndustryType, UserAdvertType, UserDataType, UserEventType, UserQuestionsType, UserSettingsType, WindowSizesType } from "../../reducers/types";
 import { generalReducerAction } from "./types";
 
 const setToken = (payload: {token: string | null, refresh_token: string | null}): generalReducerAction => ({
@@ -50,6 +50,11 @@ const setUserInvoices = (payload: InvoiceType[]): generalReducerAction => ({
 
 const setUserCompany = (payload: CompanyDataType | null): generalReducerAction => ({
     type: generalActionTypes.SET_USER_COMPANY,
+    payload
+})
+
+const setUserSettings = (payload: UserSettingsType | null): generalReducerAction => ({
+    type: generalActionTypes.SET_USER_SETTINGS,
     payload
 })
 
@@ -134,6 +139,7 @@ const generalActions = {
     setCandidatesFilters,
     resetStore,
     setError,
+    setUserSettings,
 };
 
 export default generalActions;

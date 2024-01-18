@@ -1,6 +1,6 @@
 import { SwipeablePanelProps } from "../../../components/organismes/SwipeablePanel";
 import { generalActionTypes } from "../../actions";
-import { AppDataType, CandidateMarkType, CandidateNotesType, CandidatesFiltersType, CompanyDataType, InvoiceType, JobExperienceType, JobIndustryType, JobSalaryModeType, JobSalaryTaxType, MarkDataType, NoteDataType, UserAdvertType, UserDataType, UserEventType, UserQuestionsType, WindowSizesType } from "../../reducers/types";
+import { AppDataType, CandidateMarkType, CandidateNotesType, CandidatesFiltersType, CompanyDataType, InvoiceType, JobExperienceType, JobIndustryType, JobSalaryModeType, JobSalaryTaxType, MarkDataType, NoteDataType, UserAdvertType, UserDataType, UserEventType, UserQuestionsType, UserSettingsType, WindowSizesType } from "../../reducers/types";
 
 interface setToken {
     type: generalActionTypes.SET_TOKEN,
@@ -45,6 +45,11 @@ interface setUserInvoices {
 interface setUserCompany {
     type: generalActionTypes.SET_USER_COMPANY,
     payload: CompanyDataType | null
+}
+
+interface setUserSettings {
+    type: generalActionTypes.SET_USER_SETTINGS,
+    payload: UserSettingsType | null
 }
 
 interface setIsTabbarVisible {
@@ -124,7 +129,8 @@ export type generalReducerAction =
     setUserData |
     setUserCompany |
     setUserAdverts |
-    setUserEvents |
+    setUserEvents | 
+    setUserSettings |
     setCandidateMarks |
     setCandidateNotes |
     setUserInvoices |
