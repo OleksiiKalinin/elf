@@ -65,7 +65,7 @@ const CompanyInvoiceScreen: React.FC<CompanyInvoiceScreenProps> = (props) => {
             })}
           /> */}
         </View>
-        {/* {companyData.main_address && <View style={{ marginHorizontal: 19, marginBottom: 15 }}>
+        {/* {companyData.registration_address && <View style={{ marginHorizontal: 19, marginBottom: 15 }}>
           <TextField
             label="Numer mieszkania/biura (opcjonalne)"
           // value={companyData.full_name || ''}

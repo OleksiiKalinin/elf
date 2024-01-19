@@ -18,6 +18,7 @@ import { ConfigureParams } from '@react-native-google-signin/google-signin';
 import LoadingScreen from '../atoms/LoadingScreen';
 import useRouter from '../../hooks/useRouter';
 import Colors from '../../colors/Colors';
+import { convertToFrontEndAddress } from '../../hooks/convertAddress';
 
 calendarLocaleConfig();
 geocoder.fallbackToGoogle('AIzaSyCuD83IZtlNNM3sxn9Hac4YSOXkRZurb9c');
@@ -106,9 +107,11 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
           if (getCertificates && getCertificates.length) certificates = getCertificates;
           if (getcompanyContactPersons && getcompanyContactPersons.length) contactPersons = getcompanyContactPersons;
           setUserCompany({
-            ...userCompany, logo,
+            ...userCompany,
+            registration_address: convertToFrontEndAddress(userCompany.registration_address as any),
+            address: convertToFrontEndAddress(userCompany.address as any),
+            logo, photos, certificates, contactPersons
             // video, 
-            photos, certificates, contactPersons
           });
         }).catch(() => { });
       }

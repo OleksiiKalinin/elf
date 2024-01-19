@@ -19,10 +19,8 @@ const emptyPerson: ContactPersonType  = {
   email: null,
   mobile_number: null,
   contact_hours: '08:00-18:00',
-  preferredFormsOfContact: {
-      phone: false,
-      email: false,
-  }
+  preferred_mobile_number: false,
+  preferred_email: false,
 };
 
 export type AddContactPersonsScreenProps = {
@@ -53,8 +51,8 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
     for (const contact of array) {
       if (
         contact.email && validateMail(contact.email) &&
-        contact.mobile_number && contact.mobile_number.length === 12 /* && */
-        // contact.preferredFormsOfContact.email || contact.preferredFormsOfContact.phone
+        contact.mobile_number && contact.mobile_number.length === 12 &&
+        contact.preferred_mobile_number || contact.preferred_email
       ) {
         continue;
       } else {
@@ -127,7 +125,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
   return (
     <ScreenHeaderProvider title='Dane do kontaktu'>
       <ScrollView style={styles.ScrollView} contentContainerStyle={{ paddingTop: 25 }}>
-        {contactPersons.map(({ email, mobile_number, id, contact_hours, preferredFormsOfContact }, index) => (
+        {contactPersons.map(({ email, mobile_number, id, contact_hours, preferred_mobile_number, preferred_email }, index) => (
           <View style={styles.ContactPerson} key={id}>
             <View style={styles.ContactPersonHeader}>
               <Typography size={18} weight='Bold' style={{ marginVertical: 10 }}>Osoba {index + 1}</Typography>
@@ -159,14 +157,14 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
                 })}
               />
             </View>
-            {/* <Typography weight="Bold" variant="h5" style={{ marginTop: 20 }}>
+            <Typography weight="Bold" variant="h5" style={{ marginTop: 20 }}>
               Preferowane formy kontaktu
             </Typography>
             <View style={{ marginTop: 20 }}>
               <Separator />
               <CheckBox
-                checked={preferredFormsOfContact.phone}
-                onCheckedChange={(value) => editContactPersons('preferredFormsOfContact', ({ ...preferredFormsOfContact, phone: value }), index,)}
+                checked={preferred_mobile_number}
+                onCheckedChange={(value) => editContactPersons('preferred_mobile_number', value, index,)}
                 leftTextView={
                   <Typography size={16} style={{ paddingVertical: 19 }}>
                     Telefon
@@ -176,8 +174,8 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
               />
               <Separator />
               <CheckBox
-                checked={preferredFormsOfContact.email}
-                onCheckedChange={(value) => editContactPersons('preferredFormsOfContact', ({ ...preferredFormsOfContact, email: value }), index,)}
+                checked={preferred_email}
+                onCheckedChange={(value) => editContactPersons('preferred_email', value, index,)}
                 leftTextView={
                   <Typography size={16} style={{ paddingVertical: 19 }}>
                     Email
@@ -186,12 +184,12 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
                 style={{ marginTop: 20 }}
               />
               <Separator />
-              {(showTips && (!preferredFormsOfContact.email && !preferredFormsOfContact.phone)) &&
+              {(showTips && (!preferred_email && !preferred_mobile_number)) &&
                 <Typography size={12} color={Colors.Danger}>
                   Zaznacz co najmniej jedno z pól
                 </Typography>
               }
-            </View> */}
+            </View>
             <View style={styles.ContactHoursHeader}>
               <Typography weight="Bold" variant="h5">
                 Godziny kontaktu

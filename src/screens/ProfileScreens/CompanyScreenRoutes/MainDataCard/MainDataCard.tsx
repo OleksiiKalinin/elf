@@ -47,8 +47,8 @@ const MainDataCard: FC<CompanyDataType> = (companyData) => {
             <Typography variant='h5' weight='SemiBold'>{currentIndustry?.name}</Typography>
           </View>
         </View>
-        <Typography size={20} weight='Bold'>{companyData?.short_name}</Typography>
-        <Typography color={Colors.Basic600}>{companyData?.other_address?.formattedAddress}</Typography>
+        <Typography size={20} weight='Bold'>{companyData?.name}</Typography>
+        <Typography color={Colors.Basic600}>{companyData?.address?.formattedAddress}</Typography>
         {/* <TouchableOpacity style={{marginVertical: 10}} onPress={() => companyData.video?.path && Linking.openURL(companyData.video?.path)}>
                     <Typography color={Colors.Blue500} style={{textDecorationLine: 'underline'}}>Oglądaj film o firmie</Typography>
                 </TouchableOpacity> */}

@@ -72,7 +72,7 @@ const AdvertLarge: React.FC<NewUserAdvertType> = props => {
               {jobIndustries.find(curr => curr.id === userCompany?.job_industry)?.job_positions.find(curr => curr.id === job_position_id)?.name}
             </Typography>
             <Typography variant="h5" weight="SemiBold" color={Colors.Basic700}>
-              {userCompany?.short_name}
+              {userCompany?.name}
             </Typography>
           </View>
         </View>

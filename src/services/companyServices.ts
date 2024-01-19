@@ -3,9 +3,10 @@ import { Dispatch } from "react";
 import generalActions from "../store/actionCreators/general/actions";
 import { CompanyDataType, MediaType, ContactPersonType } from "../store/reducers/types";
 import Lodash from 'lodash';
-import { convertToBackEndAddress } from "../hooks/convertAddress";
+import { convertToBackEndAddress, convertToFrontEndAddress } from "../hooks/convertAddress";
 import { AppDispatch, rootState } from "../store";
 import { Platform } from "react-native";
+import base64ToBlob from "../hooks/base64ToBlob";
 
 const createUserCompany = (props: {
   companyData: CompanyDataType,
@@ -20,8 +21,8 @@ const createUserCompany = (props: {
     const { companyCertificates, companyData, companyLogo, /* companyVideo,  */companyPhotos, contactPersons: companyContactPersons } = props;
     const newCompany = await axios.post(`/employer/companies/`, [{
       ...companyData,
-      main_address: convertToBackEndAddress(companyData.main_address),
-      other_address: convertToBackEndAddress(companyData.other_address)
+      registration_address: convertToBackEndAddress(companyData.registration_address),
+      address: convertToBackEndAddress(companyData.address)
     }], { headers: dynamicHeaders({ token }) });
     const company_id = newCompany.data[0]?.id;
     if (company_id) {
@@ -104,7 +105,9 @@ const createUserCompany = (props: {
             });
           }
         });
+        companyCertificatesFormData.append("order_list", JSON.stringify(Array(companyCertificates.length).fill(0).map((_, i) => i)));
         companyCertificatesFormData.append("company_id", company_id);
+
         const res = await axios.post(`/employer/company_certificates/`, companyCertificatesFormData, {
           headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
           transformRequest: () => companyCertificatesFormData
@@ -116,7 +119,9 @@ const createUserCompany = (props: {
         contactPersons = res.data || null;
       }
 
-      await dispatch(generalActions.setUserCompany({ ...newCompany.data[0], logo, video, photos, certificates, contactPersons }));
+      console.log(newCompany.data[0]);
+
+      await dispatch(generalActions.setUserCompany({ ...newCompany.data[0], registration_address: convertToFrontEndAddress(newCompany.data[0].registration_address), address: convertToFrontEndAddress(newCompany.data[0].address), logo, video, photos, certificates, contactPersons }));
     }
     return true;
   } catch (error: any) {
@@ -143,8 +148,8 @@ const editUserCompany = (props: {
         if (!Lodash.isEqual(oldMainCompanyData, newMainCompanyData)) {
           const res = await axios.put(`/employer/companies/${id}/`, {
             ...newMainCompanyData,
-            main_address: convertToBackEndAddress(newMainCompanyData.main_address),
-            other_address: convertToBackEndAddress(newMainCompanyData.other_address),
+            registration_address: convertToBackEndAddress(newMainCompanyData.registration_address),
+            address: convertToBackEndAddress(newMainCompanyData.address),
           }, { headers: dynamicHeaders({ token }) });
           if (res.data) newCompanyData = { ...newCompanyData, ...res.data };
         }
@@ -163,6 +168,8 @@ const editUserCompany = (props: {
         }
         // @ts-ignore
         companyLogoFormData.append("company_id", newCompanyData.id);
+
+        console.log(companyLogoFormData);
 
         let resLogo = null;
         if (!oldCompanyData.logo && !!companyLogo) {
@@ -239,6 +246,7 @@ const editUserCompany = (props: {
         // @ts-ignore
         companyPhotosFormData.append("company_id", oldCompanyData.id);
 
+        console.log('FormData:', ...companyPhotosFormData as any)
         console.log('Order:', orderData);
         console.log('All:', companyCertificates);
         console.log('Push:', forPushArray);
@@ -269,9 +277,10 @@ const editUserCompany = (props: {
         }, []) || [];
         const orderData = companyCertificates.reduce<{ id: number, order: number }[]>((prev, { id }, order) => id ? [...prev, { id, order: order }] : prev, []);
 
-        forPushArray.forEach(({ path, mime }) => {
+        forPushArray.forEach(({ path, mime, order }) => {
           if (Platform.OS === 'web' && path) {
             companyCertificatesFormData.append("file_location", base64ToBlob(path));
+            // companyCertificatesFormData.append("order", JSON.stringify(order));
           } else {
             // @ts-ignore
             companyCertificatesFormData.append("file_location", {
@@ -286,6 +295,7 @@ const editUserCompany = (props: {
         // @ts-ignore
         companyCertificatesFormData.append("company_id", oldCompanyData.id);
 
+        console.log('FormData:', ...companyCertificatesFormData as any) 
         console.log('Order:', orderData);
         console.log('All:', companyCertificates);
         console.log('Push:', forPushArray);
@@ -329,7 +339,7 @@ const editUserCompany = (props: {
         });
       };
 
-      await dispatch(generalActions.setUserCompany(newCompanyData));
+      await dispatch(generalActions.setUserCompany({...newCompanyData, registration_address: convertToFrontEndAddress(newCompanyData.registration_address as any), address: convertToFrontEndAddress(newCompanyData.address as any),}));
     }
     return true;
   } catch (error: any) {
@@ -407,8 +417,4 @@ export default {
   getUserCompanyCertificates,
   getUserCompanyContactPersons,
   deleteUserCompany,
-}
-
-function base64ToBlob(path: string): string | Blob {
-  throw new Error("Function not implemented.");
 }

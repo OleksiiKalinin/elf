@@ -117,7 +117,7 @@ const EventEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial 
         candidate_id: selectedCandidate?.id,
         candidate_first_name: selectedCandidate?.first_name,
         candidate_second_name: selectedCandidate?.last_name,
-        company_name: userCompany?.short_name as string,
+        company_name: userCompany?.name as string,
         start_time: new Date(startDate.toISOString().split('T')[0] + 'T' + startTime.toISOString().split('T')[1]).toISOString(),
         end_time: new Date(endDate.toISOString().split('T')[0] + 'T' + endTime.toISOString().split('T')[1]).toISOString(),
         job_offer: selectedAdvert?.id as number,

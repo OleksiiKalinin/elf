@@ -314,27 +314,17 @@ export interface ServiceType {
 export interface CompanyDataType {
     id: number,
     job_industry: number | null,
-    short_name: string | null,
-    full_name: string | null,
+    name: string | null,
+    registration_name: string | null,
     nip: string | null,
-    main_address: AddressType | null,
-    other_address: AddressType | null,
-    // registrationData: {
-    //     nip: string,
-    //     name: string,
-    //     address: string,
-    // },
+    registration_address: AddressType | null,
+    address: AddressType | null,
     description: string | null,
     contactPersons: ContactPersonType[],
     services?: number[] | null,
     logo?: MediaType | null,
     photos?: MediaType[] | null,
     certificates?: MediaType[] | null,
-    // images: {
-    //     logo?: MediaType | null,
-    //     photos?: MediaType[] | null,
-    //     certificates?: MediaType[] | null,
-    // },
     employees_amount?: number | null,
     square_footage?: string | null,
     languages?: number[] | null,
@@ -342,12 +332,6 @@ export interface CompanyDataType {
     account_facebook?: string | null,
     account_instagram?: string | null,
     account_linkedIn?: string | null,
-    // socialMedia: {
-    //     website?: string | null,
-    //     account_facebook?: string | null,
-    //     account_instagram?: string | null,
-    //     account_linkedIn?: string | null,
-    // },
 }
 
 export type MediaType = {
@@ -366,10 +350,8 @@ export interface ContactPersonType {
     email: string | null,
     mobile_number: string | null,
     contact_hours: string | null,
-    preferredFormsOfContact: {
-        phone: boolean,
-        email: boolean,
-    }
+    preferred_mobile_number: boolean,
+    preferred_email: boolean,
 }
 
 export interface AddressType {

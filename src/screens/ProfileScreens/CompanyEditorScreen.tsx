@@ -167,11 +167,11 @@ const CompanyEditorScreen: React.FC = () => {
   const [companyData, setCompanyData] = useState<CompanyDataType>(userCompany || {
     id: -1,
     job_industry: null,
-    short_name: null,
-    full_name: null,
+    name: null,
+    registration_name: null,
     nip: null,
-    main_address: null,
-    other_address: null,
+    registration_address: null,
+    address: null,
     description: null,
     employees_amount: null,
     square_footage: null,
@@ -201,6 +201,10 @@ const CompanyEditorScreen: React.FC = () => {
   const companyPhotosLimit = 20;
   const companyCertificatesLimit = 20;
 
+  useEffect(()=> {
+    console.log(companyData)
+  }, [companyData])
+
   useLayoutEffect(() => {
     if (userCompany) {
       setEditMode(true);
@@ -219,7 +223,7 @@ const CompanyEditorScreen: React.FC = () => {
   }, [userCompany, token]);
 
   const validateData = () => {
-    const { short_name, logo, other_address, job_industry, services, contactPersons, description, full_name, main_address, nip, employees_amount } = companyData;
+    const { name, logo, address, job_industry, services, contactPersons, description, registration_name, registration_address, nip, employees_amount, square_footage } = companyData;
     if (
       !(
         !isNumber(logoProgress)
@@ -231,8 +235,8 @@ const CompanyEditorScreen: React.FC = () => {
       return false;
     } else if (
       !(
-        (short_name && short_name.length > 2 && short_name.length <= 100)
-        // && other_address
+        (name && name.length > 2 && name.length <= 100)
+        // && address
         // && isNumber(job_industry)
         // && services
         // && contactPersons.lenght
@@ -243,7 +247,8 @@ const CompanyEditorScreen: React.FC = () => {
       return false;
     } else if (
       !(
-        !(isNumber(employees_amount) || null)
+        ((square_footage && square_footage.length <= 8) || null)
+        && (isNumber(employees_amount) || null)
       )
     ) {
       setError('Wypełnij poprawnie dodatkowe pola lub pozostaw je puste');
@@ -420,12 +425,12 @@ const CompanyEditorScreen: React.FC = () => {
       screen: 'CompanyEditorScreen',
       params: {
         subView: 'CompanyInvoiceScreen',
-        callback: (address, NIP, full_name) => {
-          changeCompanyDataHandler('full_name', full_name, false);
-          changeCompanyDataHandler('main_address', address);
+        callback: (registration_address, NIP, registration_name) => {
+          changeCompanyDataHandler('registration_name', registration_name, false);
+          changeCompanyDataHandler('registration_address', registration_address);
         },
-        address: companyData.main_address,
-        full_name: companyData.full_name,
+        address: companyData.registration_address,
+        full_name: companyData.registration_name,
         NIP: '',
         title: 'Dodaj dane do faktury'
       }
@@ -626,9 +631,9 @@ const CompanyEditorScreen: React.FC = () => {
             <View style={styles.CompanyName}>
               <TextField
                 label="Nazwa firmy*"
-                value={companyData.short_name || ''}
-                onChangeText={text => changeCompanyDataHandler('short_name', text, false)}
-                {...(showTips && (!companyData.short_name || companyData.short_name?.length < 3 || companyData.short_name.length > 100) && {
+                value={companyData.name || ''}
+                onChangeText={text => changeCompanyDataHandler('name', text, false)}
+                {...(showTips && (!companyData.name || companyData.name?.length < 3 || companyData.name.length > 100) && {
                   bottomText: 'Nazwa firmy musi zawierać od 3 do 100 znaków',
                 })}
               />
@@ -636,14 +641,14 @@ const CompanyEditorScreen: React.FC = () => {
             <View style={{ marginBottom: 24 }}>
               <MapPreview
                 label='Lokalizacja*'
-                place={companyData.other_address?.formattedAddress}
+                place={companyData.address?.formattedAddress}
                 onPress={() => router.push({
                   stack: 'ProfileStack',
                   screen: 'CompanyEditorScreen',
                   params: {
                     subView: 'GoogleMapScreen',
-                    callback: (address) => changeCompanyDataHandler('other_address', address),
-                    initialAddress: companyData.other_address
+                    callback: (address) => changeCompanyDataHandler('address', address),
+                    initialAddress: companyData.address
                   }
                 })}
               />
@@ -822,7 +827,7 @@ const CompanyEditorScreen: React.FC = () => {
                 </Typography>
               </Button>
             }
-            {(companyData.full_name && companyData.nip && companyData.main_address) ?
+            {(companyData.registration_name && companyData.nip && companyData.registration_address) ?
               <>
                 <View style={styles.ContactPersonsFilled}>
                   <View style={styles.ContactPersonsFilledTitle}>

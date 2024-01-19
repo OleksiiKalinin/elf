@@ -34,14 +34,14 @@ const companyExample: CompanyDataType = {
 
   Zatrudniamy 12 wykwalifikowanych pracowników, którzy dbają nie tylko o profesjonalną obsługę, lecz również odpowiednią atmosferę. Oferujemy usługi cateringowe, umożliwiając zamawianie jedzenia za pomocą najpopularniejszych aplikacji kurierskich.
   `,
-  full_name: "blablablabla",
+  registration_name: "blablablabla",
   nip: '777-888-88-11',
   job_industry: 3,
   logo: {
     id: 1,
     path: 'https://i.etsystatic.com/11979725/r/il/2af489/1431674872/il_fullxfull.1431674872_d74y.jpg',
   },
-  main_address: {
+  registration_address: {
     adminArea: "Podlaskie",
     country: "Polska",
     countryCode: "PL",
@@ -59,7 +59,7 @@ const companyExample: CompanyDataType = {
     subAdminArea: "Powiat suwalski",
     subLocality: null
   },
-  other_address: {
+  address: {
     adminArea: "Dolnośląskie",
     country: "Polska",
     countryCode: "PL",
@@ -77,7 +77,7 @@ const companyExample: CompanyDataType = {
     subAdminArea: "Powiat kamiennogórski",
     subLocality: null
   },
-  short_name: "Firma testowa",
+  name: "Firma testowa",
   square_footage: '50 - 100',
   website: 'www.google.pl',
   contactPersons: [],
@@ -240,6 +240,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
 
   useEffect(() => {
     if (userCompany) setCompanyData(userCompany);
+    console.log('Get:', userCompany?.photos);
   }, [userCompany]);
 
   useEffect(() => {
@@ -409,7 +410,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
             }
             <View style={styles.BasicCompanyData}>
               <Image source={{ uri: companyData.logo?.path ?? basicLogo }} style={styles.CompanyLogo} />
-              <Typography size={20} weight='Bold' style={{ marginTop: 15 }}>{companyData?.short_name}</Typography>
+              <Typography size={20} weight='Bold' style={{ marginTop: 15 }}>{companyData?.name}</Typography>
               <View style={styles.IndustryContainer}>
                 {/* <View style={styles.IndustryLogoContainer}>
                   <View style={{ position: 'absolute' }}>
@@ -426,7 +427,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
                 </View>
               </View>
               <Typography color={Colors.Basic600}>
-                {companyData?.other_address?.formattedAddress}
+                {companyData?.address?.formattedAddress}
               </Typography>
             </View>
             {!!(companyData.employees_amount || companyData.square_footage) &&
