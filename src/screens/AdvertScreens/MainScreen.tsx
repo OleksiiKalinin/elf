@@ -12,11 +12,6 @@ import {
 import { AdvertStackParamList } from '../../navigators/AdvertNavigator';
 import Colors from '../../colors/Colors';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import { nativeStore } from '../../store';
-import { useActions } from '../../hooks/useActions';
-import { SceneMap } from 'react-native-tab-view';
-import { useDispatch } from 'react-redux';
-import advertsServices from '../../services/advertsServices';
 import { UserAdvertType } from '../../store/reducers/types';
 import TabbarMenu, { TabbarRoute } from '../../components/organismes/TabbarMenu';
 import Typography from '../../components/atoms/Typography';
@@ -106,14 +101,14 @@ const MainScreen: React.FC = () => {
       backgroundContent={Colors.Basic100}
     >
       <TabbarMenu
+        onlyTabs
         stickyTop={SCREEN_HEADER_HEIGHT}
         backgroundColor={Colors.White}
         animationEnabled={false}
         navigationState={{ index: tabbarIndex, routes }}
         onIndexChange={setTabbarIndex}
-        renderScene={SceneMap({ 0: () => null, 1: () => null, 2: () => null })}
       />
-      <ScrollView>
+      <ScrollView style={{flex: 1}}>
         {{
           0: adverts.active,
           1: adverts.notActive,

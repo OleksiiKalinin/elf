@@ -1,7 +1,8 @@
 import { CommonActions, CompositeScreenProps, useIsFocused } from '@react-navigation/native';
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
+  BackHandler,
   Dimensions,
   Platform,
   StyleSheet,
@@ -69,17 +70,35 @@ const packages = [
 const stepsOrder = ['fillData', 'paymentPlan', 'paymentMethods', 'summary', 'payment', 'result'] as const;
 export type AdvertEditorStepType = typeof stepsOrder[number];
 
-const headers: { [k in AdvertEditorStepType]: string } = {
+const newAdvertHeaders: { [k in AdvertEditorStepType]: string } = {
   fillData: 'Nowe ogłoszenie - dane',
   paymentPlan: 'Nowe ogłoszenie - wybierz plan',
   paymentMethods: 'Nowe ogłoszenie - metoda płatności',
   summary: 'Nowe ogłoszenie - podsumowanie',
   payment: 'Nowe ogłoszenie - bramka płatności',
-  result: 'Nowe ogłoszenie - opublikowane!',
+  result: 'Nowe ogłoszenie - gotowe!',
 }
 
-const submitButtonText: { [k in AdvertEditorStepType]: string } = {
+const existedAdvertHeaders: { [k in AdvertEditorStepType]: string } = {
+  fillData: 'Edytuj ogłoszenie',
+  paymentPlan: 'Twoje ogłoszenie - plan',
+  paymentMethods: 'Twoje ogłoszenie - metoda płatności',
+  summary: 'Twoje ogłoszenie - podsumowanie',
+  payment: 'Twoje ogłoszenie - bramka płatności',
+  result: 'Twoje ogłoszenie - gotowe!',
+}
+
+const newAdvertSubmitButtonText: { [k in AdvertEditorStepType]: string } = {
   fillData: 'Dalej',
+  paymentPlan: 'Dalej',
+  paymentMethods: 'Podsumowanie',
+  summary: 'Akceptuję i płacę',
+  payment: '',
+  result: 'Na Główną',
+}
+
+const existedAdvertSubmitButtonText: { [k in AdvertEditorStepType]: string } = {
+  fillData: 'Zapisz',
   paymentPlan: 'Dalej',
   paymentMethods: 'Podsumowanie',
   summary: 'Akceptuję i płacę',
@@ -172,6 +191,8 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [selectedPaymentPlan, setSelectedPaymentPlan] = useState<number | null>(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
+  const [paymentSuccess, setPaymentSuccess] = useState<boolean | null>(null);
+  const stepHistory = useRef<AdvertEditorStepType[]>([]);
   // const [isMainMenuSender] = useParam('isMainMenuSender');
   // const { setSwipeablePanelProps } = useActions();
 
@@ -179,9 +200,9 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
     return languages.filter(item => advertData.known_languages_id.includes(item.id));
   }, [advertData.known_languages_id, languages]);
 
-  useEffect(() => {
-    console.log(advertData);
-  }, [advertData]);
+  // useEffect(() => {
+  //   console.log(advertData);
+  // }, [advertData]);
 
   useEffect(() => {
     if (stepInitialParam && stepsOrder.includes(stepInitialParam)) {
@@ -192,12 +213,66 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
   }, [stepInitialParam]);
 
   useEffect(() => {
+    if (step) {
+      const lastElement = stepHistory.current.at(-1);
+      if (!lastElement) {
+        stepHistory.current.push(step);
+        return;
+      }
+
+      const orderOfLastElement = stepsOrder.indexOf(lastElement);
+      const orderOfCurrentStep = stepsOrder.indexOf(step);
+
+      if (orderOfLastElement < orderOfCurrentStep) {
+        stepHistory.current.push(step);
+      }
+    }
+  }, [step]);
+
+  const nativeBackHandler = () => {
+    stepHistory.current.pop();
+
+    const lastHistoryElement = stepHistory.current.at(-1);
+    if (lastHistoryElement) {
+      setStepInitialParam(lastHistoryElement);
+    } else {
+      router.back();
+    }
+  }
+
+  useEffect(() => {
+    const handler = BackHandler.addEventListener('hardwareBackPress', () => {
+      nativeBackHandler();
+      return true;
+    });
+
+    return () => {
+      handler.remove();
+    }
+  }, []);
+
+  useEffect(() => {
     if (id) {
       const advert = userAdverts.find(e => e.id.toString() === id);
       if (advert) {
         const { candidate_data, ...data } = advert;
         setAdvertExists(true);
-        setAdvertData(data);
+        setAdvertData({
+          ...data,
+          // to delete
+          known_languages_id: [],
+          salary: [
+            {
+              id: Math.random(),
+              salary_amount_low: null,
+              salary_amount_up: null,
+              salary_tax_type_id: null,
+              salary_time_type_id: null,
+              type_of_contract_id: null,
+            }
+          ],
+          // to delete
+        });
       }
     }
   }, [id, userAdverts]);
@@ -272,67 +347,25 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
     });
   };
 
-  // const changeAdvertSalaryHandler = (props:
-  //   { createNew?: never, toDelete?: never, id: number, name: keyof UserAdvertType['salary'][number], value: string | number | null } |
-  //   { toDelete: true, id: number, name?: never, value?: never, createNew?: never } |
-  //   { createNew: true, toDelete?: never, id?: never, name?: never, value?: never }
-  // ) => {
-  //   const { id, name, value, createNew, toDelete } = props;
-
-  //   setAdvertData(prev => {
-  //     const index = prev.salary.findIndex(e => e.id === id);
-
-  //     if (id && index === -1) return prev;
-
-  //     const set = name === 'type_of_contract_id' && value ? salarySetsByContractType[value][0] || {} : {};
-
-  //     if (createNew) {
-  //       return {
-  //         ...prev,
-  //         salary: [
-  //           ...prev.salary,
-  //           {
-  //             id: Math.random(),
-  //             salary_amount_low: null,
-  //             salary_amount_up: null,
-  //             salary_tax_type_id: null,
-  //             salary_time_type_id: null,
-  //             type_of_contract_id: null,
-  //           }
-  //         ]
-  //       }
-  //     }
-
-  //     return {
-  //       ...prev,
-  //       salary: [
-  //         ...prev.salary.slice(0, index),
-  //         ...(toDelete ?
-  //           [] : [{
-  //             ...prev.salary[index],
-  //             ...set,
-  //             [name]: (typeof value === 'string') ?
-  //               value.replace(/\s/g, '')
-  //               :
-  //               value
-  //           }]
-  //         ),
-  //         ...prev.salary.slice(index + 1)
-  //       ]
-  //     }
-
-  //   });
-  // };
-
   const submitHandler = async (createAdvertNoPayment: boolean = false) => {
+    if (id && advertExists && step === 'fillData') {
+      // validate and put
+      
+      router.replace({ stack: 'AdvertStack', screen: 'AdvertScreen', params: { id } });
+      return;
+    }
+
     if (step) {
       const order = stepsOrder.indexOf(step);
       const nextStep = order >= 0 ? stepsOrder[order + 1] : undefined;
 
-      if (nextStep) {
+      if (nextStep === 'payment' && createAdvertNoPayment) {
+        setPaymentSuccess(false);
+        setStepInitialParam('result', { webBehavior: 'push' });
+      } else if (nextStep) {
         setStepInitialParam(nextStep, { webBehavior: 'push' });
       } else {
-        router.replace({ stack: 'AdvertStack' })
+        router.replace({ stack: 'AdvertStack' });
       }
 
       // if (userCompany?.id && advertData.job_position_id && advertData.location) {
@@ -384,9 +417,9 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
 
   return userCompany && step && (
     <ScreenHeaderProvider
-      // title={advertExists ? 'Edytuj ogłoszenie' : headers[step]}
-      title={headers[step]}
+      title={advertExists ? existedAdvertHeaders[step] : newAdvertHeaders[step]}
       backgroundContent={Colors.Basic100}
+      callback={Platform.OS !== 'web' ? nativeBackHandler : undefined}
       {...(step === 'payment' && {
         mode: 'mainTitle',
         staticContentHeightOnWeb: true,
@@ -1038,23 +1071,25 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
               <Typography>{'Metoda płatności: '}</Typography>
               <Typography variant='h5' weight='SemiBold'>{selectedPaymentMethod}</Typography>
             </View>}
-            <View style={{ alignItems: 'flex-start' }}>
-              <Button
-                onPress={() => submitHandler(true)}
-                disabled={loading}
-                variant='secondary'
-                size='medium'
-                withLoading
-                stickyBottom
-                fullwidth={false}
-                borderRadius={4}
-              >
-                Zapłać później*
-              </Button>
-            </View>
-            <Typography variant='small' color={Colors.Basic600} style={{ paddingVertical: 5 }}>
-              *Ogłoszenie będzie zapisane na koncie, ale nie będzie widoczne dla kandydatów. (Zakładka "W edycji")
-            </Typography>
+            {!advertExists && <>
+              <View style={{ alignItems: 'flex-start' }}>
+                <Button
+                  onPress={() => submitHandler(true)}
+                  disabled={loading}
+                  variant='secondary'
+                  size='medium'
+                  withLoading
+                  stickyBottom
+                  fullwidth={false}
+                  borderRadius={4}
+                >
+                  Zapłać później*
+                </Button>
+              </View>
+              <Typography variant='small' color={Colors.Basic600} style={{ paddingVertical: 5 }}>
+                *Ogłoszenie będzie zapisane na koncie, ale nie będzie widoczne dla kandydatów. (Zakładka "W edycji")
+              </Typography>
+            </>}
           </View>
           <Accordion
             title='Podgląd ogłoszenia'
@@ -1076,26 +1111,42 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
               if (typeof e.nativeEvent.data === 'string') {
                 const data = JSON.parse(e.nativeEvent.data || '{}');
                 if (data.isOk) {
+                  setPaymentSuccess(true);
                   setStepInitialParam('result', { webBehavior: 'replace' });
                 }
               }
             }}
-            // onMessage={(e) => console.log(typeof e.nativeEvent.data === 'string')}
+          // onMessage={(e) => console.log(typeof e.nativeEvent.data === 'string')}
           // onMessage={(e) => console.log(JSON.parse(e.nativeEvent.data || '{}').isOk)}
           // style={{ width: Math.min(windowSizes.width, 768), height: windowSizes.height - SCREEN_HEADER_HEIGHT }}
           />
         </>}
         {step === 'result' && <>
-          <Typography>result</Typography>
+          <View style={{ padding: 19 }}>
+            {advertExists && advertData.expiration_time ? <>
+              <Typography variant='h4' style={{ marginBottom: 15 }}>Ogłoszenie zostało przedłużone!</Typography>
+              <Typography weight='Bold'>Wygasa za {Math.ceil(new Date(new Date(advertData.expiration_time).getTime() - Date.now()).getTime() / 1000 / 60 / 60 / 24)} dni</Typography>
+            </> : <>
+              <Typography variant='h4' style={{ marginBottom: 15 }}>Ogłoszenie zostało stworzone!</Typography>
+              {paymentSuccess !== null && paymentSuccess ? <>
+                <Typography>Opłacone ogłoszenie opublikowane i teraz widoczne dla twoich przyszłych pracowników :)</Typography>
+              </> : <>
+                <Typography>Wybrałeś opcję "Opłać później".</Typography>
+                <Typography>Ogłoszenie znajduje się w sekcji "W edycji".</Typography>
+                <Typography>Możesz zawsze wrócić i opłacić ogłoszenie!</Typography>
+                <Typography weight='Bold'>Teraz twoje ogłoszenie nie jest widoczne dla kandydatów.</Typography>
+              </>}
+            </>}
+          </View>
         </>}
       </ScrollView>
-      {!!submitButtonText[step] && <Button
+      {!!(advertExists ? existedAdvertSubmitButtonText[step] : newAdvertSubmitButtonText[step]) && <Button
         onPress={() => submitHandler()}
         disabled={loading}
         withLoading
         stickyBottom
       >
-        {submitButtonText[step]}
+        {advertExists ? existedAdvertSubmitButtonText[step] : newAdvertSubmitButtonText[step]}
       </Button>}
       {/* <Button
         onPress={() => submitHandler()}

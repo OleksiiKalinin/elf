@@ -201,7 +201,7 @@ export default function useRouter() {
             if (Platform.OS === 'web') {
                 backOrReplace();
             } else {
-                replace(getPathnameFromScreen(currentScreen))
+                replace(getPathnameFromScreen(currentScreen), undefined, { experimental: { nativeBehavior: 'stack-replace', isNestedNavigator: true } })
             }
             setSwipeablePanelProps(null);
         },
@@ -211,7 +211,7 @@ export default function useRouter() {
         },
         replace: (url: WithUrlProps, as?: ReplaceParams[1], transitionOptions?: ReplaceParams[2]) => {
             preProcessHandler();
-            replace(validateUrl(url), as, transitionOptions);
+            replace(validateUrl(url), as, { ...transitionOptions, experimental: { nativeBehavior: 'stack-replace', isNestedNavigator: true } });
         },
     }
 }

@@ -84,7 +84,7 @@ const AdvertSmall: FC<AdvertSmallProps> = (advert) => {
                   router.push({ stack: 'AdvertStack', screen: 'AdvertEditorScreen', params: { id: id.toString() } })
                 }}
               >
-                <SvgIcon icon="pencil" style={{marginRight: 10}} />
+                <SvgIcon icon="pencil" style={{ marginRight: 10 }} />
                 <Typography variant='h4'>
                   Edytuj
                 </Typography>
@@ -97,7 +97,7 @@ const AdvertSmall: FC<AdvertSmallProps> = (advert) => {
                   //delete
                 }}
               >
-                <SvgIcon icon="closeX" fill={Colors.Danger} style={{marginRight: 10}} />
+                <SvgIcon icon="closeX" fill={Colors.Danger} style={{ marginRight: 10 }} />
                 <Typography variant='h4' color={Colors.Danger}>Usuń</Typography>
               </TouchableOpacity>
             </>)}
@@ -144,7 +144,7 @@ const AdvertSmall: FC<AdvertSmallProps> = (advert) => {
             contentVariant='h5'
             variant={expired ? 'primary' : 'light'}
             br={4}
-            onPress={() => console.log('extend')}
+            onPress={() => router.push({ stack: 'AdvertStack', screen: 'AdvertEditorScreen', params: { id: id.toString(), step: 'paymentPlan' } })}
           >
             Przedłuż
           </Button>
