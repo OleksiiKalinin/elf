@@ -1,4 +1,5 @@
-import { View, ScrollView as ScrollViewNative, Platform } from 'react-native';
+import { View, Platform } from 'react-native';
+import { ScrollView as ScrollViewNative } from 'tamagui'
 
 type Props = React.ComponentProps<typeof ScrollViewNative> & {
     /** disableWindowScroll will accept parent height as wrapper instead of window/document object */
