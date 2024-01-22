@@ -4,6 +4,7 @@ import {
   GestureResponderEvent,
   StyleSheet,
   TouchableHighlight,
+  TouchableOpacity,
   View,
   Platform
 } from 'react-native';
@@ -20,7 +21,6 @@ import CornerCircleButton from '../../components/molecules/CornerCircleButton';
 import { createParam } from 'solito';
 import { MenuStackParamList } from '../../navigators/MenuNavigator';
 import useRouter from '../../hooks/useRouter';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const { useParam } = createParam<NonNullable<MenuStackParamList['default']['MainScreen']>>();
 
@@ -280,7 +280,7 @@ const MainScreen: React.FC = ({ }) => {
           </View>
         }
         otherActions={<View style={styles.LayoutToggler}>
-          <TouchableOpacity
+          <Button variant='TouchableOpacity'
             onPress={() => setIsMainMenuFlatList(true)}
             style={{
               backgroundColor: isMainMenuFlatList ? Colors.Basic200 : Colors.White,
@@ -295,8 +295,8 @@ const MainScreen: React.FC = ({ }) => {
               icon="horizontal"
               fill={isMainMenuFlatList ? Colors.Basic900 : Colors.Basic400}
             />
-          </TouchableOpacity>
-          <TouchableOpacity
+          </Button>
+          <Button variant='TouchableOpacity'
             onPress={() => setIsMainMenuFlatList(false)}
             style={{
               backgroundColor: isMainMenuFlatList ? Colors.White : Colors.Basic200,
@@ -310,7 +310,7 @@ const MainScreen: React.FC = ({ }) => {
               icon="grid"
               fill={isMainMenuFlatList ? Colors.Basic400 : Colors.Basic900}
             />
-          </TouchableOpacity>
+          </Button>
         </View>}
       >
         <ScrollView
@@ -325,7 +325,8 @@ const MainScreen: React.FC = ({ }) => {
               {buttons.map(({ backgroundColor, badge, icon, missedEvents, title, ...clickProps }, index) => (
                 <Fragment key={index}>
                   {isMainMenuFlatList ?
-                    <TouchableOpacity activeOpacity={0.8} style={styles.FlatButton} {...clickProps}>
+                    // <TouchableOpacity activeOpacity={0.8} style={styles.FlatButton} {...clickProps}>
+                    <Button variant='TouchableOpacity' style={styles.FlatButton} {...clickProps}>
                       <View style={{ height: '100%', paddingVertical: 10, paddingRight: 15, paddingLeft: 5 }}>
                         <View style={[styles.FlatIconBG, { backgroundColor }]}>
                           <SvgIcon icon={icon} />
@@ -342,10 +343,11 @@ const MainScreen: React.FC = ({ }) => {
                           <Typography color={Colors.Basic100} variant='small'>{'  '}{missedEvents > 50 ? '50+' : missedEvents}{'  '}</Typography>
                         </View>
                       }
-                    </TouchableOpacity>
+                    </Button>
                     :
                     <View style={styles.GridButtonWrapper}>
-                      <TouchableOpacity activeOpacity={0.8} style={[styles.GridButton]} {...clickProps}>
+                      {/* <TouchableOpacity activeOpacity={0.8} style={[styles.GridButton]} {...clickProps}> */}
+                      <Button variant='TouchableOpacity' style={[styles.GridButton]} {...clickProps}>
                         <View style={[styles.GridIconBG, { backgroundColor }]}>
                           <SvgIcon icon={icon} />
                         </View>
@@ -362,7 +364,7 @@ const MainScreen: React.FC = ({ }) => {
                             <Typography color={Colors.Basic100} weight='Bold'>{missedEvents > 50 ? '50+' : missedEvents}</Typography>
                           </View>
                         }
-                      </TouchableOpacity>
+                      </Button>
                     </View>
                   }
                 </Fragment>))}
@@ -396,7 +398,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.White,
     alignItems: 'center',
     flexDirection: 'row',
-    marginVertical: 5,
+    justifyContent: 'flex-start',
+    marginBottom: 5,
+    marginTop: 5,
     borderRadius: 10,
   },
   GridButtonWrapper: {

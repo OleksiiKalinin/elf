@@ -11,7 +11,7 @@ import SvgIcon from '../atoms/SvgIcon';
 import { Separator } from 'tamagui';
 // import SvgIcon, { IconTypes } from '../SvgIcon/SvgIcon';
 
-type VariantType = 'primary' | 'secondary' | 'secondarySelected' | 'light' | 'info' | 'info_alter' | 'text' | 'disabled' | 'active' | 'white';
+type VariantType = 'TouchableOpacity' | 'primary' | 'secondary' | 'secondarySelected' | 'light' | 'info' | 'info_alter' | 'text' | 'disabled' | 'active' | 'white';
 
 type ButtonProps = {
   variant?: VariantType,
@@ -34,6 +34,12 @@ const variants: { [k in VariantType]: {
   contentColor: string,
   hoverColor: string,
 } } = {
+  TouchableOpacity: {
+    activeColor: 'none',
+    disabledColor: 'none',
+    contentColor: Colors.Basic900,
+    hoverColor: 'none',
+  },
   primary: {
     activeColor: Colors.Basic900,
     disabledColor: Colors.Basic600,
@@ -123,18 +129,33 @@ const Button: React.FC<ButtonProps> = ({
     <>
       {borderTop && <Separator borderColor={Colors.Basic300} alignSelf="stretch" />}
       <TamaButton
-        hoverStyle={{ bg: hoverColor || variants[variant].hoverColor, borderBottomColor: props.borderBottomColor }} pressStyle={{ bg: hoverColor || variants[variant].hoverColor, opacity: .5 }}
-        height={props.h ?? sizes[size] + (arrowRight ? 8 : 0)}
+        hoverStyle={{
+          bg: hoverColor || variants[variant].hoverColor,
+          borderBottomColor: props.borderBottomColor,
+          opacity: .7
+        }}
+        pressStyle={{
+          bg: hoverColor || variants[variant].hoverColor,
+          opacity: .5
+        }}
+        height={props.h ?? variant === 'TouchableOpacity' ? 'auto' : (sizes[size] + (arrowRight ? 8 : 0))}
+        width={props.w ?? variant === 'TouchableOpacity' ? 'auto' : (fullwidth ? '100%' : undefined)}
         borderRadius={0}
         bg={props.bg || props.backgroundColor || props.disabled ? variants[variant].disabledColor : variants[variant].activeColor}
         icon={props.disabled && withLoading ? <Spinner size='large' /> : undefined}
         iconAfter={arrowRight ? <SvgIcon icon='arrowRightSmall' /> : undefined}
-        width={props.w ?? (fullwidth ? '100%' : undefined)}
         focusStyle={{ borderColor: 'none' }}
-        {...(stickyBottom && Platform.OS === 'web') ? { position: 'sticky' as any, bottom: 0 } : {}}
+        {...(stickyBottom && Platform.OS === 'web') ? {
+          position: 'sticky' as any,
+          bottom: 0
+        } : {}}
+        {...(variant === 'TouchableOpacity') ? {
+          paddingHorizontal: 0,
+          space: '$-0',
+        } : {}}
         {...props}
       >
-        {!!children &&
+        {!!children && (variant !== 'TouchableOpacity' ?
           <Typography
             variant={contentVariant}
             weight={contentWeight}
@@ -142,7 +163,10 @@ const Button: React.FC<ButtonProps> = ({
             {...(arrowRight ? { style: { flex: 1, textAlign: 'left' } } : {})}
           >
             {children}
-          </Typography>}
+          </Typography>
+          :
+          children
+        )}
       </TamaButton>
       {borderBottom && <Separator borderColor={Colors.Basic300} alignSelf="stretch" />}
     </>
