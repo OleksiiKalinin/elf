@@ -4,7 +4,6 @@ import {
   GestureResponderEvent,
   StyleSheet,
   TouchableHighlight,
-  TouchableOpacity,
   View,
   Platform
 } from 'react-native';
@@ -21,6 +20,7 @@ import CornerCircleButton from '../../components/molecules/CornerCircleButton';
 import { createParam } from 'solito';
 import { MenuStackParamList } from '../../navigators/MenuNavigator';
 import useRouter from '../../hooks/useRouter';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const { useParam } = createParam<NonNullable<MenuStackParamList['default']['MainScreen']>>();
 
