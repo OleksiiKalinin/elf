@@ -17,7 +17,7 @@ if (windowExists()) {
   win.currPage = window.sessionStorage.getItem('currPage');
 }
 
-export const Layout: FC<{ children: ReactNode, hideControls?: boolean }> = ({ children, hideControls: hideControls = false }) => {
+const Layout: FC<{ children: ReactNode, hideControls?: boolean }> = ({ children, hideControls: hideControls = false }) => {
   const { isTabbarVisible } = useTypedSelector(s => s.general);
   const { setCurrentScreen, setSwipeablePanelProps } = useActions();
   const router = useRouter();
@@ -64,3 +64,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   }
 });
+
+export default Layout;

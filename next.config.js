@@ -50,8 +50,8 @@ module.exports = function () {
   let config = {
     transpilePackages,
     pageExtensions: ['jsx', 'js', 'tsx', 'ts'],
-    // output: 'standalone',
-    // distDir: 'build-web',
+    output: 'standalone',
+    distDir: 'build-web',
     typescript: {
       // !! WARN !!
       // Dangerously allow production builds to successfully complete even if
