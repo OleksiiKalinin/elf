@@ -1,12 +1,7 @@
 import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Dimensions,
-  GestureResponderEvent,
   StyleSheet,
-  TouchableHighlight,
-  TouchableOpacity,
   View,
-  Platform
 } from 'react-native';
 import Colors from '../../colors/Colors';
 import { useActions } from '../../hooks/useActions';
@@ -325,8 +320,7 @@ const MainScreen: React.FC = ({ }) => {
               {buttons.map(({ backgroundColor, badge, icon, missedEvents, title, ...clickProps }, index) => (
                 <Fragment key={index}>
                   {isMainMenuFlatList ?
-                    // <TouchableOpacity activeOpacity={0.8} style={styles.FlatButton} {...clickProps}>
-                    <Button variant='TouchableOpacity' style={styles.FlatButton} {...clickProps}>
+                    <Button variant='TouchableOpacity' activeOpacity={0.8} style={styles.FlatButton} {...clickProps}>
                       <View style={{ height: '100%', paddingVertical: 10, paddingRight: 15, paddingLeft: 5 }}>
                         <View style={[styles.FlatIconBG, { backgroundColor }]}>
                           <SvgIcon icon={icon} />
@@ -346,8 +340,7 @@ const MainScreen: React.FC = ({ }) => {
                     </Button>
                     :
                     <View style={styles.GridButtonWrapper}>
-                      {/* <TouchableOpacity activeOpacity={0.8} style={[styles.GridButton]} {...clickProps}> */}
-                      <Button variant='TouchableOpacity' style={[styles.GridButton]} {...clickProps}>
+                      <Button variant='TouchableOpacity' activeOpacity={0.8} style={[styles.GridButton]} {...clickProps}>
                         <View style={[styles.GridIconBG, { backgroundColor }]}>
                           <SvgIcon icon={icon} />
                         </View>

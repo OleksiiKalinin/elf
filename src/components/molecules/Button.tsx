@@ -24,6 +24,7 @@ type ButtonProps = {
   borderTop?: boolean,
   borderBottom?: boolean,
   arrowRight?: boolean,
+  activeOpacity?: number,
   stickyBottom?: boolean,
   size?: 'small' | 'medium' | 'large',
 } & Omit<React.ComponentProps<typeof TamaButton>, 'size'>;
@@ -35,10 +36,10 @@ const variants: { [k in VariantType]: {
   hoverColor: string,
 } } = {
   TouchableOpacity: {
-    activeColor: 'none',
-    disabledColor: 'none',
+    activeColor: 'initial',
+    disabledColor: 'initial',
     contentColor: Colors.Basic900,
-    hoverColor: 'none',
+    hoverColor: 'initial',
   },
   primary: {
     activeColor: Colors.Basic900,
@@ -122,6 +123,7 @@ const Button: React.FC<ButtonProps> = ({
   borderBottom,
   stickyBottom,
   size = 'large',
+  activeOpacity = 0.6,
   ...props
 }) => {
 
@@ -132,16 +134,16 @@ const Button: React.FC<ButtonProps> = ({
         hoverStyle={{
           bg: hoverColor || variants[variant].hoverColor,
           borderBottomColor: props.borderBottomColor,
-          opacity: .7
+          opacity: activeOpacity + 0.2,
         }}
         pressStyle={{
           bg: hoverColor || variants[variant].hoverColor,
-          opacity: .5
+          opacity: activeOpacity
         }}
         height={props.h ?? variant === 'TouchableOpacity' ? 'auto' : (sizes[size] + (arrowRight ? 8 : 0))}
         width={props.w ?? variant === 'TouchableOpacity' ? 'auto' : (fullwidth ? '100%' : undefined)}
         borderRadius={0}
-        bg={props.bg || props.backgroundColor || props.disabled ? variants[variant].disabledColor : variants[variant].activeColor}
+        bg={props.bg || props.backgroundColor || (props.disabled ? variants[variant].disabledColor : variants[variant].activeColor)}
         icon={props.disabled && withLoading ? <Spinner size='large' /> : undefined}
         iconAfter={arrowRight ? <SvgIcon icon='arrowRightSmall' /> : undefined}
         focusStyle={{ borderColor: 'none' }}

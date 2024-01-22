@@ -974,18 +974,17 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           }
           <Separator />
 
-          <View style={{ paddingHorizontal: 19 }}>
-            <CheckBox
-              checked={woCV}
-              onCheckedChange={checked => setwoCV(!!checked)}
-              leftTextView={
-                <Typography style={{ paddingVertical: 20 }}>
-                  Bez CV
-                </Typography>
-              }
-              style={{ marginTop: 20 }}
-            />
-          </View>
+          <CheckBox
+            containerStyle={{ paddingHorizontal: 19 }}
+            checked={woCV}
+            onCheckedChange={checked => setwoCV(!!checked)}
+            leftTextView={
+              <Typography style={{ paddingVertical: 20 }}>
+                Bez CV
+              </Typography>
+            }
+          />
+
           <Separator />
         </>}
         {step === 'paymentPlan' && <>
