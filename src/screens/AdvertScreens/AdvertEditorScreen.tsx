@@ -840,7 +840,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                   showTimepicker === 'start' ? 'working_hour_down' : 'working_hour_up',
                   `${hours > 9 ? hours : `0${hours}`}:${minutes > 9 ? minutes : `0${minutes}`}`
                 );
-                setShowTimepicker(false);
+                setShowTimepicker(false); 
               }}
               hours={Number(showTimepicker === 'start' ? advertData.working_hour_down?.split(':')[0] : advertData.working_hour_up?.split(':')[0])}
               minutes={Number(showTimepicker === 'start' ? advertData.working_hour_down?.split(':')[1] : advertData.working_hour_up?.split(':')[1])}
