@@ -1,0 +1,92 @@
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'RedHatDisplay', sans-serif;
+    scrollbar-color: #7e7e7e #b1b1b1;
+    scrollbar-width: thin;
+}
+
+input {
+    outline: none;
+}
+
+a {
+    text-decoration: none;
+}
+
+html {
+    width: 100%;
+    min-height: 100vh;
+}
+
+body {
+    width: 100%;
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#__next {
+    width: 100%;
+    min-height: 100vh;
+}
+
+video {
+    display: block;
+}
+
+input {
+    -webkit-user-select: text;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    background: #b1b1b1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #7e7e7e;
+    /* border-radius: 10px; */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6e6e6e;
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: #555555;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #dfe4ec inset !important;
+    -webkit-text-fill-color: black !important;
+    background-clip: content-box !important;
+}
+
+@media (hover: none) {
+    *,
+    *::before,
+    *::after {
+        scrollbar-width: none;
+    }
+    ::-webkit-scrollbar {
+        display: none;
+    }
+  }

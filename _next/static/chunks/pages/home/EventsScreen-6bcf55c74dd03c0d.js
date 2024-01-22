@@ -1,0 +1,1 @@
+(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[6626],{86628:function(n,u,e){(window.__NEXT_P=window.__NEXT_P||[]).push(["/home/EventsScreen",function(){return e(41713)}])},41713:function(n,u,e){"use strict";e.r(u);var t=e(85893),_=e(15932);u.default=function(){return(0,t.jsx)(_.Z,{})}}},function(n){n.O(0,[9774,2888,179],function(){return n(n.s=86628)}),_N_E=n.O()}]);

@@ -1,0 +1,1 @@
+(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[7603],{57184:function(n,u,t){(window.__NEXT_P=window.__NEXT_P||[]).push(["/profile/PointsScreen",function(){return t(60990)}])},60990:function(n,u,t){"use strict";t.r(u);var e=t(85893),_=t(94576);u.default=function(){return(0,e.jsx)(_.Z,{})}}},function(n){n.O(0,[9774,2888,179],function(){return n(n.s=57184)}),_N_E=n.O()}]);
