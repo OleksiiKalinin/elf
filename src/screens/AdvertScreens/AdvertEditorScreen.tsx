@@ -834,7 +834,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
             </View>
             <TimePickerModal
               visible={!!showTimepicker}
-              onDismiss={() => setShowTimepicker(false)} 
+              onDismiss={() => setShowTimepicker(false)}
               onConfirm={({ hours, minutes }) => {
                 changeAdvertDataHandler(
                   showTimepicker === 'start' ? 'working_hour_down' : 'working_hour_up',
