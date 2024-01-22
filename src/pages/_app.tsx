@@ -77,6 +77,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         <title>ELF Biznes</title>
         <meta name="description" content="ELF Biznes" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
         <link rel="icon" type="png" href="/favicon.ico" />
       </Head>
       <Script

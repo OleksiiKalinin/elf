@@ -10,6 +10,7 @@
     "web": "next dev",
     "build": "next build",
     "next-start": "next start",
+    "export": "next export",
     "test:all": "yarn test:jest",
     "test:jest": "jest",
     "lint:all": "yarn lint:eslint && yarn lint:prettier && yarn lint:types",
