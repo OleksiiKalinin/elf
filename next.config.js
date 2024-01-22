@@ -49,13 +49,13 @@ module.exports = function () {
   /** @type {import('next').NextConfig} */
   let config = {
     transpilePackages,
-    images: {
-      loader: 'akamai',
-      path: '',
-    },
-    assetPrefix: './',
+    // images: {
+    //   loader: 'akamai',
+    //   path: '',
+    // },
+    // assetPrefix: './',
     pageExtensions: ['jsx', 'js', 'tsx', 'ts'],
-    output: 'standalone',
+    // output: 'standalone',
     // distDir: 'build-web',
     typescript: {
       // !! WARN !!

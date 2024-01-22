@@ -350,7 +350,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
   const submitHandler = async (createAdvertNoPayment: boolean = false) => {
     if (id && advertExists && step === 'fillData') {
       // validate and put
-      
+
       router.replace({ stack: 'AdvertStack', screen: 'AdvertScreen', params: { id } });
       return;
     }
@@ -840,7 +840,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                   showTimepicker === 'start' ? 'working_hour_down' : 'working_hour_up',
                   `${hours > 9 ? hours : `0${hours}`}:${minutes > 9 ? minutes : `0${minutes}`}`
                 );
-                setShowTimepicker(false); 
+                setShowTimepicker(false);
               }}
               hours={Number(showTimepicker === 'start' ? advertData.working_hour_down?.split(':')[0] : advertData.working_hour_up?.split(':')[0])}
               minutes={Number(showTimepicker === 'start' ? advertData.working_hour_down?.split(':')[1] : advertData.working_hour_up?.split(':')[1])}
@@ -1104,7 +1104,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
             // onLoadStart={() => console.log(Date.now(), 'onLoadStart')}
             // onLoadEnd={() => console.log(Date.now(), 'onLoadEnd')}
             // onLoad={(e) => console.log('onLoad', (e.target as any).contentWindow.location)}
-            source={{ uri: 'http://localhost:3000/adverts/PaymentReturnScreen' }}
+            source={{ uri: `https://elf-swart.vercel.app/adverts/PaymentReturnScreen` }}
             style={{ width: '100%', height: '100%' }}
             onMessage={(e) => {
               console.log(e.nativeEvent.data);
