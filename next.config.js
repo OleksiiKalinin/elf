@@ -13,6 +13,7 @@ const transpilePackages = [
   'toggle-switch-react-native',
   'recyclerlistview',
   'moment',
+  'react-native',
   'react-native-mask-input',
   'react-native-dropdown-picker',
   'react-native-skeleton-component',
