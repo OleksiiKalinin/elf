@@ -207,16 +207,23 @@ const MainScreen: React.FC = () => {
           </View>
         </Button>
         {!!token && <View style={{ flex: 1, marginVertical: 20, alignItems: 'center', justifyContent: 'flex-end' }}>
-          <TouchableOpacity onPress={logoutHandler}>
+          <Button
+            variant='TouchableOpacity'
+            onPress={logoutHandler}
+          >
             <Typography color={Colors.Danger} variant="h4" weight='SemiBold' style={{ textDecorationLine: 'underline', textAlign: 'center', }}>
               Wyloguj się
             </Typography>
-          </TouchableOpacity>
-          <TouchableOpacity style={{ marginTop: 15 }} onPress={deleteAccountHandler}>
+          </Button>
+          <Button
+            variant='TouchableOpacity'
+            style={{ marginTop: 15 }}
+            onPress={deleteAccountHandler}
+          >
             <Typography color={Colors.Basic600} variant="h4" weight='SemiBold' style={{ textDecorationLine: 'underline', textAlign: 'center', }}>
               Usuń konto
             </Typography>
-          </TouchableOpacity>
+          </Button>
         </View>}
         {/* <ButtonArrowSelector
           text={<View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -227,7 +234,7 @@ const MainScreen: React.FC = () => {
           marginBottom={false}
           marginTop={false}
         /> */}
- 
+
         {/* <View style={{ marginTop: 32, paddingLeft: 19 }}>
           <Typography weight='Bold' size={20}>Twoje punkty</Typography>
         </View>

@@ -436,7 +436,8 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
             <Typography weight="Bold" size={20}>Podstawowe</Typography>
           </View>
           {!isNumber(advertData.job_position_id) && <Separator />}
-          <TouchableOpacity
+          <Button
+            variant='TouchableOpacity'
             onPress={() => router.push({
               stack: 'AdvertStack',
               screen: 'AdvertEditorScreen',
@@ -453,7 +454,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
             <View style={{ justifyContent: 'center' }}>
               <SvgIcon icon={'arrowRightSmall'} fill={Colors.Basic500} />
             </View>
-          </TouchableOpacity>
+          </Button>
           {!isNumber(advertData.job_position_id) && <Separator />}
           <View style={{ marginBottom: 24 }}>
             <MapPreview
@@ -624,7 +625,8 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
 
                       <View style={{ justifyContent: 'flex-end', paddingHorizontal: 10, paddingBottom: 16 }}>
                         {salarySetsByContractType[type_of_contract_id].map((e, i) => (
-                          <TouchableOpacity
+                          <Button
+                            variant='TouchableOpacity'
                             style={{ justifyContent: 'flex-end', marginBottom: i === 0 ? 10 : 0 }}
                             onPress={() => changeAdvertSalaryHandler({ id: salary_id, newValues: { salary_tax_type_id: e.salary_tax_type_id, salary_time_type_id: e.salary_time_type_id } })}
                           >
@@ -635,17 +637,20 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                               backgroundColor: e.salary_time_type_id === salary_time_type_id && e.salary_tax_type_id === salary_tax_type_id ? Colors.Basic900 : undefined,
                               height: 4, marginTop: 2, borderRadius: 4
                             }} />
-                          </TouchableOpacity>
+                          </Button>
                         ))}
                       </View>
                     </View>
                     <View style={{ alignItems: "flex-start" }}>
-                      <TouchableOpacity
+                      <Button
+                        variant='TouchableOpacity'
                         style={{ paddingHorizontal: 16, paddingBottom: 14 }}
                         onPress={() => changeAdvertSalaryHandler({ id: salary_id, toDelete: true })}
                       >
-                        <Typography color={Colors.Danger} weight='SemiBold' style={{ textDecorationLine: 'underline' }}>Usuń stawkę</Typography>
-                      </TouchableOpacity>
+                        <Typography color={Colors.Danger} weight='SemiBold' style={{ textDecorationLine: 'underline' }}>
+                          Usuń stawkę
+                        </Typography>
+                      </Button>
                     </View>
                   </>}
                 </View>
@@ -654,12 +659,15 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                 </View>}
               </>))}
               <View style={{ alignItems: "flex-start" }}>
-                <TouchableOpacity
+                <Button
+                  variant='TouchableOpacity'
                   style={{ paddingHorizontal: 19 }}
                   onPress={() => changeAdvertSalaryHandler({ createNew: true })}
                 >
-                  <Typography color={Colors.Blue500} weight='SemiBold' style={{ textDecorationLine: 'underline' }}>Dodaj kolejną</Typography>
-                </TouchableOpacity>
+                  <Typography color={Colors.Blue500} weight='SemiBold' style={{ textDecorationLine: 'underline' }}>
+                    Dodaj kolejną
+                  </Typography>
+                </Button>
               </View>
             </View>
           </Accordion>
@@ -677,13 +685,14 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                   <Typography variant='h5' weight='Bold'>
                     Opis
                   </Typography>
-                  <TouchableOpacity
+                  <Button
+                    variant='TouchableOpacity'
                     onPress={() => goToCompanyDescriptionScreen()}
                   >
                     <Typography variant='h5' weight='Bold' color={Colors.Blue500} >
                       Edytuj
                     </Typography>
-                  </TouchableOpacity>
+                  </Button>
                 </View>
                 <Typography
                   numberOfLines={descriptionExpanded ? undefined : 3}
@@ -854,13 +863,14 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                   <Typography variant='h5' weight='Bold'>
                     Zakres obowiązków
                   </Typography>
-                  <TouchableOpacity
+                  <Button
+                    variant='TouchableOpacity'
                     onPress={() => goToSelectLanguagesScreen()}
                   >
                     <Typography variant='h5' weight='Bold' color={Colors.Blue500}>
                       Edytuj
                     </Typography>
-                  </TouchableOpacity>
+                  </Button>
                 </View>
                 <Typography color={Colors.Basic600}>
                   {selectedLanguages.map(({ name }) => name).join(', ')}
@@ -885,13 +895,14 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                 <Typography variant='h5' weight='Bold'>
                   Preferowane języki w komunikacji
                 </Typography>
-                <TouchableOpacity
+                <Button
+                  variant='TouchableOpacity'
                   onPress={() => goToSelectLanguagesScreen()}
                 >
                   <Typography variant='h5' weight='Bold' color={Colors.Blue500} >
                     Edytuj
                   </Typography>
-                </TouchableOpacity>
+                </Button>
               </View>
               <Typography color={Colors.Basic600}>
                 {selectedLanguages.map(({ name }) => name).join(', ')}
@@ -916,13 +927,14 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                   <Typography variant='h5' weight='Bold'>
                     Wymagania
                   </Typography>
-                  <TouchableOpacity
+                  <Button
+                    variant='TouchableOpacity'
                     onPress={() => goToSelectLanguagesScreen()}
                   >
                     <Typography variant='h5' weight='Bold' color={Colors.Blue500} >
                       Edytuj
                     </Typography>
-                  </TouchableOpacity>
+                  </Button>
                 </View>
                 <Typography color={Colors.Basic600}>
                   {selectedLanguages.map(({ name }) => name).join(', ')}
@@ -948,13 +960,14 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                   <Typography variant='h5' weight='Bold'>
                     Benefity
                   </Typography>
-                  <TouchableOpacity
+                  <Button
+                    variant='TouchableOpacity'
                     onPress={() => goToSelectLanguagesScreen()}
                   >
                     <Typography variant='h5' weight='Bold' color={Colors.Blue500} >
                       Edytuj
                     </Typography>
-                  </TouchableOpacity>
+                  </Button>
                 </View>
                 <Typography color={Colors.Basic600}>
                   {selectedLanguages.map(({ name }) => name).join(', ')}

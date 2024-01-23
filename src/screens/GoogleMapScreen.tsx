@@ -69,12 +69,13 @@ const GoogleMapScreen: FC<GoogleMapScreenProps> = ({ callback, initialAddress, h
     }, [location]);
 
     const BackButton = useCallback(() => (
-        <TouchableOpacity
+        <Button
+            variant='TouchableOpacity'
             style={styles.BackButton}
             onPress={backToRemoveParams}
         >
             <SvgIcon icon="arrowLeft" />
-        </TouchableOpacity>
+        </Button>
     ), []);
 
     const changePositionHandler = (e: any) => {
@@ -107,7 +108,8 @@ const GoogleMapScreen: FC<GoogleMapScreenProps> = ({ callback, initialAddress, h
                     onFail={(e) => console.log(e)}
                     renderLeftButton={() => <BackButton />}
                     renderRightButton={() => hideControls ? <></> : (
-                        <TouchableOpacity
+                        <Button
+                            variant='TouchableOpacity'
                             style={styles.ClearButton}
                             onPress={!!NativeInputRef.current?.getAddressText() ? () => {
                                 NativeInputRef.current?.setAddressText('');
@@ -115,7 +117,7 @@ const GoogleMapScreen: FC<GoogleMapScreenProps> = ({ callback, initialAddress, h
                             } : undefined}
                         >
                             <SvgIcon icon={!!NativeInputRef.current?.getAddressText() ? "crossBig" : 'search'} />
-                        </TouchableOpacity>
+                        </Button>
                     )}
                     // fetchDetails
                     query={{
@@ -155,7 +157,8 @@ const GoogleMapScreen: FC<GoogleMapScreenProps> = ({ callback, initialAddress, h
                             }}
                             onChange={(e) => setWebInputValue((e.target as any).value || '')}
                         />
-                        <TouchableOpacity
+                        <Button
+                            variant='TouchableOpacity'
                             style={styles.ClearButton}
                             onPress={!!webInputValue ? () => {
                                 if (WebInputRef.current) WebInputRef.current.value = '';
@@ -164,7 +167,7 @@ const GoogleMapScreen: FC<GoogleMapScreenProps> = ({ callback, initialAddress, h
                             } : undefined}
                         >
                             <SvgIcon icon={!!webInputValue ? "crossBig" : 'search'} />
-                        </TouchableOpacity>
+                        </Button>
                     </View>
                 )}
             </View>

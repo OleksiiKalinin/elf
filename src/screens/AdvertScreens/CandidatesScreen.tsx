@@ -16,6 +16,7 @@ import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { createParam } from 'solito';
 import { InitialPropsFromParams } from '../../hooks/types';
 import AdvertSmall from '../../components/organismes/AdvertSmall';
+import Button from '../../components/molecules/Button';
 
 type Props = NonNullable<AdvertStackParamList['default']['CandidatesScreen']>;
 const { useParam } = createParam<Props>();
@@ -253,11 +254,13 @@ const CandidatesScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial }
         </View>
       )}
       renderItem={({ item }) => (
-        <TouchableOpacity style={{ marginBottom: 10 }}
+        <Button
+          variant='TouchableOpacity'
+          style={{ marginBottom: 10 }}
         // onPress={() => navigation.navigate('ProfileScreen', { candidateData: item })}
         >
           <CandidateCard {...item} rating={advert?.candidate_data.find(e => e.candidate_id === item.id)?.fit_rating} />
-        </TouchableOpacity>
+        </Button>
       )
       } />
   </View>), [candidates]);//!!!!!deps!!!!!

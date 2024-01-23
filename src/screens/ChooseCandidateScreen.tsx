@@ -15,13 +15,14 @@ import CandidateCard from '../components/organismes/CandidateCard';
 import ScreenHeaderProvider from '../components/organismes/ScreenHeaderProvider';
 import { useTypedDispatch } from '../hooks/useTypedDispatch';
 import useRouter from '../hooks/useRouter';
+import Button from '../components/molecules/Button';
 
 export type ChooseCandidateScreenProps = {
   candidates: UserAdvertType['candidate_data'],
-  callback: (candidate: CandidateDataType) => void 
+  callback: (candidate: CandidateDataType) => void
 };
 
-const ChooseCandidateScreen: React.FC<ChooseCandidateScreenProps> = ({callback, candidates: candidatesWithRating}) => {
+const ChooseCandidateScreen: React.FC<ChooseCandidateScreenProps> = ({ callback, candidates: candidatesWithRating }) => {
   const dispatch = useTypedDispatch();
   const { backToRemoveParams } = useRouter();
   const { token } = useTypedSelector(s => s.general);
@@ -50,7 +51,9 @@ const ChooseCandidateScreen: React.FC<ChooseCandidateScreenProps> = ({callback, 
         </View>
       )}
       renderItem={({ item }) => (
-        <TouchableOpacity style={{ marginBottom: 10 }} 
+        <Button
+          variant='TouchableOpacity'
+          style={{ marginBottom: 10 }}
         // onPress={() => navigation.navigate('ProfileScreen', { candidateData: item })}
         >
           <CandidateCard {...item}
@@ -60,7 +63,7 @@ const ChooseCandidateScreen: React.FC<ChooseCandidateScreenProps> = ({callback, 
               backToRemoveParams();
             }}
           />
-        </TouchableOpacity>
+        </Button>
       )
       } />
   </View>), [candidates]);//!!!!!deps!!!!!

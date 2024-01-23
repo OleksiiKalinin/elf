@@ -60,19 +60,21 @@ const MainScreen: FC = () => {
         <View style={styles.Social}>
           <FacebookSigninButton
             onSuccess={facebookSignin}
-            render={<TouchableOpacity
+            render={<Button
+              variant='TouchableOpacity'
               style={[styles.SocialButton, { backgroundColor: Colors.Link }]}
             >
               <SvgIcon icon='facebookLittle' />
-            </TouchableOpacity>
+            </Button>
             }
           />
-          <TouchableOpacity
+          <Button
+            variant='TouchableOpacity'
             onPress={() => googleSignin()}
             style={[styles.SocialButton, { backgroundColor: Colors.White }]}
           >
             <SvgIcon icon='googleLittle' />
-          </TouchableOpacity>
+          </Button>
         </View>
       </ScrollView>
       <Button

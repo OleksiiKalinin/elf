@@ -4,6 +4,7 @@ import { FC, useEffect, useRef, useState } from 'react';
 import Colors from '../../colors/Colors';
 import { PartialBy } from '../../hooks/types';
 import ImageViewer from './ImageViewer';
+import Button from '../molecules/Button';
 
 type Props = {
     hidePagination?: boolean,
@@ -41,7 +42,8 @@ const Carousel: FC<Props> = ({
 
     return (
         <View onLayout={onLayout} style={{ position: 'relative' }}>
-            <TouchableOpacity
+            <Button
+                variant='TouchableOpacity'
                 activeOpacity={1}
                 onPress={() => {
                     if (Platform.OS !== 'web' || !scrolling.current) {
@@ -60,13 +62,14 @@ const Carousel: FC<Props> = ({
                     ref={ref}
                     onSnapToItem={setCurrIndex}
                 />
-            </TouchableOpacity>
+            </Button>
             {!hidePagination && <View style={[
                 { width: '100%', paddingVertical: 5, paddingHorizontal: 15, flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap' },
                 innerPagination && { position: 'absolute', bottom: 0, left: 0 },
                 stylePaginationContainer
             ]}>
-                {props.data.map((_, index) => <TouchableOpacity
+                {props.data.map((_, index) => <Button
+                    variant='TouchableOpacity'
                     onPress={() => ref.current?.scrollTo({ index, animated: true, onFinished: () => setCurrIndex(index) })}
                     style={[{
                         padding: 2.5,
@@ -81,7 +84,7 @@ const Carousel: FC<Props> = ({
                             backgroundColor: Colors.Basic700,
                         }, stylePaginationDot]}
                     />
-                </TouchableOpacity>)}
+                </Button>)}
             </View>}
             {!disableImageViewer && <ImageViewer
                 visible={viewerIndex !== undefined}
