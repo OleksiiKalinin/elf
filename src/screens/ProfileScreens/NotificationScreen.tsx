@@ -70,8 +70,8 @@ const NotificationScreen: React.FC = () => {
             Wstrzymaj wszystkie
           </Typography>
           <Switch
-            isOn={!selectedNotifications.length}
-            onToggle={(isOn) => isOn ? setSelectedNotifications([]) : setSelectedNotifications(notifications.map(notification => notification.id))}
+            checked={!selectedNotifications.length}
+            onCheckedChange={(isOn) => isOn ? setSelectedNotifications([]) : setSelectedNotifications(notifications.map(notification => notification.id))}
           />
         </View>
         <Separator />
@@ -92,8 +92,8 @@ const NotificationScreen: React.FC = () => {
                 </View>
                 <Switch
                   key={index}
-                  isOn={selectedNotifications.includes(item.id)}
-                  onToggle={() => handleSelectedItems(item.id)}
+                  checked={selectedNotifications.includes(item.id)}
+                  onCheckedChange={() => handleSelectedItems(item.id)}
                 />
               </View>
               <Separator />
