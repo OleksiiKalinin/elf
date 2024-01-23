@@ -30,6 +30,7 @@ import DraggableList from '../../components/organismes/DraggableList';
 import Modal from '../../components/atoms/Modal';
 import { Snackbar } from 'react-native-paper';
 import { Gift, Check } from '@tamagui/lucide-icons'
+import { TouchableOpacity as GHTouchableOpacity } from 'react-native-gesture-handler';
 
 
 export const languages: LanguageType[] = [
@@ -521,7 +522,7 @@ const CompanyEditorScreen: React.FC = () => {
     const index = getIndex();
 
     return (
-      <TouchableOpacity
+      <GHTouchableOpacity
         activeOpacity={1}
         onLongPress={drag}
         disabled={isActive}
@@ -544,7 +545,7 @@ const CompanyEditorScreen: React.FC = () => {
           </View>
         }
         <Image style={styles.DraggableItemImage} source={{ uri: item.path }} />
-      </TouchableOpacity>
+      </GHTouchableOpacity>
     );
   }, []);
 
