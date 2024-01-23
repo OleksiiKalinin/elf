@@ -10,7 +10,6 @@ const transpilePackages = [
   'react-native-reanimated',
   'react-native-gesture-handler',
   'react-native-swipe-gestures',
-  'toggle-switch-react-native',
   'recyclerlistview',
   'moment',
   'react-native',

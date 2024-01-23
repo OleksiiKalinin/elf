@@ -10,6 +10,7 @@ import MapView, { MapMarker, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import SvgIcon, { IconTypes } from '../atoms/SvgIcon';
 import Typography from '../atoms/Typography';
 import Colors from '../../colors/Colors';
+import Button from './Button';
 
 const Map = MapView as unknown as FC<ComponentProps<typeof MapView> & { options: any }> & { Marker: typeof MapMarker };
 if (Platform.OS === 'android' || Platform.OS === 'ios') {
@@ -31,7 +32,7 @@ type MapPreviewProps = {
 const MapPreview: React.FC<MapPreviewProps> = ({ latitude, longitude, onPress, place, label, hideMap, rightIcon = 'arrowRight' }) => {
     return (
         <View>
-            <TouchableOpacity activeOpacity={.9} onPress={onPress}>
+            <Button variant='TouchableOpacity' activeOpacity={.9} onPress={onPress}>
                 <View style={{ backgroundColor: Colors.Basic200, flexDirection: 'row', paddingVertical: 14 }}>
                     <View style={styles.mapIcon}>
                         <SvgIcon icon="mapMarker" />
@@ -48,7 +49,7 @@ const MapPreview: React.FC<MapPreviewProps> = ({ latitude, longitude, onPress, p
                         <SvgIcon icon={rightIcon} />
                     </View>
                 </View>
-            </TouchableOpacity>
+            </Button>
             {!!latitude && !!longitude && !hideMap && (
                 <Map
                     style={styles.Map}
