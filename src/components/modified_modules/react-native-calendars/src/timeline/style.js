@@ -84,6 +84,7 @@ export default function styleConstructor(theme = {}, calendarHeight) {
             alignItems: 'flex-start',
             overflow: 'hidden',
             minHeight: 25,
+            cursor: 'pointer',
         },
         eventTitle: {
             color: EVENT_TEXT_COLOR,

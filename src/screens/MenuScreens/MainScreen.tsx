@@ -340,7 +340,7 @@ const MainScreen: React.FC = ({ }) => {
                     </Button>
                     :
                     <View style={styles.GridButtonWrapper}>
-                      <Button variant='TouchableOpacity' activeOpacity={0.8} style={[styles.GridButton]} {...clickProps}>
+                      <Button variant='TouchableOpacity' activeOpacity={0.8} style={[styles.GridButton]} containerStyle={{ flex: 1 }} {...clickProps}>
                         <View style={[styles.GridIconBG, { backgroundColor }]}>
                           <SvgIcon icon={icon} />
                         </View>

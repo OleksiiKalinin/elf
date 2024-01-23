@@ -28,6 +28,7 @@ export default function (theme = {}) {
         },
         arrow: {
             padding: 10,
+            cursor: 'pointer',
             ...appStyle.arrowStyle
         },
         arrowImage: {

@@ -11,7 +11,8 @@ export default function styleConstructor(theme = {}) {
         base: {
             width: 30,
             height: 30,
-            alignItems: 'center'
+            alignItems: 'center',
+            cursor: 'pointer'
         },
         text: {
             marginTop: 4,

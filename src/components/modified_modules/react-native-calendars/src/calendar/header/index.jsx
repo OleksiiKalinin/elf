@@ -1,9 +1,10 @@
 import includes from 'lodash/includes';
 import XDate from 'xdate';
 import React, { Fragment, useCallback, useMemo, forwardRef, useImperativeHandle, useRef } from 'react';
-import { ActivityIndicator, Platform, View, Text, TouchableOpacity, Image } from 'react-native';
+import { ActivityIndicator, Platform, View, Text, Image } from 'react-native';
 import { formatNumbers, weekDayNames } from '../../dateutils';
 import styleConstructor from './style';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 const accessibilityActions = [
     { name: 'increment', label: 'increment' },
     { name: 'decrement', label: 'decrement' }

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import XDate from 'xdate';
 import memoize from 'memoize-one';
 import React, { Component } from 'react';
-import { View, Dimensions, Animated, TouchableOpacity, Platform } from 'react-native';
+import { View, Dimensions, Animated, Platform } from 'react-native';
 import { extractCalendarListProps, extractReservationListProps } from '../componentUpdater';
 import { xdateToData, toMarkingFormat } from '../interface';
 import { sameDate, sameMonth } from '../dateutils';
@@ -14,6 +14,7 @@ import styleConstructor from './style';
 import WeekDaysNames from '../commons/WeekDaysNames';
 import CalendarList from '../calendar-list';
 import ReservationList from './reservation-list';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 const HEADER_HEIGHT = 124;
 const KNOB_HEIGHT = 50;
 /**
@@ -355,7 +356,7 @@ export default class Agenda extends Component {
                 {this.renderWeekDaysNames()}
             </Animated.View>
             <Animated.ScrollView ref={this.scrollPad} style={[this.style.scrollPadStyle, scrollPadStyle]} overScrollMode="never" showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={true} scrollEventThrottle={8} scrollsToTop={false} onTouchStart={this.onTouchStart} onTouchEnd={this.onTouchEnd} onScrollBeginDrag={this.onStartDrag} onScrollEndDrag={this.onSnapAfterDrag} onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: this.state.scrollY } } }], { useNativeDriver: true })}>
-                <TouchableOpacity testID={AGENDA_CALENDAR_KNOB} style={{ height: agendaHeight + KNOB_HEIGHT }} onLayout={this.onScrollPadLayout} onPress={Platform.select({ web: this.onClick })} />
+                <TouchableOpacity testID={AGENDA_CALENDAR_KNOB} style={{ cursor: 'pointer', height: agendaHeight + KNOB_HEIGHT }} onLayout={this.onScrollPadLayout} onPress={Platform.select({ web: this.onClick })} />
             </Animated.ScrollView>
         </View>);
     }

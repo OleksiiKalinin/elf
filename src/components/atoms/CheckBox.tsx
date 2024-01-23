@@ -22,7 +22,7 @@ const CheckBox: FC<ComponentProps<typeof TamaCheckBox> & Props> = ({ rightTextVi
         <Button
             variant='TouchableOpacity'
             activeOpacity={.9}
-            style={[{ flexDirection: flexDirection || 'row' }, containerStyle]}
+            style={[{ flexDirection: flexDirection || 'row', alignItems: 'center' }, containerStyle]}
             onPress={() => onCheckedChange?.(!checked)}
         >
             {(leftText || leftTextView) && <View style={{ flex: 1, ...(!removeSpaces ? (isFlexDirectionRow ? { marginRight: 12 } : { marginBottom: 12 }) : {}) }}>
@@ -38,7 +38,7 @@ const CheckBox: FC<ComponentProps<typeof TamaCheckBox> & Props> = ({ rightTextVi
                     borderColor: Colors.Basic600,
                     backgroundColor: Colors.Basic100
                 })}
-                focusStyle={{ borderColor: 'transparent' }}
+                focusStyle={{ borderColor: Colors.Basic900 }}
                 {...props}
                 checked={checked}
             >

@@ -1,19 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Platform, StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
-// import { ActivityIndicator, TouchableRipple } from 'react-native-paper';
+import { ActivityIndicator, Platform, StyleProp, StyleSheet } from 'react-native';
 import Colors from '../../colors/Colors';
-// import Typography from '../../atoms/Typography/Typography';
-// import AnimatedColorView from 'react-native-animated-colors';
 import { Button as TamaButton, Spinner } from 'tamagui';
 import Typography, { TypographyProps } from '../atoms/Typography';
-import { ArrowRight } from '@tamagui/lucide-icons';
 import SvgIcon from '../atoms/SvgIcon';
 import { Separator } from 'tamagui';
-// import SvgIcon, { IconTypes } from '../SvgIcon/SvgIcon';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { isArray } from 'lodash';
 
-type VariantType = 'TouchableOpacity' | 'primary' | 'secondary' | 'secondarySelected' | 'light' | 'info' | 'info_alter' | 'text' | 'disabled' | 'active' | 'white';
+type VariantType = 'primary' | 'secondary' | 'secondarySelected' | 'light' | 'info' | 'info_alter' | 'text' | 'disabled' | 'active' | 'white';
+type Sizes = 'small' | 'medium' | 'large';
 
-type ButtonProps = {
+export type ButtonPropsOriginal = {
   variant?: VariantType,
   contentColor?: string,
   hoverColor?: string,
@@ -26,8 +24,15 @@ type ButtonProps = {
   arrowRight?: boolean,
   activeOpacity?: number,
   stickyBottom?: boolean,
-  size?: 'small' | 'medium' | 'large',
+  size?: Sizes,
 } & Omit<React.ComponentProps<typeof TamaButton>, 'size'>;
+
+export type ButtonPropsTouchableOpacity = {
+  variant: 'TouchableOpacity',
+} & React.ComponentProps<typeof TouchableOpacity>;
+
+export type ButtonPropsGeneral = ButtonPropsOriginal | ButtonPropsTouchableOpacity;
+
 
 const variants: { [k in VariantType]: {
   activeColor: string,
@@ -35,12 +40,6 @@ const variants: { [k in VariantType]: {
   contentColor: string,
   hoverColor: string,
 } } = {
-  TouchableOpacity: {
-    activeColor: 'initial',
-    disabledColor: 'initial',
-    contentColor: Colors.Basic900,
-    hoverColor: 'initial',
-  },
   primary: {
     activeColor: Colors.Basic900,
     disabledColor: Colors.Basic600,
@@ -103,29 +102,45 @@ const variants: { [k in VariantType]: {
   },
 }
 
-const sizes: { [k in NonNullable<ButtonProps['size']>]: number } = {
+const sizes: { [k in Sizes]: number } = {
   small: 30,
   medium: 44,
   large: 50,
 }
 
-const Button: React.FC<ButtonProps> = ({
-  children,
-  variant = 'primary',
-  contentWeight = 'CAPS',
-  contentVariant = 'main',
-  contentColor = null,
-  hoverColor = null,
-  withLoading = false,
-  fullwidth = true,
-  arrowRight,
-  borderTop,
-  borderBottom,
-  stickyBottom,
-  size = 'large',
-  activeOpacity = 0.6,
-  ...props
-}) => {
+const Button: React.FC<ButtonPropsGeneral> = (props) => {
+
+  if (props.variant === 'TouchableOpacity') {
+    return (
+      <TouchableOpacity
+        {...props}
+        style={[
+          {
+            cursor: 'pointer',
+          },
+          ...(isArray(props.style) ? props.style : [props.style])
+        ]}
+      />
+    );
+  }
+
+  const {
+    children,
+    variant = 'primary',
+    contentWeight = 'CAPS',
+    contentVariant = 'main',
+    contentColor = null,
+    hoverColor = null,
+    withLoading = false,
+    fullwidth = true,
+    arrowRight,
+    borderTop,
+    borderBottom,
+    stickyBottom,
+    size = 'large',
+    activeOpacity = 0.6,
+    ...rest
+  } = props;
 
   return (
     <>
@@ -140,8 +155,8 @@ const Button: React.FC<ButtonProps> = ({
           bg: hoverColor || variants[variant].hoverColor,
           opacity: activeOpacity
         }}
-        height={props.h ?? variant === 'TouchableOpacity' ? 'auto' : (sizes[size] + (arrowRight ? 8 : 0))}
-        width={props.w ?? variant === 'TouchableOpacity' ? 'auto' : (fullwidth ? '100%' : undefined)}
+        height={props.h ?? (sizes[size] + (arrowRight ? 8 : 0))}
+        width={props.w ?? (fullwidth ? '100%' : undefined)}
         borderRadius={0}
         bg={props.bg || props.backgroundColor || (props.disabled ? variants[variant].disabledColor : variants[variant].activeColor)}
         icon={props.disabled && withLoading ? <Spinner size='large' /> : undefined}
@@ -151,13 +166,9 @@ const Button: React.FC<ButtonProps> = ({
           position: 'sticky' as any,
           bottom: 0
         } : {}}
-        {...(variant === 'TouchableOpacity') ? {
-          paddingHorizontal: 0,
-          space: '$-0',
-        } : {}}
-        {...props}
+        {...rest}
       >
-        {!!children && (variant !== 'TouchableOpacity' ?
+        {!!children && (
           <Typography
             variant={contentVariant}
             weight={contentWeight}
@@ -166,8 +177,6 @@ const Button: React.FC<ButtonProps> = ({
           >
             {children}
           </Typography>
-          :
-          children
         )}
       </TamaButton>
       {borderBottom && <Separator borderColor={Colors.Basic300} alignSelf="stretch" />}

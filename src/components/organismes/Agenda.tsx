@@ -106,10 +106,10 @@ const Agenda: React.FC<{ getCurrentDate: (s: string) => void, events: UserEventT
             renderItem={(item, firstItemInDay) => {
                 const { timeStart, timeEnd, isPhoneCall, address, firstName, lastName, jobPosition, id } = item as ItemType;
                 return (
-                    <Button variant='TouchableOpacity'
+                    <Button 
+                        variant='TouchableOpacity'
                         onPress={() => push({ stack: 'CalendarStack', screen: 'EventScreen', params: { id: id.toString() } })}
                         style={{
-                            flex: 1,
                             minHeight: 110,
                             backgroundColor: Colors.White,
                             // borderRadius: 10,

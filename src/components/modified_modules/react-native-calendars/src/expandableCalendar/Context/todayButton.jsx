@@ -1,12 +1,13 @@
 import XDate from 'xdate';
 import React, { forwardRef, useImperativeHandle, useEffect, useRef, useState, useContext, useCallback } from 'react';
-import { Animated, TouchableOpacity } from 'react-native';
+import { Animated } from 'react-native';
 import { getDefaultLocale } from '../../services';
 import { toMarkingFormat } from '../../interface';
 import { isToday, isPastDate } from '../../dateutils';
 import { UpdateSources, todayString } from '../commons';
 import styleConstructor from '../style';
 import Context from './index';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 const TOP_POSITION = 65;
 const DOWN_ICON = require('../../img/down.png');
 const UP_ICON = require('../../img/up.png');

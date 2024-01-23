@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { BackHandler, View, Platform, Dimensions, StatusBar } from 'react-native';
-import Button from '../molecules/Button';
+import Button, { ButtonPropsOriginal } from '../molecules/Button';
 import Colors from '../../colors/Colors';
 import Typography from '../atoms/Typography';
 import { Sheet } from 'tamagui';
@@ -20,7 +20,7 @@ export type SwipeablePanelProps = {
 	subTitle?: string;
 	backgroundColor?: string;
 	hideBar?: boolean;
-	buttons?: (React.ComponentProps<typeof Button> & { closeAction?: CloseActionType })[];
+	buttons?: (ButtonPropsOriginal & { closeAction?: CloseActionType })[];
 	mode?: 'options' | 'screen',
 	defaultCloseAction?: CloseActionType,
 };
