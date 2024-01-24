@@ -408,6 +408,16 @@ const getUserCompanyContactPersons = (id: number) => async (dispatch: AppDispatc
   }
 };
 
+const getCompanyRegistrationData = (nip: string) => async (dispatch: AppDispatch, getState: () => rootState) => {
+  const { token } = getState().general;
+  try {
+    const res = await axios.get(`/employer/check-nip/${nip}/`, { headers: dynamicHeaders({ token }) });
+    return res.data;
+  } catch (error: any) {
+    return await errorHandler({ error, returnDefaulValue: null, dispatch, getState, caller: getCompanyRegistrationData.bind(this, nip) });
+  }
+};
+
 export default {
   createUserCompany,
   editUserCompany,
@@ -417,4 +427,5 @@ export default {
   getUserCompanyCertificates,
   getUserCompanyContactPersons,
   deleteUserCompany,
+  getCompanyRegistrationData,
 }

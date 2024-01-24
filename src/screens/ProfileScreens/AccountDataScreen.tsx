@@ -28,7 +28,7 @@ const { useParam } = createParam<NonNullable<ProfileStackParamList['default']['A
 const AccountDataScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const { userData, token } = useTypedSelector(state => state.general);
-  const { setSwipeablePanelProps } = useActions();
+  const { setSwipeablePanelProps, setSnackbarMessage } = useActions();
   const [subView] = useParam('subView');
   const router = useRouter();
   const [formData, setFormData] = useState<RegistDataType>({
@@ -40,10 +40,6 @@ const AccountDataScreen: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [showTips, setShowTips] = useState<boolean>(false);
   const [isDataValid, setIsDataValid] = useState<boolean>(false);
-  const [snackbar, setSnackbar] = useState<{ type: 'success' | 'error', text: string | null }>({
-    type: 'error',
-    text: null,
-  });
 
   const changeFormDataHandler = (name: keyof RegistDataType, text: string | boolean) => {
     setFormData(prev => ({ ...prev, [name]: typeof text === 'string' ? text.replace(/\s/g, '') : text }));
@@ -139,10 +135,6 @@ const AccountDataScreen: React.FC = () => {
     } else setShowTips(true);
   }
 
-  const changePasswordSnackbar = () => {
-    setSnackbar({ type: 'success', text: 'Zmieniono hasło' });
-  };
-
   const setOptions = () => {
     router.push({
       stack: 'ProfileStack',
@@ -157,7 +149,6 @@ const AccountDataScreen: React.FC = () => {
       screen: 'AccountDataScreen',
       params: {
         subView: 'ChangePasswordScreen',
-        callback: changePasswordSnackbar,
       }
     });
   };
@@ -236,22 +227,6 @@ const AccountDataScreen: React.FC = () => {
             disabled={!token || loading}
             onPress={changeHandler}>Zaktualizuj
           </Button>
-      <Snackbar
-        visible={!!snackbar.text}
-        onDismiss={() => setSnackbar(prev => ({ ...prev, text: null }))}
-        duration={4000}
-        wrapperStyle={{
-          maxWidth: 768,
-          alignItems: 'center',
-          position: Platform.OS === 'web' ? 'fixed' : 'absolute',
-        }}
-        style={{
-          backgroundColor: snackbar.type === 'error' ? Colors.Danger : Colors.SuccessDark,
-          maxWidth: 500,
-        }}
-      >
-        {snackbar.text}
-      </Snackbar>
     </ScreenHeaderProvider>
   );
 };

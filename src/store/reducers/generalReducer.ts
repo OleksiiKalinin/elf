@@ -25,12 +25,18 @@ const initialState: generalReducerState = {
     jobSalaryModes: [],
     jobSalaryTaxes: [],
     jobExperiences: [],
+    languages: [],
+    services: [],
+    employeesAmount: [],
     appLoading: true,
     userData: null,
     userCompany: null,
     userAdverts: [],
     userEvents: [],
-    userSettings: null,
+    userSettings: {
+        notifications: [],
+        cookies: [],
+    },
     candidateNotes: [],
     candidateMarks: [],
     marksData: [],
@@ -39,7 +45,7 @@ const initialState: generalReducerState = {
     windowSizes: Dimensions.get('window'),
     userQuestions: [],
     candidatesFilters: null,
-    error: null,
+    snackbarMessage: null,
 }
 
 export const generalReducer = (state = initialState, action: generalReducerAction): generalReducerState => {
@@ -74,8 +80,8 @@ export const generalReducer = (state = initialState, action: generalReducerActio
             return { ...state, isTabbarVisible: action.payload };
         case generalActionTypes.SET_APP_LOADING:
             return { ...state, appLoading: action.payload };
-        case generalActionTypes.SET_ERROR:
-            return { ...state, error: action.payload };
+        case generalActionTypes.SET_SNACKBAR_MESSAGE:
+            return { ...state, snackbarMessage: action.payload };
         case generalActionTypes.SET_IS_MAIN_MENU_FLAT_LIST:
             AsyncStorage.setItem('isMainMenuFlatList', Number(action.payload).toString());
             return { ...state, isMainMenuFlatList: action.payload };
@@ -92,6 +98,14 @@ export const generalReducer = (state = initialState, action: generalReducerActio
         case generalActionTypes.SET_CANDIDATES_FILTERS:
             return { ...state, candidatesFilters: action.payload };
         case generalActionTypes.SET_USER_SETTINGS:
+            if(action.payload){
+                if (action.payload.notifications) {
+                    AsyncStorage.setItem('notifications', JSON.stringify(action.payload.notifications));
+                };
+                if (action.payload.cookies) {
+                    AsyncStorage.setItem('cookies', JSON.stringify(action.payload.cookies));
+                };
+            }
             return { ...state, userSettings: action.payload };
         case generalActionTypes.LOG_OUT:
             AsyncStorage.multiRemove(['token', 'refresh_token']);

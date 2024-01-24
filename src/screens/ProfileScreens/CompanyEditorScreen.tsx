@@ -30,140 +30,13 @@ import DraggableList from '../../components/organismes/DraggableList';
 import Modal from '../../components/atoms/Modal';
 import { Snackbar } from 'react-native-paper';
 import { Gift, Check } from '@tamagui/lucide-icons'
-
-
-export const languages: LanguageType[] = [
-  {
-    id: 1,
-    name: 'Polski',
-    isPopular: true,
-  },
-  {
-    id: 2,
-    name: 'Angielski',
-    isPopular: true,
-  },
-  {
-    id: 3,
-    name: 'Włoski',
-  },
-  {
-    id: 4,
-    name: 'Francuski',
-  },
-  {
-    id: 5,
-    name: 'Ukraiński',
-    isPopular: true,
-  },
-  {
-    id: 6,
-    name: 'Hiszpański',
-  },
-  {
-    id: 7,
-    name: 'Niemiecki',
-  },
-  {
-    id: 8,
-    name: 'Rosyjski',
-  },
-  {
-    id: 9,
-    name: 'Szwedzki',
-  },
-  {
-    id: 10,
-    name: 'Duński',
-  },
-  {
-    id: 11,
-    name: 'Norweski',
-  },
-  {
-    id: 12,
-    name: 'Fiński',
-  },
-  {
-    id: 13,
-    name: 'Węgierski',
-  },
-  {
-    id: 14,
-    name: 'Grecki',
-  },
-];
-
-const services: LanguageType[] = [
-  {
-    id: 1,
-    name: 'Manicure',
-  },
-  {
-    id: 2,
-    name: 'Pedicure',
-  },
-  {
-    id: 3,
-    name: 'Przedłużanie rzęs',
-  },
-  {
-    id: 4,
-    name: 'Regulacja i henna brwi',
-  },
-  {
-    id: 5,
-    name: 'Zabiegi na twarz',
-  },
-  {
-    id: 6,
-    name: 'Zabiegi na ciało',
-  },
-  {
-    id: 7,
-    name: 'Usługi fryzjerskie',
-  },
-];
-
-const employeesAmount: LanguageType[] = [
-  {
-    id: 1,
-    name: '1 - 5',
-  },
-  {
-    id: 2,
-    name: '5 - 20',
-  },
-  {
-    id: 3,
-    name: '20 - 50',
-  },
-  {
-    id: 4,
-    name: '50 - 100',
-  },
-  {
-    id: 5,
-    name: '100 - 500',
-  },
-  {
-    id: 6,
-    name: '500 - 1000',
-  },
-  {
-    id: 7,
-    name: '1000 - 5000',
-  },
-  {
-    id: 8,
-    name: '5000+',
-  },
-];
+import { useActions } from '../../hooks/useActions';
 
 const CompanyEditorScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
+  const { setSnackbarMessage } = useActions();
   const [loading, setLoading] = useState<boolean>(false);
-  const { jobIndustries, token, userCompany } = useTypedSelector(state => state.general);
+  const { jobIndustries, token, userCompany, languages, services, employeesAmount } = useTypedSelector(state => state.general);
   const [companyData, setCompanyData] = useState<CompanyDataType>(userCompany || {
     id: -1,
     job_industry: null,
@@ -193,17 +66,12 @@ const CompanyEditorScreen: React.FC = () => {
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [descriptionHeight, setDescriptionHeight] = useState(0);
   const [editMode, setEditMode] = useState(false);
-  const [error, setError] = useState<null | string>(null);
   const [showTips, setShowTips] = useState<boolean>(false);
 
   const router = useRouter();
   const { replace } = useRouter();
   const companyPhotosLimit = 20;
   const companyCertificatesLimit = 20;
-
-  useEffect(()=> {
-    console.log(companyData)
-  }, [companyData])
 
   useLayoutEffect(() => {
     if (userCompany) {
@@ -231,7 +99,7 @@ const CompanyEditorScreen: React.FC = () => {
         && !isNumber(certificatesProgress)
       )
     ) {
-      setError('Trwa ładowanie zdjęć');
+      setSnackbarMessage({type: 'error', text: 'Trwa ładowanie zdjęć'});
       return false;
     } else if (
       !(
@@ -243,7 +111,7 @@ const CompanyEditorScreen: React.FC = () => {
         // && description
       )
     ) {
-      setError('Wypełnij wszystkie obowiązkowe pola z gwiazdką!');
+      setSnackbarMessage({type: 'error', text: 'Wypełnij wszystkie obowiązkowe pola z gwiazdką!'});
       return false;
     } else if (
       !(
@@ -251,7 +119,7 @@ const CompanyEditorScreen: React.FC = () => {
         && (isNumber(employees_amount) || null)
       )
     ) {
-      setError('Wypełnij poprawnie dodatkowe pola lub pozostaw je puste');
+      setSnackbarMessage({type: 'error', text: 'Wypełnij poprawnie dodatkowe pola lub pozostaw je puste'});
       return false;
     } else {
       return true;
@@ -339,8 +207,6 @@ const CompanyEditorScreen: React.FC = () => {
         order: i,
       })
     });
-
-    console.log('update order:', newArray);
 
     return newArray
   };
@@ -1329,22 +1195,6 @@ const CompanyEditorScreen: React.FC = () => {
               </View>
             </View>
           </Modal> */}
-          <Snackbar
-            visible={!!error}
-            onDismiss={() => setError(null)}
-            duration={4000}
-            wrapperStyle={{
-              maxWidth: 768,
-              alignItems: 'center',
-              position: Platform.OS === 'web' ? 'fixed' : 'absolute',
-            }}
-            style={{
-              backgroundColor: Colors.Danger,
-              maxWidth: 500,
-            }}
-          >
-            {error}
-          </Snackbar>
         </ScreenHeaderProvider>
       }
     </>

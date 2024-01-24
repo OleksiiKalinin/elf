@@ -1,6 +1,6 @@
 import { SwipeablePanelProps } from "../../../components/organismes/SwipeablePanel";
 import { generalActionTypes } from "../../actions";
-import { AppDataType, CandidateMarkType, CandidateNotesType, CandidatesFiltersType, CompanyDataType, InvoiceType, JobExperienceType, JobIndustryType, JobSalaryModeType, JobSalaryTaxType, MarkDataType, NoteDataType, UserAdvertType, UserDataType, UserEventType, UserQuestionsType, UserSettingsType, WindowSizesType } from "../../reducers/types";
+import { AppDataType, CandidateMarkType, CandidateNotesType, CandidatesFiltersType, CompanyDataType, InvoiceType, JobExperienceType, JobIndustryType, JobSalaryModeType, JobSalaryTaxType, MarkDataType, NoteDataType, SnackbarMessageType, UserAdvertType, UserDataType, UserEventType, UserQuestionsType, UserSettingsType, WindowSizesType } from "../../reducers/types";
 
 interface setToken {
     type: generalActionTypes.SET_TOKEN,
@@ -110,9 +110,9 @@ interface resetStore {
     type: generalActionTypes.RESET_STORE
 }
 
-interface setError {
-    type: generalActionTypes.SET_ERROR,
-    payload: string | null,
+interface setSnackbarMessage {
+    type: generalActionTypes.SET_SNACKBAR_MESSAGE,
+    payload: SnackbarMessageType | null,
 }
 
 export type generalReducerAction = 
@@ -138,4 +138,4 @@ export type generalReducerAction =
     setUserQuestions |
     setCandidatesFilters |
     resetStore |
-    setError
+    setSnackbarMessage

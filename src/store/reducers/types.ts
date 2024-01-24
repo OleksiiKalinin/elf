@@ -23,6 +23,9 @@ export interface generalReducerState {
     jobSalaryModes: JobSalaryModeType[],
     jobSalaryTaxes: JobSalaryTaxType[],
     jobExperiences: JobExperienceType[],
+    languages: LanguageType[],
+    services: ServiceType[],
+    employeesAmount: EmployeesAmountType[],
     userCompany: CompanyDataType | null,
     userAdverts: UserAdvertType[],
     userEvents: UserEventType[],
@@ -34,7 +37,7 @@ export interface generalReducerState {
     userInvoices: InvoiceType[],
     userQuestions: UserQuestionsType[],
     candidatesFilters: CandidatesFiltersType | null,
-    error: string | null,
+    snackbarMessage: SnackbarMessageType | null,
 }
 
 export type WindowSizesType = ScaledSize;
@@ -51,6 +54,9 @@ export type AppDataType = {
     jobSalaryModes: generalReducerState['jobSalaryModes'],
     jobSalaryTaxes: generalReducerState['jobSalaryTaxes'],
     jobExperiences: generalReducerState['jobExperiences'],
+    languages: generalReducerState['languages'],
+    employeesAmount: generalReducerState['employeesAmount'],
+    services: generalReducerState['services'],
     userEvents: generalReducerState['userEvents'],
     marksData: generalReducerState['marksData'],
     notesData: generalReducerState['notesData'],
@@ -311,6 +317,11 @@ export interface ServiceType {
     isPopular?: boolean,
 }
 
+export interface EmployeesAmountType {
+    name: string,
+    id: number,
+}
+
 export interface CompanyDataType {
     id: number,
     job_industry: number | null,
@@ -392,6 +403,11 @@ export interface UserQuestionsType {
 }
 
 export interface UserSettingsType {
-    notifications: number[],
-    cookies: number[],
+    notifications: number[] | null,
+    cookies: number[] | null,
 }
+
+export interface SnackbarMessageType {
+    type: 'success' | 'error',
+    text: string,
+};

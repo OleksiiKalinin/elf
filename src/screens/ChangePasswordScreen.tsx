@@ -10,6 +10,7 @@ import { useTypedDispatch } from '../hooks/useTypedDispatch';
 import authServices from '../services/authServices';
 import { useTypedSelector } from '../hooks/useTypedSelector';
 import { Snackbar } from 'react-native-paper';
+import { useActions } from '../hooks/useActions';
 
 type PasswordType = {
   currentPassword: string,
@@ -17,12 +18,9 @@ type PasswordType = {
   confirmPassword: string,
 };
 
-export type ChangePasswordScreenProps = {
-  callback: () => void,
-};
-
-const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = ({ callback }) => {
+const ChangePasswordScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
+  const { setSnackbarMessage } = useActions();
   const { backToRemoveParams } = useRouter();
   const { userData } = useTypedSelector(state => state.general);
   const [showTips, setShowTips] = useState<boolean>(false);
@@ -58,7 +56,7 @@ const ChangePasswordScreen: React.FC<ChangePasswordScreenProps> = ({ callback })
     if (validateData()) {
       const validCurrentPassword = await dispatch(authServices.checkPassword({ username: userData?.email as string, password: formData.currentPassword }));
       if (validCurrentPassword && currentPassword !== newPassword) {
-        callback();
+        setSnackbarMessage({type: 'success', text: 'Hasło zostało zmienione'});
         backToRemoveParams();
       } else if (validCurrentPassword && currentPassword === newPassword) {
         setError('Nowe hasło musi się różnić od obecnego');

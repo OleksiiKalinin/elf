@@ -35,7 +35,6 @@ import Accordion from '../../components/molecules/Accordion';
 import { isNumber } from 'lodash';
 import CheckBox from '../../components/atoms/CheckBox';
 import { TimePickerModal } from '../../components/modified_modules/react-native-paper-dates/Time/TimePickerModal';
-import { languages } from '../ProfileScreens/CompanyEditorScreen';
 import AdvertLarge from '../../components/organismes/AdvertLarge';
 import MainDataCard from '../ProfileScreens/CompanyScreenRoutes/MainDataCard/MainDataCard';
 import { WebView } from 'react-native-webview';
@@ -142,7 +141,7 @@ const salarySetsByContractType: {
 const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial, stepInitial }) => {
   const dispatch = useTypedDispatch();
   const router = useRouter();
-  const { jobIndustries, userCompany, jobSalaryModes, jobSalaryTaxes, jobStartFrom, jobTrials, jobModes, jobContractTypes, jobTrialTimes, jobExperiences, windowSizes, userAdverts } = useTypedSelector(state => state.general);
+  const { jobIndustries, userCompany, jobSalaryModes, jobSalaryTaxes, jobStartFrom, jobTrials, jobModes, jobContractTypes, jobTrialTimes, jobExperiences, windowSizes, userAdverts, languages } = useTypedSelector(state => state.general);
   const currentPositions = userCompany?.job_industry ? getJobPositionsFrom(jobIndustries, userCompany.job_industry) : [];
   const [stepInitialParam, setStepInitialParam] = useParam('step', { initial: stepInitial });
   const [step, setStep] = useState<AdvertEditorStepType | null>(null);

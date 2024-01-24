@@ -121,8 +121,8 @@ export const errorHandler = async (props: {
                 message = details;
             }
         }
-        
-        await dispatch(generalActions.setError(message));
+
+        await dispatch(generalActions.setSnackbarMessage({ type: 'error', text: message }));
         return returnDefaulValue;
     }
     return true;

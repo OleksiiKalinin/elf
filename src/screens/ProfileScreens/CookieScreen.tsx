@@ -1,23 +1,30 @@
-import { Linking, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { CompositeScreenProps, useIsFocused, useRoute } from '@react-navigation/native';
 import Colors from '../../colors/Colors';
-import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import Switch from '../../components/atoms/Switch';
 import Typography from '../../components/atoms/Typography';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
-import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { ScrollView } from '../../components/molecules/ScrollView';
 import Button from '../../components/molecules/Button';
+import { useActions } from '../../hooks/useActions';
+import useRouter from '../../hooks/useRouter';
 
-const notifications = [
+const consents = [
   {
+    id: 1,
+    name: 'Niezbędne pliki cookie',
+    content:
+      'Niezbędne pliki cookie są konieczne do funkcjonowania witryny i umożliwiają dostęp do jej bezpiecznych obszarów oraz wybór funduszy w celu dokonania inwestycji. Są to przede wszystkim pliki cookie sesji i są one usuwane po opuszczeniu witryny lub zakończeniu transakcji.  Jeżeli je wyłączysz, aplikacja przestanie działać.',
+  },
+  {
+    id: 2,
     name: 'Funkcjonalne pliki cookie',
     content:
       'Funkcjonalne pliki cookie sprawiają, że aplikacja jest wygodniejsza w nawigacji, a niektóre z jej obszarów - spersonalizowane.  Jeżeli je wyłączysz, nie będziemy w stanie zapewnić prawidłowego wykonania wszystkich usług, Funkcjonalne pliki cookie są ustawiane przez nas lub zewnętrznych dostawców.',
   },
   {
+    id: 3,
     name: 'Pliki cookie social media',
     content:
       'Pliki cookie powiązane z social media są ustawiane przez portale społecznościowe. Aplikacja potrzebuje tych plików, aby użytkownicy mogli kontaktować się np. przez Facebook Messenger i udostępniać treści na zewnątrz (m.in. oferty pracy).',
@@ -25,89 +32,113 @@ const notifications = [
 ];
 
 const CookieScreen: React.FC = () => {
-  const [acceptAll, setAcceptAll] = useState(false);
-  const [acceptNecessary, setAcceptNecessary] = useState(false);
+  const { userSettings } = useTypedSelector(state => state.general);
+  const { setUserSettings } = useActions();
+  const [selectedConsents, setSelectedConsents] = useState<number[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-
-  const [switchState, setSwitchState] = useState([
-    false,
-    false,
-  ]);
+  const router = useRouter();
 
   useEffect(() => {
-    (switchState[0] === false || switchState[1] === false) && setAcceptAll(false)
-  });
+    setSelectedConsents(userSettings?.cookies || []);
+  }, [userSettings]);
 
-  useEffect(() => {
-    switchState[0] === false && setAcceptNecessary(false)
-  });
+  const handleSelectedItems = (id: number) => {
+    const mySet = new Set([...selectedConsents]);
+    if (mySet.has(id)) {
+      mySet.delete(id);
+    } else {
+      mySet.add(id);
+    }
+    setSelectedConsents([...mySet]);
+  };
 
+  const changeHandler = () => {
+    setLoading(true);
+    if (userSettings) {
+      setUserSettings({ ...userSettings, cookies: selectedConsents });
+    };
+    goToSettingsScreen();
+  };
+
+  const goToSettingsScreen = () => {
+    router.push({
+      stack: 'ProfileStack',
+      screen: 'SettingsScreen',
+      params: undefined
+    });
+  };
 
   return (
-    <ScreenHeaderProvider>
-        <ScrollView style={styles.Content}>
-
-          <Typography color={Colors.Basic700} style={{ marginHorizontal: 19, marginVertical: 12 }}>
-            Aplikacja wykorzystuje pliki cookie. Możesz nimi zarządzać w dowolnym momencie, zmieniając wybrane opcje.
-          </Typography>
-          <Typography color={Colors.Basic700} style={{ marginHorizontal: 19, marginVertical: 12 }}>
-            Dowiedz się więcej na temat plików cookie i sposobu ich wykorzystywania w naszej aplikacji.
-          </Typography>
-
-
-
-          <View
-            style={[
-              styles.notificationItem,
-              { borderTopWidth: 1, marginTop: 25 },
-            ]}>
-            <Typography>Akceptuję wszystkie</Typography>
-            <Switch isOn={acceptAll} onToggle={() => acceptAll ? (setAcceptAll(false), setSwitchState([false, false])) : (setAcceptAll(true), setSwitchState([true, true]))} />
-          </View>
-
-          <View
-            style={[
-              styles.notificationItem,
-              { borderTopWidth: 1, marginBottom: 25 },
-            ]}>
-            <Typography>Akceptuję wyłącznie niezbędne cookies</Typography>
-            <Switch disabled={acceptAll} isOn={acceptNecessary} onToggle={() => acceptNecessary ? (setAcceptNecessary(false), setSwitchState([false, false])) : (setAcceptNecessary(true), setSwitchState([true, false]))} />
-          </View>
-
-          <View
-            style={{ borderBottomWidth: 1, borderColor: Colors.Basic300 }}></View>
-          {notifications.map((item, index) => (
-            <View style={styles.notificationItem}>
-              <View style={{ width: '80%' }}>
-                <Typography>{item.name}</Typography>
-                <Typography variant="small" color={Colors.Basic600}>
+    <ScreenHeaderProvider backgroundContent={Colors.Basic100}>
+      <ScrollView style={styles.ScrollView}>
+        <Typography variant='h5' style={styles.Description}>
+          Aplikacja wykorzystuje pliki cookie. Możesz nimi zarządzać w dowolnym momencie, zmieniając wybrane opcje.
+        </Typography>
+        <Typography variant='h5' style={styles.Description}>
+          Dowiedz się więcej na temat plików cookie i sposobu ich wykorzystywania w naszej aplikacji.
+        </Typography>
+        <View style={styles.Buttons}>
+          <Button
+            w='100%'
+            variant='text'
+            borderTop
+            style={[styles.ConsentButton, { height: 60 }]}
+            pressStyle={styles.ConsentButtonPress}
+            onPress={() => selectedConsents.length === consents.length ? setSelectedConsents([1]) : setSelectedConsents(consents.map(item => item.id))}
+          >
+            <View style={styles.ConsentButtonContent}>
+              <View style={styles.TitleAndSwitch}>
+                <Typography style={styles.ConsentTitle} size={18} textAlign='left'>
+                  Akceptuję wszystkie
+                </Typography>
+                <Switch
+                  isOn={selectedConsents.length === consents.length}
+                  onToggle={(isOn) => isOn ? setSelectedConsents(consents.map(item => item.id)) : setSelectedConsents([1])}
+                />
+              </View>
+            </View>
+          </Button>
+          {consents.map((item, index) => (
+            <Button
+              w='100%'
+              borderTop={index === 0}
+              borderBottom
+              variant='text'
+              disabled={item.id === 1}
+              style={[styles.ConsentButton, { height: 'auto' }]}
+              pressStyle={styles.ConsentButtonPress}
+              onPress={() => handleSelectedItems(item.id)}
+            >
+              <View style={styles.ConsentButtonContent}>
+                <View style={styles.TitleAndSwitch}>
+                  <Typography style={styles.ConsentTitle} size={18} textAlign='left'>
+                    {item.name}
+                  </Typography>
+                  <Switch
+                    onToggle={() => handleSelectedItems(item.id)}
+                    disabled={item.id === 1}
+                    isOn={item.id === 1 || selectedConsents.includes(item.id)}
+                  />
+                </View>
+                <Typography
+                  style={styles.ConsentTitle}
+                  variant="h5"
+                  textAlign='left'
+                  color={Colors.Basic600}
+                >
                   {item.content}
                 </Typography>
               </View>
-              <Switch
-                isOn={switchState[index]}
-                onToggle={() =>
-                  setSwitchState(prevState => {
-                    const newState = [...prevState];
-                    newState[index] === true ? newState[index] = false : newState[index] = true;
-                    return newState;
-                  })
-                }
-              />
-            </View>
+            </Button>
           ))}
-          <View
-            style={{
-              borderBottomWidth: 1,
-              borderColor: Colors.Basic300,
-              marginBottom: 50,
-            }}></View>
-        </ScrollView>
-        <Button
+        </View>
+        <View style={{ height: 50 }} />
+      </ScrollView>
+      <Button
         stickyBottom
         withLoading
         disabled={loading}
-        /* onPress={() => changeHandler()} */
+        onPress={() => changeHandler()}
       >
         Zaktualizuj
       </Button>
@@ -116,21 +147,42 @@ const CookieScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  Wrapper: {
+  ScrollView: {
     flex: 1,
-    backgroundColor: Colors.Basic200,
+    marginTop: 20,
+    width: '100%',
   },
-  Content: {
-    flex: 1,
+  Description: {
+    marginHorizontal: 19,
+    marginVertical: 12,
+    color: Colors.Basic700,
   },
-  notificationItem: {
-    flexDirection: 'row',
+  Buttons: {
+    marginTop: 24,
+  },
+  ConsentButton: {
     paddingHorizontal: 19,
+    paddingVertical: 16,
+  },
+  ConsentButtonContent: {
+    paddingVertical: 16,
+    width: '100%'
+  },
+  ConsentButtonPress: {
+    opacity: 1,
+    bg: Colors.Basic200,
+  },
+  TitleAndSwitch: {
+    flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingTop: 16,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderColor: Colors.Basic300,
+    alignItems: 'center',
+    width: '100%'
+  },
+  ConsentTitle: {
+    width: '85%',
+  },
+  Switch: {
+    width: '15%'
   },
 });
 

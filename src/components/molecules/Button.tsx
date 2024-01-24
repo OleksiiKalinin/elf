@@ -139,7 +139,7 @@ const Button: React.FC<ButtonProps> = ({
             variant={contentVariant}
             weight={contentWeight}
             color={contentColor || variants[variant].contentColor}
-            {...(arrowRight ? { style: { flex: 1, textAlign: 'left' } } : {})}
+            {...(arrowRight ? { style: { flex: 1, textAlign: 'left', width: '100%'} } : {style: { width: props.w || undefined as any}})}
           >
             {children}
           </Typography>}

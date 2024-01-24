@@ -34,8 +34,8 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { setWindowSizes } = useActions();
   const router = useRouter();
   const dispatch = useTypedDispatch();
-  const { token, userCompany, appLoading, userData, error } = useTypedSelector(state => state.general);
-  const { setToken, setUserCompany, setError } = useActions();
+  const { token, userCompany, appLoading, userData, snackbarMessage } = useTypedSelector(state => state.general);
+  const { setToken, setUserCompany, setSnackbarMessage, setUserSettings } = useActions();
   // ssr huck
   const [ssrWindowSizes, setSsrWindowSizes] = useState<any>(Platform.OS === 'web' ? {} : Dimensions.get('window'));
 
@@ -64,6 +64,20 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
       await setToken({ refresh_token, token });
       await dispatch(generalServices.getAppData(token));
+
+      const defaultNotifications = [1, 2, 3, 4, 5, 6];
+      const defaultCookies = [1];
+
+      const getNotifications = await AsyncStorage.getItem('notifications');
+      const getCookies = await AsyncStorage.getItem('cookies');
+
+      const notifications = !!getNotifications ? JSON.parse(getNotifications) : null;
+      const cookies = !!getCookies ? JSON.parse(getCookies) : null;
+
+      await setUserSettings({ 
+        notifications: notifications || defaultNotifications, 
+        cookies: cookies || defaultCookies 
+      });
     })();
   }, []);
 
@@ -132,20 +146,19 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
           {appLoading && <LoadingScreen />}
           {children}
           <Snackbar
-            visible={!!error}
-            onDismiss={() => setError(null)}
+            visible={!!snackbarMessage}
+            onDismiss={() => setSnackbarMessage(null)}
             duration={4000}
             wrapperStyle={{
               alignItems: 'center',
-              maxWidth: 768,
               position: Platform.OS === 'web' ? 'fixed' : 'absolute',
             }}
             style={{
-              backgroundColor: Colors.Danger,
+              backgroundColor: snackbarMessage?.type === 'error' ? Colors.Danger : Colors.SuccessDark,
               maxWidth: 350,
             }}
           >
-            {error}
+            {snackbarMessage?.text}
           </Snackbar>
         </PaperProvider>
       </MenuProvider >

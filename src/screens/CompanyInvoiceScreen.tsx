@@ -15,6 +15,8 @@ import { AddressType } from '../store/reducers/types';
 import Button from '../components/molecules/Button';
 import useRouter from '../hooks/useRouter';
 import { ScrollView } from '../components/molecules/ScrollView';
+import { useTypedDispatch } from '../hooks/useTypedDispatch';
+import companyServices from '../services/companyServices';
 
 export type CompanyInvoiceScreenProps = {
   address: AddressType | null,
@@ -25,30 +27,43 @@ export type CompanyInvoiceScreenProps = {
 };
 
 const CompanyInvoiceScreen: React.FC<CompanyInvoiceScreenProps> = (props) => {
+  const dispatch = useTypedDispatch();
   const { callback, address: initAddress, NIP: initNIP, full_name: initFull_name, title } = props;
   const [address, setAddress] = useState<AddressType | null>(initAddress);
   const [NIP, setNIP] = useState<string>(initNIP || '');
   const [full_name, setFull_name] = useState<string>(initFull_name || '');
   const { backToRemoveParams } = useRouter();
 
+  const getDataFromGUS = async () => {
+    const data = await dispatch(companyServices['getCompanyRegistrationData'](NIP));
+    console.log(data);
+  };
+
   return (
     <ScreenHeaderProvider title={title}>
-      <ScrollView style={{ backgroundColor: Colors.Basic100, flex: 1 }} contentContainerStyle={{paddingTop: 24}}>
-        <View style={{marginBottom: 10, paddingHorizontal: 19}}>
+      <ScrollView style={{ backgroundColor: Colors.Basic100, flex: 1 }} contentContainerStyle={{ paddingTop: 24 }}>
+        <View style={{ marginBottom: 10, paddingHorizontal: 19, flexDirection: 'row', justifyContent: 'space-between' }}>
+          <TextField
+            label="NIP"
+            value={NIP}
+            onChangeText={setNIP}
+          />
+          <Button
+           /*  variant='text' */
+           onPress={()=> getDataFromGUS()}
+            style={{ width: 250 }}
+          >
+            Pobierz dane z GUS
+          </Button>
+        </View>
+        <View style={{ marginBottom: 10, paddingHorizontal: 19 }}>
           <TextField
             label="Nazwa firmy"
             value={full_name}
             onChangeText={setFull_name}
           />
         </View>
-        <View style={{marginBottom: 10, paddingHorizontal: 19}}>
-          <TextField
-            label="NIP"
-            value={NIP}
-            onChangeText={setNIP}
-          />
-        </View>
-        <View style={{marginBottom: 24, paddingHorizontal: 19}}>
+        <View style={{ marginBottom: 24, paddingHorizontal: 19 }}>
           <TextField
             label="Kod pocztowy"
             value={NIP}
@@ -85,6 +100,6 @@ const CompanyInvoiceScreen: React.FC<CompanyInvoiceScreenProps> = (props) => {
   );
 };
 
-const styles = StyleSheet.create({});
-
 export default CompanyInvoiceScreen;
+
+const styles = StyleSheet.create({});

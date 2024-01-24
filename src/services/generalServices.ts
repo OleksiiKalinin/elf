@@ -51,7 +51,7 @@ const getAppData = (token: generalReducerState['token']) => async (dispatch: App
         //     await axios.post('/employer/create_user/', {}, { headers: dynamicHeaders({token}) });
         //     userData.data.is_employer = true;
         // }
-
+        console.log(appData);
         if (!token) {
             googleSignOut();
             facebookSignOut();
@@ -81,6 +81,9 @@ const getAppData = (token: generalReducerState['token']) => async (dispatch: App
             jobSalaryModes: appData?.salary_time_type || [],
             jobSalaryTaxes: appData?.salary_tax_type || [],
             jobExperiences: appData?.experience || [],
+            languages: appData?.languages || [],
+            services: appData?.services || [],
+            employeesAmount: appData?.employees_amount || [],
             marksData: appData?.notes_candidate_scoring || [],
             notesData: appData?.notes_flags1 || [],
             userQuestions: [],
