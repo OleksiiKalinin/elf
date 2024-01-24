@@ -8,6 +8,7 @@ import Modal from '../atoms/Modal';
 import Typography from '../atoms/Typography';
 import SvgIcon from '../atoms/SvgIcon';
 import NativeImageViewer from './NativeImageViewer';
+import Button from '../molecules/Button';
 
 type Props = {
     close: () => void,
@@ -46,12 +47,14 @@ const ImageViewer: FC<Props> = ({ close, visible, index = 0, data }) => {
     );
 
     const CloseButton = (
-        <TouchableOpacity
+        <Button
+            variant='TouchableOpacity'
             onPress={close}
+            containerStyle={styles.CloseButtonWrapper}
             style={styles.CloseButton}
         >
             <SvgIcon icon='closeX' fill={Colors.White} />
-        </TouchableOpacity>
+        </Button>
     );
 
     return (
@@ -152,15 +155,17 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.Black20,
         borderBottomLeftRadius: 10
     },
-    CloseButton: {
+    CloseButtonWrapper: {
         position: 'absolute',
         top: 0,
         left: 0,
+        zIndex: 10000,
+    },
+    CloseButton: {
         padding: 10,
         backgroundColor: Colors.Black20,
-        zIndex: 10000,
         borderBottomRightRadius: 10
-    }
+    },
 })
 
 export default ImageViewer;

@@ -73,7 +73,7 @@ const EventEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial 
   const [selectedCandidate, setSelectedCandidate] = useState<CandidateDataType | null>(null);
   const [location, setLocation] = useState<AddressType | null>(null);
   const { setSwipeablePanelProps } = useActions();
-  
+
   const [displayStartHours, displayStartMinutes] = [startTime.getHours(), startTime.getMinutes()];
   const [displayEndHours, displayEndMinutes] = [endTime.getHours(), endTime.getMinutes()];
 
@@ -238,14 +238,15 @@ const EventEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial 
             <Typography weight="Bold" variant='h5' style={[styles.Title, { marginTop: 0 }]}>
               Ogłoszenie*
             </Typography>
-            {selectedAdvert && <TouchableOpacity
+            {selectedAdvert && <Button
+              variant='TouchableOpacity'
               style={{ marginRight: 18 }}
               onPress={goToChooseAdvertScreen}
             >
               <Typography style={{ textDecorationLine: 'underline' }} color={Colors.Blue500}>
                 Zmień wybór
               </Typography>
-            </TouchableOpacity>}
+            </Button>}
           </View>
           {selectedAdvert ?
             <AdvertSmall
@@ -269,21 +270,24 @@ const EventEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial 
             <Typography weight="Bold" variant='h5' style={[styles.Title, { marginTop: 0 }]}>
               Kandydat*
             </Typography>
-            {selectedCandidate && <TouchableOpacity
+            {selectedCandidate && <Button
+              variant='TouchableOpacity'
               style={{ marginRight: 18 }}
               onPress={goToChooseCandidateScreen}
             >
               <Typography style={{ textDecorationLine: 'underline' }} color={Colors.Blue500}>
                 Zmień wybór
               </Typography>
-            </TouchableOpacity>}
+            </Button>}
           </View>
           {selectedCandidate ?
-            <TouchableOpacity style={{ marginBottom: 10 }}
+            <Button
+              variant='TouchableOpacity'
+              style={{ marginBottom: 10 }}
             // onPress={() => navigation.navigate('ProfileScreen', { candidateData: selectedCandidate })}
             >
               <CandidateCard {...selectedCandidate} />
-            </TouchableOpacity>
+            </Button>
             :
             <Button
               variant='secondary'

@@ -116,7 +116,8 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({
     return (
       <Fragment key={i}>
         {i === 0 && <Separator />}
-        <TouchableOpacity
+        <Button
+          variant='TouchableOpacity'
           style={styles.Button}
           onPress={() => handleIndustry(id)}
         >
@@ -142,7 +143,7 @@ const JobCategoryScreen: React.FC<JobCategoryScreenProps> = ({
               style={{ alignSelf: 'center' }}
             />
           </View>
-        </TouchableOpacity>
+        </Button>
         <Separator />
       </Fragment>
     );

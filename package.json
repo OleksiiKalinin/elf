@@ -10,6 +10,7 @@
     "web": "next dev",
     "build": "next build",
     "next-start": "next start",
+    "export": "next export",
     "test:all": "yarn test:jest",
     "test:jest": "jest",
     "lint:all": "yarn lint:eslint && yarn lint:prettier && yarn lint:types",
@@ -126,7 +127,6 @@
     "sharp": "^0.31.3",
     "solito": "^3.0.0",
     "tamagui": "1.7.2",
-    "toggle-switch-react-native": "^3.3.0",
     "xdate": "^0.8.2"
   },
   "devDependencies": {

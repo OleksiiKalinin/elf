@@ -280,8 +280,12 @@ const MainScreen: React.FC = () => {
             <Typography color={Colors.Danger} variant="h4" weight='SemiBold' style={{ textDecorationLine: 'underline', textAlign: 'center', }}>
               Wyloguj się
             </Typography>
-          </TouchableOpacity>
-          <TouchableOpacity style={{ marginTop: 15 }} onPress={deleteAccountHandler}>
+          </Button>
+          <Button
+            variant='TouchableOpacity'
+            style={{ marginTop: 15 }}
+            onPress={deleteAccountHandler}
+          >
             <Typography color={Colors.Basic600} variant="h4" weight='SemiBold' style={{ textDecorationLine: 'underline', textAlign: 'center', }}>
               Usuń konto
             </Typography>

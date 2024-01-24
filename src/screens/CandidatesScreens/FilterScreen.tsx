@@ -301,7 +301,8 @@ const FilterScreen: React.FC = () => {
             style={{ marginBottom: 30 }}
           >
             {sortingModes.map(({ id, name }, i) => (
-              <TouchableOpacity
+              <Button
+                variant='TouchableOpacity'
                 style={[
                   styles.HorizontalButton,
                   {
@@ -310,9 +311,10 @@ const FilterScreen: React.FC = () => {
                   },
                 ]}
                 onPress={() => changeFiltersHandler('sorting_id', id)}
-                activeOpacity={0.8}>
+                activeOpacity={0.8}
+              >
                 <Typography size={16}>{name}</Typography>
-              </TouchableOpacity>
+              </Button>
             ))}
           </ScrollView>
           <Typography style={styles.Title} size={18} weight="Bold">
@@ -335,13 +337,15 @@ const FilterScreen: React.FC = () => {
               style={styles.SelectedItems}
             >
               {selectedPositions?.map(({ id, name }) => (
-                <TouchableOpacity
+                <Button
+                  variant='TouchableOpacity'
                   onPress={() => changeFiltersHandler('positions_id', id)}
                   key={id}
-                  style={styles.SelectedItem}>
+                  style={styles.SelectedItem}
+                >
                   <Typography size={14}>{name}</Typography>
                   <SvgIcon icon="closeCircleAlt" fill={Colors.Basic200} />
-                </TouchableOpacity>
+                </Button>
               ))}
             </ScrollView>
           )}
@@ -362,12 +366,14 @@ const FilterScreen: React.FC = () => {
               style={styles.SelectedItems}
             >
               {filters.locations_id?.map(({ locality }) => (
-                <TouchableOpacity
+                <Button
+                  variant='TouchableOpacity'
                   onPress={() => changeFiltersHandler('locations_id', null)}
-                  style={styles.SelectedItem}>
+                  style={styles.SelectedItem}
+                >
                   <Typography size={14}>{locality}</Typography>
                   <SvgIcon icon="closeCircleAlt" fill={Colors.Basic200} />
-                </TouchableOpacity>
+                </Button>
               ))}
             </ScrollView>
           )}
@@ -397,7 +403,8 @@ const FilterScreen: React.FC = () => {
               style={{ paddingBottom: 8 }}
             >
               {availability.map(({ id, name }, i) => (
-                <TouchableOpacity
+                <Button
+                  variant='TouchableOpacity'
                   key={id}
                   style={[
                     styles.HorizontalButton,
@@ -407,9 +414,10 @@ const FilterScreen: React.FC = () => {
                     },
                   ]}
                   onPress={() => changeFiltersHandler('availability_id', id)}
-                  activeOpacity={0.8}>
+                  activeOpacity={0.8}
+                >
                   <Typography size={16}>{name}</Typography>
-                </TouchableOpacity>
+                </Button>
               ))}
             </ScrollView>
           </Accordion>
@@ -425,7 +433,8 @@ const FilterScreen: React.FC = () => {
               style={{ paddingBottom: 8 }}
             >
               {workModes.map(({ id, name }, i) => (
-                <TouchableOpacity
+                <Button
+                  variant='TouchableOpacity'
                   key={id}
                   style={[
                     styles.HorizontalButton,
@@ -435,9 +444,10 @@ const FilterScreen: React.FC = () => {
                     },
                   ]}
                   onPress={() => changeFiltersHandler('workModes_id', id)}
-                  activeOpacity={0.8}>
+                  activeOpacity={0.8}
+                >
                   <Typography size={16}>{name}</Typography>
-                </TouchableOpacity>
+                </Button>
               ))}
             </ScrollView>
           </Accordion>
@@ -453,7 +463,8 @@ const FilterScreen: React.FC = () => {
               style={{ paddingBottom: 8 }}
             >
               {contracts.map(({ id, name }, i) => (
-                <TouchableOpacity
+                <Button
+                  variant='TouchableOpacity'
                   key={id}
                   style={[
                     styles.HorizontalButton,
@@ -465,9 +476,10 @@ const FilterScreen: React.FC = () => {
                     },
                   ]}
                   onPress={() => changeFiltersHandler('contracts_id', id)}
-                  activeOpacity={0.8}>
+                  activeOpacity={0.8}
+                >
                   <Typography size={16}>{name}</Typography>
-                </TouchableOpacity>
+                </Button>
               ))}
             </ScrollView>
           </Accordion>
@@ -489,13 +501,15 @@ const FilterScreen: React.FC = () => {
               style={styles.SelectedItems}
             >
               {selectedLanguages?.map(({ id, name }) => (
-                <TouchableOpacity
+                <Button
+                  variant='TouchableOpacity'
                   onPress={() => changeFiltersHandler('languages_id', id)}
                   key={id}
-                  style={styles.SelectedItem}>
+                  style={styles.SelectedItem}
+                >
                   <Typography size={14}>{name}</Typography>
                   <SvgIcon icon="closeCircleAlt" />
-                </TouchableOpacity>
+                </Button>
               ))}
             </ScrollView>
           )}

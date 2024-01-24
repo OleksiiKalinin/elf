@@ -41,6 +41,7 @@ export default function styleConstructor(theme = {}) {
             width: 40,
             height: 4,
             borderRadius: 3,
+            cursor: 'pointer',
             backgroundColor: appStyle.expandableKnobColor
         },
         sectionText: {
@@ -142,6 +143,7 @@ export default function styleConstructor(theme = {}) {
             justifyContent: 'center',
             alignItems: 'center',
             backgroundColor: 'white',
+            cursor: 'pointer',
             ...Platform.select({
                 ios: {
                     shadowColor: '#79838A',

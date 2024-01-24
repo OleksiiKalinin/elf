@@ -42,8 +42,10 @@ const AdvertSmall: FC<AdvertSmallProps> = (advert) => {
       }, containerStyle]}
     >
       <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity
+        <Button
+          variant='TouchableOpacity'
           onPress={() => router.push({ stack: 'AdvertStack', screen: 'AdvertScreen', params: { id: id.toString() } })}
+          containerStyle={{ flex: 1 }}
           style={{ flexDirection: 'row', flex: 1, paddingLeft: 20 }}
         >
           <View>
@@ -61,7 +63,7 @@ const AdvertSmall: FC<AdvertSmallProps> = (advert) => {
               {advert.location?.formattedAddress}
             </Typography>
           </View>
-        </TouchableOpacity>
+        </Button>
         {!hideOptions &&
           <Popover
             placement='left-start'
@@ -77,7 +79,8 @@ const AdvertSmall: FC<AdvertSmallProps> = (advert) => {
             )}
           >
             {(close) => (<>
-              <TouchableOpacity
+              <Button
+                variant='TouchableOpacity'
                 style={{ padding: 10, flexDirection: 'row', alignItems: 'center' }}
                 onPress={() => {
                   close();
@@ -88,9 +91,10 @@ const AdvertSmall: FC<AdvertSmallProps> = (advert) => {
                 <Typography variant='h4'>
                   Edytuj
                 </Typography>
-              </TouchableOpacity>
+              </Button>
               <Separator borderColor={Colors.Basic500} />
-              <TouchableOpacity
+              <Button
+                variant='TouchableOpacity'
                 style={{ padding: 10, flexDirection: 'row', alignItems: 'center' }}
                 onPress={() => {
                   close();
@@ -99,7 +103,7 @@ const AdvertSmall: FC<AdvertSmallProps> = (advert) => {
               >
                 <SvgIcon icon="closeX" fill={Colors.Danger} style={{ marginRight: 10 }} />
                 <Typography variant='h4' color={Colors.Danger}>Usuń</Typography>
-              </TouchableOpacity>
+              </Button>
             </>)}
           </Popover>
         }

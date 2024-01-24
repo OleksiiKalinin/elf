@@ -10,6 +10,7 @@ import { useActions } from '../../hooks/useActions';
 import Lodash from "lodash";
 import Typography from '../atoms/Typography';
 import useRouter from '../../hooks/useRouter';
+import Button from '../molecules/Button';
 
 type ScheduleType = {
     [k: string]: ItemType[]
@@ -105,19 +106,18 @@ const Agenda: React.FC<{ getCurrentDate: (s: string) => void, events: UserEventT
             renderItem={(item, firstItemInDay) => {
                 const { timeStart, timeEnd, isPhoneCall, address, firstName, lastName, jobPosition, id } = item as ItemType;
                 return (
-                    <TouchableOpacity
+                    <Button 
+                        variant='TouchableOpacity'
                         onPress={() => push({ stack: 'CalendarStack', screen: 'EventScreen', params: { id: id.toString() } })}
                         style={{
-                            flex: 1,
                             minHeight: 110,
                             backgroundColor: Colors.White,
                             // borderRadius: 10,
-                            padding: 10,
                             marginRight: 14,
                             marginTop: firstItemInDay ? 25 : 15
                         }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <View style={{ height: '100%', flex: 1 }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', flex: 1, padding: 10, }}>
+                            <View style={{ height: '100%', flex: 1, alignItems: 'flex-start' }}>
                                 <Typography variant='h5'>{timeStart} - {timeEnd}</Typography>
                                 <Typography variant='h5' weight='SemiBold'>{firstName} {lastName}</Typography>
                                 <Typography variant='h5' weight='SemiBold' color={Colors.Basic700} style={{ marginTop: 'auto' }}>{jobPosition}</Typography>
@@ -132,7 +132,7 @@ const Agenda: React.FC<{ getCurrentDate: (s: string) => void, events: UserEventT
                                 </View>
                             </View>
                         </View>
-                    </TouchableOpacity>
+                    </Button>
                 )
             }}
             renderEmptyDate={() => <View style={{ paddingTop: 45, paddingRight: 14 }}>

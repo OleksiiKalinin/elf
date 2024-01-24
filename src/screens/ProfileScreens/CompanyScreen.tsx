@@ -16,7 +16,6 @@ import Typography from '../../components/atoms/Typography';
 import { Separator } from 'tamagui';
 import Accordion from '../../components/molecules/Accordion';
 import { Linking } from "react-native";
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { createParam } from 'solito';
 import { InitialPropsFromParams } from '../../hooks/types';
 import { Snackbar } from 'react-native-paper';
@@ -526,31 +525,31 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
                 </Typography>
                 <View style={styles.SocialMedia}>
                   {companyData.account_instagram &&
-                    <TouchableOpacity
+                    <Button
+                      variant='TouchableOpacity'
                       onPress={() => Linking.openURL(companyData.account_instagram as string)}
                       activeOpacity={.5}
-                      style={{ cursor: 'pointer' }}
                     >
                       <SvgIcon icon={'instagram'} fill={Colors.Blue500} />
-                    </TouchableOpacity>
+                    </Button>
                   }
                   {companyData.account_facebook &&
-                    <TouchableOpacity
+                    <Button
+                      variant='TouchableOpacity'
                       onPress={() => Linking.openURL(companyData.account_facebook as string)}
                       activeOpacity={.5}
-                      style={{ cursor: 'pointer' }}
                     >
                       <SvgIcon icon={'facebook'} fill={Colors.Blue500} />
-                    </TouchableOpacity>
+                    </Button>
                   }
                   {companyData.website &&
-                    <TouchableOpacity
+                    <Button
+                      variant='TouchableOpacity'
                       onPress={() => Linking.openURL(companyData.website as string)}
                       activeOpacity={.5}
-                      style={{ cursor: 'pointer' }}
                     >
                       <SvgIcon icon={'internet'} fill={Colors.Blue500} />
-                    </TouchableOpacity>
+                    </Button>
                   }
                 </View>
               </>
@@ -578,7 +577,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
             }
           </>
         }
-        <View style={{height: 100}}/>
+        <View style={{ height: 100 }} />
       </ScrollView>
       <Snackbar
         visible={snackbar}

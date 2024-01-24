@@ -15,7 +15,7 @@ import CheckBox from '../components/atoms/CheckBox';
 import { Separator } from 'tamagui';
 import { isString } from 'lodash';
 
-const emptyPerson: ContactPersonType  = {
+const emptyPerson: ContactPersonType = {
   email: null,
   mobile_number: null,
   contact_hours: '08:00-18:00',
@@ -30,7 +30,7 @@ export type AddContactPersonsScreenProps = {
 
 const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) => {
   const { contactPersons: initContactPersons, setContactPersons: changeContactPersonsHandler } = props;
-  const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(initContactPersons.length ?  [...initContactPersons].sort((a, b) => {
+  const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(initContactPersons.length ? [...initContactPersons].sort((a, b) => {
     const orderA = a.id ?? Number.MAX_SAFE_INTEGER;
     const orderB = b.id ?? Number.MAX_SAFE_INTEGER;
     return orderA - orderB;
@@ -40,7 +40,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
   const [isDataValid, setIsDataValid] = useState<boolean>(false);
   const [errorModal, setErrorModal] = useState<string | null>(null);
   const { backToRemoveParams } = useRouter();
-  
+
   useEffect(() => {
     setIsDataValid(validateContactPersons());
   }, [contactPersons]);
@@ -129,9 +129,14 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
           <View style={styles.ContactPerson} key={id}>
             <View style={styles.ContactPersonHeader}>
               <Typography size={18} weight='Bold' style={{ marginVertical: 10 }}>Osoba {index + 1}</Typography>
-              {(index !== 0 || contactPersons.length > 1) && <TouchableOpacity onPress={() => deleteContactPerson(index)}>
-                <Typography color={Colors.Danger}>usuń</Typography>
-              </TouchableOpacity>}
+              {(index !== 0 || contactPersons.length > 1) && (
+                <Button
+                  variant='TouchableOpacity'
+                  onPress={() => deleteContactPerson(index)}
+                >
+                  <Typography color={Colors.Danger}>usuń</Typography>
+                </Button>
+              )}
             </View>
             <View style={{ marginBottom: 30 }}>
               <TextField

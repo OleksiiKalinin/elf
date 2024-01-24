@@ -13,7 +13,7 @@ import { NextThemeProvider, useRootTheme } from '@tamagui/next-theme';
 import config from '../../tamagui';
 import Script from 'next/script';
 import { nextStore } from '../store/nextstore';
-import { Layout } from './Layout';
+import Layout from './Layout';
 import AppUnifiedProvider from '../components/organismes/AppUnifiedProvider';
 import { useRouter } from 'next/router';
 import { WithUrlProps } from '../hooks/withUrl';
@@ -77,6 +77,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         <title>ELF Biznes</title>
         <meta name="description" content="ELF Biznes" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {/* <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
         <link rel="icon" type="png" href="/favicon.ico" />
       </Head>
       <Script

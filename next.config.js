@@ -10,9 +10,9 @@ const transpilePackages = [
   'react-native-reanimated',
   'react-native-gesture-handler',
   'react-native-swipe-gestures',
-  'toggle-switch-react-native',
   'recyclerlistview',
   'moment',
+  'react-native',
   'react-native-mask-input',
   'react-native-dropdown-picker',
   'react-native-skeleton-component',
@@ -49,6 +49,11 @@ module.exports = function () {
   /** @type {import('next').NextConfig} */
   let config = {
     transpilePackages,
+    // images: {
+    //   loader: 'akamai',
+    //   path: '',
+    // },
+    // assetPrefix: './',
     pageExtensions: ['jsx', 'js', 'tsx', 'ts'],
     // output: 'standalone',
     // distDir: 'build-web',

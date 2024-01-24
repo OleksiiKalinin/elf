@@ -1,8 +1,9 @@
 import React, { Fragment, useCallback, useRef } from 'react';
-import { TouchableOpacity, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { xdateToData } from '../../../interface';
 import styleConstructor from './style';
 import Marking from '../marking';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 const BasicDay = (props) => {
     const { theme, date, onPress, onLongPress, markingType, marking, state, disableAllTouchEventsForDisabledDays, disableAllTouchEventsForInactiveDays, accessibilityLabel, children, testID } = props;
     const style = useRef(styleConstructor(theme));

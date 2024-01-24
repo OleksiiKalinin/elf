@@ -3,7 +3,6 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import React, { Fragment, useCallback, useEffect, useState, useRef, useMemo, useLayoutEffect } from 'react';
@@ -83,7 +82,7 @@ const CompanyEditorScreen: React.FC = () => {
       setContactPersons(userCompany?.contactPersons || []);
     };
     const timer = setTimeout(() => {
-      if (!token) {  
+      if (!token) {
         goToAuthScreen();
       };
     }, 1000);
@@ -387,7 +386,8 @@ const CompanyEditorScreen: React.FC = () => {
     const index = getIndex();
 
     return (
-      <TouchableOpacity
+      <Button
+        variant='TouchableOpacity'
         activeOpacity={1}
         onLongPress={drag}
         disabled={isActive}
@@ -410,7 +410,7 @@ const CompanyEditorScreen: React.FC = () => {
           </View>
         }
         <Image style={styles.DraggableItemImage} source={{ uri: item.path }} />
-      </TouchableOpacity>
+      </Button>
     );
   }, []);
 
@@ -458,30 +458,30 @@ const CompanyEditorScreen: React.FC = () => {
             </View>
           </View> */}
 
-          <View style={{backgroundColor: Colors.White, position: Platform.select({web: 'sticky' as any}), top: 50, zIndex: 100000, paddingLeft: 19 }}>
+          <View style={{ backgroundColor: Colors.White, position: Platform.select({ web: 'sticky' as any }), top: 50, zIndex: 100000, paddingLeft: 19 }}>
             <Separator />
-            <View style={{flexDirection: 'row', paddingVertical: 10 }}>
-              <View style={{flexDirection: 'row', flex: 1}}>
-                  <View style={{flexDirection: 'row', gap: 5, width: '100%', alignItems: 'center'}}>
-                  {[true, true, true, true, true, true,].map(item=> 
-                    <View style={{height: 4, borderRadius: 50, backgroundColor: item ? Colors.Green500 : Colors.Basic400, flex: 1}}/>
+            <View style={{ flexDirection: 'row', paddingVertical: 10 }}>
+              <View style={{ flexDirection: 'row', flex: 1 }}>
+                <View style={{ flexDirection: 'row', gap: 5, width: '100%', alignItems: 'center' }}>
+                  {[true, true, true, true, true, true,].map(item =>
+                    <View style={{ height: 4, borderRadius: 50, backgroundColor: item ? Colors.Green500 : Colors.Basic400, flex: 1 }} />
                   )}
-                  <View style={{minWidth: 50, alignItems: 'center'}}>
-                  <Check />
-                </View>
+                  <View style={{ minWidth: 50, alignItems: 'center' }}>
+                    <Check />
                   </View>
-                  
+                </View>
+
               </View>
-              <View style={{flexDirection: 'row', flex: 1}}>
-              <View style={{flexDirection: 'row', gap: 5, width: '100%', alignItems: 'center'}}>
-                  {[true, true, true, false, false, false].map(item=> 
-                    <View style={{height: 4, borderRadius: 50, backgroundColor: item ? Colors.Green500 : Colors.Basic400, flex: 1}}/>
+              <View style={{ flexDirection: 'row', flex: 1 }}>
+                <View style={{ flexDirection: 'row', gap: 5, width: '100%', alignItems: 'center' }}>
+                  {[true, true, true, false, false, false].map(item =>
+                    <View style={{ height: 4, borderRadius: 50, backgroundColor: item ? Colors.Green500 : Colors.Basic400, flex: 1 }} />
                   )}
-                  <View style={{minWidth: 50, alignItems: 'center'}}>
-                  <Gift color={Colors.Basic500}/>
-                </View>
+                  <View style={{ minWidth: 50, alignItems: 'center' }}>
+                    <Gift color={Colors.Basic500} />
                   </View>
-                  
+                </View>
+
               </View>
             </View>
           </View>
@@ -782,22 +782,24 @@ const CompanyEditorScreen: React.FC = () => {
                       !!companyLogo ?
                         <View style={styles.LoadedImages}>
                           <View style={styles.LoadedImagesButtons}>
-                            <TouchableOpacity
+                            <Button
+                              variant='TouchableOpacity'
                               style={styles.LoadedImagesButton}
                               onPress={() => setCompanyLogo(null)}
                             >
                               <Typography variant='h5' weight="Bold" style={styles.DeleteImagesButton}>
                                 Usuń wybrane
                               </Typography>
-                            </TouchableOpacity>
-                            <TouchableOpacity
+                            </Button>
+                            <Button
+                              variant='TouchableOpacity'
                               style={styles.LoadedImagesButton}
                               onPress={() => onPress()}
                             >
                               <Typography variant='h5' weight="Bold" style={styles.AddMoreImages}>
                                 Dodaj ponownie
                               </Typography>
-                            </TouchableOpacity>
+                            </Button>
                           </View>
                           <View style={styles.LoadedLogoContainer}>
                             <Image
@@ -809,7 +811,10 @@ const CompanyEditorScreen: React.FC = () => {
 
                         :
 
-                        <TouchableOpacity onPress={() => onPress()}>
+                        <Button
+                          variant='TouchableOpacity'
+                          onPress={() => onPress()}
+                        >
                           <View style={styles.ImageLoaderContent}>
                             <View style={styles.AddImageText}>
                               <SvgIcon icon="createCircleSmall" fill={Colors.Basic900} />
@@ -818,7 +823,7 @@ const CompanyEditorScreen: React.FC = () => {
                               </Typography>
                             </View>
                           </View>
-                        </TouchableOpacity>
+                        </Button>
                     }
                   </>
                 }
@@ -862,23 +867,25 @@ const CompanyEditorScreen: React.FC = () => {
                     !!companyPhotos.length ?
                       <View style={styles.LoadedImages}>
                         <View style={styles.LoadedImagesButtons}>
-                          <TouchableOpacity
+                          <Button
+                            variant='TouchableOpacity'
                             style={styles.LoadedImagesButton}
                             onPress={() => setCompanyPhotos([])}
                           >
                             <Typography variant='h5' weight="Bold" style={styles.DeleteImagesButton}>
                               Usuń wszystkie
                             </Typography>
-                          </TouchableOpacity>
+                          </Button>
                           {(companyPhotos.length < companyPhotosLimit) &&
-                            <TouchableOpacity
+                            <Button
+                              variant='TouchableOpacity'
                               style={styles.LoadedImagesButton}
                               onPress={() => onPress()}
                             >
                               <Typography variant='h5' weight="Bold" style={styles.AddMoreImages}>
                                 Dodaj kolejne
                               </Typography>
-                            </TouchableOpacity>
+                            </Button>
                           }
                         </View>
                         <View style={styles.DraggableImagesContainer}>
@@ -901,7 +908,8 @@ const CompanyEditorScreen: React.FC = () => {
 
                       :
 
-                      <TouchableOpacity
+                      <Button
+                        variant='TouchableOpacity'
                         onPress={() => onPress()}
                         style={styles.ImageLoader}
                       >
@@ -920,7 +928,7 @@ const CompanyEditorScreen: React.FC = () => {
                             </Typography>
                           </View>
                         </View>
-                      </TouchableOpacity>
+                      </Button>
                   }
                 </>
               }
@@ -964,23 +972,25 @@ const CompanyEditorScreen: React.FC = () => {
                     !!companyCertificates.length ?
                       <View style={styles.LoadedImages}>
                         <View style={styles.LoadedImagesButtons}>
-                          <TouchableOpacity
+                          <Button
+                            variant='TouchableOpacity'
                             style={styles.LoadedImagesButton}
                             onPress={() => setCompanyCertificates([])}
                           >
                             <Typography variant='h5' weight="Bold" style={styles.DeleteImagesButton}>
                               Usuń wszystkie
                             </Typography>
-                          </TouchableOpacity>
+                          </Button>
                           {(companyCertificates.length < companyCertificatesLimit) &&
-                            <TouchableOpacity
+                            <Button
+                              variant='TouchableOpacity'
                               style={styles.LoadedImagesButton}
                               onPress={() => onPress()}
                             >
                               <Typography variant='h5' weight="Bold" style={styles.AddMoreImages}>
                                 Dodaj kolejne
                               </Typography>
-                            </TouchableOpacity>
+                            </Button>
                           }
                         </View>
                         <View style={styles.DraggableImagesContainer}>
@@ -1003,7 +1013,8 @@ const CompanyEditorScreen: React.FC = () => {
 
                       :
 
-                      <TouchableOpacity
+                      <Button
+                        variant='TouchableOpacity'
                         onPress={() => onPress()}
                         style={styles.ImageLoader}
                       >
@@ -1022,7 +1033,7 @@ const CompanyEditorScreen: React.FC = () => {
                             </Typography>
                           </View>
                         </View>
-                      </TouchableOpacity>
+                      </Button>
                   }
                 </>
               }

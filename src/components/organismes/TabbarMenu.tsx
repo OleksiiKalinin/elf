@@ -55,9 +55,7 @@ const TabbarMenu: React.FC<TabbarMenuProps> = ({
           ]}
           tabStyle={[styles.Tab, autoWidth ? { width: 'auto' } : {}]}
           renderLabel={({ route, focused }) => (
-            <TouchableOpacity
-              style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}
-            >
+            <View style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row', backgroundColor: Colors.White }}>
               {route.icon && <SvgIcon icon={route.icon as IconTypes} />}
               <Typography
                 color={focused ? Colors.Basic900 : Colors.Basic600}
@@ -67,7 +65,7 @@ const TabbarMenu: React.FC<TabbarMenuProps> = ({
               >
                 {route.title}
               </Typography>
-            </TouchableOpacity>
+            </View>
           )}
         />
         {ComponentToPassDown}

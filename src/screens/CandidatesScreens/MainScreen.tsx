@@ -25,6 +25,7 @@ import CandidateCard from '../../components/organismes/CandidateCard';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { useRouter } from 'solito/router';
+import Button from '../../components/molecules/Button';
 
 const MainScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
@@ -358,9 +359,13 @@ const MainScreen: React.FC = () => {
         </View>
       )}
       renderItem={({ item }) => (
-        <TouchableOpacity style={{ marginBottom: 10 }} onPress={() => router.push(`/candidates/ProfileScreen?id=${item.id}`)}>
+        <Button
+          variant='TouchableOpacity'
+          style={{ marginBottom: 10 }}
+          onPress={() => router.push(`/candidates/ProfileScreen?id=${item.id}`)}
+        >
           <CandidateCard {...item} />
-        </TouchableOpacity>
+        </Button>
       )
       } />
   </View>), [candidates]);//!!!!!deps!!!!!

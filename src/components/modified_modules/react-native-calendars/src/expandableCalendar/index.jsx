@@ -4,7 +4,7 @@ import isNumber from 'lodash/isNumber';
 import throttle from 'lodash/throttle';
 import XDate from 'xdate';
 import React, { useContext, useRef, useState, useEffect, useCallback, useMemo } from 'react';
-import { AccessibilityInfo, PanResponder, Animated, View, Text, Image, TouchableOpacity } from 'react-native';
+import { AccessibilityInfo, PanResponder, Animated, View, Text, Image } from 'react-native';
 import { page } from '../dateutils';
 import { parseDate, toMarkingFormat } from '../interface';
 import styleConstructor, { HEADER_HEIGHT, KNOB_CONTAINER_HEIGHT } from './style';
@@ -16,6 +16,7 @@ import WeekCalendar from './WeekCalendar';
 import Context from './Context';
 import constants from '../commons/constants';
 import { UpdateSources } from './commons';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 export var Positions;
 (function (Positions) {
     Positions["CLOSED"] = "closed";

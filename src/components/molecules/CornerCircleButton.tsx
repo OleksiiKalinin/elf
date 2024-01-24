@@ -1,9 +1,10 @@
-import { View, TouchableOpacity, Platform, GestureResponderEvent } from 'react-native';
+import { View, Platform, GestureResponderEvent } from 'react-native';
 import SvgIcon from '../atoms/SvgIcon';
 import { BOTTOM_TABS_HEIGHT } from '../organismes/BottomTabs';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
+import Button from './Button';
 
-const CornerCircleButton: React.FC<{ onPress: (event: GestureResponderEvent) => void }> = ({ onPress, ...props }) => {
+const CornerCircleButton: React.FC<{ onPress: ((event: GestureResponderEvent) => void) & (() => void) }> = ({ onPress, ...props }) => {
     const { isTabbarVisible, windowSizes } = useTypedSelector(s => s.general);
 
     return (
@@ -22,9 +23,9 @@ const CornerCircleButton: React.FC<{ onPress: (event: GestureResponderEvent) => 
             }),
             zIndex: 1,
         }}>
-            <TouchableOpacity onPress={onPress} {...props}>
+            <Button variant='TouchableOpacity' onPress={onPress} {...props}>
                 <SvgIcon icon='addBig' />
-            </TouchableOpacity>
+            </Button>
         </View>
     );
 };
