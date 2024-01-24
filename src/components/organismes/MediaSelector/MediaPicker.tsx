@@ -246,7 +246,8 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
     const selected = selectedIndex !== -1;
 
     return (
-      <TouchableOpacity
+      <Button
+        variant='TouchableOpacity'
         onPress={() => handlePressItem(item)}
         onLongPress={() => handleLongPressItem(item)}
         activeOpacity={0.9}
@@ -271,7 +272,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
             </Typography>
           </View>
         )}
-      </TouchableOpacity>
+      </Button>
     );
   }, [selectedFiles, itemSize]);
 

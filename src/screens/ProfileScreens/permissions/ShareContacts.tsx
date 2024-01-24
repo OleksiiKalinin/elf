@@ -24,12 +24,12 @@ const ShareContacts: React.FC = () => {
               </Typography>
             </View>
             <View style={{ alignSelf: "flex-start" }}>
-              <Switch
+              {/* <Switch
                 isOn={switchState}
                 onToggle={() =>
                   switchState ? setSwitchState(false) : setSwitchState(true)
                 }
-              />
+              /> */}
             </View>
           </View>
 
