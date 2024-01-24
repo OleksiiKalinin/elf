@@ -38,6 +38,7 @@ import { TimePickerModal } from '../../components/modified_modules/react-native-
 import AdvertLarge from '../../components/organismes/AdvertLarge';
 import MainDataCard from '../ProfileScreens/CompanyScreenRoutes/MainDataCard/MainDataCard';
 import { WebView } from 'react-native-webview';
+import HorizontalButtonsSelector from '../../components/molecules/HorizontalButtonsSelector';
 
 const MaxPlanCardWidth = 310;
 
@@ -425,9 +426,12 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
       })}
     >
       <ScrollView
-        contentContainerStyle={{
-          paddingBottom: step === 'payment' ? 0 : 30,
-          height: step === 'payment' && Platform.OS === 'web' ? '100%' : undefined
+        contentContainerStyle={step === 'payment' ? {
+          paddingBottom: 0,
+          height: Platform.select({ web: '100%' }),
+          flex: Platform.select({ native: 1 })
+        } : {
+          paddingBottom: 30,
         }}
       >
         {step === 'fillData' && <>
@@ -482,24 +486,12 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
               </View>}
             </View>}
           >
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingLeft: 19, marginBottom: 24 }}>
-              {jobExperiences.map(({ id, name }) => (
-                <View style={{ marginRight: 19 }}>
-                  <Button
-                    size='medium'
-                    variant={advertData.job_experience_id === id ? 'secondarySelected' : 'secondary'}
-                    contentWeight={advertData.job_experience_id === id ? 'Bold' : 'SemiBold'}
-                    contentVariant='h5'
-                    contentColor={Colors.Basic900}
-                    style={{ paddingVertical: 6, paddingHorizontal: 8 }}
-                    onPress={() => changeAdvertDataHandler('job_experience_id', id)}
-                    borderRadius={4}
-                  >
-                    {name}
-                  </Button>
-                </View>
-              ))}
-            </ScrollView>
+            <HorizontalButtonsSelector
+              data={jobExperiences}
+              selected={advertData.job_experience_id}
+              onSelect={(id) => changeAdvertDataHandler('job_experience_id', id)}
+              contentContainerStyle={{ marginBottom: 24 }}
+            />
           </Accordion>
           <Separator />
           <Accordion
@@ -510,24 +502,12 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
               </View>}
             </View>}
           >
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingLeft: 19, marginBottom: 24 }}>
-              {jobModes.map(({ id, name }) => (
-                <View style={{ marginRight: 16 }}>
-                  <Button
-                    size='medium'
-                    variant={advertData.job_mode_id === id ? 'secondarySelected' : 'secondary'}
-                    contentWeight={advertData.job_mode_id === id ? 'Bold' : 'SemiBold'}
-                    contentVariant='h5'
-                    contentColor={Colors.Basic900}
-                    style={{ paddingVertical: 6, paddingHorizontal: 8 }}
-                    onPress={() => changeAdvertDataHandler('job_mode_id', id)}
-                    borderRadius={4}
-                  >
-                    {name}
-                  </Button>
-                </View>
-              ))}
-            </ScrollView>
+            <HorizontalButtonsSelector
+              data={jobModes}
+              selected={advertData.job_mode_id}
+              onSelect={(id) => changeAdvertDataHandler('job_mode_id', id)}
+              contentContainerStyle={{ marginBottom: 24 }}
+            />
           </Accordion>
           <Separator />
           <Accordion
@@ -538,24 +518,12 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
               </View>}
             </View>}
           >
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingLeft: 19, marginBottom: 24 }}>
-              {jobStartFrom.map(({ id, name }) => (
-                <View style={{ marginRight: 16 }}>
-                  <Button
-                    size='medium'
-                    variant={advertData.job_start_id === id ? 'secondarySelected' : 'secondary'}
-                    contentWeight={advertData.job_start_id === id ? 'Bold' : 'SemiBold'}
-                    contentVariant='h5'
-                    contentColor={Colors.Basic900}
-                    style={{ paddingVertical: 6, paddingHorizontal: 8 }}
-                    onPress={() => changeAdvertDataHandler('job_start_id', id)}
-                    borderRadius={4}
-                  >
-                    {name}
-                  </Button>
-                </View>
-              ))}
-            </ScrollView>
+            <HorizontalButtonsSelector
+              data={jobStartFrom}
+              selected={advertData.job_start_id}
+              onSelect={(id) => changeAdvertDataHandler('job_start_id', id)}
+              contentContainerStyle={{ marginBottom: 24 }}
+            />
           </Accordion>
           <Separator />
           <Accordion
@@ -569,23 +537,12 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
             <View style={{ marginBottom: 24 }}>
               {advertData.salary.map(({ id: salary_id, salary_amount_low, salary_amount_up, salary_tax_type_id, salary_time_type_id, type_of_contract_id }, index, thisArray) => (<>
                 <View key={salary_id} style={{ margin: 16, marginTop: 0, backgroundColor: Colors.White, borderRadius: 10, paddingTop: 16, paddingBottom: 2 }}>
-                  <ScrollView horizontal contentContainerStyle={{ paddingLeft: 16, marginBottom: 7, paddingBottom: 7 }}>
-                    {jobContractTypes.map(({ id, name }) => (
-                      <View style={{ marginRight: 16 }}>
-                        <Button
-                          size='medium'
-                          variant={type_of_contract_id === id ? 'secondarySelected' : 'secondary'}
-                          contentWeight={type_of_contract_id === id ? 'Bold' : 'SemiBold'}
-                          contentVariant='h5'
-                          contentColor={Colors.Basic900}
-                          onPress={() => changeAdvertSalaryHandler({ id: salary_id, newValues: { type_of_contract_id: id } })}
-                          borderRadius={4}
-                        >
-                          {name}
-                        </Button>
-                      </View>
-                    ))}
-                  </ScrollView>
+                  <HorizontalButtonsSelector
+                    data={jobContractTypes}
+                    selected={type_of_contract_id}
+                    onSelect={(id) => changeAdvertSalaryHandler({ id: salary_id, newValues: { type_of_contract_id: id } })}
+                    contentContainerStyle={{ paddingLeft: 16, marginBottom: 7, paddingBottom: 7 }}
+                  />
                   {salary_time_type_id && salary_tax_type_id && type_of_contract_id && <>
                     <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-end', paddingHorizontal: 6 }}>
                       <View style={{ flexDirection: 'row', alignItems: 'center', minWidth: 270, flex: 1, flexGrow: 1, paddingHorizontal: 10, paddingBottom: 16 }}>
@@ -733,74 +690,29 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
               </View>}
             </View>}
           >
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingLeft: 19, marginBottom: 24 }}>
-              {jobTrials.map(({ id, name }) => (
-                <View style={{ marginRight: 20 }}>
-                  <Button
-                    borderRadius={2.5}
-                    size='small'
-                    paddingHorizontal={0}
-                    contentVariant='h5'
-                    contentColor={Colors.Basic900}
-                    contentWeight={advertData.trial_type_id === id ? 'Bold' : 'SemiBold'}
-                    variant='text'
-                    borderBottomWidth={4}
-                    borderBottomColor={advertData.trial_type_id === id ? Colors.Basic900 : 'transparent'}
-                    onPress={() => changeAdvertDataHandler('trial_type_id', id)}
-                  >
-                    {name}
-                  </Button>
-                </View>
-              ))}
-            </ScrollView>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingLeft: 19, marginBottom: 24 }}>
-              {jobTrialTimes.map(({ id, name }) => (
-                <View style={{ marginRight: 16 }}>
-                  <Button
-                    size='medium'
-                    variant={advertData.trial_time_id === id ? 'secondarySelected' : 'secondary'}
-                    contentWeight={advertData.trial_time_id === id ? 'Bold' : 'SemiBold'}
-                    contentVariant='h5'
-                    contentColor={Colors.Basic900}
-                    style={{ paddingVertical: 6, paddingHorizontal: 8 }}
-                    onPress={() => changeAdvertDataHandler('trial_time_id', id)}
-                    borderRadius={4}
-                  >
-                    {name}
-                  </Button>
-                </View>
-              ))}
-            </ScrollView>
+            <HorizontalButtonsSelector
+              data={jobTrials}
+              selected={advertData.trial_type_id}
+              onSelect={(id) => changeAdvertDataHandler('trial_type_id', id)}
+              contentContainerStyle={{ marginBottom: 24, paddingLeft: 19 }}
+              buttonProps={({ selected }) => ({
+                size: 'small',
+                variant: 'text',
+                borderBottomWidth: 4,
+                borderBottomColor: selected ? Colors.Basic900 : 'transparent',
+                borderRadius: 2.5,
+                paddingLeft: 0,
+                paddingRight: 0,
+              })}
+            />
+            <HorizontalButtonsSelector
+              data={jobTrialTimes}
+              selected={advertData.trial_time_id}
+              onSelect={(id) => changeAdvertDataHandler('trial_time_id', id)}
+              contentContainerStyle={{ marginBottom: 24 }}
+            />
           </Accordion>
           <Separator />
-          {/* <Accordion
-            title={<View style={{ flexDirection: "row", alignItems: 'center' }}>
-              <Typography variant='h5'>Rodzaj umowy</Typography>
-              {isNumber(advertData.type_of_contract_id) && <View style={{ marginLeft: 10 }}>
-                <SvgIcon icon='doneCircleGreen' />
-              </View>}
-            </View>}
-          >
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingLeft: 19, marginBottom: 24 }}>
-              {jobContractTypes.map(({ id, name }) => (
-                <View style={{ marginRight: 16 }}>
-                  <Button
-                    size='medium'
-                    variant={advertData.type_of_contract_id === id ? 'secondarySelected' : 'secondary'}
-                    contentWeight={advertData.type_of_contract_id === id ? 'Bold' : 'SemiBold'}
-                    contentVariant='h5'
-                    contentColor={Colors.Basic900}
-                    style={{ paddingVertical: 6, paddingHorizontal: 8 }}
-                    onPress={() => changeAdvertDataHandler('type_of_contract_id', id)}
-                    borderRadius={4}
-                  >
-                    {name}
-                  </Button>
-                </View>
-              ))}
-            </ScrollView>
-          </Accordion>
-          <Separator /> */}
           <Accordion
             title={<View style={{ flexDirection: "row", alignItems: 'center' }}>
               <Typography variant='h5'>Godziny pracy</Typography>
@@ -1112,24 +1024,22 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
         </>}
         {step === 'payment' && <>
           <WebView
-            // onLoadStart={() => console.log(Date.now(), 'onLoadStart')}
-            // onLoadEnd={() => console.log(Date.now(), 'onLoadEnd')}
-            // onLoad={(e) => console.log('onLoad', (e.target as any).contentWindow.location)}
             source={{ uri: `https://elf-swart.vercel.app/adverts/PaymentReturnScreen` }}
             style={{ width: '100%', height: '100%' }}
             onMessage={(e) => {
               console.log(e.nativeEvent.data);
-              if (typeof e.nativeEvent.data === 'string') {
-                const data = JSON.parse(e.nativeEvent.data || '{}');
-                if (data.isOk) {
-                  setPaymentSuccess(true);
-                  setStepInitialParam('result', { webBehavior: 'replace' });
+              if ((typeof e.nativeEvent.data === 'string') && !!e.nativeEvent.data) {
+                try {
+                  const data = JSON.parse(e.nativeEvent.data);
+                  if (data.isOk) {
+                    setPaymentSuccess(true);
+                    setStepInitialParam('result', { webBehavior: 'replace' });
+                  }
+                } catch (error) {
+                  console.log(error);
                 }
               }
             }}
-          // onMessage={(e) => console.log(typeof e.nativeEvent.data === 'string')}
-          // onMessage={(e) => console.log(JSON.parse(e.nativeEvent.data || '{}').isOk)}
-          // style={{ width: Math.min(windowSizes.width, 768), height: windowSizes.height - SCREEN_HEADER_HEIGHT }}
           />
         </>}
         {step === 'result' && <>
@@ -1159,58 +1069,11 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
       >
         {advertExists ? existedAdvertSubmitButtonText[step] : newAdvertSubmitButtonText[step]}
       </Button>}
-      {/* <Button
-        onPress={() => submitHandler()}
-        disabled={loading}
-        withLoading
-        stickyBottom
-      >
-        {advertExists ? 'Zapisz' : submitButtonText[step]}
-      </Button> */}
     </ScreenHeaderProvider >
   );
 };
 
 const styles = StyleSheet.create({
-  Button: {
-    height: 50,
-    width: 'auto',
-    justifyContent: 'flex-start',
-  },
-  Textfield: {
-    marginVertical: 16,
-  },
-  wideButton: {
-    width: '48.5%',
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    backgroundColor: Colors.Basic300,
-    height: 44,
-    borderRadius: 4,
-  },
-  Label: {
-    position: 'absolute',
-    bottom: 50,
-    backgroundColor: Colors.Basic300,
-    paddingVertical: 5,
-    paddingHorizontal: 11,
-  },
-  textInput: {
-    width: 81,
-    height: 44,
-    backgroundColor: Colors.Basic300,
-    borderRadius: 4,
-    textAlign: "center"
-  },
-  ContactHoursButtons: {
-    flex: 1,
-    flexDirection: 'row',
-    marginTop: 20,
-  },
-  HourButton: {
-    width: '35%',
-    maxWidth: 200
-  },
 });
 
 export default AdvertEditorScreen;

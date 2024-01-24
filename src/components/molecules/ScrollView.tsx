@@ -1,3 +1,4 @@
+import { isArray } from 'lodash';
 import { View, ScrollView as ScrollViewNative, Platform } from 'react-native';
 
 type Props = React.ComponentProps<typeof ScrollViewNative> & {
@@ -15,8 +16,12 @@ export function ScrollView({ disableWindowScroll = false, ...props }: Props) {
         showsVerticalScrollIndicator={Platform.OS === 'web'}
         showsHorizontalScrollIndicator={Platform.OS === 'web'}
         {...props}
-        
-        //@ts-ignore
-        {...(Platform.OS === 'web' && (!disableWindowScroll || !props.horizontal) ? { style: { ...props.style, ...props.contentContainerStyle }, contentContainerStyle: undefined } : {})}
+        {...(Platform.OS === 'web' && (!disableWindowScroll || !props.horizontal) ? {
+            style: [
+                ...(isArray(props.style) ? props.style : [props.style]),
+                ...(isArray(props.contentContainerStyle) ? props.contentContainerStyle : [props.contentContainerStyle]),
+            ],
+            contentContainerStyle: undefined
+        } : {})}
     />);
 }
