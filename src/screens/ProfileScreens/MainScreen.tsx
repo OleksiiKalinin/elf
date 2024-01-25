@@ -227,7 +227,7 @@ const MainScreen: React.FC = () => {
             </Typography>
           </View>
         </Button>
-        {/* <Button
+        <Button
           variant='text'
           arrowRight
           borderBottom
@@ -241,7 +241,7 @@ const MainScreen: React.FC = () => {
               Pakiety płatności
             </Typography>
           </View>
-        </Button> */}
+        </Button>
         <Button
           variant='text'
           arrowRight

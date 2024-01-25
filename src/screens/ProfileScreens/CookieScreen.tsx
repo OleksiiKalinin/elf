@@ -15,7 +15,7 @@ const consents = [
     id: 1,
     name: 'Niezbędne pliki cookie',
     content:
-      'Niezbędne pliki cookie są konieczne do funkcjonowania witryny i umożliwiają dostęp do jej bezpiecznych obszarów oraz wybór funduszy w celu dokonania inwestycji. Są to przede wszystkim pliki cookie sesji i są one usuwane po opuszczeniu witryny lub zakończeniu transakcji.  Jeżeli je wyłączysz, aplikacja przestanie działać.',
+      'Niezbędne pliki cookie są konieczne do funkcjonowania witryny i umożliwiają dostęp do jej bezpiecznych obszarów oraz wybór funduszy w celu dokonania inwestycji. Są to przede wszystkim pliki cookie sesji i są one usuwane po opuszczeniu witryny lub zakończeniu transakcji.',
   },
   {
     id: 2,

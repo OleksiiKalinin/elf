@@ -84,53 +84,41 @@ const NotificationScreen: React.FC = () => {
   return (
     <ScreenHeaderProvider backgroundContent={Colors.Basic100}>
       <ScrollView style={styles.Content}>
-        <Button
-          w='100%'
-          variant='text'
-          borderTop
-          style={[styles.NotificationButton, { height: 60 }]}
-          pressStyle={styles.NotificationButtonPress}
-          onPress={() => selectedNotifications.length === 0 ? setSelectedNotifications(notifications.map(item => item.id)) : setSelectedNotifications([0])}
-        >
-          <View style={styles.NotificationButtonContent}>
-            <View style={styles.TitleAndSwitch}>
-              <Typography style={styles.NotificationTitle} size={18} textAlign='left'>
-                Wstrzymaj wszystkie
-              </Typography>
-              <Switch
-                isOn={!selectedNotifications.length}
-                onToggle={(isOn) => isOn ? setSelectedNotifications([]) : setSelectedNotifications(notifications.map(notification => notification.id))}
-              />
-            </View>
-          </View>
-        </Button>
+        <Separator />
+        <Switch
+          checked={!selectedNotifications.length}
+          onCheckedChange={(isOn) => isOn ? setSelectedNotifications([]) : setSelectedNotifications(notifications.map(notification => notification.id))}
+          containerStyle={styles.HoldAllSwitch}
+          leftTextView={
+            <Typography style={styles.NotificationText} size={18}>
+              Wstrzymaj wszystkie
+            </Typography>
+          }
+        />
         <Separator />
         <View style={{ marginTop: 24 }}>
           {notifications.map((item, index) => (
-            <Button
-              w='100%'
-              borderTop={index === 0}
-              borderBottom
-              variant='text'
-              style={[styles.NotificationButton, { height: 'auto' }]}
-              pressStyle={styles.NotificationButtonPress}
-              onPress={() => handleSelectedItems(item.id)}
-            >
-              <View style={styles.NotificationButtonContent}>
-                <View style={styles.TitleAndSwitch}>
-                  <Typography style={styles.NotificationTitle} size={18} textAlign='left'>
-                    {item.name}
-                  </Typography>
-                  <Switch
-                    onToggle={() => handleSelectedItems(item.id)}
-                    isOn={selectedNotifications.includes(item.id)}
-                  />
-                </View>
-                <Typography style={styles.NotificationTitle} variant="h5" textAlign='left' color={Colors.Basic600}>
-                  {item.content}
-                </Typography>
-              </View>
-            </Button>
+            <>
+              {index === 0 &&
+                <Separator />
+              }
+              <Switch 
+                checked={selectedNotifications.includes(item.id)}
+                onCheckedChange={() => handleSelectedItems(item.id)}
+                containerStyle={styles.NotificationSwitch}
+                leftTextView={
+                  <>
+                    <Typography style={styles.NotificationText} size={18} textAlign='left'>
+                      {item.name}
+                    </Typography>
+                    <Typography style={styles.NotificationText} variant="h5" textAlign='left' color={Colors.Basic600}>
+                      {item.content}
+                    </Typography>
+                  </>
+                }
+              />
+              <Separator />
+            </>
           ))}
         </View>
       </ScrollView>
@@ -151,25 +139,15 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 50,
   },
-  NotificationButton: {
+  HoldAllSwitch: {
+    paddingHorizontal: 19, 
+    height: 58
+  },
+  NotificationSwitch: {
     paddingHorizontal: 19,
     paddingVertical: 16,
   },
-  NotificationButtonContent: {
-    paddingVertical: 16,
-    width: '100%'
-  },
-  NotificationButtonPress: {
-    opacity: 1,
-    bg: Colors.Basic200,
-  },
-  TitleAndSwitch: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%'
-  },
-  NotificationTitle: {
+  NotificationText: {
     width: '85%'
   },
 });
