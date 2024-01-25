@@ -140,6 +140,9 @@ const languages: LanguageType[] = [
 ];
 
 const initFilters: CandidatesFiltersType = {
+  //to add
+  // first_name: '',
+  // last_name: '',
   sorting_id: 1,
   positions_id: [],
   locations_id: [],

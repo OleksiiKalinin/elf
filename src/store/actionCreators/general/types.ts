@@ -12,6 +12,11 @@ interface setWindowSizes {
     payload: WindowSizesType
 }
 
+interface setShowUserShouldBeLogedInModal {
+    type: generalActionTypes.SET_SHOW_USER_SHOULD_BE_LOGED_IN_MODAL,
+    payload: boolean
+}
+
 interface setUserData {
     type: generalActionTypes.SET_USER_DATA,
     payload: UserDataType
@@ -138,4 +143,5 @@ export type generalReducerAction =
     setUserQuestions |
     setCandidatesFilters |
     resetStore |
-    setSnackbarMessage
+    setSnackbarMessage |
+    setShowUserShouldBeLogedInModal

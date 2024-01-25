@@ -19,6 +19,7 @@ import LoadingScreen from '../atoms/LoadingScreen';
 import useRouter from '../../hooks/useRouter';
 import Colors from '../../colors/Colors';
 import { convertToFrontEndAddress } from '../../hooks/convertAddress';
+import UserShouldBeLogedInModal from './UserShouldBeLogedInModal';
 
 calendarLocaleConfig();
 geocoder.fallbackToGoogle('AIzaSyCuD83IZtlNNM3sxn9Hac4YSOXkRZurb9c');
@@ -160,6 +161,7 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
           >
             {snackbarMessage?.text}
           </Snackbar>
+          <UserShouldBeLogedInModal />
         </PaperProvider>
       </MenuProvider >
     </GoogleSigninProvider>

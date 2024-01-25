@@ -13,6 +13,11 @@ const setWindowSizes = (payload: WindowSizesType): generalReducerAction => ({
     payload
 })
 
+const setShowUserShouldBeLogedInModal = (payload: boolean): generalReducerAction => ({
+    type: generalActionTypes.SET_SHOW_USER_SHOULD_BE_LOGED_IN_MODAL,
+    payload
+})
+
 const setIsTabbarVisible = (payload: boolean): generalReducerAction => ({
     type: generalActionTypes.SET_IS_TABBAR_VISIBLE,
     payload
@@ -140,6 +145,7 @@ const generalActions = {
     resetStore,
     setSnackbarMessage,
     setUserSettings,
+    setShowUserShouldBeLogedInModal,
 };
 
 export default generalActions;
