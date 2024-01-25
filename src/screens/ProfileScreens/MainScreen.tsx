@@ -119,7 +119,7 @@ const MainScreen: React.FC = () => {
 
   return (
     <ScreenHeaderProvider backgroundContent={Colors.Basic100}>
-      <ScrollView style={styles.ScrollView}>
+      <ScrollView contentContainerStyle={{ paddingTop: 24 }} style={styles.ScrollView}>
         <Typography weight='Bold' size={20} style={[styles.GroupHeader, { marginTop: 24 }]}>
           Twoje punkty
         </Typography>
@@ -274,7 +274,6 @@ const MainScreen: React.FC = () => {
             </View>
           </Button>
         }
-        <View style={{height: 60}}/>
         {/* {!!token && <View style={{ flex: 1, marginVertical: 20, alignItems: 'center', justifyContent: 'flex-end' }}>
           <TouchableOpacity onPress={logoutHandler}>
             <Typography color={Colors.Danger} variant="h4" weight='SemiBold' style={{ textDecorationLine: 'underline', textAlign: 'center', }}>
@@ -299,7 +298,6 @@ const MainScreen: React.FC = () => {
 const styles = StyleSheet.create({
   ScrollView: {
     flex: 1,
-    paddingTop: 24,
   },
   PointsButton: {
     height: 80,

@@ -83,7 +83,7 @@ const NotificationScreen: React.FC = () => {
 
   return (
     <ScreenHeaderProvider backgroundContent={Colors.Basic100}>
-      <ScrollView style={styles.Content}>
+      <ScrollView contentContainerStyle={{paddingTop: 50}} style={styles.Content}>
         <Separator />
         <Switch
           checked={!selectedNotifications.length}
@@ -102,7 +102,8 @@ const NotificationScreen: React.FC = () => {
               {index === 0 &&
                 <Separator />
               }
-              <Switch 
+              <Switch
+                key={index}
                 checked={selectedNotifications.includes(item.id)}
                 onCheckedChange={() => handleSelectedItems(item.id)}
                 containerStyle={styles.NotificationSwitch}
@@ -137,7 +138,6 @@ const NotificationScreen: React.FC = () => {
 const styles = StyleSheet.create({
   Content: {
     flex: 1,
-    marginTop: 50,
   },
   HoldAllSwitch: {
     paddingHorizontal: 19, 

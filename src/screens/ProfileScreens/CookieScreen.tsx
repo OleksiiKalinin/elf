@@ -9,6 +9,7 @@ import { ScrollView } from '../../components/molecules/ScrollView';
 import Button from '../../components/molecules/Button';
 import { useActions } from '../../hooks/useActions';
 import useRouter from '../../hooks/useRouter';
+import { Separator } from 'tamagui';
 
 const consents = [
   {
@@ -70,7 +71,7 @@ const CookieScreen: React.FC = () => {
 
   return (
     <ScreenHeaderProvider backgroundContent={Colors.Basic100}>
-      <ScrollView style={styles.ScrollView}>
+      <ScrollView contentContainerStyle={{ paddingTop: 20 }} style={styles.ScrollView}>
         <Typography variant='h5' style={styles.Description}>
           Aplikacja wykorzystuje pliki cookie. Możesz nimi zarządzać w dowolnym momencie, zmieniając wybrane opcje.
         </Typography>
@@ -78,61 +79,43 @@ const CookieScreen: React.FC = () => {
           Dowiedz się więcej na temat plików cookie i sposobu ich wykorzystywania w naszej aplikacji.
         </Typography>
         <View style={styles.Buttons}>
-          <Button
-            w='100%'
-            variant='text'
-            borderTop
-            style={[styles.ConsentButton, { height: 60 }]}
-            pressStyle={styles.ConsentButtonPress}
-            onPress={() => selectedConsents.length === consents.length ? setSelectedConsents([1]) : setSelectedConsents(consents.map(item => item.id))}
-          >
-            <View style={styles.ConsentButtonContent}>
-              <View style={styles.TitleAndSwitch}>
-                <Typography style={styles.ConsentTitle} size={18} textAlign='left'>
-                  Akceptuję wszystkie
-                </Typography>
-                <Switch
-                  isOn={selectedConsents.length === consents.length}
-                  onToggle={(isOn) => isOn ? setSelectedConsents(consents.map(item => item.id)) : setSelectedConsents([1])}
-                />
-              </View>
-            </View>
-          </Button>
+          <Separator />
+          <Switch
+            checked={selectedConsents.length === consents.length}
+            onCheckedChange={(isOn) => isOn ? setSelectedConsents(consents.map(item => item.id)) : setSelectedConsents([1])}
+            containerStyle={styles.AcceptAllSwitch}
+            leftTextView={
+              <Typography style={styles.SwitchText} size={18}>
+                Akceptuję wszystkie
+              </Typography>
+            }
+          />
           {consents.map((item, index) => (
-            <Button
-              w='100%'
-              borderTop={index === 0}
-              borderBottom
-              variant='text'
-              disabled={item.id === 1}
-              style={[styles.ConsentButton, { height: 'auto' }]}
-              pressStyle={styles.ConsentButtonPress}
-              onPress={() => handleSelectedItems(item.id)}
-            >
-              <View style={styles.ConsentButtonContent}>
-                <View style={styles.TitleAndSwitch}>
-                  <Typography style={styles.ConsentTitle} size={18} textAlign='left'>
-                    {item.name}
-                  </Typography>
-                  <Switch
-                    onToggle={() => handleSelectedItems(item.id)}
-                    disabled={item.id === 1}
-                    isOn={item.id === 1 || selectedConsents.includes(item.id)}
-                  />
-                </View>
-                <Typography
-                  style={styles.ConsentTitle}
-                  variant="h5"
-                  textAlign='left'
-                  color={Colors.Basic600}
-                >
-                  {item.content}
-                </Typography>
-              </View>
-            </Button>
+            <>
+              {index === 0 &&
+                <Separator />
+              }
+              <Switch
+                key={index}
+                checked={item.id === 0 || selectedConsents.includes(item.id)}
+                onCheckedChange={() => item.id !== 1 && handleSelectedItems(item.id)}
+                containerStyle={styles.ConsentSwitch}
+                style={{opacity: item.id === 1 ? .7 : 1}}
+                leftTextView={
+                  <>
+                    <Typography style={styles.SwitchText} size={18} textAlign='left'>
+                      {item.name}
+                    </Typography>
+                    <Typography style={styles.SwitchText} variant="h5" textAlign='left' color={Colors.Basic600}>
+                      {item.content}
+                    </Typography>
+                  </>
+                }
+              />
+              <Separator />
+            </>
           ))}
         </View>
-        <View style={{ height: 50 }} />
       </ScrollView>
       <Button
         stickyBottom
@@ -149,7 +132,6 @@ const CookieScreen: React.FC = () => {
 const styles = StyleSheet.create({
   ScrollView: {
     flex: 1,
-    marginTop: 20,
     width: '100%',
   },
   Description: {
@@ -160,29 +142,16 @@ const styles = StyleSheet.create({
   Buttons: {
     marginTop: 24,
   },
-  ConsentButton: {
+  AcceptAllSwitch: {
+    paddingHorizontal: 19, 
+    height: 58
+  },
+  SwitchText: {
+    width: '85%'
+  },
+  ConsentSwitch: {
     paddingHorizontal: 19,
     paddingVertical: 16,
-  },
-  ConsentButtonContent: {
-    paddingVertical: 16,
-    width: '100%'
-  },
-  ConsentButtonPress: {
-    opacity: 1,
-    bg: Colors.Basic200,
-  },
-  TitleAndSwitch: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%'
-  },
-  ConsentTitle: {
-    width: '85%',
-  },
-  Switch: {
-    width: '15%'
   },
 });
 
