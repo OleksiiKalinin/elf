@@ -239,7 +239,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
 
   useEffect(() => {
     if (userCompany) setCompanyData(userCompany);
-    console.log('Get:', userCompany?.photos);
+    console.log('Get:', userCompany?.certificates);
   }, [userCompany]);
 
   useEffect(() => {
