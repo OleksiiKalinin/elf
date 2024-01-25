@@ -46,6 +46,7 @@ const initialState: generalReducerState = {
     userQuestions: [],
     candidatesFilters: null,
     snackbarMessage: null,
+    showUserShouldBeLogedInModal: false,
 }
 
 export const generalReducer = (state = initialState, action: generalReducerAction): generalReducerState => {
@@ -82,6 +83,8 @@ export const generalReducer = (state = initialState, action: generalReducerActio
             return { ...state, appLoading: action.payload };
         case generalActionTypes.SET_SNACKBAR_MESSAGE:
             return { ...state, snackbarMessage: action.payload };
+        case generalActionTypes.SET_SHOW_USER_SHOULD_BE_LOGED_IN_MODAL:
+            return { ...state, showUserShouldBeLogedInModal: action.payload };
         case generalActionTypes.SET_IS_MAIN_MENU_FLAT_LIST:
             AsyncStorage.setItem('isMainMenuFlatList', Number(action.payload).toString());
             return { ...state, isMainMenuFlatList: action.payload };

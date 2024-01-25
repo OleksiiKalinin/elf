@@ -85,14 +85,24 @@ const validateUrl = (props: WithUrlProps): string => {
 }
 
 export default function useRouter() {
-    const { currentScreen } = useTypedSelector(s => s.general);
-    const { setSwipeablePanelProps } = useActions();
+    const { currentScreen, userData } = useTypedSelector(s => s.general);
+    const { setSwipeablePanelProps, setShowUserShouldBeLogedInModal } = useActions();
     const { back, parseNextPath, push, replace } = useSolitoRouter();
     const { params, setParams } = useParams();
     const id = useRef(Math.random().toString() + Math.random().toString());
 
-    const preProcessHandler = () => {
-        // console.log('pressed');
+    const preProcessHandler = (): boolean => {
+        console.log('pressed');
+        let access = true;
+        // let access = false;
+
+        // if (userData) {
+        //     access = true;
+        // } else {
+        //     setShowUserShouldBeLogedInModal(true);
+        // }
+
+        return access;
     }
 
     useEffect(() => {
@@ -190,7 +200,8 @@ export default function useRouter() {
             return {
                 ...linking,
                 onPress: (e) => {
-                    preProcessHandler();
+                    const access = preProcessHandler();
+                    if (!access) return;
                     linking.onPress(e);
                 }
             }
@@ -206,11 +217,13 @@ export default function useRouter() {
             setSwipeablePanelProps(null);
         },
         push: (url: WithUrlProps, as?: PushParams[1], transitionOptions?: PushParams[2]) => {
-            preProcessHandler();
+            const access = preProcessHandler();
+            if (!access) return;
             push(validateUrl(url), as, transitionOptions);
         },
         replace: (url: WithUrlProps, as?: ReplaceParams[1], transitionOptions?: ReplaceParams[2]) => {
-            preProcessHandler();
+            const access = preProcessHandler();
+            if (!access) return;
             replace(validateUrl(url), as, { ...transitionOptions, experimental: { nativeBehavior: 'stack-replace', isNestedNavigator: true } });
         },
     }

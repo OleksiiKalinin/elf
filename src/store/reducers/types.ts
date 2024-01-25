@@ -38,6 +38,7 @@ export interface generalReducerState {
     userQuestions: UserQuestionsType[],
     candidatesFilters: CandidatesFiltersType | null,
     snackbarMessage: SnackbarMessageType | null,
+    showUserShouldBeLogedInModal: boolean,
 }
 
 export type WindowSizesType = ScaledSize;
