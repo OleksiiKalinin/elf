@@ -231,21 +231,6 @@ const MainScreen: React.FC = () => {
           variant='text'
           arrowRight
           borderBottom
-        // onPress={()=> router.push({stack: 'ProfileStack', screen: 'PaymentTemporalScreen'})}
-        >
-          <View style={styles.ArrowButton}>
-            <View style={styles.ButtonIconContainer}>
-              <SvgIcon icon='payment' />
-            </View>
-            <Typography weight='SemiBold' variant='h5' style={styles.ButtonText}>
-              Pakiety płatności
-            </Typography>
-          </View>
-        </Button>
-        <Button
-          variant='text'
-          arrowRight
-          borderBottom
           onPress={() => goToSettingsScreen()}
         >
           <View style={styles.ArrowButton}>
@@ -274,22 +259,6 @@ const MainScreen: React.FC = () => {
             </View>
           </Button>
         }
-        {/* {!!token && <View style={{ flex: 1, marginVertical: 20, alignItems: 'center', justifyContent: 'flex-end' }}>
-          <TouchableOpacity onPress={logoutHandler}>
-            <Typography color={Colors.Danger} variant="h4" weight='SemiBold' style={{ textDecorationLine: 'underline', textAlign: 'center', }}>
-              Wyloguj się
-            </Typography>
-          </Button>
-          <Button
-            variant='TouchableOpacity'
-            style={{ marginTop: 15 }}
-            onPress={deleteAccountHandler}
-          >
-            <Typography color={Colors.Basic600} variant="h4" weight='SemiBold' style={{ textDecorationLine: 'underline', textAlign: 'center', }}>
-              Usuń konto
-            </Typography>
-          </TouchableOpacity>
-        </View>} */}
       </ScrollView>
     </ScreenHeaderProvider>
   );

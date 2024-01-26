@@ -8,7 +8,7 @@ import {
 import React, { Fragment, useCallback, useEffect, useState, useRef, useMemo, useLayoutEffect } from 'react';
 import Colors from '../../colors/Colors';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import { AddressType, CompanyDataType, MediaType, ContactPersonType, LanguageType } from '../../store/reducers/types';
+import { AddressType, CompanyDataType, MediaType, ContactPersonType, LanguageType, CompanyRegistrationAddresType } from '../../store/reducers/types';
 import { RenderItemParams } from 'react-native-draggable-flatlist';
 import companyServices from '../../services/companyServices';
 import { isArray, isNumber } from 'lodash';
@@ -142,7 +142,7 @@ const CompanyEditorScreen: React.FC = () => {
     }
   };
 
-  const changeCompanyDataHandler = (name: keyof CompanyDataType, value: string | number | number[] | AddressType | null, replaceSpaces: boolean = true) => {
+  const changeCompanyDataHandler = (name: keyof CompanyDataType, value: string | number | number[] | AddressType | CompanyRegistrationAddresType | null, replaceSpaces: boolean = true) => {
     setCompanyData(prev => ({
       ...prev,
       [name]: value ?
@@ -290,14 +290,19 @@ const CompanyEditorScreen: React.FC = () => {
       screen: 'CompanyEditorScreen',
       params: {
         subView: 'CompanyInvoiceScreen',
-        callback: (registration_address, NIP, registration_name) => {
-          changeCompanyDataHandler('registration_name', registration_name, false);
-          changeCompanyDataHandler('registration_address', registration_address);
+        callback: (nip,  name, address) => {
+          console.log(address)
+          changeCompanyDataHandler('nip', nip, false);
+          changeCompanyDataHandler('registration_name', name, false);
+          changeCompanyDataHandler('registration_address', address, false);
         },
-        address: companyData.registration_address,
-        full_name: companyData.registration_name,
-        NIP: '',
-        title: 'Dodaj dane do faktury'
+        initialData: {
+          nip: companyData?.nip || '',
+          name: companyData?.registration_name || '',
+          street: companyData?.registration_address?.street || '',
+          postalCode: companyData?.registration_address?.postalCode || '',
+          locality: companyData?.registration_address?.locality || '',
+        }
       }
     })
   };
@@ -458,7 +463,7 @@ const CompanyEditorScreen: React.FC = () => {
             </View>
           </View> */}
 
-          <View style={{ backgroundColor: Colors.White, position: Platform.select({ web: 'sticky' as any }), top: 50, zIndex: 100000, paddingLeft: 19 }}>
+          <View style={{ backgroundColor: Colors.White, position: Platform.select({ web: 'sticky' as any }), top: Platform.select({ web: 50 }), zIndex: 100000, paddingLeft: 19 }}>
             <Separator />
             <View style={{ flexDirection: 'row', paddingVertical: 10 }}>
               <View style={{ flexDirection: 'row', flex: 1 }}>

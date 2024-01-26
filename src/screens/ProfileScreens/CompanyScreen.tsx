@@ -40,24 +40,7 @@ const companyExample: CompanyDataType = {
     id: 1,
     path: 'https://i.etsystatic.com/11979725/r/il/2af489/1431674872/il_fullxfull.1431674872_d74y.jpg',
   },
-  registration_address: {
-    adminArea: "Podlaskie",
-    country: "Polska",
-    countryCode: "PL",
-    flat_number: null,
-    formattedAddress: "Wigry 11, 16-402 Suwałki, Polska",
-    locale: "pl",
-    locality: "Suwałki",
-    position: {
-      lat: 54.0690485,
-      lng: 23.0864083
-    },
-    postalCode: "16-402",
-    streetName: null,
-    streetNumber: null,
-    subAdminArea: "Powiat suwalski",
-    subLocality: null
-  },
+  registration_address: null,
   address: {
     adminArea: "Dolnośląskie",
     country: "Polska",

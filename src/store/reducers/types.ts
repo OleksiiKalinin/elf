@@ -323,13 +323,19 @@ export interface EmployeesAmountType {
     id: number,
 }
 
+export interface CompanyRegistrationAddresType {
+    street: string,
+    postalCode: string,
+    locality: string,
+}
+
 export interface CompanyDataType {
     id: number,
     job_industry: number | null,
     name: string | null,
     registration_name: string | null,
     nip: string | null,
-    registration_address: AddressType | null,
+    registration_address: CompanyRegistrationAddresType | null,
     address: AddressType | null,
     description: string | null,
     contactPersons: ContactPersonType[],

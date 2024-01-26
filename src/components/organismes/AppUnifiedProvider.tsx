@@ -123,7 +123,7 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
           if (getcompanyContactPersons && getcompanyContactPersons.length) contactPersons = getcompanyContactPersons;
           setUserCompany({
             ...userCompany,
-            registration_address: convertToFrontEndAddress(userCompany.registration_address as any),
+            /* registration_address: convertToFrontEndAddress(userCompany.registration_address as any), */
             address: convertToFrontEndAddress(userCompany.address as any),
             logo, photos, certificates, contactPersons
             // video, 
@@ -155,7 +155,7 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
               position: Platform.OS === 'web' ? 'fixed' : 'absolute',
             }}
             style={{
-              backgroundColor: snackbarMessage?.type === 'error' ? Colors.Danger : Colors.SuccessDark,
+              backgroundColor: !!snackbarMessage ? snackbarMessage?.type === 'error' ? Colors.Danger : Colors.SuccessDark : 'none',
               maxWidth: 350,
             }}
           >
