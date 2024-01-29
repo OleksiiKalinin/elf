@@ -1,14 +1,13 @@
 import {
   Image,
-  Platform,
   ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
-import React, { Fragment, useCallback, useEffect, useState, useRef, useMemo, useLayoutEffect } from 'react';
+import React, { Fragment, useCallback, useEffect, useState, useMemo, useLayoutEffect } from 'react';
 import Colors from '../../colors/Colors';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import { AddressType, CompanyDataType, MediaType, ContactPersonType, LanguageType, CompanyRegistrationAddresType } from '../../store/reducers/types';
+import { AddressType, CompanyDataType, MediaType, ContactPersonType, CompanyRegistrationAddresType } from '../../store/reducers/types';
 import { RenderItemParams } from 'react-native-draggable-flatlist';
 import companyServices from '../../services/companyServices';
 import { isArray, isNumber } from 'lodash';
@@ -26,10 +25,8 @@ import SvgUriImage from '../../components/atoms/SvgUriImage';
 import MapPreview from '../../components/molecules/MapPreview';
 import { Separator } from 'tamagui';
 import DraggableList from '../../components/organismes/DraggableList';
-import Modal from '../../components/atoms/Modal';
-import { Snackbar } from 'react-native-paper';
-import { Gift, Check } from '@tamagui/lucide-icons'
 import { useActions } from '../../hooks/useActions';
+import FormProgressBar, { FormFieldType } from '../../components/organismes/FormProgressBar';
 
 const CompanyEditorScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
@@ -66,6 +63,7 @@ const CompanyEditorScreen: React.FC = () => {
   const [descriptionHeight, setDescriptionHeight] = useState(0);
   const [editMode, setEditMode] = useState(false);
   const [showTips, setShowTips] = useState<boolean>(false);
+  const [fields, setFields] = useState<FormFieldType[]>([]);
 
   const router = useRouter();
   const { replace } = useRouter();
@@ -89,8 +87,33 @@ const CompanyEditorScreen: React.FC = () => {
     return () => clearTimeout(timer);
   }, [userCompany, token]);
 
+  useEffect(() => {
+    const { name, address, job_industry, services, description, registration_name, registration_address, nip, employees_amount, square_footage, languages, account_instagram, account_facebook, account_linkedIn, website } = companyData;
+
+    setFields([
+      { name: 'name', isValid: !!(name && name.length > 2 && name.length <= 100), require: true },
+      { name: 'address', isValid: !!address, require: true },
+      { name: 'job_industry', isValid: !!job_industry, require: true },
+      { name: 'services', isValid: !!services?.length, require: true },
+      { name: 'contactPersons', isValid: !!contactPersons.length, require: true },
+      { name: 'description', isValid: !!description, require: true },
+      { name: 'invoiceData', isValid: !!(registration_name && nip && registration_address) },
+      { name: 'logo', isValid: !!(companyLogo) },
+      { name: 'photos', isValid: !!(companyPhotos.length) },
+      { name: 'certificates', isValid: !!(companyCertificates.length) },
+      { name: 'square_footage', isValid: !!(square_footage && square_footage.length && square_footage.length <= 8) },
+      { name: 'employees_amount', isValid: !!(employees_amount) },
+      { name: 'languages', isValid: !!(languages?.length) },
+      { name: 'socialMedia', isValid: !!(account_instagram || account_facebook || account_linkedIn || website) },
+    ]);
+  }, [companyData, contactPersons, companyLogo, companyPhotos, companyCertificates]);
+
+  const isFieldValid = (fieldName: keyof typeof companyData) => {
+    const fieldIndex = fields.findIndex(item => item.name === fieldName);
+    return fieldIndex !== -1 && fields[fieldIndex].isValid;
+  };
+
   const validateData = () => {
-    const { name, logo, address, job_industry, services, contactPersons, description, registration_name, registration_address, nip, employees_amount, square_footage } = companyData;
     if (
       !(
         !isNumber(logoProgress)
@@ -98,27 +121,13 @@ const CompanyEditorScreen: React.FC = () => {
         && !isNumber(certificatesProgress)
       )
     ) {
-      setSnackbarMessage({type: 'error', text: 'Trwa ładowanie zdjęć'});
+      setSnackbarMessage({ type: 'error', text: 'Trwa ładowanie zdjęć' });
       return false;
-    } else if (
-      !(
-        (name && name.length > 2 && name.length <= 100)
-        // && address
-        // && isNumber(job_industry)
-        // && services
-        // && contactPersons.lenght
-        // && description
-      )
-    ) {
-      setSnackbarMessage({type: 'error', text: 'Wypełnij wszystkie obowiązkowe pola z gwiazdką!'});
+    } else if (!fields.filter(field => field.require).every(item => item.isValid)) {
+      setSnackbarMessage({ type: 'error', text: 'Wypełnij wszystkie obowiązkowe pola z gwiazdką!' });
       return false;
-    } else if (
-      !(
-        ((square_footage && square_footage.length <= 8) || null)
-        && (isNumber(employees_amount) || null)
-      )
-    ) {
-      setSnackbarMessage({type: 'error', text: 'Wypełnij poprawnie dodatkowe pola lub pozostaw je puste'});
+    } else if (!(isFieldValid('square_footage') || companyData.square_footage === null)) {
+      setSnackbarMessage({ type: 'error', text: 'Wypełnij poprawnie dodatkowe pola lub pozostaw je puste' });
       return false;
     } else {
       return true;
@@ -136,7 +145,10 @@ const CompanyEditorScreen: React.FC = () => {
       })
       );
       setLoading(false);
-      if (!!isOk) goToCompanyScreen();
+      if (!!isOk) {
+        if (editMode) setSnackbarMessage({ type: 'success', text: 'Zaktualizowano profil' });
+        goToCompanyScreen();
+      };
     } else {
       setShowTips(true);
     }
@@ -290,7 +302,7 @@ const CompanyEditorScreen: React.FC = () => {
       screen: 'CompanyEditorScreen',
       params: {
         subView: 'CompanyInvoiceScreen',
-        callback: (nip,  name, address) => {
+        callback: (nip, name, address) => {
           console.log(address)
           changeCompanyDataHandler('nip', nip, false);
           changeCompanyDataHandler('registration_name', name, false);
@@ -423,74 +435,9 @@ const CompanyEditorScreen: React.FC = () => {
     <>
       {token &&
         <ScreenHeaderProvider title={editMode ? 'Edytuj profil firmy' : 'Utwórz profil firmy'}>
-          {/* <View style={{backgroundColor: Colors.White, position: Platform.select({web: 'sticky' as any}), top: 50, zIndex: 100000}}>
-          <Separator />
-            <View style={{flexDirection: 'row', paddingVertical: 10,}}>
-            <View style={{flexDirection: 'row', flex: 1, marginLeft: 19}}>
-            <View style={{flex: 1}}>
-            <Slider
-              min={0}
-              max={100}
-              step={1}
-              value={[100]}
-            >
-              <Slider.Track >
-                <Slider.TrackActive backgroundColor={Colors.Green500}/>
-              </Slider.Track>
-            </Slider>
-            </View>
-            <View style={{width: 50, alignItems: 'center'}}>
-            <Check/>
-            </View>
-          </View>
-          <View style={{flexDirection: 'row', flex: 1}}>
-            <View style={{flex: 1}}>
-            <Slider
-              min={0}
-              max={100}
-              step={1}
-              value={[70]}
-            >
-              <Slider.Track >
-                <Slider.TrackActive backgroundColor={Colors.Green500}/>
-              </Slider.Track>
-            </Slider>
-            </View>
-            <View style={{width: 50, alignItems: 'center'}}>
-              <Gift color={Colors.Basic500}/>
-            </View>
-          </View>
-            </View>
-          </View> */}
-
-          <View style={{ backgroundColor: Colors.White, position: Platform.select({ web: 'sticky' as any }), top: Platform.select({ web: 50 }), zIndex: 100000, paddingLeft: 19 }}>
-            <Separator />
-            <View style={{ flexDirection: 'row', paddingVertical: 10 }}>
-              <View style={{ flexDirection: 'row', flex: 1 }}>
-                <View style={{ flexDirection: 'row', gap: 5, width: '100%', alignItems: 'center' }}>
-                  {[true, true, true, true, true, true,].map(item =>
-                    <View style={{ height: 4, borderRadius: 50, backgroundColor: item ? Colors.Green500 : Colors.Basic400, flex: 1 }} />
-                  )}
-                  <View style={{ minWidth: 50, alignItems: 'center' }}>
-                    <Check />
-                  </View>
-                </View>
-
-              </View>
-              <View style={{ flexDirection: 'row', flex: 1 }}>
-                <View style={{ flexDirection: 'row', gap: 5, width: '100%', alignItems: 'center' }}>
-                  {[true, true, true, false, false, false].map(item =>
-                    <View style={{ height: 4, borderRadius: 50, backgroundColor: item ? Colors.Green500 : Colors.Basic400, flex: 1 }} />
-                  )}
-                  <View style={{ minWidth: 50, alignItems: 'center' }}>
-                    <Gift color={Colors.Basic500} />
-                  </View>
-                </View>
-
-              </View>
-            </View>
-          </View>
-
+          <FormProgressBar
+            fields={fields}
+          />
           <ScrollView style={styles.Content} contentContainerStyle={{ paddingVertical: 20 }}>
             <Typography
               size={20}
@@ -503,8 +450,9 @@ const CompanyEditorScreen: React.FC = () => {
               <TextField
                 label="Nazwa firmy*"
                 value={companyData.name || ''}
+                maxLength={100}
                 onChangeText={text => changeCompanyDataHandler('name', text, false)}
-                {...(showTips && (!companyData.name || companyData.name?.length < 3 || companyData.name.length > 100) && {
+                {...(showTips && !isFieldValid('name') && {
                   bottomText: 'Nazwa firmy musi zawierać od 3 do 100 znaków',
                 })}
               />
@@ -1100,7 +1048,7 @@ const CompanyEditorScreen: React.FC = () => {
                 </Typography>
               </Button>
             }
-            {companyData.languages ?
+            {companyData.languages?.length ?
               <>
                 <View style={styles.SelectedItemsContainer}>
                   <View style={styles.SelectedItemsHeader}>
