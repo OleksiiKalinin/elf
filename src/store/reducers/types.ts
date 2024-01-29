@@ -1,12 +1,14 @@
 import { SwipeablePanelProps } from "../../components/organismes/SwipeablePanel";
 import { ScaledSize } from 'react-native';
-import { PartialBy } from "../../hooks/types";
+import { NonNullableKeys, PartialBy } from "../../hooks/types";
+import { CurrentScreenType, WithUrlProps } from "../../hooks/withUrl";
 
 export interface generalReducerState {
     isTabbarVisible: boolean,
     windowSizes: WindowSizesType,
     theme: string,
-    currentScreen: string,
+    // currentScreen: string,
+    currentScreen: CurrentScreenType,
     token: string | null,
     refresh_token: string | null,
     profileHelpScreenDisplayed: boolean,
@@ -38,8 +40,13 @@ export interface generalReducerState {
     userQuestions: UserQuestionsType[],
     candidatesFilters: CandidatesFiltersType | null,
     snackbarMessage: SnackbarMessageType | null,
-    showUserShouldBeLogedInModal: boolean,
+    showUserShouldBeLogedInModal: ShowUserShouldBeLogedInModalType,
 }
+
+export type ShowUserShouldBeLogedInModalType = {
+    state: boolean,
+    closeAction: 'close' | 'redirectToRoot'
+};
 
 export type WindowSizesType = ScaledSize;
 

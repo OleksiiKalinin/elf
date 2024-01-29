@@ -11,16 +11,20 @@ import useRouter from '../../hooks/useRouter';
 const UserShouldBeLogedInModal = () => {
     const { showUserShouldBeLogedInModal } = useTypedSelector(s => s.general);
     const { setShowUserShouldBeLogedInModal } = useActions();
-    const { push } = useRouter();
+    const { push, replace } = useRouter();
 
-    const closeHandler = () => {
-        setShowUserShouldBeLogedInModal(false);
+    const closeHandler = (closeAction: boolean = true) => {
+        if (closeAction && (showUserShouldBeLogedInModal.closeAction === 'redirectToRoot')) {
+            replace({ stack: 'MenuStack' });
+        }
+        setShowUserShouldBeLogedInModal({ state: false, closeAction: 'close' });
     }
 
     return (
         <Modal
-            visible={showUserShouldBeLogedInModal}
+            visible={showUserShouldBeLogedInModal.state}
             onClose={closeHandler}
+            disableBackBehaviorOnWeb
         >
             <View style={styles.Modal}>
                 <View style={styles.CropContainer}>
@@ -35,16 +39,19 @@ const UserShouldBeLogedInModal = () => {
                         style={{ margin: 7.5, flex: 1 }}
                         variant='secondary'
                         borderRadius={4}
-                        onPress={closeHandler}
+                        onPress={() => closeHandler()}
                     >
-                        Cofnij
+                        {showUserShouldBeLogedInModal.closeAction === 'close' ? 'Anuluj' : 'Zamknij'}
                     </Button>
                     <Button
                         fullwidth={false}
                         size='medium'
                         style={{ margin: 7.5, flex: 1 }}
                         borderRadius={4}
-                        onPress={() => push({ stack: 'AuthStack' })}
+                        onPress={() => {
+                            push({ stack: 'AuthStack' });
+                            closeHandler(false);
+                        }}
                     >
                         Zaloguj
                     </Button>
@@ -56,10 +63,6 @@ const UserShouldBeLogedInModal = () => {
 
 const styles = StyleSheet.create({
     Modal: {
-        // justifyContent: 'center',
-        // alignItems: 'center',
-        // width: '100%',
-        // height: '100%',
         backgroundColor: Colors.White,
         borderRadius: 4,
     },

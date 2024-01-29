@@ -2,23 +2,31 @@ import { forIn, isPlainObject } from "lodash";
 import { RootStackParamList } from "../navigators/RootNavigator";
 import getPathnameFromScreen from "./getPathnameFromScreen";
 
-export type WithUrlProps<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? Stack<T> : never;
+export type WithUrlProps<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? Stack<T, true> : never;
+export type CurrentScreenType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? Stack<T, false> : never;
 
-type Stack<T extends keyof RootStackParamList> = {
+type Stack<T extends keyof RootStackParamList, params extends boolean> = {
     stack: T,
-} & (Screens<T, keyof RootStackParamList[T]['default']> | {screen?: undefined, params?: any});
+} &
+    (Screens<T, params, keyof RootStackParamList[T]['default']> | (
+        params extends true ?
+        { screen?: undefined, params?: any }
+        :
+        never
+    ));
 
-type Screens<T extends keyof RootStackParamList, K extends keyof RootStackParamList[T]['default'] = keyof RootStackParamList[T]['default']> = K extends K ? Screen<T, K> : never;
+type Screens<T extends keyof RootStackParamList, params extends boolean, K extends keyof RootStackParamList[T]['default'] = keyof RootStackParamList[T]['default']> = K extends K ? Screen<T, K, params> : never;
 
-type Screen<T extends keyof RootStackParamList, K extends keyof RootStackParamList[T]['default']> = {
+type Screen<T extends keyof RootStackParamList, K extends keyof RootStackParamList[T]['default'], params extends boolean> = {
     screen: K,
-} & OptionalParams<RootStackParamList[T]['default'][K]>;
+} & (params extends true ? OptionalParams<RootStackParamList[T]['default'][K]> : {});
 
 type OptionalParams<T> = [T] extends [undefined] ? { params?: any } : { params: T };
 // type OptionalParams<T> = [T] extends [undefined] ? {params?: never} : T extends undefined ? { params?: any } : { params: T };
 
 export default function withUrl({ stack, screen = 'MainScreen', params = undefined }: WithUrlProps): string {
-    let url = getPathnameFromScreen(stack + '-' + screen);
+    //@ts-ignore
+    let url = getPathnameFromScreen({ screen, stack });
     if (isPlainObject(params)) {
         const query: string[] = [];
         forIn(params, (value, key) => {

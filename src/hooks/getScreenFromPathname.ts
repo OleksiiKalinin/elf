@@ -1,8 +1,9 @@
 import { navigationLinking } from "../navigators/RootNavigator";
+import { CurrentScreenType } from "./withUrl";
 
-export default function getScreenFromPathname(pathname: string): string {
+export default function getScreenFromPathname(pathname: string): CurrentScreenType {
     const [, routeStack, routeScreen] = pathname.split('/');
-    let currentScreen = '';
+    let currentScreen: CurrentScreenType | null = null;
 
     if (routeStack) {
         const linking: any = navigationLinking.config?.screens;
@@ -14,18 +15,27 @@ export default function getScreenFromPathname(pathname: string): string {
                         for (const screenName in currStack.screens) {
                             const currScreen = currStack.screens[screenName];
                             if (currScreen === routeScreen) {
-                                currentScreen = stackName + '-' + screenName;
+                                //@ts-ignore
+                                currentScreen = { stack: stackName, screen: screenName };
                                 break;
                             }
                         }
                     }
                     if (!currentScreen) {
-                        currentScreen = stackName + '-' + 'MainScreen';
+                        //@ts-ignore
+                        currentScreen = { stack: stackName, screen: 'MainScreen' };
                     }
                 }
             }
         }
     }
 
-    return currentScreen || 'MenuStack-MainScreen';
+    if (!currentScreen) {
+        currentScreen = {
+            stack: 'MenuStack',
+            screen: 'MainScreen'
+        };
+    }
+
+    return currentScreen;
 }

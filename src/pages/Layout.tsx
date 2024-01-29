@@ -10,6 +10,7 @@ import SwipeablePanel from '../components/organismes/SwipeablePanel';
 import getScreenFromPathname from '../hooks/getScreenFromPathname';
 import LoadingScreen from '../components/atoms/LoadingScreen';
 import windowExists from '../hooks/windowExists';
+import { isEqual } from 'lodash';
 
 if (windowExists()) {
   const win: any = window;
@@ -18,12 +19,16 @@ if (windowExists()) {
 }
 
 const Layout: FC<{ children: ReactNode, hideControls?: boolean }> = ({ children, hideControls: hideControls = false }) => {
-  const { isTabbarVisible } = useTypedSelector(s => s.general);
+  const { isTabbarVisible, currentScreen } = useTypedSelector(s => s.general);
   const { setCurrentScreen, setSwipeablePanelProps } = useActions();
   const router = useRouter();
 
   useEffect(() => {
-    setCurrentScreen(getScreenFromPathname(router.pathname));
+    const oldScreen = currentScreen;
+    const newScreen = getScreenFromPathname(router.pathname);
+    if (!isEqual(oldScreen, newScreen)) {
+      setCurrentScreen(newScreen);
+    }
 
     if (windowExists()) {
       const win: any = window;

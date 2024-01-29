@@ -32,7 +32,7 @@ const { useParam } = createParam<Props>();
 const MainScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const router = useRouter();
-  const { token, userCompany, userAdverts } = useTypedSelector(state => state.general);
+  const { token, userCompany, userAdverts, userData } = useTypedSelector(state => state.general);
   const [tabbarIndex, setTabbarIndex] = React.useState<number>(0);
   const [routes] = React.useState<TabbarRoute[]>([
     { key: '0', title: 'Aktywne' },
@@ -116,7 +116,7 @@ const MainScreen: React.FC = () => {
         }[tabbarIndex]}
       </ScrollView>
     </ScreenHeaderProvider>
-    <CornerCircleButton onPress={() => router.push({ stack: 'AdvertStack', screen: 'AdvertEditorScreen', params: undefined })} />
+    {userData && <CornerCircleButton onPress={() => router.push({ stack: 'AdvertStack', screen: 'AdvertEditorScreen', params: undefined })} />}
   </>);
 };
 

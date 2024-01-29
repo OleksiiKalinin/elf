@@ -59,7 +59,8 @@ const MainScreen: React.FC = ({ }) => {
       icon: IconTypes,
       missedEvents: number,
       badge: string,
-    } & (ReturnType<typeof useLink> | { onPress: () => void }))[]
+      onPress: () => void,
+    })[]
   }[] = [
       {
         sectionTitle: 'Aktualności',
@@ -68,9 +69,7 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Image test',
             backgroundColor: Colors.Sea300,
             icon: 'pencil',
-            ...useLink({
-              href: { stack: 'MenuStack', screen: 'ImageScreen', params: undefined }
-            }),
+            onPress: () => push({ stack: 'MenuStack', screen: 'ImageScreen', params: undefined }),
             missedEvents: 10,
             badge: 'Nowe',
           },
@@ -78,9 +77,7 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Test Screen',
             backgroundColor: Colors.Sea300,
             icon: 'search',
-            ...useLink({
-              href: { stack: 'MenuStack', screen: 'TestScreen', params: undefined }
-            }),
+            onPress: () => push({ stack: 'MenuStack', screen: 'TestScreen', params: undefined }),
             missedEvents: 10,
             badge: 'Nowe',
           },
@@ -88,9 +85,7 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Historia wydarzeń',
             backgroundColor: Colors.Sea300,
             icon: 'eventsHistory',
-            ...useLink({
-              href: { stack: 'MenuStack', screen: 'EventsScreen' }
-            }),
+            onPress: () => push({ stack: 'MenuStack', screen: 'EventsScreen' }),
             missedEvents: 10,
             badge: 'Nowe',
           },
@@ -98,9 +93,7 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Zaplanowane spotkania',
             backgroundColor: Colors.Sea300,
             icon: 'meeting',
-            ...useLink({
-              href: { stack: 'CalendarStack' }
-            }),
+            onPress: () => push({ stack: 'CalendarStack' }),
             missedEvents: 0,
             badge: ''
           },
@@ -108,9 +101,7 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Kalendarz',
             backgroundColor: Colors.Sea300,
             icon: 'calendar',
-            ...useLink({
-              href: { stack: 'CalendarStack' }
-            }),
+            onPress: () => push({ stack: 'CalendarStack' }),
             missedEvents: 0,
             badge: ''
           },
@@ -118,9 +109,7 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Powiadomienia',
             backgroundColor: Colors.Sea300,
             icon: 'notification',
-            ...useLink({
-              href: { stack: 'MenuStack', screen: 'EventsScreen' }
-            }),
+            onPress: () => push({ stack: 'MenuStack', screen: 'EventsScreen' }),
             missedEvents: 0,
             badge: ''
           },
@@ -134,16 +123,14 @@ const MainScreen: React.FC = ({ }) => {
             backgroundColor: Colors.Blue100,
             icon: 'candidates',
             missedEvents: 0,
-            ...useLink({ href: { stack: 'CandidatesStack' } }),
+            onPress: () => push({ stack: 'CandidatesStack' }),
             badge: ''
           },
           {
             title: 'Twoi ulubieni kandydaci',
             backgroundColor: Colors.Blue100,
             icon: 'cardOutlined',
-            ...useLink({
-              href: { stack: 'CandidatesStack', screen: 'FavouritesScreen' }
-            }),
+            onPress: () => push({ stack: 'CandidatesStack', screen: 'FavouritesScreen' }),
             missedEvents: 0,
             badge: ''
           },
@@ -151,9 +138,7 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Ogłoszenia',
             backgroundColor: Colors.Blue100,
             icon: 'work',
-            ...useLink({
-              href: { stack: 'AdvertStack' },
-            }),
+            onPress: () => push({ stack: 'AdvertStack' },),
             missedEvents: 0,
             badge: '',
           },
@@ -161,9 +146,7 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Profil',
             backgroundColor: Colors.Blue100,
             icon: 'user',
-            ...useLink({
-              href: { stack: 'ProfileStack' },
-            }),
+            onPress: () => push({ stack: 'ProfileStack' },),
             missedEvents: 0,
             badge: ''
           },
@@ -171,9 +154,7 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Pakiety',
             backgroundColor: Colors.Blue100,
             icon: 'bag',
-            ...useLink({
-              href: { stack: 'ProfileStack', screen: 'PackagesScreen' },
-            }),
+            onPress: () => push({ stack: 'ProfileStack', screen: 'PackagesScreen' },),
             missedEvents: 0,
             badge: ''
           },
@@ -186,9 +167,7 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Kalkulator wynagrodzeń',
             backgroundColor: Colors.Basic200,
             icon: 'calculator',
-            ...useLink({
-              href: { stack: 'MenuStack' }
-            }),
+            onPress: () => push({ stack: 'MenuStack' }),
             missedEvents: 0,
             badge: ''
           },
@@ -196,9 +175,7 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Lista pytań',
             backgroundColor: Colors.Basic200,
             icon: 'list',
-            ...useLink({
-              href: { stack: 'MenuStack', screen: 'QuestionsListScreen', params: undefined }
-            }),
+            onPress: () => push({ stack: 'MenuStack', screen: 'QuestionsListScreen', params: undefined }),
             missedEvents: 0,
             badge: ''
           },
@@ -206,9 +183,7 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Artykuły i nowości',
             backgroundColor: Colors.Basic200,
             icon: 'fileDocument',
-            ...useLink({
-              href: { stack: 'MenuStack' }
-            }),
+            onPress: () => push({ stack: 'MenuStack' }),
             missedEvents: 0,
             badge: 'Nowe',
           },
@@ -216,9 +191,7 @@ const MainScreen: React.FC = ({ }) => {
             title: 'Wszystkie instrukcje',
             backgroundColor: Colors.Basic200,
             icon: 'fileDocument',
-            ...useLink({
-              href: { stack: 'MenuStack' }
-            }),
+            onPress: () => push({ stack: 'MenuStack' }),
             missedEvents: 0,
             badge: ''
           },
@@ -228,7 +201,7 @@ const MainScreen: React.FC = ({ }) => {
 
   useEffect(() => {
     console.log('userData: ', userData);
-    if ((currentScreen !== 'AuthStack-FillUserDataScreen') && userData && !(userData.email && userData.first_name && userData.last_name)) {
+    if (!(currentScreen.stack === 'AuthStack' && currentScreen.screen === 'FillUserDataScreen') && userData && !(userData.email && userData.first_name && userData.last_name)) {
       setSwipeablePanelProps({
         title: 'Brakuje nam twoich danych po zalogowaniu poprzez media społecznościowe!',
         subTitle: 'Nie będą Ci dostępne większość funkcji aplikacji dopóki nie uzupełnisz te dane.',
@@ -365,7 +338,7 @@ const MainScreen: React.FC = ({ }) => {
           ))}
         </ScrollView>
       </ScreenHeaderProvider>
-      <CornerCircleButton {...useLink({ href: { stack: 'MenuStack', screen: 'MainScreen', params: { subView: 'options' } } })} />
+      {userData && <CornerCircleButton {...useLink({ href: { stack: 'MenuStack', screen: 'MainScreen', params: { subView: 'options' } } })} />}
     </>
   );
 };

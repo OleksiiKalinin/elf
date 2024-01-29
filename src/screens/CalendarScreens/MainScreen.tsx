@@ -15,7 +15,7 @@ import useRouter from '../../hooks/useRouter';
 const MainScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const { useLink } = useRouter();
-  const { token, userEvents, jobIndustries } = useTypedSelector(state => state.general);
+  const { token, userEvents, jobIndustries, userData } = useTypedSelector(state => state.general);
   const [monthTitle, setMonthTitle] = useState<string>('');
   const { current: remindedEvents } = useRef<number[]>([]);
   const { setSwipeablePanelProps } = useActions();
@@ -104,7 +104,7 @@ const MainScreen: React.FC = () => {
     <ScreenHeaderProvider staticContentHeightOnWeb mode="mainTitle" title={monthTitle}>
       <Agenda getCurrentDate={setMonthTitle} events={userEvents} />
     </ScreenHeaderProvider>
-    <CornerCircleButton {...useLink({ href: {stack: 'CalendarStack', screen: 'EventEditorScreen', params: undefined} })} />
+    {userData && <CornerCircleButton {...useLink({ href: {stack: 'CalendarStack', screen: 'EventEditorScreen', params: undefined} })} />}
   </>);
 };
 

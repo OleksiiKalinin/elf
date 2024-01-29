@@ -11,7 +11,8 @@ const initialState: generalReducerState = {
     isTabbarVisible: true,
     isMainMenuFlatList: false,
     theme: 'light',
-    currentScreen: 'MenuStack-MainScreen',
+    // currentScreen: 'MenuStack-MainScreen',
+    currentScreen: { stack: "MenuStack", screen: 'MainScreen' },
     token: null,
     refresh_token: null,
     swipeablePanelProps: null,
@@ -46,7 +47,10 @@ const initialState: generalReducerState = {
     userQuestions: [],
     candidatesFilters: null,
     snackbarMessage: null,
-    showUserShouldBeLogedInModal: false,
+    showUserShouldBeLogedInModal: {
+        state: false,
+        closeAction: 'close'
+    },
 }
 
 export const generalReducer = (state = initialState, action: generalReducerAction): generalReducerState => {
@@ -101,7 +105,7 @@ export const generalReducer = (state = initialState, action: generalReducerActio
         case generalActionTypes.SET_CANDIDATES_FILTERS:
             return { ...state, candidatesFilters: action.payload };
         case generalActionTypes.SET_USER_SETTINGS:
-            if(action.payload){
+            if (action.payload) {
                 if (action.payload.notifications) {
                     AsyncStorage.setItem('notifications', JSON.stringify(action.payload.notifications));
                 };

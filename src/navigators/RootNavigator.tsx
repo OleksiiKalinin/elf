@@ -16,6 +16,8 @@ import BottomTabs from '../components/organismes/BottomTabs';
 import { useRouter } from 'solito/router';
 import notificationHandler from '../hooks/notificationHandler';
 import SplashScreen from 'react-native-lottie-splash-screen'
+import { isEqual } from 'lodash';
+import { CurrentScreenType } from '../hooks/withUrl';
 
 export type RootStackParamList = {
   MenuStack: MenuStackParamList;
@@ -118,7 +120,7 @@ export const screens: React.ComponentProps<typeof RootStack.Screen>[] = [
 ];
 
 const RootNavigator: React.FC = () => {
-  const { isTabbarVisible, appLoading } = useTypedSelector(state => state.general);
+  const { isTabbarVisible, appLoading, currentScreen } = useTypedSelector(state => state.general);
   const { setCurrentScreen, setIsTabbarVisible } = useActions();
   const tempKeyboardAccess = useRef<boolean>(false);
   const { push } = useRouter();
@@ -164,7 +166,11 @@ const RootNavigator: React.FC = () => {
     const screenByHistory: string | null = history && history[history?.length - 1] ? history[history.length - 1].name : null;
     const stack: string = route.name;
     const screen: string = screenByParams && screenByHistory ? screenByHistory : (screenByParams || screenByHistory || 'MainScreen');
-    setCurrentScreen(stack + '-' + screen);
+
+    const newScreen = { stack, screen } as CurrentScreenType;
+    if (!isEqual(currentScreen, newScreen)) {
+      setCurrentScreen(newScreen);
+    }
   }
 
   return (

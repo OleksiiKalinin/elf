@@ -51,7 +51,6 @@ const getAppData = (token: generalReducerState['token']) => async (dispatch: App
         //     await axios.post('/employer/create_user/', {}, { headers: dynamicHeaders({token}) });
         //     userData.data.is_employer = true;
         // }
-        console.log(appData);
         if (!token) {
             googleSignOut();
             facebookSignOut();

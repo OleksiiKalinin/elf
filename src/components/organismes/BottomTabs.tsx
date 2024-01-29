@@ -9,6 +9,7 @@ import { useLink } from 'solito/link';
 import Typography from '../atoms/Typography';
 import withUrl from '../../hooks/withUrl';
 import { RootStackParamList } from '../../navigators/RootNavigator';
+import { protectedUrls } from '../../hooks/useRouter';
 
 export const BOTTOM_TABS_HEIGHT = 45;
 
@@ -38,6 +39,9 @@ const hiddenTabbarScreens: ScreensType = {
     ProfileStack: ['SettingsScreen', 'PackagesScreen', 'NoCompanyScreen', 'CompanyEditorScreen', 'AddPaymentScreen', 'CompanyScreen', 'EditPaymentScreen', 'MethodsScreen', 'NotificationScreen', 'PaymentScreen', 'PointsScreen', 'PrivacyScreen', 'AccountDataScreen', 'ToolsScreen', 'CookieScreen'],
 };
 
+/**
+ * don't import custom useRouter!!!
+ */
 const BottomTabs: FC<BottomTabsProps> = ({ routes }) => {
     const { isTabbarVisible, currentScreen } = useTypedSelector(state => state.general);
     const { setIsTabbarVisible } = useActions();
@@ -60,11 +64,9 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes }) => {
     }
 
     useEffect(() => {
-        if (currentScreen) {
-            const [stack, screen] = currentScreen.split('-');
-            //@ts-ignore
-            setIsTabbarVisible(!hiddenTabbarScreens[stack].includes(screen));
-        }
+        const { stack, screen } = currentScreen;
+        //@ts-ignore
+        setIsTabbarVisible(!(hiddenTabbarScreens[stack].includes(screen) || protectedUrls[stack].find(e => e === 'all' || e === screen)));
     }, [currentScreen]);
 
     return (
@@ -77,10 +79,10 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes }) => {
             <View style={[{ flexDirection: 'row', backgroundColor: Colors.White, maxWidth: 768, width: '100%', flex: 1 }]}>
                 {routes.map((route) => {
                     const stack = route as keyof RootStackParamList;
-                    const isFocused = (currentScreen.split('-')[0] === stack) || (stack === 'MenuStack' && currentScreen.split('-')[0] === 'ProfileStack');
+                    const isFocused = (currentScreen.stack === stack) || (stack === 'MenuStack' && currentScreen.stack === 'ProfileStack');
 
                     const excludedStacks: Array<keyof RootStackParamList> = ['AuthStack', 'ProfileStack'];
-                    if (excludedStacks.includes(stack)) return null;
+                    if (excludedStacks.includes(stack) || !!protectedUrls[stack].find(e => e === 'all')) return null;
 
                     return (
                         <Button

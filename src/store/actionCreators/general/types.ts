@@ -1,6 +1,7 @@
 import { SwipeablePanelProps } from "../../../components/organismes/SwipeablePanel";
+import { CurrentScreenType } from "../../../hooks/withUrl";
 import { generalActionTypes } from "../../actions";
-import { AppDataType, CandidateMarkType, CandidateNotesType, CandidatesFiltersType, CompanyDataType, InvoiceType, JobExperienceType, JobIndustryType, JobSalaryModeType, JobSalaryTaxType, MarkDataType, NoteDataType, SnackbarMessageType, UserAdvertType, UserDataType, UserEventType, UserQuestionsType, UserSettingsType, WindowSizesType } from "../../reducers/types";
+import { AppDataType, CandidateMarkType, CandidateNotesType, CandidatesFiltersType, CompanyDataType, InvoiceType, JobExperienceType, JobIndustryType, JobSalaryModeType, JobSalaryTaxType, MarkDataType, NoteDataType, ShowUserShouldBeLogedInModalType, SnackbarMessageType, UserAdvertType, UserDataType, UserEventType, UserQuestionsType, UserSettingsType, WindowSizesType } from "../../reducers/types";
 
 interface setToken {
     type: generalActionTypes.SET_TOKEN,
@@ -14,7 +15,7 @@ interface setWindowSizes {
 
 interface setShowUserShouldBeLogedInModal {
     type: generalActionTypes.SET_SHOW_USER_SHOULD_BE_LOGED_IN_MODAL,
-    payload: boolean
+    payload: ShowUserShouldBeLogedInModalType
 }
 
 interface setUserData {
@@ -89,7 +90,7 @@ interface setProfileHelpScreenDisplayed {
 
 interface setCurrentScreen {
     type: generalActionTypes.SET_CURRENT_SCREEN,
-    payload: string,
+    payload: CurrentScreenType,
 }
 
 interface setAppData {

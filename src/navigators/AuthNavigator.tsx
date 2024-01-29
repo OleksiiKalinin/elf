@@ -31,7 +31,6 @@ export const AuthStackLinking: PathConfigMap<AuthStackParamList['default']> = {
 const AuthStack = createNativeStackNavigator<AuthStackParamList['default']>();
 
 const AuthNavigator: React.FC = () => {
-    const { token } = useTypedSelector(state => state.general);
 
     return (
         <AuthStack.Navigator initialRouteName="MainScreen" screenOptions={{ headerShown: false }}>

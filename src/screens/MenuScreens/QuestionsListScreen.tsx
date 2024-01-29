@@ -1,34 +1,34 @@
-import React, {useEffect} from 'react';
-import {Platform, StyleSheet, View} from 'react-native';
+import React, { useEffect } from 'react';
+import { Platform, StyleSheet, View } from 'react-native';
 import Colors from '../../colors/Colors';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import Typography from '../../components/atoms/Typography';
 import Button from '../../components/molecules/Button';
-import {ScrollView} from '../../components/molecules/ScrollView';
+import { ScrollView } from '../../components/molecules/ScrollView';
 import useRouter from '../../hooks/useRouter';
 import CornerCircleButton from '../../components/molecules/CornerCircleButton';
-import {MenuStackParamList} from '../../navigators/MenuNavigator';
-import {createParam} from 'solito';
-import {useTypedSelector} from '../../hooks/useTypedSelector';
-import {Snackbar} from 'react-native-paper';
+import { MenuStackParamList } from '../../navigators/MenuNavigator';
+import { createParam } from 'solito';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
+import { Snackbar } from 'react-native-paper';
 import SvgIcon from '../../components/atoms/SvgIcon';
-import {InitialPropsFromParams} from '../../hooks/types';
+import { InitialPropsFromParams } from '../../hooks/types';
 
 type Params = NonNullable<MenuStackParamList['default']['QuestionsListScreen']>;
 
-const {useParam} = createParam<Params>();
+const { useParam } = createParam<Params>();
 
 const QuestionsListScreen: React.FC<InitialPropsFromParams<Params>> = ({
   newlistInitial,
 }) => {
-  const {replace, useLink} = useRouter();
+  const { replace, useLink } = useRouter();
   const router = useRouter();
   const [snackbar, setSnackbar] = React.useState(false);
-  const {userQuestions} = useTypedSelector(state => state.general);
-  const [newList] = useParam('newlist', {initial: newlistInitial});
+  const { userQuestions, userData } = useTypedSelector(state => state.general);
+  const [newList] = useParam('newlist', { initial: newlistInitial });
 
   const goToQuestionsScreen = (id: string) => {
-    router.push({stack: 'MenuStack', screen: 'QuestionsScreen', params: {id}});
+    router.push({ stack: 'MenuStack', screen: 'QuestionsScreen', params: { id } });
   };
 
   useEffect(() => {
@@ -48,7 +48,7 @@ const QuestionsListScreen: React.FC<InitialPropsFromParams<Params>> = ({
       <ScrollView style={styles.ScrollView}>
         {userQuestions.length > 0 ? (
           <View style={styles.ListContainer}>
-            {userQuestions.map(({id, name}, i) => (
+            {userQuestions.map(({ id, name }, i) => (
               <Button
                 key={id}
                 variant="text"
@@ -72,7 +72,7 @@ const QuestionsListScreen: React.FC<InitialPropsFromParams<Params>> = ({
         onDismiss={() => setSnackbar(false)}
         wrapperStyle={[
           styles.SnackbarWrapper,
-          {position: Platform.OS === 'web' ? 'fixed' : 'absolute'},
+          { position: Platform.OS === 'web' ? 'fixed' : 'absolute' },
         ]}
         style={styles.Snackbar}>
         <View style={styles.SnackbarContent}>
@@ -82,7 +82,7 @@ const QuestionsListScreen: React.FC<InitialPropsFromParams<Params>> = ({
           </Typography>
         </View>
       </Snackbar>
-      <CornerCircleButton
+      {userData && <CornerCircleButton
         {...useLink({
           href: {
             stack: 'MenuStack',
@@ -90,7 +90,7 @@ const QuestionsListScreen: React.FC<InitialPropsFromParams<Params>> = ({
             params: undefined,
           },
         })}
-      />
+      />}
     </ScreenHeaderProvider>
   );
 };

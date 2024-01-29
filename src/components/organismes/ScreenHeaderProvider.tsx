@@ -1,13 +1,15 @@
 import { StyleSheet, View, Platform, TouchableOpacity, Dimensions, StyleProp, ViewStyle, ColorValue } from 'react-native';
-import React, { ReactNode, useEffect, useRef } from 'react';
+import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import SvgIcon, { IconTypes } from '../atoms/SvgIcon';
 import Typography from '../atoms/Typography';
 import Button from '../molecules/Button';
 import Colors from '../../colors/Colors';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { RootStackParamList } from '../../navigators/RootNavigator';
-import useRouter from '../../hooks/useRouter';
+import useRouter, { protectedUrls } from '../../hooks/useRouter';
 import { BOTTOM_TABS_HEIGHT } from './BottomTabs';
+import { useActions } from '../../hooks/useActions';
+import windowExists from '../../hooks/windowExists';
 
 
 type ScreensTitlesType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: { [K in keyof RootStackParamList[T]['default']]: string } } : never;
@@ -109,6 +111,8 @@ type ScreenHeaderProviderProps = {
 
 export const SCREEN_HEADER_HEIGHT = 50;
 
+let firstAppLoading = true;
+
 const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   children,
   mode = 'backAction',
@@ -126,16 +130,41 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   backgroundContent,
 }) => {
   const { backToRemoveParams, back } = useRouter();
-  const { currentScreen, windowSizes, swipeablePanelProps, isTabbarVisible } = useTypedSelector(s => s.general);
-  const [stack, screen] = currentScreen.split('-');
+  const { currentScreen, userData, windowSizes, swipeablePanelProps, isTabbarVisible } = useTypedSelector(s => s.general);
+  const { setShowUserShouldBeLogedInModal } = useActions();
+  const [contentProtected, setContentProtected] = useState<boolean>(true);
   // @ts-ignore
-  const currentTitle: string = screensTitles[stack][screen] || '';
+  const currentTitle: string = screensTitles[currentScreen.stack][currentScreen.screen] || '';
+  const firstRender = useRef(true);
+
   const HeaderSpace = transparent || hide ? 0 : SCREEN_HEADER_HEIGHT;
   const BottomSpace = isTabbarVisible ? BOTTOM_TABS_HEIGHT : 0;
   const StaticHeightForWeb = windowSizes.height - HeaderSpace - BottomSpace;
 
+  useEffect(() => {
+    if (firstAppLoading || !firstRender.current) {
+    const { stack, screen } = currentScreen;
+    let protectedUrl = true;
+
+    if (
+      userData ||
+      !protectedUrls[stack].find(e => e === 'all' || e === screen)
+    ) {
+      protectedUrl = false;
+    } else {
+      setShowUserShouldBeLogedInModal({ state: true, closeAction: 'redirectToRoot' });
+    }
+
+    setContentProtected(protectedUrl);
+  }
+
+  firstRender.current = false;
+  firstAppLoading = false;
+  }, [currentScreen]);
+
   return (
     <View style={{
+      display: contentProtected ? 'none' : 'flex',
       flex: Platform.select({ native: 1 }),
       minHeight: Platform.select({ web: windowSizes.height - BottomSpace }),
       alignItems: 'center',

@@ -1,28 +1,5 @@
-// import React, { ComponentProps, FC } from 'react';
-// import ToggleSwitch from 'toggle-switch-react-native';
-// import Colors from '../../colors/Colors';
-
-
-// type SwitchProps = {
-//     // label?: string,
-// } & ComponentProps<typeof ToggleSwitch>;
-
-// const Switch: FC<SwitchProps> = ({...props}) => {
-//     return (
-//         <ToggleSwitch
-//             onColor={props.offColor || props.disabled ? Colors.Basic600 : Colors.Basic900}
-//             offColor={props.offColor || Colors.Basic400}
-//             animationSpeed={props.animationSpeed || 200}
-//             {...props} 
-//         />
-//     );
-// };
-
-// export default Switch;
-
 import React, { ComponentProps, FC, useState } from 'react';
 import { View, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
-import { Check } from '@tamagui/lucide-icons';
 import { Switch as TamaSwitch } from 'tamagui';
 import Colors from '../../colors/Colors';
 import Typography from './Typography';

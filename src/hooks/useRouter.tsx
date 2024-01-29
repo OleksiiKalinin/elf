@@ -35,6 +35,19 @@ let activeId: string | null = null;
 //f*cking fix of 4x params re-render???
 let prevParams: string | undefined = undefined;
 
+
+type ProtectedUrlsType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: Array<keyof RootStackParamList[T]['default']> | ['all'] } : never;
+
+export const protectedUrls: ProtectedUrlsType = {
+    AuthStack: [],
+    AdvertStack: ['all'],
+    CandidatesStack: ['VideoScreen', 'FavouritesScreen', 'FavSettingsScreen',],
+    CalendarStack: ['all'],
+    MenuStack: ['CallsScreen', 'EventsScreen', 'NewsScreen', 'QuestionsScreen', 'QuestionEditorScreen', 'QuestionsListScreen', "NewsDetailsScreen",],
+    MessengerStack: ['all'],
+    ProfileStack: ['all'],
+}
+
 const validateUrl = (props: WithUrlProps): string => {
     const newProps: WithUrlProps = cloneDeep(props);
 
@@ -91,16 +104,17 @@ export default function useRouter() {
     const { params, setParams } = useParams();
     const id = useRef(Math.random().toString() + Math.random().toString());
 
-    const preProcessHandler = (): boolean => {
-        console.log('pressed');
-        let access = true;
-        // let access = false;
+    const preProcessHandler = ({ stack, screen }: WithUrlProps): boolean => {
+        let access = false;
 
-        // if (userData) {
-        //     access = true;
-        // } else {
-        //     setShowUserShouldBeLogedInModal(true);
-        // }
+        if (
+            userData ||
+            !protectedUrls[stack].find(e => e === 'all' || e === screen)
+        ) {
+            access = true;
+        } else {
+            setShowUserShouldBeLogedInModal({ state: true, closeAction: 'close' });
+        }
 
         return access;
     }
@@ -185,7 +199,7 @@ export default function useRouter() {
                 back();
             } else {
                 win.prevPageIsNull = true;
-                const [stack, screen] = currentScreen.split('-');
+                const { stack, screen } = currentScreen;
                 replace(withUrl({ stack: (screen === 'MainScreen' ? 'MenuStack' : stack as any) }));
             }
         } else {
@@ -194,13 +208,21 @@ export default function useRouter() {
     }
 
     return {
+        /**
+         * This method does not protect from unauthorized access to path on web because of "href" property.
+         * 
+         * Use only on:
+         * * public screens to redirect to another public screen.
+         * * protected screens to redirect to another protected screen.
+         * * protected screens to redirect to public screen.
+         */
         useLink: ({ href, ...props }: Omit<UseLinkProps, 'href'> & { href: WithUrlProps }): ReturnType<typeof solitoLink> => {
             const linking = solitoLink({ ...props, href: validateUrl(href) });
 
             return {
                 ...linking,
                 onPress: (e) => {
-                    const access = preProcessHandler();
+                    const access = preProcessHandler(href);
                     if (!access) return;
                     linking.onPress(e);
                 }
@@ -217,12 +239,12 @@ export default function useRouter() {
             setSwipeablePanelProps(null);
         },
         push: (url: WithUrlProps, as?: PushParams[1], transitionOptions?: PushParams[2]) => {
-            const access = preProcessHandler();
+            const access = preProcessHandler(url);
             if (!access) return;
             push(validateUrl(url), as, transitionOptions);
         },
         replace: (url: WithUrlProps, as?: ReplaceParams[1], transitionOptions?: ReplaceParams[2]) => {
-            const access = preProcessHandler();
+            const access = preProcessHandler(url);
             if (!access) return;
             replace(validateUrl(url), as, { ...transitionOptions, experimental: { nativeBehavior: 'stack-replace', isNestedNavigator: true } });
         },

@@ -1,6 +1,7 @@
 import { SwipeablePanelProps } from "../../../components/organismes/SwipeablePanel";
+import { CurrentScreenType } from "../../../hooks/withUrl";
 import { generalActionTypes } from "../../actions";
-import { AppDataType, CandidateMarkType, CandidateNotesType, CandidatesFiltersType, CompanyDataType, InvoiceType, JobIndustryType, SnackbarMessageType, UserAdvertType, UserDataType, UserEventType, UserQuestionsType, UserSettingsType, WindowSizesType } from "../../reducers/types";
+import { AppDataType, CandidateMarkType, CandidateNotesType, CandidatesFiltersType, CompanyDataType, InvoiceType, JobIndustryType, ShowUserShouldBeLogedInModalType, SnackbarMessageType, UserAdvertType, UserDataType, UserEventType, UserQuestionsType, UserSettingsType, WindowSizesType } from "../../reducers/types";
 import { generalReducerAction } from "./types";
 
 const setToken = (payload: {token: string | null, refresh_token: string | null}): generalReducerAction => ({
@@ -13,7 +14,7 @@ const setWindowSizes = (payload: WindowSizesType): generalReducerAction => ({
     payload
 })
 
-const setShowUserShouldBeLogedInModal = (payload: boolean): generalReducerAction => ({
+const setShowUserShouldBeLogedInModal = (payload: ShowUserShouldBeLogedInModalType): generalReducerAction => ({
     type: generalActionTypes.SET_SHOW_USER_SHOULD_BE_LOGED_IN_MODAL,
     payload
 })
@@ -88,7 +89,7 @@ const setProfileHelpScreenDisplayed = (payload: boolean): generalReducerAction =
     payload
 })
 
-const setCurrentScreen = (payload: string): generalReducerAction => ({
+const setCurrentScreen = (payload: CurrentScreenType): generalReducerAction => ({
     type: generalActionTypes.SET_CURRENT_SCREEN,
     payload
 })

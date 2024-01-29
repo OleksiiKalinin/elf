@@ -5,7 +5,6 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import Typography from '../../components/atoms/Typography';
 import Button from '../../components/molecules/Button';
 import { ScrollView } from '../../components/molecules/ScrollView';
-import CornerCircleButton from '../../components/molecules/CornerCircleButton';
 import { MenuStackParamList } from '../../navigators/MenuNavigator';
 import { createParam } from 'solito';
 import { useTypedSelector } from '../../hooks/useTypedSelector';

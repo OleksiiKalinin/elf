@@ -16,7 +16,7 @@ import { nextStore } from '../store/nextstore';
 import Layout from './Layout';
 import AppUnifiedProvider from '../components/organismes/AppUnifiedProvider';
 import { useRouter } from 'next/router';
-import { WithUrlProps } from '../hooks/withUrl';
+import { CurrentScreenType, WithUrlProps } from '../hooks/withUrl';
 import getPathnameFromScreen from '../hooks/getPathnameFromScreen';
 import Lottie from "lottie-react";
 import windowExists from '../hooks/windowExists';
@@ -40,10 +40,12 @@ const frame = {
 
 const initialMetrics = { insets, frame };
 
-const ROUTES_TO_RETAIN = ([
+const routesToRetain: CurrentScreenType[] = [
   { stack: 'CalendarStack', screen: 'EventEditorScreen' },
   // other routes
-] as Omit<WithUrlProps, 'params'>[]).map(({ stack, screen = 'MainScreen' }) => getPathnameFromScreen(stack + '-' + screen));
+];
+
+const ROUTES_TO_RETAIN = routesToRetain.map((route) => getPathnameFromScreen(route));
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();

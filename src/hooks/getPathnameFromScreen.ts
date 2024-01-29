@@ -1,11 +1,12 @@
 import { navigationLinking } from "../navigators/RootNavigator";
+import { CurrentScreenType } from "./withUrl";
 
-export default function getPathnameFromScreen(initScreen: string): string {
-    const [stack, screen] = initScreen.split('-');
+export default function getPathnameFromScreen(initScreen: CurrentScreenType): string {
+    const { stack, screen } = initScreen;
     let pathname = '/';
 
     if (stack) {
-        const routeStack: any = (navigationLinking.config?.screens as any)[stack];
+        const routeStack: any = navigationLinking.config?.screens[stack];
         if (routeStack?.path) {
             pathname += routeStack?.path;
             const routeScreen = routeStack.screens?.[screen];

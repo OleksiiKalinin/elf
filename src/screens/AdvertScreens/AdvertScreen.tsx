@@ -35,7 +35,7 @@ const AdvertScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial }) =>
   const { setSwipeablePanelProps } = useActions();
   const [isPanelActive, setIsPanelActive] = useState(false);
   const [isPanelActive2, setIsPanelActive2] = useState(false);
-  const { useLink, push } = useRouter();
+  const { push } = useRouter();
   const [id] = useParam('id', { initial: idInitial })
 
   const advert = userAdverts.find(curr => curr.id === Number(id));
@@ -69,9 +69,7 @@ const AdvertScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial }) =>
           children: 'Tak',
           contentColor: Colors.Danger,
           contentVariant: 'h5',
-          ...useLink({
-            href: { stack: 'AdvertStack' },
-          }),
+          onPress: () => push({ stack: 'AdvertStack' }),
           // nativeStore.dispatch({
           //   type: advertActionTypes.REMOVE_ADVERT,
           //   payload: {
