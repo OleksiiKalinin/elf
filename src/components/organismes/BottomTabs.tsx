@@ -8,7 +8,7 @@ import Button from '../molecules/Button';
 import Typography from '../atoms/Typography';
 import withUrl from '../../hooks/withUrl';
 import { RootStackParamList } from '../../navigators/RootNavigator';
-import { protectedUrls } from '../../hooks/useRouter';
+import { notPublicUrls, withCompanyUrls } from '../../hooks/useRouter';
 import { useRouter } from 'solito/router';
 
 export const BOTTOM_TABS_HEIGHT = 45;
@@ -43,7 +43,7 @@ const hiddenTabbarScreens: ScreensType = {
  * don't import custom useRouter!!!
  */
 const BottomTabs: FC<BottomTabsProps> = ({ routes }) => {
-    const { isTabbarVisible, currentScreen, userData } = useTypedSelector(state => state.general);
+    const { isTabbarVisible, currentScreen, userData, userCompany } = useTypedSelector(state => state.general);
     const { setIsTabbarVisible } = useActions();
     const router = useRouter();
 
@@ -66,7 +66,10 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes }) => {
 
     useEffect(() => {
         const { stack, screen } = currentScreen;
-        if ((!userData && protectedUrls[stack].find(e => e === 'all' || e === screen))) {
+        if (
+            (!userData && !!notPublicUrls[stack].find(e => e === 'all' || e === screen)) ||
+            (userData && !userCompany && !!withCompanyUrls[stack].find(e => e === 'all' || e === screen))
+        ) {
             setIsTabbarVisible(false);
             return;
         }
@@ -87,7 +90,7 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes }) => {
                     const isFocused = (currentScreen.stack === stack) || (stack === 'MenuStack' && currentScreen.stack === 'ProfileStack');
 
                     const excludedStacks: Array<keyof RootStackParamList> = ['AuthStack', 'ProfileStack'];
-                    if (!userData && protectedUrls[stack].find(e => e === 'all')) return null;
+                    if (!userData && notPublicUrls[stack].find(e => e === 'all')) return null;
                     if (excludedStacks.includes(stack)) return null;
 
                     return (

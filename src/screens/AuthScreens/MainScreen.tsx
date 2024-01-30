@@ -13,7 +13,7 @@ import { FacebookSigninButton } from '../../components/organismes/FacebookSignin
 
 const MainScreen: FC = () => {
   const dispatch = useTypedDispatch();
-  const { useLink, back } = useRouter();
+  const { useLink, back, replace } = useRouter();
 
   const googleSignin = Platform.OS === 'web' ?
     useGoogleLogin({ onSuccess: ({ access_token }) => dispatch(authServices.googleSignin(access_token)) })

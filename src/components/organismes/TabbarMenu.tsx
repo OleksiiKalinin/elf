@@ -55,7 +55,7 @@ const TabbarMenu: React.FC<TabbarMenuProps> = ({
           ]}
           tabStyle={[styles.Tab, autoWidth ? { width: 'auto' } : {}]}
           renderLabel={({ route, focused }) => (
-            <View style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row', backgroundColor: Colors.White }}>
+            <View style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
               {route.icon && <SvgIcon icon={route.icon as IconTypes} />}
               <Typography
                 color={focused ? Colors.Basic900 : Colors.Basic600}

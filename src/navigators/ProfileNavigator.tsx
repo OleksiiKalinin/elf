@@ -69,7 +69,6 @@ export type ProfileStackParamList = {
     ShareLocation: undefined,
     CookieScreen: undefined,
     HelpCenterScreen: undefined,
-    CreateCompanyProfile: undefined,
     AddAdvert: undefined,
     AddCall: undefined,
     AddEvent: undefined,
@@ -115,7 +114,6 @@ export const ProfileStackLinking: PathConfigMap<ProfileStackParamList['default']
   // AddCall: 'AddCall',
   // AddEvent: 'AddEvent',
 
-  // CreateCompanyProfile: 'CreateCompanyProfile',
   // HelpCenterScreen: 'HelpCenterScreen',
   // Register: 'Register',
   // RODO: 'RODO',
@@ -153,7 +151,6 @@ const ProfileNavigator: React.FC = () => {
       <ProfileStack.Screen name="ShareContacts" component={ShareContacts} />
       <ProfileStack.Screen name="ShareLocation" component={ShareLocation} />
       <ProfileStack.Screen name="HelpCenterScreen" component={HelpCenterScreen} />
-      <ProfileStack.Screen name="CreateCompanyProfile" component={CreateCompanyProfile} />
       <ProfileStack.Screen name="AddAdvert" component={AddAdvert} />
       <ProfileStack.Screen name="AddCall" component={AddCall} />
       <ProfileStack.Screen name="AddEvent" component={AddEvent} />

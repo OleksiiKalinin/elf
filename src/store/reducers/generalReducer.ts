@@ -11,7 +11,6 @@ const initialState: generalReducerState = {
     isTabbarVisible: true,
     isMainMenuFlatList: false,
     theme: 'light',
-    // currentScreen: 'MenuStack-MainScreen',
     currentScreen: { stack: "MenuStack", screen: 'MainScreen' },
     token: null,
     refresh_token: null,
@@ -48,6 +47,10 @@ const initialState: generalReducerState = {
     candidatesFilters: null,
     snackbarMessage: null,
     showUserShouldBeLogedInModal: {
+        state: false,
+        closeAction: 'close'
+    },
+    showUserShouldHaveCompanyModal: {
         state: false,
         closeAction: 'close'
     },
@@ -89,6 +92,8 @@ export const generalReducer = (state = initialState, action: generalReducerActio
             return { ...state, snackbarMessage: action.payload };
         case generalActionTypes.SET_SHOW_USER_SHOULD_BE_LOGED_IN_MODAL:
             return { ...state, showUserShouldBeLogedInModal: action.payload };
+        case generalActionTypes.SET_SHOW_USER_SHOULD_HAVE_COMPANY_MODAL:
+            return { ...state, showUserShouldHaveCompanyModal: action.payload };
         case generalActionTypes.SET_IS_MAIN_MENU_FLAT_LIST:
             AsyncStorage.setItem('isMainMenuFlatList', Number(action.payload).toString());
             return { ...state, isMainMenuFlatList: action.payload };

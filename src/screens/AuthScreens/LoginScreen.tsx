@@ -14,6 +14,7 @@ import Button from '../../components/molecules/Button';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { ScrollView } from '../../components/molecules/ScrollView';
 import useRouter from '../../hooks/useRouter';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
 
 type inputs = 'username' | 'password';
 
@@ -25,10 +26,12 @@ export type LoginDataType = {
 const AuthLoginScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const router = useRouter();
+  const { userData } = useTypedSelector(s => s.general);
   const [formData, setFormData] = useState<LoginDataType>({ username: '', password: '' });
   const [loading, setLoading] = useState<boolean>(false);
   const [showTips, setShowTips] = useState<boolean>(false);
   const [isDataValid, setIsDataValid] = useState<boolean>(false);
+  const [loggedIn, setLoggedIn] = useState<boolean>(false);
 
   const changeFormDataHandler = (name: inputs, text: string) => {
     setFormData(prev => ({ ...prev, [name]: text.replace(/\s/g, '') }));
@@ -43,15 +46,23 @@ const AuthLoginScreen: React.FC = () => {
     ));
   }, [formData]);
 
+  useEffect(() => {
+    setLoggedIn(!!userData);
+  }, [userData]);
+
+  useEffect(() => {
+    if (loggedIn) {
+      router.replace({ stack: 'MenuStack' });
+    }
+  }, [loggedIn]);
+
   const loginHandler = async () => {
     if (isDataValid) {
       Keyboard.dismiss();
       setLoading(true);
       const isOk = await dispatch(authServices.login(formData));
       if (!!isOk) {
-        console.log('replace');
-        
-        router.replace({ stack: 'MenuStack' });
+        setLoggedIn(true);
       }
 
       setLoading(false);

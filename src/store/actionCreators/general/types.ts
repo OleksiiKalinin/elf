@@ -18,6 +18,11 @@ interface setShowUserShouldBeLogedInModal {
     payload: ShowUserShouldBeLogedInModalType
 }
 
+interface setShowUserShouldHaveCompanyModal {
+    type: generalActionTypes.SET_SHOW_USER_SHOULD_HAVE_COMPANY_MODAL,
+    payload: ShowUserShouldBeLogedInModalType
+}
+
 interface setUserData {
     type: generalActionTypes.SET_USER_DATA,
     payload: UserDataType
@@ -145,4 +150,5 @@ export type generalReducerAction =
     setCandidatesFilters |
     resetStore |
     setSnackbarMessage |
-    setShowUserShouldBeLogedInModal
+    setShowUserShouldBeLogedInModal |
+    setShowUserShouldHaveCompanyModal

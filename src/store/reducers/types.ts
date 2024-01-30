@@ -7,7 +7,6 @@ export interface generalReducerState {
     isTabbarVisible: boolean,
     windowSizes: WindowSizesType,
     theme: string,
-    // currentScreen: string,
     currentScreen: CurrentScreenType,
     token: string | null,
     refresh_token: string | null,
@@ -41,6 +40,7 @@ export interface generalReducerState {
     candidatesFilters: CandidatesFiltersType | null,
     snackbarMessage: SnackbarMessageType | null,
     showUserShouldBeLogedInModal: ShowUserShouldBeLogedInModalType,
+    showUserShouldHaveCompanyModal: ShowUserShouldBeLogedInModalType,
 }
 
 export type ShowUserShouldBeLogedInModalType = {
