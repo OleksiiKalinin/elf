@@ -338,7 +338,7 @@ const MainScreen: React.FC = ({ }) => {
           ))}
         </ScrollView>
       </ScreenHeaderProvider>
-      {userData && <CornerCircleButton {...useLink({ href: { stack: 'MenuStack', screen: 'MainScreen', params: { subView: 'options' } } })} />}
+      {userData && <CornerCircleButton onPress={() => push({ stack: 'MenuStack', screen: 'MainScreen', params: { subView: 'options' } })} />}
     </>
   );
 };

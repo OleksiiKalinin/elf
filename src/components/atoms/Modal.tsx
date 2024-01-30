@@ -9,7 +9,7 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 const MARGIN = 15;
 
 /** Custom Modal with good web support, including support onClose event (web history back button, dismiss, native hardware back button, etc.) */
-const Modal: FC<ComponentProps<typeof RNModal> & { onClose: () => void, disableBackBehaviorOnWeb?: boolean }> = ({ onClose, disableBackBehaviorOnWeb = false, children, ...props }) => {
+const Modal: FC<ComponentProps<typeof RNModal> & { onClose: () => void }> = ({ onClose, children, ...props }) => {
 	const { windowSizes } = useTypedSelector(s => s.general);
 	const [sizes, setSizes] = useState({ height: 0, width: 0 });
 	const wasVisible = useRef<boolean>(false);

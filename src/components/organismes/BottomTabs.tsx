@@ -5,11 +5,11 @@ import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import Colors from '../../colors/Colors';
 import Button from '../molecules/Button';
-import { useLink } from 'solito/link';
 import Typography from '../atoms/Typography';
 import withUrl from '../../hooks/withUrl';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import { protectedUrls } from '../../hooks/useRouter';
+import { useRouter } from 'solito/router';
 
 export const BOTTOM_TABS_HEIGHT = 45;
 
@@ -43,8 +43,9 @@ const hiddenTabbarScreens: ScreensType = {
  * don't import custom useRouter!!!
  */
 const BottomTabs: FC<BottomTabsProps> = ({ routes }) => {
-    const { isTabbarVisible, currentScreen } = useTypedSelector(state => state.general);
+    const { isTabbarVisible, currentScreen, userData } = useTypedSelector(state => state.general);
     const { setIsTabbarVisible } = useActions();
+    const router = useRouter();
 
     const badgeNumbers: { [k in keyof RootStackParamList]: number } = {
         MenuStack: 0,
@@ -65,9 +66,13 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes }) => {
 
     useEffect(() => {
         const { stack, screen } = currentScreen;
+        if ((!userData && protectedUrls[stack].find(e => e === 'all' || e === screen))) {
+            setIsTabbarVisible(false);
+            return;
+        }
         //@ts-ignore
-        setIsTabbarVisible(!(hiddenTabbarScreens[stack].includes(screen) || protectedUrls[stack].find(e => e === 'all' || e === screen)));
-    }, [currentScreen]);
+        setIsTabbarVisible(!hiddenTabbarScreens[stack].includes(screen));
+    }, [currentScreen, userData]);
 
     return (
         <View style={[{
@@ -82,7 +87,8 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes }) => {
                     const isFocused = (currentScreen.stack === stack) || (stack === 'MenuStack' && currentScreen.stack === 'ProfileStack');
 
                     const excludedStacks: Array<keyof RootStackParamList> = ['AuthStack', 'ProfileStack'];
-                    if (excludedStacks.includes(stack) || !!protectedUrls[stack].find(e => e === 'all')) return null;
+                    if (!userData && protectedUrls[stack].find(e => e === 'all')) return null;
+                    if (excludedStacks.includes(stack)) return null;
 
                     return (
                         <Button
@@ -90,7 +96,8 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes }) => {
                             variant='white'
                             accessibilityState={isFocused ? { selected: true } : {}}
                             style={{ height: '100%', flex: 1 }}
-                            {...useLink({ href: withUrl({ stack: stack as any }) })}
+                            onPress={() => router.push(withUrl({ stack: stack as any }))}
+                            // {...useLink({ href: withUrl({ stack: stack as any }) })}
                         >
                             <View style={{ position: 'relative', width: '100%', height: '100%' }}>
                                 {!!badgeNumbers[stack] && <View style={{ position: 'absolute', borderRadius: 8, paddingLeft: 5, paddingRight: 5, backgroundColor: Colors.Basic900, zIndex: 1, left: 16, top: -8 }}>

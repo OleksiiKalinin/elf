@@ -21,7 +21,7 @@ const { useParam } = createParam<Params>();
 const QuestionsListScreen: React.FC<InitialPropsFromParams<Params>> = ({
   newlistInitial,
 }) => {
-  const { replace, useLink } = useRouter();
+  const { replace, push } = useRouter();
   const router = useRouter();
   const [snackbar, setSnackbar] = React.useState(false);
   const { userQuestions, userData } = useTypedSelector(state => state.general);
@@ -82,15 +82,7 @@ const QuestionsListScreen: React.FC<InitialPropsFromParams<Params>> = ({
           </Typography>
         </View>
       </Snackbar>
-      {userData && <CornerCircleButton
-        {...useLink({
-          href: {
-            stack: 'MenuStack',
-            screen: 'QuestionEditorScreen',
-            params: undefined,
-          },
-        })}
-      />}
+      {userData && <CornerCircleButton onPress={() => push({ stack: 'MenuStack', screen: 'QuestionEditorScreen', params: undefined })} />}
     </ScreenHeaderProvider>
   );
 };

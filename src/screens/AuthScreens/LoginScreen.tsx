@@ -49,6 +49,8 @@ const AuthLoginScreen: React.FC = () => {
       setLoading(true);
       const isOk = await dispatch(authServices.login(formData));
       if (!!isOk) {
+        console.log('replace');
+        
         router.replace({ stack: 'MenuStack' });
       }
 

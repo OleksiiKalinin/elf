@@ -24,7 +24,6 @@ const UserShouldBeLogedInModal = () => {
         <Modal
             visible={showUserShouldBeLogedInModal.state}
             onClose={closeHandler}
-            disableBackBehaviorOnWeb
         >
             <View style={styles.Modal}>
                 <View style={styles.CropContainer}>
