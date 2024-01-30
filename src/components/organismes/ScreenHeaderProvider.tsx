@@ -6,7 +6,7 @@ import Button from '../molecules/Button';
 import Colors from '../../colors/Colors';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { RootStackParamList } from '../../navigators/RootNavigator';
-import useRouter, { protectedUrls } from '../../hooks/useRouter';
+import useRouter, { notPublicUrls, withCompanyUrls } from '../../hooks/useRouter';
 import { BOTTOM_TABS_HEIGHT } from './BottomTabs';
 import { useActions } from '../../hooks/useActions';
 import windowExists from '../../hooks/windowExists';
@@ -57,7 +57,6 @@ export const screensTitles: ScreensTitlesType = {
     AddAdvert: '',
     AddCall: '',
     AddEvent: '',
-    CreateCompanyProfile: '',
     PaymentMethods: '',
     Register: '',
     RODO: 'Polityka prywatności',
@@ -130,8 +129,8 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   backgroundContent,
 }) => {
   const { backToRemoveParams, back } = useRouter();
-  const { currentScreen, userData, windowSizes, swipeablePanelProps, isTabbarVisible } = useTypedSelector(s => s.general);
-  const { setShowUserShouldBeLogedInModal } = useActions();
+  const { currentScreen, userData, userCompany, windowSizes, swipeablePanelProps, isTabbarVisible, appLoading } = useTypedSelector(s => s.general);
+  const { setShowUserShouldBeLogedInModal, setShowUserShouldHaveCompanyModal } = useActions();
   const [contentProtected, setContentProtected] = useState<boolean>(true);
   // @ts-ignore
   const currentTitle: string = screensTitles[currentScreen.stack][currentScreen.screen] || '';
@@ -142,31 +141,32 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   const StaticHeightForWeb = windowSizes.height - HeaderSpace - BottomSpace;
 
   useEffect(() => {
-    if (firstAppLoading || !firstRender.current) {
-      const { stack, screen } = currentScreen;
-      let protectedUrl = true;
+    if (!appLoading) {
+      if (firstAppLoading || !firstRender.current) {
+        const { stack, screen } = currentScreen;
+        let protectedUrl = true;
 
-      if (
-        userData ||
-        !protectedUrls[stack].find(e => e === 'all' || e === screen)
-      ) {
-        protectedUrl = false;
-      } else {
-        setShowUserShouldBeLogedInModal({ state: true, closeAction: 'redirectToRoot' });
+        if (!userData && !!notPublicUrls[stack].find(e => e === 'all' || e === screen)) {
+          setShowUserShouldBeLogedInModal({ state: true, closeAction: 'redirectToRoot' });
+        } else if (userData && !userCompany && !!withCompanyUrls[stack].find(e => e === 'all' || e === screen)) {
+          setShowUserShouldHaveCompanyModal({ state: true, closeAction: 'redirectToRoot' });
+        } else {
+          protectedUrl = false;
+        }
+
+        setContentProtected(protectedUrl);
       }
 
-      setContentProtected(protectedUrl);
+      firstRender.current = false;
+      firstAppLoading = false;
     }
-
-    firstRender.current = false;
-    firstAppLoading = false;
-  }, [currentScreen]);
+  }, [currentScreen, userData, appLoading]);
 
   useEffect(() => {
     if (swipeablePanelProps?.mode === 'screen') {
       setContentProtected(false);
     }
-  }, [swipeablePanelProps]);
+  }, [swipeablePanelProps, userData]);
 
   return (
     <View style={{

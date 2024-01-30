@@ -38,7 +38,7 @@ let prevParams: string | undefined = undefined;
 
 type ProtectedUrlsType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: Array<keyof RootStackParamList[T]['default']> | ['all'] } : never;
 
-export const protectedUrls: ProtectedUrlsType = {
+export const notPublicUrls: ProtectedUrlsType = {
     AuthStack: [],
     AdvertStack: ['all'],
     CandidatesStack: ['VideoScreen', 'FavouritesScreen', 'FavSettingsScreen',],
@@ -46,6 +46,16 @@ export const protectedUrls: ProtectedUrlsType = {
     MenuStack: ['CallsScreen', 'EventsScreen', 'NewsScreen', 'QuestionsScreen', 'QuestionEditorScreen', 'QuestionsListScreen', "NewsDetailsScreen",],
     MessengerStack: ['all'],
     ProfileStack: ['all'],
+}
+
+export const withCompanyUrls: ProtectedUrlsType = {
+    AuthStack: [],
+    AdvertStack: ['AdvertEditorScreen', 'CandidatesScreen', "AdvertScreen"],
+    CandidatesStack: [],
+    CalendarStack: ['EventEditorScreen'],
+    MenuStack: [],
+    MessengerStack: [],
+    ProfileStack: ['CompanyScreen'],
 }
 
 const validateUrl = (props: WithUrlProps): string => {
@@ -98,8 +108,8 @@ const validateUrl = (props: WithUrlProps): string => {
 }
 
 export default function useRouter() {
-    const { currentScreen, userData } = useTypedSelector(s => s.general);
-    const { setSwipeablePanelProps, setShowUserShouldBeLogedInModal } = useActions();
+    const { currentScreen, userData, userCompany } = useTypedSelector(s => s.general);
+    const { setSwipeablePanelProps, setShowUserShouldBeLogedInModal, setShowUserShouldHaveCompanyModal } = useActions();
     const { back, parseNextPath, push, replace } = useSolitoRouter();
     const { params, setParams } = useParams();
     const id = useRef(Math.random().toString() + Math.random().toString());
@@ -107,13 +117,12 @@ export default function useRouter() {
     const preProcessHandler = ({ stack, screen }: WithUrlProps): boolean => {
         let access = false;
 
-        if (
-            userData ||
-            !protectedUrls[stack].find(e => e === 'all' || e === screen)
-        ) {
-            access = true;
-        } else {
+        if (!userData && !!notPublicUrls[stack].find(e => e === 'all' || e === screen)) {
             setShowUserShouldBeLogedInModal({ state: true, closeAction: 'close' });
+        } else if (userData && !userCompany && !!withCompanyUrls[stack].find(e => e === 'all' || e === screen)) {
+            setShowUserShouldHaveCompanyModal({ state: true, closeAction: 'close' });
+        } else {
+            access = true;
         }
 
         return access;
@@ -234,7 +243,7 @@ export default function useRouter() {
             if (Platform.OS === 'web') {
                 backOrReplace();
             } else {
-                replace(getPathnameFromScreen(currentScreen), undefined, { experimental: { nativeBehavior: 'stack-replace', isNestedNavigator: true } })
+                replace(getPathnameFromScreen(currentScreen))
             }
             setSwipeablePanelProps(null);
         },
@@ -245,8 +254,14 @@ export default function useRouter() {
         },
         replace: (url: WithUrlProps, as?: ReplaceParams[1], transitionOptions?: ReplaceParams[2]) => {
             const access = preProcessHandler(url);
+
             if (!access) return;
-            replace(validateUrl(url), as, { ...transitionOptions, experimental: { nativeBehavior: 'stack-replace', isNestedNavigator: true } });
+
+            let options: any = {};
+            if (currentScreen.stack === url.stack) {
+                options = { experimental: { nativeBehavior: 'stack-replace', isNestedNavigator: true } };
+            }
+            replace(validateUrl(url), as, { ...transitionOptions, ...options });
         },
     }
 }

@@ -19,6 +19,11 @@ const setShowUserShouldBeLogedInModal = (payload: ShowUserShouldBeLogedInModalTy
     payload
 })
 
+const setShowUserShouldHaveCompanyModal = (payload: ShowUserShouldBeLogedInModalType): generalReducerAction => ({
+    type: generalActionTypes.SET_SHOW_USER_SHOULD_HAVE_COMPANY_MODAL,
+    payload
+})
+
 const setIsTabbarVisible = (payload: boolean): generalReducerAction => ({
     type: generalActionTypes.SET_IS_TABBAR_VISIBLE,
     payload
@@ -147,6 +152,7 @@ const generalActions = {
     setSnackbarMessage,
     setUserSettings,
     setShowUserShouldBeLogedInModal,
+    setShowUserShouldHaveCompanyModal,
 };
 
 export default generalActions;

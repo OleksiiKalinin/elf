@@ -145,7 +145,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
   const { jobIndustries, userCompany, jobSalaryModes, jobSalaryTaxes, jobStartFrom, jobTrials, jobModes, jobContractTypes, jobTrialTimes, jobExperiences, windowSizes, userAdverts, languages } = useTypedSelector(state => state.general);
   const currentPositions = userCompany?.job_industry ? getJobPositionsFrom(jobIndustries, userCompany.job_industry) : [];
   const [stepInitialParam, setStepInitialParam] = useParam('step', { initial: stepInitial });
-  const [step, setStep] = useState<AdvertEditorStepType | null>(null);
+  const [step, setStep] = useState<AdvertEditorStepType>(stepInitialParam || 'fillData');
   const [advertData, setAdvertData] = useState<NewUserAdvertType>({
     //_start to remove
     salary_amount_low: null,
@@ -415,7 +415,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
     });
   };
 
-  return userCompany && step && (
+  return (
     <ScreenHeaderProvider
       title={advertExists ? existedAdvertHeaders[step] : newAdvertHeaders[step]}
       backgroundContent={Colors.Basic100}
@@ -444,7 +444,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
             onPress={() => router.push({
               stack: 'AdvertStack',
               screen: 'AdvertEditorScreen',
-              params: { subView: 'JobCategoryScreen', mode: 'singlePosition', initialIndustry: userCompany.job_industry || undefined, callback: (_, id) => changeAdvertDataHandler('job_position_id', id) }
+              params: { subView: 'JobCategoryScreen', mode: 'singlePosition', initialIndustry: userCompany?.job_industry || undefined, callback: (_, id) => changeAdvertDataHandler('job_position_id', id) }
             })}
             style={{
               flexDirection: 'row', padding: 19,

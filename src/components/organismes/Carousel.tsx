@@ -37,7 +37,7 @@ const Carousel: FC<Props> = ({
     }, [currIndex]);
 
     const onLayout = (event: LayoutChangeEvent) => {
-        setItemWidth(event.nativeEvent.layout.width || 1)
+        setItemWidth(event.nativeEvent.layout.width || 1);
     };
 
     return (

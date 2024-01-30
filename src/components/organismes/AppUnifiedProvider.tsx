@@ -21,6 +21,7 @@ import Colors from '../../colors/Colors';
 import { convertToFrontEndAddress } from '../../hooks/convertAddress';
 import UserShouldBeLogedInModal from '../modals/UserShouldBeLogedInModal';
 import SnackbarMessage from '../modals/SnackbarMessage';
+import UserShouldHaveCompanyModal from '../modals/UserShouldHaveCompanyModal';
 
 calendarLocaleConfig();
 geocoder.fallbackToGoogle('AIzaSyCuD83IZtlNNM3sxn9Hac4YSOXkRZurb9c');
@@ -150,6 +151,7 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
           {children}
           <SnackbarMessage />
           <UserShouldBeLogedInModal />
+          <UserShouldHaveCompanyModal />
         </PaperProvider>
       </MenuProvider >
     </GoogleSigninProvider>
