@@ -143,24 +143,30 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
 
   useEffect(() => {
     if (firstAppLoading || !firstRender.current) {
-    const { stack, screen } = currentScreen;
-    let protectedUrl = true;
+      const { stack, screen } = currentScreen;
+      let protectedUrl = true;
 
-    if (
-      userData ||
-      !protectedUrls[stack].find(e => e === 'all' || e === screen)
-    ) {
-      protectedUrl = false;
-    } else {
-      setShowUserShouldBeLogedInModal({ state: true, closeAction: 'redirectToRoot' });
+      if (
+        userData ||
+        !protectedUrls[stack].find(e => e === 'all' || e === screen)
+      ) {
+        protectedUrl = false;
+      } else {
+        setShowUserShouldBeLogedInModal({ state: true, closeAction: 'redirectToRoot' });
+      }
+
+      setContentProtected(protectedUrl);
     }
 
-    setContentProtected(protectedUrl);
-  }
-
-  firstRender.current = false;
-  firstAppLoading = false;
+    firstRender.current = false;
+    firstAppLoading = false;
   }, [currentScreen]);
+
+  useEffect(() => {
+    if (swipeablePanelProps?.mode === 'screen') {
+      setContentProtected(false);
+    }
+  }, [swipeablePanelProps]);
 
   return (
     <View style={{
