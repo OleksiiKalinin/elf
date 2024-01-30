@@ -37,7 +37,7 @@ const Carousel: FC<Props> = ({
     }, [currIndex]);
 
     const onLayout = (event: LayoutChangeEvent) => {
-        setItemWidth(event.nativeEvent.layout.width)
+        setItemWidth(event.nativeEvent.layout.width || 1)
     };
 
     return (
@@ -71,7 +71,7 @@ const Carousel: FC<Props> = ({
                 {props.data.map((_, index) => <Button
                     variant='TouchableOpacity'
                     onPress={() => ref.current?.scrollTo({ index, animated: true, onFinished: () => setCurrIndex(index) })}
-                    style={[{
+                    containerStyle={[{
                         padding: 2.5,
                         opacity: currIndex === index ? 1 : 0.6
                     }, stylePaginationDotContainer]}

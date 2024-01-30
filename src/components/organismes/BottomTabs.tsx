@@ -97,7 +97,6 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes }) => {
                             accessibilityState={isFocused ? { selected: true } : {}}
                             style={{ height: '100%', flex: 1 }}
                             onPress={() => router.push(withUrl({ stack: stack as any }))}
-                            // {...useLink({ href: withUrl({ stack: stack as any }) })}
                         >
                             <View style={{ position: 'relative', width: '100%', height: '100%' }}>
                                 {!!badgeNumbers[stack] && <View style={{ position: 'absolute', borderRadius: 8, paddingLeft: 5, paddingRight: 5, backgroundColor: Colors.Basic900, zIndex: 1, left: 16, top: -8 }}>
