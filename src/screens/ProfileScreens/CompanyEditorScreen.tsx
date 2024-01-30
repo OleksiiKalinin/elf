@@ -91,12 +91,12 @@ const CompanyEditorScreen: React.FC = () => {
     const { name, address, job_industry, services, description, registration_name, registration_address, nip, employees_amount, square_footage, languages, account_instagram, account_facebook, account_linkedIn, website } = companyData;
 
     setFields([
-      { name: 'name', isValid: !!(name && name.length > 2 && name.length <= 100), require: true },
-      { name: 'address', isValid: !!address, require: true },
-      { name: 'job_industry', isValid: !!job_industry, require: true },
-      { name: 'services', isValid: !!services?.length, require: true },
-      { name: 'contactPersons', isValid: !!contactPersons.length, require: true },
-      { name: 'description', isValid: !!description, require: true },
+      { name: 'name', isValid: !!(name && name.length > 2 && name.length <= 100), required: true },
+      { name: 'address', isValid: !!address, required: true },
+      { name: 'job_industry', isValid: !!job_industry, required: true },
+      { name: 'services', isValid: !!services?.length, required: true },
+      { name: 'contactPersons', isValid: !!contactPersons.length, required: true },
+      { name: 'description', isValid: !!description, required: true },
       { name: 'invoiceData', isValid: !!(registration_name && nip && registration_address) },
       { name: 'logo', isValid: !!(companyLogo) },
       { name: 'photos', isValid: !!(companyPhotos.length) },
@@ -123,7 +123,7 @@ const CompanyEditorScreen: React.FC = () => {
     ) {
       setSnackbarMessage({ type: 'error', text: 'Trwa ładowanie zdjęć' });
       return false;
-    } else if (!fields.filter(field => field.require).every(item => item.isValid)) {
+    } else if (!fields.filter(field => field.required).every(item => item.isValid)) {
       setSnackbarMessage({ type: 'error', text: 'Wypełnij wszystkie obowiązkowe pola z gwiazdką!' });
       return false;
     } else if (!(isFieldValid('square_footage') || companyData.square_footage === null)) {
@@ -432,743 +432,720 @@ const CompanyEditorScreen: React.FC = () => {
   }, []);
 
   return (
-    <>
-      {token &&
-        <ScreenHeaderProvider title={editMode ? 'Edytuj profil firmy' : 'Utwórz profil firmy'}>
-          <FormProgressBar
-            fields={fields}
+    <ScreenHeaderProvider 
+      title={editMode ? 'Edytuj profil firmy' : 'Utwórz profil firmy'}
+      backgroundContent={Colors.Basic100}
+    >
+      <FormProgressBar
+        fields={fields}
+        giftInfoText={{
+          requiredFields: 'Uzupełnij podstawowe pola, aby zakończyć proces tworzenia profilu firmy.',
+          optionalFields: 'Uzupełnij dodatkowe pola, aby otrzymać prezent w postaci możliwości dodania darmowego ogłoszenia.',
+        }}
+      />
+      <ScrollView style={styles.Content} contentContainerStyle={{ paddingTop: 20 }}>
+        <Typography
+          size={20}
+          weight='Bold'
+          style={[styles.SectionHeader, { marginTop: 15 }]}
+        >
+          Podstawowe
+        </Typography>
+        <View style={styles.CompanyName}>
+          <TextField
+            label="Nazwa firmy*"
+            value={companyData.name || ''}
+            maxLength={100}
+            onChangeText={text => changeCompanyDataHandler('name', text, false)}
+            {...(showTips && !isFieldValid('name') && {
+              bottomText: 'Nazwa firmy musi zawierać od 3 do 100 znaków',
+            })}
           />
-          <ScrollView style={styles.Content} contentContainerStyle={{ paddingVertical: 20 }}>
-            <Typography
-              size={20}
-              weight='Bold'
-              style={[styles.SectionHeader, { marginTop: 15 }]}
-            >
-              Podstawowe
+        </View>
+        <View style={{ marginBottom: 24 }}>
+          <MapPreview
+            label='Lokalizacja*'
+            place={companyData.address?.formattedAddress}
+            onPress={() => router.push({
+              stack: 'ProfileStack',
+              screen: 'CompanyEditorScreen',
+              params: {
+                subView: 'GoogleMapScreen',
+                callback: (address) => changeCompanyDataHandler('address', address),
+                initialAddress: companyData.address
+              }
+            })}
+          />
+        </View>
+        <Button
+          variant='text'
+          arrowRight
+          borderTop
+          borderBottom
+          onPress={() => goToJobCategoryScreen()}
+        >
+          {companyData.job_industry ?
+            <View style={styles.JobIndustry}>
+              <View style={styles.JobIndustryIcon}>
+                <View style={{ position: 'absolute' }}>
+                  <SkeletonContainer animation='wave' speed={600}>
+                    <Skeleton style={styles.JobIndustryIconSkeleton} />
+                  </SkeletonContainer>
+                </View>
+                <SvgUriImage width={34} height={34} src={jobIndustries.find(curr => curr.id === companyData.job_industry)?.icon || ''} />
+              </View>
+              <Typography variant='h5' weight='SemiBold'>{jobIndustries.find(curr => curr.id === companyData.job_industry)?.name || ''}</Typography>
+            </View>
+
+            :
+
+            <>
+              <Typography
+                variant='h5'
+              >
+                Branża
+              </Typography>
+              <Typography style={{ color: Colors.Red }}>
+                *
+              </Typography>
+            </>
+          }
+        </Button>
+        {companyData.services ?
+          <>
+            <View style={styles.SelectedItemsContainer}>
+              <View style={styles.SelectedItemsHeader}>
+                <Typography variant='h5' weight='Bold'>
+                  Usługi
+                </Typography>
+                <Button
+                  variant='TouchableOpacity'
+                  style={styles.EditButton}
+                  onPress={() => goToSelectServicesScreen()}
+                >
+                  <Typography variant='h5' weight='Bold' style={styles.EditButtonText}>
+                    Edytuj
+                  </Typography>
+                </Button>
+              </View>
+              <Typography style={styles.SelectedItems}>
+                {selectedServices.map(({ id, name }, i) =>
+                  <Fragment key={id}>
+                    {name}
+                    {i !== selectedServices.length - 1 ? ', ' : ''}
+                  </Fragment>
+                )}
+              </Typography>
+            </View>
+            <Separator marginTop={12} />
+          </>
+
+          :
+
+          <Button
+            variant='text'
+            borderBottom
+            arrowRight
+            onPress={() => goToSelectServicesScreen()}
+          >
+            <Typography variant='h5'>
+              Usługi
             </Typography>
-            <View style={styles.CompanyName}>
-              <TextField
-                label="Nazwa firmy*"
-                value={companyData.name || ''}
-                maxLength={100}
-                onChangeText={text => changeCompanyDataHandler('name', text, false)}
-                {...(showTips && !isFieldValid('name') && {
-                  bottomText: 'Nazwa firmy musi zawierać od 3 do 100 znaków',
-                })}
-              />
+            <Typography style={{ color: Colors.Red }}>
+              *
+            </Typography>
+          </Button>
+        }
+        {contactPersons.length ?
+          <>
+            <View style={styles.ContactPersonsFilled}>
+              <View style={styles.ContactPersonsFilledTitle}>
+                <SvgIcon icon='doneCircleGreen' />
+                <Typography variant='h5' weight='Bold'>
+                  Dane do kontaktu uzupełnione
+                </Typography>
+              </View>
+              <Button
+                variant='TouchableOpacity'
+                style={styles.EditButton}
+                onPress={() => goToAddPersonsContactScreen()}
+              >
+                <Typography variant='h5' weight='Bold' style={styles.EditButtonText} >
+                  Edytuj
+                </Typography>
+              </Button>
             </View>
-            <View style={{ marginBottom: 24 }}>
-              <MapPreview
-                label='Lokalizacja*'
-                place={companyData.address?.formattedAddress}
-                onPress={() => router.push({
-                  stack: 'ProfileStack',
-                  screen: 'CompanyEditorScreen',
-                  params: {
-                    subView: 'GoogleMapScreen',
-                    callback: (address) => changeCompanyDataHandler('address', address),
-                    initialAddress: companyData.address
-                  }
-                })}
-              />
-            </View>
-            <Button
-              variant='text'
-              arrowRight
-              borderTop
-              borderBottom
-              onPress={() => goToJobCategoryScreen()}
-            >
-              {companyData.job_industry ?
-                <View style={styles.JobIndustry}>
-                  <View style={styles.JobIndustryIcon}>
-                    <View style={{ position: 'absolute' }}>
-                      <SkeletonContainer animation='wave' speed={600}>
-                        <Skeleton style={styles.JobIndustryIconSkeleton} />
-                      </SkeletonContainer>
-                    </View>
-                    <SvgUriImage width={34} height={34} src={jobIndustries.find(curr => curr.id === companyData.job_industry)?.icon || ''} />
+            <Separator />
+          </>
+
+          :
+
+          <Button
+            variant='text'
+            arrowRight
+            borderBottom
+            onPress={() => goToAddPersonsContactScreen()}
+          >
+            <Typography variant='h5'>
+              Dane do kontaktu
+            </Typography>
+            <Typography style={{ color: Colors.Red }}>
+              *
+            </Typography>
+          </Button>
+        }
+        {companyData.description ?
+          <>
+            <View style={styles.FilledDescription}>
+              <View style={styles.FilledDescriptionHeader}>
+                <Typography variant='h5' weight='Bold'>
+                  Opis firmy
+                </Typography>
+                <Button
+                  variant='TouchableOpacity'
+                  style={styles.EditButton}
+                  onPress={() => goToCompanyDescriptionScreen()}
+                >
+                  <Typography variant='h5' weight='Bold' style={styles.EditButtonText}>
+                    Edytuj
+                  </Typography>
+                </Button>
+              </View>
+
+              <Typography
+                numberOfLines={descriptionExpanded ? undefined : 3}
+                color={Colors.Basic600}
+                onLayout={handleDescriptionLayout}
+              >
+                {companyData.description}
+              </Typography>
+
+              {((!descriptionExpanded && descriptionHeight > 53) || descriptionExpanded && descriptionHeight !== 54) &&
+                <Button
+                  variant='text'
+                  onPress={() => setDescriptionExpanded(prev => !prev)}
+                >
+
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <SvgIcon icon={descriptionExpanded ? "arrowTop" : "arrowBottom"} fill={Colors.Basic500} />
                   </View>
-                  <Typography variant='h5' weight='SemiBold'>{jobIndustries.find(curr => curr.id === companyData.job_industry)?.name || ''}</Typography>
+                </Button>
+              }
+            </View>
+            <Separator marginTop={12} />
+          </>
+
+          :
+
+          <Button
+            variant='text'
+            arrowRight
+            borderBottom
+            onPress={() => goToCompanyDescriptionScreen()}
+          >
+            <Typography variant='h5'>
+              Opis firmy
+            </Typography>
+            <Typography style={{ color: Colors.Red }}>
+              *
+            </Typography>
+          </Button>
+        }
+        {(companyData.registration_name && companyData.nip && companyData.registration_address) ?
+          <>
+            <View style={styles.ContactPersonsFilled}>
+              <View style={styles.ContactPersonsFilledTitle}>
+                <SvgIcon icon='doneCircleGreen' />
+                <Typography variant='h5' weight='Bold'>
+                  Dane do faktury uzupełnione
+                </Typography>
+              </View>
+              <Button
+                variant='TouchableOpacity'
+                style={styles.EditButton}
+                onPress={() => goToCompanyInvoiceScreen()}
+              >
+                <Typography variant='h5' weight='Bold' style={styles.EditButtonText}>
+                  Edytuj
+                </Typography>
+              </Button>
+            </View>
+            <Separator />
+          </>
+
+          :
+
+          <Button
+            variant='text'
+            arrowRight
+            borderBottom
+            onPress={() => goToCompanyInvoiceScreen()}
+          >
+            <Typography variant='h5'>
+              Dane do faktury
+            </Typography>
+          </Button>
+        }
+        <Typography
+          size={20}
+          weight='Bold'
+          style={[styles.SectionHeader, { marginTop: 26 }]}
+        >
+          Dodatkowe
+        </Typography>
+        <View style={styles.CompanyLogoTitle}>
+          <Typography weight="Bold" variant="h5">
+            Logo firmy{' '}
+          </Typography>
+        </View>
+        <View style={styles.CompanyLogo}>
+          <MediaSelector
+            type='image'
+            crop
+            cropResolution={{
+              width: 500,
+              height: 500,
+            }}
+            imageSettings={{
+              compressionProgress: (progress) => (Math.round(progress * 100)) === 100 ? setLogoProgress(null) : setLogoProgress(progress),
+            }}
+            callback={(images) => setCompanyLogo(handleSingleFile(images))}
+            render={(onPress) =>
+              <>
+                {(!!logoProgress && (logoProgress < 100)) ?
+
+                  <View style={styles.LoadingImages}>
+                    <Typography size={16} weight='SemiBold' style={styles.LoadingImagesText}>
+                      Ładowanie zdjęć: {Math.round(logoProgress * 100)}%
+                    </Typography>
+                    <Slider
+                      min={0}
+                      max={100}
+                      step={1}
+                      value={[Math.round(logoProgress * 100)]}
+                    >
+                      <Slider.Track>
+                        <Slider.TrackActive />
+                      </Slider.Track>
+                    </Slider>
+                  </View>
+
+                  :
+
+                  !!companyLogo ?
+                    <View style={styles.LoadedImages}>
+                      <View style={styles.LoadedImagesButtons}>
+                        <Button
+                          variant='TouchableOpacity'
+                          style={styles.LoadedImagesButton}
+                          onPress={() => setCompanyLogo(null)}
+                        >
+                          <Typography variant='h5' weight="Bold" style={styles.DeleteImagesButton}>
+                            Usuń wybrane
+                          </Typography>
+                        </Button>
+                        <Button
+                          variant='TouchableOpacity'
+                          style={styles.LoadedImagesButton}
+                          onPress={() => onPress()}
+                        >
+                          <Typography variant='h5' weight="Bold" style={styles.AddMoreImages}>
+                            Dodaj ponownie
+                          </Typography>
+                        </Button>
+                      </View>
+                      <View style={styles.LoadedLogoContainer}>
+                        <Image
+                          style={styles.LoadedLogo}
+                          source={{ uri: companyLogo.path }}
+                        />
+                      </View>
+                    </View>
+
+                    :
+
+                    <Button
+                      variant='TouchableOpacity'
+                      onPress={() => onPress()}
+                    >
+                      <View style={styles.ImageLoaderContent}>
+                        <View style={styles.AddImageText}>
+                          <SvgIcon icon="createCircleSmall" fill={Colors.Basic900} />
+                          <Typography variant="h5" weight='Bold'>
+                            {'  '}Dodaj logo
+                          </Typography>
+                        </View>
+                      </View>
+                    </Button>
+                }
+              </>
+            }
+          />
+        </View>
+        <View style={styles.ImagesTitle}>
+          <Typography weight="Bold" variant="h5">
+            Zdjęcia firmy{' '}
+          </Typography>
+        </View>
+        <MediaSelector
+          type='image'
+          multiple
+          selectionLimit={companyPhotosLimit}
+          initialSelected={companyPhotos as any}
+          imageSettings={{
+            compressionProgress: (progress) => (Math.round(progress * 100)) === 100 ? setPhotosProgress(null) : setPhotosProgress(progress),
+          }}
+          callback={(images) => setCompanyPhotos(handleMultipleFiles(images))}
+          render={(onPress) =>
+            <>
+              {!!photosProgress && photosProgress < 100 ?
+                <View style={styles.LoadingImages}>
+                  <Typography size={16} weight='SemiBold' style={styles.LoadingImagesText}>
+                    Ładowanie zdjęć: {Math.round(photosProgress * 100)}%
+                  </Typography>
+                  <Slider
+                    min={0}
+                    max={100}
+                    step={1}
+                    value={[Math.round(photosProgress * 100)]}
+                  >
+                    <Slider.Track>
+                      <Slider.TrackActive />
+                    </Slider.Track>
+                  </Slider>
                 </View>
 
                 :
 
-                <>
-                  <Typography
-                    variant='h5'
-                  >
-                    Branża
-                  </Typography>
-                  <Typography style={{ color: Colors.Red }}>
-                    *
-                  </Typography>
-                </>
-              }
-            </Button>
-            {companyData.services ?
-              <>
-                <View style={styles.SelectedItemsContainer}>
-                  <View style={styles.SelectedItemsHeader}>
-                    <Typography variant='h5' weight='Bold'>
-                      Usługi
-                    </Typography>
-                    <Button
-                      variant='text'
-                      style={styles.EditButton}
-                      onPress={() => goToSelectServicesScreen()}
-                    >
-                      <Typography variant='h5' weight='Bold' style={styles.EditButtonText}>
-                        Edytuj
-                      </Typography>
-                    </Button>
-                  </View>
-                  <Typography style={styles.SelectedItems}>
-                    {selectedServices.map(({ id, name }, i) =>
-                      <Fragment key={id}>
-                        {name}
-                        {i !== selectedServices.length - 1 ? ', ' : ''}
-                      </Fragment>
-                    )}
-                  </Typography>
-                </View>
-                <Separator marginTop={12} />
-              </>
-
-              :
-
-              <Button
-                variant='text'
-                borderBottom
-                arrowRight
-                onPress={() => goToSelectServicesScreen()}
-              >
-                <Typography variant='h5'>
-                  Usługi
-                </Typography>
-                <Typography style={{ color: Colors.Red }}>
-                  *
-                </Typography>
-              </Button>
-            }
-            {contactPersons.length ?
-              <>
-                <View style={styles.ContactPersonsFilled}>
-                  <View style={styles.ContactPersonsFilledTitle}>
-                    <SvgIcon icon='doneCircleGreen' />
-                    <Typography variant='h5' weight='Bold'>
-                      Dane do kontaktu uzupełnione
-                    </Typography>
-                  </View>
-                  <Button
-                    variant='text'
-                    style={styles.EditButton}
-                    onPress={() => goToAddPersonsContactScreen()}
-                  >
-                    <Typography variant='h5' weight='Bold' style={styles.EditButtonText} >
-                      Edytuj
-                    </Typography>
-                  </Button>
-                </View>
-                <Separator />
-              </>
-
-              :
-
-              <Button
-                variant='text'
-                arrowRight
-                borderBottom
-                onPress={() => goToAddPersonsContactScreen()}
-              >
-                <Typography variant='h5'>
-                  Dane do kontaktu
-                </Typography>
-                <Typography style={{ color: Colors.Red }}>
-                  *
-                </Typography>
-              </Button>
-            }
-            {companyData.description ?
-              <>
-                <View style={styles.FilledDescription}>
-                  <View style={styles.FilledDescriptionHeader}>
-                    <Typography variant='h5' weight='Bold'>
-                      Opis firmy
-                    </Typography>
-                    <Button
-                      variant='text'
-                      style={styles.EditButton}
-                      onPress={() => goToCompanyDescriptionScreen()}
-                    >
-                      <Typography variant='h5' weight='Bold' style={styles.EditButtonText}>
-                        Edytuj
-                      </Typography>
-                    </Button>
-                  </View>
-
-                  <Typography
-                    numberOfLines={descriptionExpanded ? undefined : 3}
-                    color={Colors.Basic600}
-                    onLayout={handleDescriptionLayout}
-                  >
-                    {companyData.description}
-                  </Typography>
-
-                  {((!descriptionExpanded && descriptionHeight > 53) || descriptionExpanded && descriptionHeight !== 54) &&
-                    <Button
-                      variant='text'
-                      onPress={() => setDescriptionExpanded(prev => !prev)}
-                    >
-
-                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <SvgIcon icon={descriptionExpanded ? "arrowTop" : "arrowBottom"} fill={Colors.Basic500} />
-                      </View>
-                    </Button>
-                  }
-                </View>
-                <Separator marginTop={12} />
-              </>
-
-              :
-
-              <Button
-                variant='text'
-                arrowRight
-                borderBottom
-                onPress={() => goToCompanyDescriptionScreen()}
-              >
-                <Typography variant='h5'>
-                  Opis firmy
-                </Typography>
-                <Typography style={{ color: Colors.Red }}>
-                  *
-                </Typography>
-              </Button>
-            }
-            {(companyData.registration_name && companyData.nip && companyData.registration_address) ?
-              <>
-                <View style={styles.ContactPersonsFilled}>
-                  <View style={styles.ContactPersonsFilledTitle}>
-                    <SvgIcon icon='doneCircleGreen' />
-                    <Typography variant='h5' weight='Bold'>
-                      Dane do faktury uzupełnione
-                    </Typography>
-                  </View>
-                  <Button
-                    variant='text'
-                    style={styles.EditButton}
-                    onPress={() => goToCompanyInvoiceScreen()}
-                  >
-                    <Typography variant='h5' weight='Bold' style={styles.EditButtonText}>
-                      Edytuj
-                    </Typography>
-                  </Button>
-                </View>
-                <Separator />
-              </>
-
-              :
-
-              <Button
-                variant='text'
-                arrowRight
-                borderBottom
-                onPress={() => goToCompanyInvoiceScreen()}
-              >
-                <Typography variant='h5'>
-                  Dane do faktury
-                </Typography>
-              </Button>
-            }
-            <Typography
-              size={20}
-              weight='Bold'
-              style={[styles.SectionHeader, { marginTop: 26 }]}
-            >
-              Dodatkowe
-            </Typography>
-            <View style={styles.CompanyLogoTitle}>
-              <Typography weight="Bold" variant="h5">
-                Logo firmy{' '}
-              </Typography>
-              {!companyData.logo &&
-                <Typography style={{ color: Colors.Red }}>
-                  *
-                </Typography>
-              }
-            </View>
-            <View style={styles.CompanyLogo}>
-              <MediaSelector
-                type='image'
-                crop
-                cropResolution={{
-                  width: 500,
-                  height: 500,
-                }}
-                imageSettings={{
-                  compressionProgress: (progress) => (Math.round(progress * 100)) === 100 ? setLogoProgress(null) : setLogoProgress(progress),
-                }}
-                callback={(images) => setCompanyLogo(handleSingleFile(images))}
-                render={(onPress) =>
-                  <>
-                    {(!!logoProgress && (logoProgress < 100)) ?
-
-                      <View style={styles.LoadingImages}>
-                        <Typography size={16} weight='SemiBold' style={styles.LoadingImagesText}>
-                          Ładowanie zdjęć: {Math.round(logoProgress * 100)}%
+                !!companyPhotos.length ?
+                  <View style={styles.LoadedImages}>
+                    <View style={styles.LoadedImagesButtons}>
+                      <Button
+                        variant='TouchableOpacity'
+                        style={styles.LoadedImagesButton}
+                        onPress={() => setCompanyPhotos([])}
+                      >
+                        <Typography variant='h5' weight="Bold" style={styles.DeleteImagesButton}>
+                          Usuń wszystkie
                         </Typography>
-                        <Slider
-                          min={0}
-                          max={100}
-                          step={1}
-                          value={[Math.round(logoProgress * 100)]}
-                        >
-                          <Slider.Track>
-                            <Slider.TrackActive />
-                          </Slider.Track>
-                        </Slider>
-                      </View>
-
-                      :
-
-                      !!companyLogo ?
-                        <View style={styles.LoadedImages}>
-                          <View style={styles.LoadedImagesButtons}>
-                            <Button
-                              variant='TouchableOpacity'
-                              style={styles.LoadedImagesButton}
-                              onPress={() => setCompanyLogo(null)}
-                            >
-                              <Typography variant='h5' weight="Bold" style={styles.DeleteImagesButton}>
-                                Usuń wybrane
-                              </Typography>
-                            </Button>
-                            <Button
-                              variant='TouchableOpacity'
-                              style={styles.LoadedImagesButton}
-                              onPress={() => onPress()}
-                            >
-                              <Typography variant='h5' weight="Bold" style={styles.AddMoreImages}>
-                                Dodaj ponownie
-                              </Typography>
-                            </Button>
-                          </View>
-                          <View style={styles.LoadedLogoContainer}>
-                            <Image
-                              style={styles.LoadedLogo}
-                              source={{ uri: companyLogo.path }}
-                            />
-                          </View>
-                        </View>
-
-                        :
-
+                      </Button>
+                      {(companyPhotos.length < companyPhotosLimit) &&
                         <Button
                           variant='TouchableOpacity'
+                          style={styles.LoadedImagesButton}
                           onPress={() => onPress()}
                         >
-                          <View style={styles.ImageLoaderContent}>
-                            <View style={styles.AddImageText}>
-                              <SvgIcon icon="createCircleSmall" fill={Colors.Basic900} />
-                              <Typography variant="h5" weight='Bold'>
-                                {'  '}Dodaj logo
-                              </Typography>
-                            </View>
-                          </View>
+                          <Typography variant='h5' weight="Bold" style={styles.AddMoreImages}>
+                            Dodaj kolejne
+                          </Typography>
                         </Button>
-                    }
-                  </>
-                }
-              />
-            </View>
-            <View style={styles.ImagesTitle}>
-              <Typography weight="Bold" variant="h5">
-                Zdjęcia firmy{' '}
-              </Typography>
-            </View>
-            <MediaSelector
-              type='image'
-              multiple
-              selectionLimit={companyPhotosLimit}
-              initialSelected={companyPhotos as any}
-              imageSettings={{
-                compressionProgress: (progress) => (Math.round(progress * 100)) === 100 ? setPhotosProgress(null) : setPhotosProgress(progress),
-              }}
-              callback={(images) => setCompanyPhotos(handleMultipleFiles(images))}
-              render={(onPress) =>
-                <>
-                  {!!photosProgress && photosProgress < 100 ?
-                    <View style={styles.LoadingImages}>
-                      <Typography size={16} weight='SemiBold' style={styles.LoadingImagesText}>
-                        Ładowanie zdjęć: {Math.round(photosProgress * 100)}%
-                      </Typography>
-                      <Slider
-                        min={0}
-                        max={100}
-                        step={1}
-                        value={[Math.round(photosProgress * 100)]}
-                      >
-                        <Slider.Track>
-                          <Slider.TrackActive />
-                        </Slider.Track>
-                      </Slider>
+                      }
                     </View>
+                    <View style={styles.DraggableImagesContainer}>
+                      <DraggableList
+                        horizontal
+                        data={companyPhotos.sort((a, b) => {
+                          const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
+                          const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
 
-                    :
-
-                    !!companyPhotos.length ?
-                      <View style={styles.LoadedImages}>
-                        <View style={styles.LoadedImagesButtons}>
-                          <Button
-                            variant='TouchableOpacity'
-                            style={styles.LoadedImagesButton}
-                            onPress={() => setCompanyPhotos([])}
-                          >
-                            <Typography variant='h5' weight="Bold" style={styles.DeleteImagesButton}>
-                              Usuń wszystkie
-                            </Typography>
-                          </Button>
-                          {(companyPhotos.length < companyPhotosLimit) &&
-                            <Button
-                              variant='TouchableOpacity'
-                              style={styles.LoadedImagesButton}
-                              onPress={() => onPress()}
-                            >
-                              <Typography variant='h5' weight="Bold" style={styles.AddMoreImages}>
-                                Dodaj kolejne
-                              </Typography>
-                            </Button>
-                          }
-                        </View>
-                        <View style={styles.DraggableImagesContainer}>
-                          <DraggableList
-                            horizontal
-                            data={companyPhotos.sort((a, b) => {
-                              const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
-                              const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
-
-                              return orderA - orderB;
-                            })}
-                            onDragEnd={({ data }) => setCompanyPhotos(updateOrder(data))}
-                            keyExtractor={({ path }) => path}
-                            renderItem={(props: RenderItemParams<MediaType>) => renderScrollPhotoItem({ ...props, mode: 'photos' })}
-                            contentContainerStyle={styles.DraggableImagesContent}
-                            style={styles.DraggableImages}
-                          />
-                        </View>
-                      </View>
-
-                      :
-
-                      <Button
-                        variant='TouchableOpacity'
-                        onPress={() => onPress()}
-                        style={styles.ImageLoader}
-                      >
-                        <View style={[styles.ImageLoaderContent, { height: 118 }]}>
-                          <View style={styles.ImagesAmountLabel}>
-                            <View style={styles.ImagesAmountLabelTextContainer}>
-                              <Typography variant='h5' weight='SemiBold' style={styles.ImagesAmountLabelText}>
-                                Dodaj do 20 zdjęć
-                              </Typography>
-                            </View>
-                          </View>
-                          <View style={styles.AddImageText}>
-                            <SvgIcon icon="createCircleSmall" />
-                            <Typography variant="h5" weight='Bold'>
-                              {'  '}Dodaj zdjęcia
-                            </Typography>
-                          </View>
-                        </View>
-                      </Button>
-                  }
-                </>
-              }
-            />
-            <View style={styles.ImagesTitle}>
-              <Typography weight="Bold" variant="h5">
-                Certyfikaty{' '}
-              </Typography>
-            </View>
-            <MediaSelector
-              type='image'
-              multiple
-              selectionLimit={companyCertificatesLimit}
-              initialSelected={companyCertificates as any}
-              imageSettings={{
-                compressionProgress: (progress) => (Math.round(progress * 100)) === 100 ? setCertificatesProgress(null) : setCertificatesProgress(progress),
-              }}
-              callback={(images) => setCompanyCertificates(handleMultipleFiles(images))}
-              render={(onPress) =>
-                <>
-                  {(!!certificatesProgress && (certificatesProgress < 100)) ?
-
-                    <View style={styles.LoadingImages}>
-                      <Typography size={16} weight='SemiBold' style={styles.LoadingImagesText}>
-                        Ładowanie zdjęć: {Math.round(certificatesProgress * 100)}%
-                      </Typography>
-                      <Slider
-                        min={0}
-                        max={100}
-                        step={1}
-                        value={[Math.round(certificatesProgress * 100)]}
-                      >
-                        <Slider.Track>
-                          <Slider.TrackActive />
-                        </Slider.Track>
-                      </Slider>
+                          return orderA - orderB;
+                        })}
+                        onDragEnd={({ data }) => setCompanyPhotos(updateOrder(data))}
+                        keyExtractor={({ path }) => path}
+                        renderItem={(props: RenderItemParams<MediaType>) => renderScrollPhotoItem({ ...props, mode: 'photos' })}
+                        contentContainerStyle={styles.DraggableImagesContent}
+                        style={styles.DraggableImages}
+                      />
                     </View>
-
-                    :
-
-                    !!companyCertificates.length ?
-                      <View style={styles.LoadedImages}>
-                        <View style={styles.LoadedImagesButtons}>
-                          <Button
-                            variant='TouchableOpacity'
-                            style={styles.LoadedImagesButton}
-                            onPress={() => setCompanyCertificates([])}
-                          >
-                            <Typography variant='h5' weight="Bold" style={styles.DeleteImagesButton}>
-                              Usuń wszystkie
-                            </Typography>
-                          </Button>
-                          {(companyCertificates.length < companyCertificatesLimit) &&
-                            <Button
-                              variant='TouchableOpacity'
-                              style={styles.LoadedImagesButton}
-                              onPress={() => onPress()}
-                            >
-                              <Typography variant='h5' weight="Bold" style={styles.AddMoreImages}>
-                                Dodaj kolejne
-                              </Typography>
-                            </Button>
-                          }
-                        </View>
-                        <View style={styles.DraggableImagesContainer}>
-                          <DraggableList
-                            horizontal
-                            data={companyCertificates.sort((a, b) => {
-                              const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
-                              const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
-
-                              return orderA - orderB;
-                            })}
-                            onDragEnd={({ data }) => setCompanyCertificates(updateOrder(data))}
-                            keyExtractor={({ path }) => path}
-                            renderItem={(props: RenderItemParams<MediaType>) => renderScrollPhotoItem({ ...props, mode: 'certificates' })}
-                            contentContainerStyle={styles.DraggableImagesContent}
-                            style={styles.DraggableImages}
-                          />
-                        </View>
-                      </View>
-
-                      :
-
-                      <Button
-                        variant='TouchableOpacity'
-                        onPress={() => onPress()}
-                        style={styles.ImageLoader}
-                      >
-                        <View style={[styles.ImageLoaderContent, { height: 118 }]}>
-                          <View style={styles.ImagesAmountLabel}>
-                            <View style={styles.ImagesAmountLabelTextContainer}>
-                              <Typography variant='h5' weight='SemiBold' style={styles.ImagesAmountLabelText}>
-                                Dodaj do 20 zdjęć
-                              </Typography>
-                            </View>
-                          </View>
-                          <View style={styles.AddImageText}>
-                            <SvgIcon icon="createCircleSmall" />
-                            <Typography variant="h5" weight='Bold'>
-                              {'  '}Dodaj zdjęcia
-                            </Typography>
-                          </View>
-                        </View>
-                      </Button>
-                  }
-                </>
-              }
-            />
-            <Separator marginTop={16} />
-            <View style={styles.SquareFootageTitle}>
-              <Typography weight="Bold" variant="h5">
-                Metraż miejsca pracy{' '}
-              </Typography>
-            </View>
-            <View style={styles.SquareFootage}>
-              <TextField
-                placeholder='0'
-                maxLength={5}
-                placeholderTextColor={Colors.Basic600}
-                containerStyles={styles.SquareFootageTextField}
-                height={44}
-                keyboardType='decimal-pad'
-                right={<Typography>m²</Typography>}
-                value={companyData.square_footage || ''}
-                onChangeText={(text) => changeCompanyDataHandler('square_footage', text.replace(/^0/, '').replace(/[^0-9]/g, ''))}
-              />
-            </View>
-            {companyData.employees_amount ?
-              <>
-                <View style={styles.SelectedItemsContainer}>
-                  <View style={styles.SelectedItemsHeader}>
-                    <Typography variant='h5' weight='Bold'>
-                      Liczba pracowników
-                    </Typography>
-                    <Button
-                      variant='text'
-                      style={{ width: 'auto', padding: 0 }}
-                      onPress={() => goToSelectEmployeesAmountScreen()}
-                    >
-                      <Typography variant='h5' weight='Bold' style={styles.EditButtonText}>
-                        Edytuj
-                      </Typography>
-                    </Button>
                   </View>
-                  <Typography style={styles.SelectedItems}>
-                    {selectedEmployeesAmount?.name}
+
+                  :
+
+                  <Button
+                    variant='TouchableOpacity'
+                    onPress={() => onPress()}
+                    style={styles.ImageLoader}
+                  >
+                    <View style={[styles.ImageLoaderContent, { height: 118 }]}>
+                      <View style={styles.ImagesAmountLabel}>
+                        <View style={styles.ImagesAmountLabelTextContainer}>
+                          <Typography variant='h5' weight='SemiBold' style={styles.ImagesAmountLabelText}>
+                            Dodaj do 20 zdjęć
+                          </Typography>
+                        </View>
+                      </View>
+                      <View style={styles.AddImageText}>
+                        <SvgIcon icon="createCircleSmall" />
+                        <Typography variant="h5" weight='Bold'>
+                          {'  '}Dodaj zdjęcia
+                        </Typography>
+                      </View>
+                    </View>
+                  </Button>
+              }
+            </>
+          }
+        />
+        <View style={styles.ImagesTitle}>
+          <Typography weight="Bold" variant="h5">
+            Certyfikaty{' '}
+          </Typography>
+        </View>
+        <MediaSelector
+          type='image'
+          multiple
+          selectionLimit={companyCertificatesLimit}
+          initialSelected={companyCertificates as any}
+          imageSettings={{
+            compressionProgress: (progress) => (Math.round(progress * 100)) === 100 ? setCertificatesProgress(null) : setCertificatesProgress(progress),
+          }}
+          callback={(images) => setCompanyCertificates(handleMultipleFiles(images))}
+          render={(onPress) =>
+            <>
+              {(!!certificatesProgress && (certificatesProgress < 100)) ?
+
+                <View style={styles.LoadingImages}>
+                  <Typography size={16} weight='SemiBold' style={styles.LoadingImagesText}>
+                    Ładowanie zdjęć: {Math.round(certificatesProgress * 100)}%
                   </Typography>
+                  <Slider
+                    min={0}
+                    max={100}
+                    step={1}
+                    value={[Math.round(certificatesProgress * 100)]}
+                  >
+                    <Slider.Track>
+                      <Slider.TrackActive />
+                    </Slider.Track>
+                  </Slider>
                 </View>
-                <Separator marginTop={12} />
-              </>
 
-              :
+                :
 
-              <Button
-                variant='text'
-                borderTop
-                borderBottom
-                arrowRight
-                onPress={() => goToSelectEmployeesAmountScreen()}
-              >
-                <Typography variant='h5'>
+                !!companyCertificates.length ?
+                  <View style={styles.LoadedImages}>
+                    <View style={styles.LoadedImagesButtons}>
+                      <Button
+                        variant='TouchableOpacity'
+                        style={styles.LoadedImagesButton}
+                        onPress={() => setCompanyCertificates([])}
+                      >
+                        <Typography variant='h5' weight="Bold" style={styles.DeleteImagesButton}>
+                          Usuń wszystkie
+                        </Typography>
+                      </Button>
+                      {(companyCertificates.length < companyCertificatesLimit) &&
+                        <Button
+                          variant='TouchableOpacity'
+                          style={styles.LoadedImagesButton}
+                          onPress={() => onPress()}
+                        >
+                          <Typography variant='h5' weight="Bold" style={styles.AddMoreImages}>
+                            Dodaj kolejne
+                          </Typography>
+                        </Button>
+                      }
+                    </View>
+                    <View style={styles.DraggableImagesContainer}>
+                      <DraggableList
+                        horizontal
+                        data={companyCertificates.sort((a, b) => {
+                          const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
+                          const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
+
+                          return orderA - orderB;
+                        })}
+                        onDragEnd={({ data }) => setCompanyCertificates(updateOrder(data))}
+                        keyExtractor={({ path }) => path}
+                        renderItem={(props: RenderItemParams<MediaType>) => renderScrollPhotoItem({ ...props, mode: 'certificates' })}
+                        contentContainerStyle={styles.DraggableImagesContent}
+                        style={styles.DraggableImages}
+                      />
+                    </View>
+                  </View>
+
+                  :
+
+                  <Button
+                    variant='TouchableOpacity'
+                    onPress={() => onPress()}
+                    style={styles.ImageLoader}
+                  >
+                    <View style={[styles.ImageLoaderContent, { height: 118 }]}>
+                      <View style={styles.ImagesAmountLabel}>
+                        <View style={styles.ImagesAmountLabelTextContainer}>
+                          <Typography variant='h5' weight='SemiBold' style={styles.ImagesAmountLabelText}>
+                            Dodaj do 20 zdjęć
+                          </Typography>
+                        </View>
+                      </View>
+                      <View style={styles.AddImageText}>
+                        <SvgIcon icon="createCircleSmall" />
+                        <Typography variant="h5" weight='Bold'>
+                          {'  '}Dodaj zdjęcia
+                        </Typography>
+                      </View>
+                    </View>
+                  </Button>
+              }
+            </>
+          }
+        />
+        <Separator marginTop={16} />
+        <View style={styles.SquareFootageTitle}>
+          <Typography weight="Bold" variant="h5">
+            Metraż miejsca pracy{' '}
+          </Typography>
+        </View>
+        <View style={styles.SquareFootage}>
+          <TextField
+            placeholder='0'
+            maxLength={5}
+            placeholderTextColor={Colors.Basic600}
+            containerStyles={styles.SquareFootageTextField}
+            height={44}
+            keyboardType='number-pad'
+            right={<Typography>m²</Typography>}
+            value={companyData.square_footage || ''}
+            onChangeText={(text) => changeCompanyDataHandler('square_footage', text.replace(/^0/, '').replace(/[^0-9]/g, ''))}
+          />
+        </View>
+        {companyData.employees_amount ?
+          <>
+            <View style={styles.SelectedItemsContainer}>
+              <View style={styles.SelectedItemsHeader}>
+                <Typography variant='h5' weight='Bold'>
                   Liczba pracowników
                 </Typography>
-              </Button>
-            }
-            {companyData.languages?.length ?
-              <>
-                <View style={styles.SelectedItemsContainer}>
-                  <View style={styles.SelectedItemsHeader}>
-                    <Typography variant='h5' weight='Bold'>
-                      Preferowane języki w komunikacji
-                    </Typography>
-                    <Button
-                      variant='text'
-                      style={{ width: 'auto', padding: 0 }}
-                      onPress={() => goToSelectLanguagesScreen()}
-                    >
-                      <Typography variant='h5' weight='Bold' style={styles.EditButtonText}>
-                        Edytuj
-                      </Typography>
-                    </Button>
-                  </View>
-                  <Typography style={styles.SelectedItems}>
-                    {selectedLanguages.map(({ id, name }, i) =>
-                      <Fragment key={id}>
-                        {name}
-                        {i !== selectedLanguages.length - 1 ? ', ' : ''}
-                      </Fragment>
-                    )}
+                <Button
+                  variant='TouchableOpacity'
+                  style={styles.EditButton}
+                  onPress={() => goToSelectEmployeesAmountScreen()}
+                >
+                  <Typography variant='h5' weight='Bold' style={styles.EditButtonText}>
+                    Edytuj
                   </Typography>
-                </View>
-                <Separator marginTop={12} />
-              </>
+                </Button>
+              </View>
+              <Typography style={styles.SelectedItems}>
+                {selectedEmployeesAmount?.name}
+              </Typography>
+            </View>
+            <Separator marginTop={12} />
+          </>
 
-              :
+          :
 
-              <Button
-                variant='text'
-                borderBottom
-                arrowRight
-                onPress={() => goToSelectLanguagesScreen()}
-              >
-                <Typography variant='h5'>
+          <Button
+            variant='text'
+            borderTop
+            borderBottom
+            arrowRight
+            onPress={() => goToSelectEmployeesAmountScreen()}
+          >
+            <Typography variant='h5'>
+              Liczba pracowników
+            </Typography>
+          </Button>
+        }
+        {companyData.languages?.length ?
+          <>
+            <View style={styles.SelectedItemsContainer}>
+              <View style={styles.SelectedItemsHeader}>
+                <Typography variant='h5' weight='Bold'>
                   Preferowane języki w komunikacji
                 </Typography>
-              </Button>
-            }
-            {(companyData.account_facebook || companyData.account_instagram || companyData.account_linkedIn || companyData.website) ?
-              <View style={styles.FilledSocialMediaContainer}>
-                <View style={styles.FilledSocialMedia}>
-                  <Typography variant='h5' weight='Bold'>
-                    Social media
-                  </Typography>
-                  <Button
-                    variant='text'
-                    style={{ width: 'auto', padding: 0 }}
-                    onPress={() => goToSocialMediaScreen()}
-                  >
-                    <Typography variant='h5' weight='Bold' color={Colors.Blue500} >
-                      Edytuj
-                    </Typography>
-                  </Button>
-                </View>
-                <View style={styles.SocialMediaIcons}>
-                  <SvgIcon icon={'facebook'} fill={companyData.account_facebook ? Colors.Basic900 : Colors.Basic600} />
-                  <SvgIcon icon={'instagram'} fill={companyData.account_instagram ? Colors.Basic900 : Colors.Basic600} />
-                  <SvgIcon icon={'instagram'} fill={companyData.account_linkedIn ? Colors.Basic900 : Colors.Basic600} />
-                  <SvgIcon icon={'internet'} fill={companyData.website ? Colors.Basic900 : Colors.Basic600} />
-                </View>
-                <Separator marginTop={12} />
-              </View>
-
-              :
-
-              <View style={styles.UnfilledSocialMedia}>
                 <Button
-                  variant='text'
-                  borderBottom
-                  arrowRight
-                  onPress={() => goToSocialMediaScreen()}
+                  variant='TouchableOpacity'
+                  style={styles.EditButton}
+                  onPress={() => goToSelectLanguagesScreen()}
                 >
-                  <Typography variant='h5'>
-                    Social media
+                  <Typography variant='h5' weight='Bold' style={styles.EditButtonText}>
+                    Edytuj
                   </Typography>
                 </Button>
               </View>
-            }
-          </ScrollView>
-          <Button
-            stickyBottom
-            withLoading
-            disabled={loading}
-            onPress={() => submitCompanyData()}
-          >
-            {editMode ? 'Zaktualizuj' : 'Utwórz'}
-          </Button>
-          {/* <Modal
-            transparent={true}
-            visible={!!errorModal}
-            onClose={() => setErrorModal(null)}
-          >
-            <View style={styles.ErrorModalContainer}>
-              <View style={styles.ErrorModalContent}>
-                <Typography>
-                  {errorModal}
-                </Typography>
-                <Button
-                  style={{ height: 30 }}
-                  variant='text'
-                  onPress={() => setErrorModal(null)}
-                >
-                  Ok
-                </Button>
-              </View>
+              <Typography style={styles.SelectedItems}>
+                {selectedLanguages.map(({ id, name }, i) =>
+                  <Fragment key={id}>
+                    {name}
+                    {i !== selectedLanguages.length - 1 ? ', ' : ''}
+                  </Fragment>
+                )}
+              </Typography>
             </View>
-          </Modal> */}
-        </ScreenHeaderProvider>
-      }
-    </>
+            <Separator marginTop={12} />
+          </>
+
+          :
+
+          <Button
+            variant='text'
+            borderBottom
+            arrowRight
+            onPress={() => goToSelectLanguagesScreen()}
+          >
+            <Typography variant='h5'>
+              Preferowane języki w komunikacji
+            </Typography>
+          </Button>
+        }
+        {(companyData.account_facebook || companyData.account_instagram || companyData.account_linkedIn || companyData.website) ?
+          <View style={styles.FilledSocialMediaContainer}>
+            <View style={styles.FilledSocialMedia}>
+              <Typography variant='h5' weight='Bold'>
+                Social media
+              </Typography>
+              <Button
+                variant='text'
+                style={{ width: 'auto', padding: 0 }}
+                onPress={() => goToSocialMediaScreen()}
+              >
+                <Typography variant='h5' weight='Bold' color={Colors.Blue500} >
+                  Edytuj
+                </Typography>
+              </Button>
+            </View>
+            <View style={styles.SocialMediaIcons}>
+              <SvgIcon icon={'facebook'} fill={companyData.account_facebook ? Colors.Basic900 : Colors.Basic600} />
+              <SvgIcon icon={'instagram'} fill={companyData.account_instagram ? Colors.Basic900 : Colors.Basic600} />
+              <SvgIcon icon={'instagram'} fill={companyData.account_linkedIn ? Colors.Basic900 : Colors.Basic600} />
+              <SvgIcon icon={'internet'} fill={companyData.website ? Colors.Basic900 : Colors.Basic600} />
+            </View>
+            <Separator marginTop={12} />
+          </View>
+
+          :
+
+          <View>
+            <Button
+              variant='text'
+              borderBottom
+              arrowRight
+              onPress={() => goToSocialMediaScreen()}
+            >
+              <Typography variant='h5'>
+                Social media
+              </Typography>
+            </Button>
+          </View>
+        }
+      </ScrollView>
+      <Button
+        stickyBottom
+        withLoading
+        disabled={loading}
+        onPress={() => submitCompanyData()}
+      >
+        {editMode ? 'Zaktualizuj' : 'Utwórz'}
+      </Button>
+    </ScreenHeaderProvider>
   );
 };
 
 const styles = StyleSheet.create({
   Content: {
     flex: 1,
-    backgroundColor: Colors.Basic100,
   },
   CompanyName: {
     marginHorizontal: 19,
@@ -1359,6 +1336,8 @@ const styles = StyleSheet.create({
   EditButton: {
     width: 'auto',
     padding: 0,
+    height: 50,
+    justifyContent: 'center'
   },
   EditButtonText: {
     color: Colors.Blue500
@@ -1411,9 +1390,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 24,
     paddingHorizontal: 19,
-  },
-  UnfilledSocialMedia: {
-    paddingBottom: 60
   },
   ErrorModalContainer: {
     justifyContent: 'center',

@@ -205,9 +205,9 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
   const { setSwipeablePanelProps } = useActions();
   const { userCompany } = useTypedSelector(state => state.general);
   const [companyData, setCompanyData] = useState<CompanyDataType | null>(companyExample);
-  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
-  const [servicesExpanded, setServicesExpanded] = useState(false);
-  const [languagesExpanded, setLanguagesExpanded] = useState(false);
+  const [descriptionExpanded, setDescriptionExpanded] = useState(true);
+  const [servicesExpanded, setServicesExpanded] = useState(true);
+  const [languagesExpanded, setLanguagesExpanded] = useState(true);
   const [carouselHeight, setCarouselHeight] = useState(0);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isHeaderTransparent, setIsHeaderTransparent] = useState(true);
