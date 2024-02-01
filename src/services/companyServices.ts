@@ -21,7 +21,6 @@ const createUserCompany = (props: {
     const { companyCertificates, companyData, companyLogo, /* companyVideo,  */companyPhotos, contactPersons: companyContactPersons } = props;
     const newCompany = await axios.post(`/employer/companies/`, [{
       ...companyData,
-      /* registration_address: convertToBackEndAddress(companyData.registration_address), */
       address: convertToBackEndAddress(companyData.address)
     }], { headers: dynamicHeaders({ token }) });
     const company_id = newCompany.data[0]?.id;
@@ -121,7 +120,7 @@ const createUserCompany = (props: {
 
       console.log(newCompany.data[0]);
 
-      await dispatch(generalActions.setUserCompany({ ...newCompany.data[0], registration_address: convertToFrontEndAddress(newCompany.data[0].registration_address), address: convertToFrontEndAddress(newCompany.data[0].address), logo, video, photos, certificates, contactPersons }));
+      await dispatch(generalActions.setUserCompany({ ...newCompany.data[0], address: convertToFrontEndAddress(newCompany.data[0].address), logo, video, photos, certificates, contactPersons }));
     }
     return true;
   } catch (error: any) {
@@ -148,7 +147,6 @@ const editUserCompany = (props: {
         if (!Lodash.isEqual(oldMainCompanyData, newMainCompanyData)) {
           const res = await axios.put(`/employer/companies/${id}/`, {
             ...newMainCompanyData,
-            /* registration_address: convertToBackEndAddress(newMainCompanyData.registration_address), */
             address: convertToBackEndAddress(newMainCompanyData.address),
           }, { headers: dynamicHeaders({ token }) });
           if (res.data) newCompanyData = { ...newCompanyData, ...res.data };
@@ -339,7 +337,7 @@ const editUserCompany = (props: {
         });
       };
 
-      await dispatch(generalActions.setUserCompany({...newCompanyData, /* registration_address: convertToFrontEndAddress(newCompanyData.registration_address as any), */ address: convertToFrontEndAddress(newCompanyData.address as any),}));
+      await dispatch(generalActions.setUserCompany({...newCompanyData, address: convertToFrontEndAddress(newCompanyData.address as any),}));
     }
     return true;
   } catch (error: any) {

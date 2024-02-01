@@ -336,13 +336,30 @@ export interface CompanyRegistrationAddresType {
     locality: string,
 }
 
+export interface CompanyRegistrationDataType {
+    Regon: string | null,
+    Nip: string | null,
+    StatusNip: string | null,
+    Nazwa: string | null,
+    Wojewodztwo: string | null,
+    Powiat: string | null,
+    Gmina: string | null,
+    Miejscowosc: string | null,
+    KodPocztowy: string | null,
+    Ulica: string | null,
+    NrNieruchomosci: string | null,
+    NrLokalu: string | null,
+    Typ: string | null,
+    SilosID: string | null,
+    DataZakonczeniaDzialalnosci: string | null,
+    MiejscowoscPoczty: string | null,
+}
+
 export interface CompanyDataType {
     id: number,
     job_industry: number | null,
     name: string | null,
-    registration_name: string | null,
-    nip: string | null,
-    registration_address: CompanyRegistrationAddresType | null,
+    nip_info: CompanyRegistrationDataType | null,
     address: AddressType | null,
     description: string | null,
     contactPersons: ContactPersonType[],

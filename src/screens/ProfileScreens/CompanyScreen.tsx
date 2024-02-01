@@ -33,14 +33,12 @@ const companyExample: CompanyDataType = {
 
   Zatrudniamy 12 wykwalifikowanych pracowników, którzy dbają nie tylko o profesjonalną obsługę, lecz również odpowiednią atmosferę. Oferujemy usługi cateringowe, umożliwiając zamawianie jedzenia za pomocą najpopularniejszych aplikacji kurierskich.
   `,
-  registration_name: "blablablabla",
-  nip: '777-888-88-11',
   job_industry: 3,
   logo: {
     id: 1,
     path: 'https://i.etsystatic.com/11979725/r/il/2af489/1431674872/il_fullxfull.1431674872_d74y.jpg',
   },
-  registration_address: null,
+  nip_info: null,
   address: {
     adminArea: "Dolnośląskie",
     country: "Polska",
@@ -537,7 +535,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
                 </View>
               </>
             }
-            {companyData.languages &&
+            {!!companyData.languages?.length &&
               <View style={styles.Languages}>
                 <Separator />
                 <Accordion
