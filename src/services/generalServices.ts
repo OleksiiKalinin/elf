@@ -64,7 +64,6 @@ const getAppData = (token: generalReducerState['token']) => async (dispatch: App
             userData: userData || null,
             userCompany: userCompanyData && userCompanyData[0] ? {
                 ...userCompanyData[0],
-                registration_address: convertToFrontEndAddress(userCompanyData[0].registration_address),
                 address: convertToFrontEndAddress(userCompanyData[0].address),
             } : null,
             userEvents: userEventsData?.map((event: any) => ({

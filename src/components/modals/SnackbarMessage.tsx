@@ -19,7 +19,7 @@ const SnackbarMessage = () => {
                 position: Platform.OS === 'web' ? 'fixed' : 'absolute',
             }}
             style={{
-                backgroundColor: snackbarMessage?.type === 'error' ? Colors.Danger : Colors.SuccessDark,
+                backgroundColor: snackbarMessage?.type === 'error' ? Colors.Danger : snackbarMessage?.type === 'success' ? Colors.SuccessDark : 'none',
                 maxWidth: 350,
             }}
         >

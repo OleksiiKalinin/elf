@@ -38,7 +38,6 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
   const [showTips, setShowTips] = useState<boolean>(false);
   const [showTimepicker, setShowTimepicker] = useState<'start' | 'end' | false>(false);
   const [isDataValid, setIsDataValid] = useState<boolean>(false);
-  const [errorModal, setErrorModal] = useState<string | null>(null);
   const { backToRemoveParams } = useRouter();
 
   useEffect(() => {
@@ -246,49 +245,29 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
                 onConfirm={({ hours, minutes }) => {
                   const time = `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
                   if (showTimepicker === 'start') {
-                    const newStartTime = new Date(0, 0, 0, hours, minutes)
-                    const endTime = new Date(0, 0, 0, parseInt(contact_hours?.substring(6, 8)), parseInt(contact_hours?.substring(9, 11)));
-                    if (newStartTime >= endTime) {
+                    /* const newStartTime = new Date(0, 0, 0, hours, minutes)
+                    const endTime = new Date(0, 0, 0, parseInt(contact_hours?.substring(6, 8)), parseInt(contact_hours?.substring(9, 11))); */
+                    /* if (newStartTime >= endTime) {
                       setErrorModal('Godzina początkowa nie może być późniejsza niż godzina końcowa');
-                    } else {
-                      editContactPersons('contact_hours', (time + contact_hours.substring(5)), index);
-                      setShowTimepicker(false);
-                    };
+                    } else { */
+                    editContactPersons('contact_hours', (time + contact_hours.substring(5)), index);
+                    setShowTimepicker(false);
+                    /* }; */
                   } else {
-                    const newEndTime = new Date(0, 0, 0, hours, minutes)
-                    const startTime = new Date(0, 0, 0, parseInt(contact_hours.substring(0, 2)), parseInt(contact_hours.substring(3, 5)));
-                    if (newEndTime <= startTime) {
+                    /* const newEndTime = new Date(0, 0, 0, hours, minutes)
+                    const startTime = new Date(0, 0, 0, parseInt(contact_hours.substring(0, 2)), parseInt(contact_hours.substring(3, 5))); */
+                    /* if (newEndTime <= startTime) {
                       setErrorModal('Godzina końcowa nie może być wcześniejsza niż godzina początkowa');
-                    } else {
-                      editContactPersons('contact_hours', (contact_hours.substring(0, contact_hours.length - 5) + time), index);
-                      setShowTimepicker(false);
-                    }
+                    } else { */
+                    editContactPersons('contact_hours', (contact_hours.substring(0, contact_hours.length - 5) + time), index);
+                    setShowTimepicker(false);
+                    /* } */
                   }
                 }}
               />
             }
           </View>))}
       </ScrollView>
-      <Modal
-        transparent={true}
-        visible={!!errorModal}
-        onClose={() => setErrorModal(null)}
-      >
-        <View style={styles.ErrorModalContainer}>
-          <View style={styles.ErrorModalContent}>
-            <Typography>
-              {errorModal}
-            </Typography>
-            <Button
-              style={{ height: 30 }}
-              variant='text'
-              onPress={() => setErrorModal(null)}
-            >
-              Ok
-            </Button>
-          </View>
-        </View>
-      </Modal>
       <View>
         <Button onPress={() => handleConfirm()}>
           Potwierdź

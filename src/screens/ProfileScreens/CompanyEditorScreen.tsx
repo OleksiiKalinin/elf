@@ -7,7 +7,7 @@ import {
 import React, { Fragment, useCallback, useEffect, useState, useMemo, useLayoutEffect } from 'react';
 import Colors from '../../colors/Colors';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import { AddressType, CompanyDataType, MediaType, ContactPersonType, CompanyRegistrationAddresType } from '../../store/reducers/types';
+import { AddressType, CompanyDataType, MediaType, ContactPersonType, CompanyRegistrationDataType } from '../../store/reducers/types';
 import { RenderItemParams } from 'react-native-draggable-flatlist';
 import companyServices from '../../services/companyServices';
 import { isArray, isNumber } from 'lodash';
@@ -32,14 +32,12 @@ const CompanyEditorScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const { setSnackbarMessage } = useActions();
   const [loading, setLoading] = useState<boolean>(false);
-  const { jobIndustries, token, userCompany, languages, services, employeesAmount } = useTypedSelector(state => state.general);
+  const { jobIndustries, userCompany, languages, services, employeesAmount } = useTypedSelector(state => state.general);
   const [companyData, setCompanyData] = useState<CompanyDataType>(userCompany || {
     id: -1,
     job_industry: null,
     name: null,
-    registration_name: null,
-    nip: null,
-    registration_address: null,
+    nip_info: null,
     address: null,
     description: null,
     employees_amount: null,
@@ -49,11 +47,11 @@ const CompanyEditorScreen: React.FC = () => {
     account_facebook: null,
     account_instagram: null,
     account_linkedIn: null,
-    languages: null,
+    languages: [],
     services: null,
+    logo: null,
   });
   const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(companyData.contactPersons || []);
-  const [companyLogo, setCompanyLogo] = useState<MediaType | null>(userCompany?.logo || null);
   const [companyPhotos, setCompanyPhotos] = useState<MediaType[]>(userCompany?.photos || []);
   const [companyCertificates, setCompanyCertificates] = useState<MediaType[]>(userCompany?.certificates || []);
   const [logoProgress, setLogoProgress] = useState<number | null>(null);
@@ -66,7 +64,6 @@ const CompanyEditorScreen: React.FC = () => {
   const [fields, setFields] = useState<FormFieldType[]>([]);
 
   const router = useRouter();
-  const { replace } = useRouter();
   const companyPhotosLimit = 20;
   const companyCertificatesLimit = 20;
 
@@ -74,21 +71,15 @@ const CompanyEditorScreen: React.FC = () => {
     if (userCompany) {
       setEditMode(true);
       setCompanyData(userCompany);
-      setCompanyLogo(userCompany?.logo || null);
       setCompanyPhotos(userCompany?.photos || []);
       setCompanyCertificates(userCompany?.certificates || []);
       setContactPersons(userCompany?.contactPersons || []);
     };
-    const timer = setTimeout(() => {
-      if (!token) {
-        goToAuthScreen();
-      };
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, [userCompany, token]);
+  }, [userCompany]);
 
   useEffect(() => {
-    const { name, address, job_industry, services, description, registration_name, registration_address, nip, employees_amount, square_footage, languages, account_instagram, account_facebook, account_linkedIn, website } = companyData;
+    console.log(companyData);
+    const { name, address, job_industry, services, description, nip_info, employees_amount, square_footage, languages, account_instagram, account_facebook, account_linkedIn, website, logo } = companyData;
 
     setFields([
       { name: 'name', isValid: !!(name && name.length > 2 && name.length <= 100), required: true },
@@ -97,8 +88,8 @@ const CompanyEditorScreen: React.FC = () => {
       { name: 'services', isValid: !!services?.length, required: true },
       { name: 'contactPersons', isValid: !!contactPersons.length, required: true },
       { name: 'description', isValid: !!description, required: true },
-      { name: 'invoiceData', isValid: !!(registration_name && nip && registration_address) },
-      { name: 'logo', isValid: !!(companyLogo) },
+      { name: 'nip_info', isValid: !!nip_info },
+      { name: 'logo', isValid: !!(logo) },
       { name: 'photos', isValid: !!(companyPhotos.length) },
       { name: 'certificates', isValid: !!(companyCertificates.length) },
       { name: 'square_footage', isValid: !!(square_footage && square_footage.length && square_footage.length <= 8) },
@@ -106,7 +97,7 @@ const CompanyEditorScreen: React.FC = () => {
       { name: 'languages', isValid: !!(languages?.length) },
       { name: 'socialMedia', isValid: !!(account_instagram || account_facebook || account_linkedIn || website) },
     ]);
-  }, [companyData, contactPersons, companyLogo, companyPhotos, companyCertificates]);
+  }, [companyData, contactPersons, companyPhotos, companyCertificates]);
 
   const isFieldValid = (fieldName: keyof typeof companyData) => {
     const fieldIndex = fields.findIndex(item => item.name === fieldName);
@@ -141,7 +132,7 @@ const CompanyEditorScreen: React.FC = () => {
         'editUserCompany' :
         'createUserCompany'
       ]({
-        companyData, companyLogo, companyPhotos, companyCertificates, contactPersons, oldCompanyData: userCompany || companyData
+        companyData, companyLogo: companyData.logo ?? null, companyPhotos, companyCertificates, contactPersons, oldCompanyData: userCompany || companyData
       })
       );
       setLoading(false);
@@ -154,7 +145,7 @@ const CompanyEditorScreen: React.FC = () => {
     }
   };
 
-  const changeCompanyDataHandler = (name: keyof CompanyDataType, value: string | number | number[] | AddressType | CompanyRegistrationAddresType | null, replaceSpaces: boolean = true) => {
+  const changeCompanyDataHandler = (name: keyof CompanyDataType, value: string | number | number[] | AddressType | CompanyRegistrationDataType |MediaFileType | MediaFileType[] | null, replaceSpaces: boolean = true) => {
     setCompanyData(prev => ({
       ...prev,
       [name]: value ?
@@ -163,6 +154,7 @@ const CompanyEditorScreen: React.FC = () => {
           :
           !isArray(value) ? value : value.length === 0 ? null : value
         :
+
         null
     }));
   };
@@ -302,21 +294,10 @@ const CompanyEditorScreen: React.FC = () => {
       screen: 'CompanyEditorScreen',
       params: {
         subView: 'CompanyInvoiceScreen',
-        callback: (nip, name, address) => {
-          console.log(address)
-          changeCompanyDataHandler('nip', nip, false);
-          changeCompanyDataHandler('registration_name', name, false);
-          changeCompanyDataHandler('registration_address', address, false);
-        },
-        initialData: {
-          nip: companyData?.nip || '',
-          name: companyData?.registration_name || '',
-          street: companyData?.registration_address?.street || '',
-          postalCode: companyData?.registration_address?.postalCode || '',
-          locality: companyData?.registration_address?.locality || '',
-        }
+        callback: (data) => changeCompanyDataHandler('nip_info', data, false),
+        initialData: companyData.nip_info
       }
-    })
+    });
   };
 
   const goToSelectEmployeesAmountScreen = () => {
@@ -348,7 +329,7 @@ const CompanyEditorScreen: React.FC = () => {
         mode: 'multiple',
         highlightPopularItems: true,
         list: languages,
-        callback: (languages) => changeCompanyDataHandler('languages', languages),
+        callback: (languages) => languages.length ? changeCompanyDataHandler('languages', languages) : setCompanyData(prev => ({ ...prev, languages: [] })),
         labels: {
           searchLabel: 'Znajdź język',
           itemsLabel: 'Pozostałe języki',
@@ -392,24 +373,17 @@ const CompanyEditorScreen: React.FC = () => {
     });
   };
 
-  const goToAuthScreen = () => {
-    replace({
-      stack: 'AuthStack',
-      screen: 'MainScreen'
-    });
-  };
-
   const renderScrollPhotoItem = useCallback(({ item, drag, isActive, getIndex, mode }: RenderItemParams<MediaType> & { mode: 'photos' | 'certificates' }) => {
     const index = getIndex();
 
     return (
-      <Button
-        variant='TouchableOpacity'
-        activeOpacity={1}
-        onLongPress={drag}
-        disabled={isActive}
-        style={[styles.DraggableItem, { opacity: isActive ? 0.5 : 1 }]}
-      >
+      <View style={[styles.DraggableItem, { opacity: isActive ? .5 : 1 }]}>
+        <Button
+          variant='TouchableOpacity'
+          onLongPress={drag}
+        >
+          <Image style={styles.DraggableItemImage} source={{ uri: item.path }} />
+        </Button>
         <View style={styles.DraggableItemDeleteButton}>
           <Button
             p={5}
@@ -426,13 +400,12 @@ const CompanyEditorScreen: React.FC = () => {
             </Typography>
           </View>
         }
-        <Image style={styles.DraggableItemImage} source={{ uri: item.path }} />
-      </Button>
+      </View>
     );
   }, []);
 
   return (
-    <ScreenHeaderProvider 
+    <ScreenHeaderProvider
       title={editMode ? 'Edytuj profil firmy' : 'Utwórz profil firmy'}
       backgroundContent={Colors.Basic100}
     >
@@ -556,44 +529,6 @@ const CompanyEditorScreen: React.FC = () => {
             </Typography>
           </Button>
         }
-        {contactPersons.length ?
-          <>
-            <View style={styles.ContactPersonsFilled}>
-              <View style={styles.ContactPersonsFilledTitle}>
-                <SvgIcon icon='doneCircleGreen' />
-                <Typography variant='h5' weight='Bold'>
-                  Dane do kontaktu uzupełnione
-                </Typography>
-              </View>
-              <Button
-                variant='TouchableOpacity'
-                style={styles.EditButton}
-                onPress={() => goToAddPersonsContactScreen()}
-              >
-                <Typography variant='h5' weight='Bold' style={styles.EditButtonText} >
-                  Edytuj
-                </Typography>
-              </Button>
-            </View>
-            <Separator />
-          </>
-
-          :
-
-          <Button
-            variant='text'
-            arrowRight
-            borderBottom
-            onPress={() => goToAddPersonsContactScreen()}
-          >
-            <Typography variant='h5'>
-              Dane do kontaktu
-            </Typography>
-            <Typography style={{ color: Colors.Red }}>
-              *
-            </Typography>
-          </Button>
-        }
         {companyData.description ?
           <>
             <View style={styles.FilledDescription}>
@@ -651,24 +586,73 @@ const CompanyEditorScreen: React.FC = () => {
             </Typography>
           </Button>
         }
-        {(companyData.registration_name && companyData.nip && companyData.registration_address) ?
+        {contactPersons.length ?
           <>
             <View style={styles.ContactPersonsFilled}>
               <View style={styles.ContactPersonsFilledTitle}>
                 <SvgIcon icon='doneCircleGreen' />
                 <Typography variant='h5' weight='Bold'>
-                  Dane do faktury uzupełnione
+                  Dane do kontaktu
                 </Typography>
               </View>
               <Button
                 variant='TouchableOpacity'
                 style={styles.EditButton}
-                onPress={() => goToCompanyInvoiceScreen()}
+                onPress={() => goToAddPersonsContactScreen()}
               >
-                <Typography variant='h5' weight='Bold' style={styles.EditButtonText}>
+                <Typography variant='h5' weight='Bold' style={styles.EditButtonText} >
                   Edytuj
                 </Typography>
               </Button>
+            </View>
+            <Separator />
+          </>
+
+          :
+
+          <Button
+            variant='text'
+            arrowRight
+            borderBottom
+            onPress={() => goToAddPersonsContactScreen()}
+          >
+            <Typography variant='h5'>
+              Dane do kontaktu
+            </Typography>
+            <Typography style={{ color: Colors.Red }}>
+              *
+            </Typography>
+          </Button>
+        }
+        {!!companyData.nip_info ?
+          <>
+            <View style={styles.ContactPersonsFilled}>
+              <View style={styles.ContactPersonsFilledTitle}>
+                <SvgIcon icon='doneCircleGreen' />
+                <Typography variant='h5' weight='Bold'>
+                  Dane do faktury
+                </Typography>
+              </View>
+              <View style={styles.EditButtons}>
+                <Button
+                  variant='TouchableOpacity'
+                  style={styles.EditButton}
+                  onPress={() => changeCompanyDataHandler('nip_info', null, false)}
+                >
+                  <Typography variant='h5' weight='Bold' style={styles.DeleteImagesButton}>
+                    Usuń
+                  </Typography>
+                </Button>
+                <Button
+                  variant='TouchableOpacity'
+                  style={styles.EditButton}
+                  onPress={() => goToCompanyInvoiceScreen()}
+                >
+                  <Typography variant='h5' weight='Bold' style={styles.EditButtonText}>
+                    Edytuj
+                  </Typography>
+                </Button>
+              </View>
             </View>
             <Separator />
           </>
@@ -709,11 +693,10 @@ const CompanyEditorScreen: React.FC = () => {
             imageSettings={{
               compressionProgress: (progress) => (Math.round(progress * 100)) === 100 ? setLogoProgress(null) : setLogoProgress(progress),
             }}
-            callback={(images) => setCompanyLogo(handleSingleFile(images))}
+            callback={(images) => changeCompanyDataHandler('logo', handleSingleFile(images), false)}
             render={(onPress) =>
               <>
                 {(!!logoProgress && (logoProgress < 100)) ?
-
                   <View style={styles.LoadingImages}>
                     <Typography size={16} weight='SemiBold' style={styles.LoadingImagesText}>
                       Ładowanie zdjęć: {Math.round(logoProgress * 100)}%
@@ -732,13 +715,13 @@ const CompanyEditorScreen: React.FC = () => {
 
                   :
 
-                  !!companyLogo ?
+                  !!companyData.logo ?
                     <View style={styles.LoadedImages}>
                       <View style={styles.LoadedImagesButtons}>
                         <Button
                           variant='TouchableOpacity'
                           style={styles.LoadedImagesButton}
-                          onPress={() => setCompanyLogo(null)}
+                          onPress={() => changeCompanyDataHandler('logo', null, false)}
                         >
                           <Typography variant='h5' weight="Bold" style={styles.DeleteImagesButton}>
                             Usuń wybrane
@@ -757,7 +740,7 @@ const CompanyEditorScreen: React.FC = () => {
                       <View style={styles.LoadedLogoContainer}>
                         <Image
                           style={styles.LoadedLogo}
-                          source={{ uri: companyLogo.path }}
+                          source={{ uri: companyData.logo.path }}
                         />
                       </View>
                     </View>
@@ -1017,15 +1000,26 @@ const CompanyEditorScreen: React.FC = () => {
                 <Typography variant='h5' weight='Bold'>
                   Liczba pracowników
                 </Typography>
-                <Button
-                  variant='TouchableOpacity'
-                  style={styles.EditButton}
-                  onPress={() => goToSelectEmployeesAmountScreen()}
-                >
-                  <Typography variant='h5' weight='Bold' style={styles.EditButtonText}>
-                    Edytuj
-                  </Typography>
-                </Button>
+                <View style={styles.EditButtons}>
+                  <Button
+                    variant='TouchableOpacity'
+                    style={styles.EditButton}
+                    onPress={() => changeCompanyDataHandler('employees_amount', null)}
+                  >
+                    <Typography variant='h5' weight='Bold' style={styles.DeleteImagesButton}>
+                      Usuń
+                    </Typography>
+                  </Button>
+                  <Button
+                    variant='TouchableOpacity'
+                    style={styles.EditButton}
+                    onPress={() => goToSelectEmployeesAmountScreen()}
+                  >
+                    <Typography variant='h5' weight='Bold' style={styles.EditButtonText}>
+                      Edytuj
+                    </Typography>
+                  </Button>
+                </View>
               </View>
               <Typography style={styles.SelectedItems}>
                 {selectedEmployeesAmount?.name}
@@ -1220,7 +1214,8 @@ const styles = StyleSheet.create({
     flex: 1
   },
   DraggableItem: {
-    marginRight: 19, position: 'relative',
+    marginRight: 19,
+    position: 'relative',
   },
   DraggableItemDeleteButton: {
     position: 'absolute',
@@ -1333,6 +1328,10 @@ const styles = StyleSheet.create({
   SelectedItems: {
     color: Colors.Basic600,
   },
+  EditButtons: {
+    flexDirection: 'row',
+    gap: 15
+  },
   EditButton: {
     width: 'auto',
     padding: 0,
@@ -1378,7 +1377,7 @@ const styles = StyleSheet.create({
   },
   FilledSocialMediaContainer: {
     marginTop: 18,
-    paddingBottom: 60
+    paddingBottom: 32
   },
   FilledSocialMedia: {
     flexDirection: 'row',

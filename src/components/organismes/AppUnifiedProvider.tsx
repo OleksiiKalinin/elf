@@ -125,7 +125,6 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
           if (getcompanyContactPersons && getcompanyContactPersons.length) contactPersons = getcompanyContactPersons;
           setUserCompany({
             ...userCompany,
-           /*  registration_address: convertToFrontEndAddress(userCompany.registration_address as any), */
             square_footage: userCompany.square_footage ? userCompany.square_footage.replace(/\.00\b/g, "") : null,
             address: convertToFrontEndAddress(userCompany.address as any),
             logo, photos, certificates, contactPersons
