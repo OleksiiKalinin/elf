@@ -74,7 +74,13 @@ const RememberPasswordScreen: React.FC = () => {
           </View>
         </View>
         <View>
-          <Button withLoading disabled={loading} onPress={rememberPasswordHandler}>Potwierdź</Button>
+          <Button
+            withLoading
+            disabled={loading}
+            onPress={rememberPasswordHandler}
+          >
+            Potwierdź
+          </Button>
         </View>
       </View>
     </ScreenHeaderProvider>

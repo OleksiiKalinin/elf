@@ -96,9 +96,14 @@ const AuthLoginScreen: React.FC = () => {
           />
         </View>
         <View style={[styles.margin, { alignItems: 'flex-start' }]}>
-          <Typography color={Colors.Link} style={{ borderBottomWidth: 1, borderBottomColor: Colors.Link }} variant='small'
-          // onPress={() => navigation.navigate('RememberPasswordScreen')}
-          >Nie pamiętam hasła</Typography>
+          <Typography
+            color={Colors.Link}
+            variant='small'
+            style={{ borderBottomWidth: 1, borderBottomColor: Colors.Link }}
+            onPress={() => router.push({ stack: 'AuthStack', screen: 'RememberPasswordScreen' })}
+          >
+            Nie pamiętam hasła
+          </Typography>
         </View>
         <View style={{ marginVertical: 24 }}>
           <Button disabled={loading} onPress={loginHandler}>Zaloguj się</Button>
@@ -107,9 +112,12 @@ const AuthLoginScreen: React.FC = () => {
           <Typography textAlign='center' weight='SemiBold' variant='h4'>Nie masz konta? Zarejestruj się.</Typography>
         </View>
         <View style={{ marginBottom: 12 }}>
-          <Button variant='secondary'
-          // onPress={() => navigation.navigate('RegistrationScreen')}
-          >Zarejestruj się</Button>
+          <Button
+            variant='secondary'
+            onPress={() => router.push({ stack: 'AuthStack', screen: 'RegistrationScreen' })}
+          >
+            Zarejestruj się
+          </Button>
         </View>
       </ScrollView >
     </ScreenHeaderProvider>

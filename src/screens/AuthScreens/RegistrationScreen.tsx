@@ -148,16 +148,24 @@ const AuthRegistrateScreen: React.FC = () => {
           </View>
           <View style={[styles.margin, { marginBottom: 24 }]}>
             <Typography color={Colors.Basic600} variant='small'>
-              *Administratorem danych osobowych podawanych w formularzu jest
+              {`*Administratorem danych osobowych podawanych w formularzu jest
               Jobassistant z siedzibą w Puławach, ul. Ignacego Mościckiego 1.
               Szczegółowe informacje na temat przetwarzania Twoich danych osobowych
-              oraz przysługujących Ci praw znajdziesz w{'  '}<Typography color={Colors.Link} onPress={() => Linking.openURL('https://jobassistant.pl/wp-content/uploads/2020/06/RODO_Ithouse_.pdf')}>Polityce Prywatności</Typography>.
+              oraz przysługujących Ci praw znajdziesz w  `}
+              <Typography color={Colors.Link} onPress={() => Linking.openURL('https://jobassistant.pl/wp-content/uploads/2020/06/RODO_Ithouse_.pdf')}>
+                Polityce Prywatności
+              </Typography>.
             </Typography>
           </View>
         </ScrollView>
-        <View>
-          <Button disabled={loading} onPress={registrateHandler}>Potwierdź</Button>
-        </View>
+        <Button
+          stickyBottom
+          withLoading
+          disabled={loading}
+          onPress={registrateHandler}
+        >
+          Potwierdź
+        </Button>
       </View>
     </ScreenHeaderProvider>
   )

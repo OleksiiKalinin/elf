@@ -116,13 +116,11 @@ const ItemSelectorScreen: React.FC<ItemSelectorScreenProps> = ({
         }
         {filteredList.map(({ id, name, icon }, i) => (
           mode === 'single' ?
-            render ?
+            (render ?
               <Fragment key={id}>
                 {render(id, name, i, icon, initialSelected)}
               </Fragment>
-
               :
-
               <Button
                 key={id}
                 arrowRight
@@ -134,25 +132,19 @@ const ItemSelectorScreen: React.FC<ItemSelectorScreenProps> = ({
               >
                 <Typography size={16}>{name}</Typography>
               </Button>
-
+            )
             :
-
             <Fragment key={id}>
               {i === 0 && <Separator />}
               <View style={{ paddingHorizontal: 19 }}>
                 <CheckBox
-
                   checked={selectedItems.includes(id)}
                   onCheckedChange={() => handleSelectedItems(id)}
-                  leftTextView={
-                    render ?
-                      render(id, name, i, icon)
-
-                      :
-
-                      <Typography style={styles.CheckBoxText} size={16}>{name}</Typography>
+                  leftTextView={render ?
+                    render(id, name, i, icon)
+                    :
+                    <Typography style={styles.CheckBoxText} size={16}>{name}</Typography>
                   }
-                  style={styles.CheckBox}
                 />
               </View>
               <Separator />
@@ -175,17 +167,12 @@ const ItemSelectorScreen: React.FC<ItemSelectorScreenProps> = ({
           right={
             search && (
               <Button
-                height={21}
-                variant="text"
-                icon={
-                  <SvgIcon
-                    icon="crossBig"
-                    fill={Colors.Basic500}
-                    style={{ marginRight: -15 }}
-                  />
-                }
+                variant="TouchableOpacity"
                 onPress={() => setSearch('')}
-              />
+                style={{ padding: 5, marginRight: -5 }}
+              >
+                <SvgIcon icon="crossBig" fill={Colors.Basic500} />
+              </Button>
             )
           }
         />
@@ -201,15 +188,12 @@ const ItemSelectorScreen: React.FC<ItemSelectorScreenProps> = ({
                 {listOfItems(list.filter(item => !item.isPopular), labels.itemsLabel)}
               </View>
             </>
-
             :
-
             <View>
               {listOfItems(list, labels.itemsLabel)}
             </View>
           }
         </View>
-
       </ScrollView>
       {mode === 'multiple' && (
         <Button
@@ -224,13 +208,10 @@ const ItemSelectorScreen: React.FC<ItemSelectorScreenProps> = ({
   );
 
   return (
-    <>
-      {headerProps ? (
-        <ScreenHeaderProvider {...headerProps}>{content}</ScreenHeaderProvider>
-      ) : (
-        <>{content}</>
-      )}
-    </>
+    headerProps ?
+      <ScreenHeaderProvider {...headerProps}>{content}</ScreenHeaderProvider>
+      :
+      content
   );
 };
 
@@ -246,9 +227,6 @@ const styles = StyleSheet.create({
   List: {
     marginTop: 24,
     gap: 24
-  },
-  CheckBox: {
-    marginTop: 20,
   },
   CheckBoxText: {
     paddingVertical: 20,

@@ -42,30 +42,47 @@ import HorizontalButtonsSelector from '../../components/molecules/HorizontalButt
 
 const MaxPlanCardWidth = 310;
 
-const packageTypes = [
-  { id: 1, price: 50, type: 'Standard' },
-  { id: 2, price: 80, type: 'Comfort' },
-  { id: 3, price: 99, type: 'Pro' },
-];
-
-const packageTimes = [
-  '1 tydzień - 80 zł',
-  '2 tygodnie - 130zł',
-  '1 miesiąc - 230zł',
-  'Abonament miesięczny 200zł',
-];
-
-const packages = [
-  {
-    active: [
-      'Tworzenie dowolnej liczby profilów firm',
-      'Promowanie ogłoszeń na liście 10 firm z okolicy (do 15 km)',
-      'Możliwość dodania dowolnej liczby ogłoszeń',
-      'Promocja Twoich ogłoszeń na social media',
-    ],
-    nonactive: ['Wiedza', 'Promowanie', 'Porównywanie kandydatów'],
-  },
-];
+const packageTypes: {
+  id: number,
+  price: number,
+  name: string,
+  daysPeriod: number,
+  jumpRefresh: number,
+  addressesCount: number | 'unlimited',
+  candidatesMatch: boolean,
+  jobAssistant: boolean,
+}[] = [
+    {
+      id: 1,
+      price: 99,
+      name: 'Small',
+      daysPeriod: 30,
+      jumpRefresh: 2,
+      addressesCount: 1,
+      candidatesMatch: false,
+      jobAssistant: false,
+    },
+    {
+      id: 2,
+      price: 149,
+      name: 'Medium',
+      daysPeriod: 45,
+      jumpRefresh: 3,
+      addressesCount: 'unlimited',
+      candidatesMatch: true,
+      jobAssistant: false,
+    },
+    {
+      id: 3,
+      price: 189,
+      name: 'Large',
+      daysPeriod: 45,
+      jumpRefresh: 5,
+      addressesCount: 'unlimited',
+      candidatesMatch: true,
+      jobAssistant: true,
+    },
+  ];
 
 const stepsOrder = ['fillData', 'paymentPlan', 'paymentMethods', 'summary', 'payment', 'result'] as const;
 export type AdvertEditorStepType = typeof stepsOrder[number];
@@ -135,9 +152,14 @@ const salarySetsByContractType: {
   }],
   5: [{
     salary_tax_type_id: 2,
+    salary_time_type_id: 3
+  }, {
+    salary_tax_type_id: 2,
     salary_time_type_id: 2
   }],
 }
+
+const contractTypeCategories = [[2, 4], [3], [5]];
 
 const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial, stepInitial }) => {
   const dispatch = useTypedDispatch();
@@ -179,8 +201,8 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
     job_start_id: null,
     trial_time_id: null,
     trial_type_id: null,
-    working_hour_down: '08:00',
-    working_hour_up: '16:00',
+    working_hour_down: null,
+    working_hour_up: null,
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [woCV, setwoCV] = useState<boolean>(false);
@@ -732,7 +754,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                   onPress={() => setShowTimepicker('start')}
                   borderRadius={4}
                 >
-                  {advertData.working_hour_down}
+                  {advertData.working_hour_down || 'dodaj'}
                 </Button>
               </View>
               <View style={{ justifyContent: 'center', height: 44, alignSelf: 'flex-end' }}>
@@ -748,7 +770,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                   onPress={() => setShowTimepicker('end')}
                   borderRadius={4}
                 >
-                  {advertData.working_hour_up}
+                  {advertData.working_hour_up || 'dodaj'}
                 </Button>
               </View>
             </View>
@@ -762,8 +784,8 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                 );
                 setShowTimepicker(false);
               }}
-              hours={Number(showTimepicker === 'start' ? advertData.working_hour_down?.split(':')[0] : advertData.working_hour_up?.split(':')[0])}
-              minutes={Number(showTimepicker === 'start' ? advertData.working_hour_down?.split(':')[1] : advertData.working_hour_up?.split(':')[1])}
+              hours={Number(showTimepicker === 'start' ? advertData.working_hour_down?.split(':')[0] : advertData.working_hour_up?.split(':')[0]) || 8}
+              minutes={Number(showTimepicker === 'start' ? advertData.working_hour_down?.split(':')[1] : advertData.working_hour_up?.split(':')[1]) || 0}
             />
           </Accordion>
           <Separator />
@@ -912,57 +934,77 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           <Separator />
         </>}
         {step === 'paymentPlan' && <>
-          <ScrollView horizontal showsHorizontalScrollIndicator contentContainerStyle={{ paddingLeft: 20 }}>
+          <ScrollView contentContainerStyle={{ padding: 19 }}>
             {packageTypes.map((item) =>
               <View style={{
-                maxWidth: MaxPlanCardWidth - (windowSizes.width > MaxPlanCardWidth * 2 ? 40 : 0),
-                width: windowSizes.width - 70,
-                marginVertical: 20,
-                marginRight: 20,
-                backgroundColor: Colors.Basic200
+                // maxWidth: MaxPlanCardWidth - (windowSizes.width > MaxPlanCardWidth * 2 ? 40 : 0),
+                // width: windowSizes.width - 70,
+                marginBottom: 20,
+                backgroundColor: selectedPaymentPlan === item.id ? Colors.Basic300 : Colors.Basic200,
+                borderRadius: 4
               }}>
-                <Typography variant="h2" weight="Bold" style={{ marginLeft: 19 }}>
-                  {item.price}zł <Typography variant="main"> tydzień</Typography>
+                <Typography variant="h2" weight="Bold" style={{ marginLeft: 15, marginTop: 10 }}>
+                  {item.price}zł <Typography variant="h4">{item.daysPeriod}{' dni'}</Typography>
                 </Typography>
-                <Typography style={{ marginLeft: 19, marginBottom: 6 }}>
-                  {item.type}
+                <Typography variant='h4' style={{ marginLeft: 15, marginBottom: 5 }}>
+                  {item.name}
                 </Typography>
-                <View style={{ paddingVertical: 8, paddingHorizontal: 19 }}>
-                  {packages[0].active.map(item => (
-                    <View style={{ flexDirection: 'row', marginVertical: 8 }}>
-                      <SvgIcon icon="check" style={{ alignSelf: 'center' }} />
-                      <Typography variant="small" style={{ paddingLeft: 11, alignSelf: 'center', flex: 1 }}>
-                        {item}
-                      </Typography>
+                <View style={{ paddingVertical: 8, paddingHorizontal: 15 }}>
+                  <View style={{ flexDirection: 'row', marginVertical: 5 }}>
+                    <View style={{ width: 30 }}>
+                      <Typography variant='h5' weight='Bold'>{isNumber(item.addressesCount) ? item.addressesCount : '∞'}</Typography>
                     </View>
-                  ))}
-                  {packages[0].nonactive.map(item => (
-                    <View style={{ flexDirection: 'row', marginVertical: 8 }}>
-                      <SvgIcon icon="closeX" style={{ alignSelf: 'center' }} />
-                      <Typography variant="small" style={{ paddingLeft: 11, alignSelf: 'center', flex: 1 }} color={Colors.Basic600}>
-                        {item}
-                      </Typography>
+                    <Typography style={{ alignSelf: 'center', flex: 1 }}>
+                      lokalizacje oferty
+                    </Typography>
+                  </View>
+                  <View style={{ flexDirection: 'row', marginVertical: 5 }}>
+                    <View style={{ width: 30 }}>
+                      <Typography variant='h5' weight='Bold'>{item.jumpRefresh}</Typography>
                     </View>
-                  ))}
+                    <Typography style={{ alignSelf: 'center', flex: 1 }}>
+                      podbić/odświerzeń
+                    </Typography>
+                  </View>
+                  {item.candidatesMatch && <View style={{ flexDirection: 'row', marginVertical: 5 }}>
+                    <View style={{ width: 30 }}>
+                      <SvgIcon icon="check" />
+                    </View>
+                    <Typography style={{ alignSelf: 'center', flex: 1 }}>
+                      dopasowanie kandydatów (%)
+                    </Typography>
+                  </View>}
+                  {item.jobAssistant && <View style={{ flexDirection: 'row', marginVertical: 5 }}>
+                    <View style={{ width: 30 }}>
+                      <SvgIcon icon="check" />
+                    </View>
+                    <Typography style={{ alignSelf: 'center', flex: 1 }}>
+                      wsparcie Job Assistanta
+                    </Typography>
+                  </View>}
                 </View>
-                {selectedPaymentPlan === item.id ?
-                  <Button
-                    size='medium'
-                    variant='secondarySelected'
-                    icon={<SvgIcon icon='check' />}
-                    onPress={() => setSelectedPaymentPlan(null)}
-                  >
-                    Wybrano
-                  </Button>
-                  :
-                  <Button
-                    size='medium'
-                    variant='secondary'
-                    onPress={() => setSelectedPaymentPlan(item.id)}
-                  >
-                    Wybierz
-                  </Button>
-                }
+                <View style={{ padding: 15, paddingTop: 0 }}>
+                  {selectedPaymentPlan === item.id ?
+                    <Button
+                      size='medium'
+                      borderRadius={4}
+                      variant='secondarySelected'
+                      icon={<SvgIcon icon='check' fill={Colors.SuccessLight} />}
+                      onPress={() => setSelectedPaymentPlan(null)}
+                    >
+                      Wybrano
+                    </Button>
+                    :
+                    <Button
+                      size='medium'
+                      borderRadius={4}
+                      variant='secondary'
+                      onPress={() => setSelectedPaymentPlan(item.id)}
+                    >
+                      Wybierz
+                    </Button>
+                  }
+                </View>
               </View>
             )}
           </ScrollView>
@@ -987,7 +1029,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           <View style={{ padding: 19 }}>
             {selectedPaymentPlan && <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Typography>{'Pakiet: '}</Typography>
-              <Typography variant='h5' weight='SemiBold'>{packageTypes[selectedPaymentPlan].type}</Typography>
+              <Typography variant='h5' weight='SemiBold'>{packageTypes[selectedPaymentPlan].name}</Typography>
               <Typography weight='Bold'>{'  '}{packageTypes[selectedPaymentPlan].price}{' zł'}</Typography>
             </View>}
             {selectedPaymentMethod && <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
