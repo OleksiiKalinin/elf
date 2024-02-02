@@ -18,7 +18,7 @@ const registrate = (formData: RegistDataType) => async (dispatch: AppDispatch, g
 
         if (res.data) {
             const { access_token, refresh_token } = res.data as { access_token: string | null, refresh_token: string | null };
-            await axios.post('/employer/create_user/', {}, { headers: dynamicHeaders({token: access_token}) });
+            await axios.post('/employer/create_user/', {}, { headers: dynamicHeaders({ token: access_token }) });
             await dispatch(generalActions.setToken({ token: access_token, refresh_token }));
             await dispatch(generalServices.getAppData(access_token));
         } else {
@@ -32,7 +32,7 @@ const registrate = (formData: RegistDataType) => async (dispatch: AppDispatch, g
 };
 
 const login = (formData: LoginDataType) => async (dispatch: AppDispatch, getState: () => rootState) => {
-    const {  } = getState().general;
+    const { } = getState().general;
 
     try {
         dispatch(generalActions.setAppLoading(true));
@@ -72,27 +72,22 @@ const deleteAccount = () => async (dispatch: AppDispatch, getState: () => rootSt
     await dispatch(generalActions.LogOut());
 };
 
-const checkPassword = (formData: LoginDataType) => async (dispatch: AppDispatch, getState: () => rootState) => {
-    const {  } = getState().general;
+const changePassword = (currentPassword: string, newPassword: string) => async (dispatch: AppDispatch, getState: () => rootState) => {
+    const { token } = getState().general;
+    const data = { current_password: currentPassword, new_password: newPassword };
 
     try {
-        const res = await axios.post(`/api-auth/token/`, {
-            ...pythonAdmin, ...formData,
-            'grant_type': 'password',
-        });
-        if (res.data) {
-            return true;
-        } else {
-            return false;
-        };
+        /* dispatch(generalActions.setAppLoading(true)); */
+        await axios.post('/api-auth/change-password/', data, { headers: { Authorization: `Bearer ${token}` } });
+        /* dispatch(generalActions.setAppLoading(false)); */
+        return true;
     } catch (error: any) {
-        console.log(error)
-        // return await errorHandler({ error, dispatch, getState, caller: login.bind(this, formData) });
+        return await errorHandler({ error, dispatch, getState, caller: changePassword.bind(this, currentPassword, newPassword) });
     }
 };
 
 const resetPassword = (email: string) => async (dispatch: AppDispatch, getState: () => rootState) => {
-    const {  } = getState().general;
+    const { } = getState().general;
 
     try {
         dispatch(generalActions.setAppLoading(true));
@@ -105,7 +100,7 @@ const resetPassword = (email: string) => async (dispatch: AppDispatch, getState:
 };
 
 const googleSignin = (initialToken?: string) => async (dispatch: AppDispatch, getState: () => rootState) => {
-    const {  } = getState().general;
+    const { } = getState().general;
 
     try {
         let token = initialToken;
@@ -125,7 +120,7 @@ const googleSignin = (initialToken?: string) => async (dispatch: AppDispatch, ge
                 backend: 'google-oauth2'
             });
             const { access_token, refresh_token } = data as { access_token: string | null, refresh_token: string | null };
-            await axios.post('/employer/create_user/', {}, { headers: dynamicHeaders({token}) }).catch(() => { });
+            await axios.post('/employer/create_user/', {}, { headers: dynamicHeaders({ token }) }).catch(() => { });
             await dispatch(generalActions.setToken({ token: access_token, refresh_token }));
             await dispatch(generalServices.getAppData(access_token));
         } else {
@@ -148,7 +143,7 @@ const googleSignin = (initialToken?: string) => async (dispatch: AppDispatch, ge
 };
 
 const facebookSignin = (accessToken: string | null) => async (dispatch: AppDispatch, getState: () => rootState) => {
-    const {  } = getState().general;
+    const { } = getState().general;
 
     // dispatch(generalActions.setAppLoading(true));
     try {
@@ -180,5 +175,5 @@ export default {
     facebookSignin,
     resetPassword,
     deleteAccount,
-    checkPassword,
+    changePassword,
 };

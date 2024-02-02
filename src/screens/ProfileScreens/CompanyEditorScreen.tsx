@@ -10,7 +10,7 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { AddressType, CompanyDataType, MediaType, ContactPersonType, CompanyRegistrationDataType } from '../../store/reducers/types';
 import { RenderItemParams } from 'react-native-draggable-flatlist';
 import companyServices from '../../services/companyServices';
-import { isArray, isNumber } from 'lodash';
+import { isArray, isEqual, isNumber } from 'lodash';
 import SvgIcon from '../../components/atoms/SvgIcon';
 import Typography from '../../components/atoms/Typography';
 import TextField from '../../components/molecules/TextField';
@@ -50,10 +50,10 @@ const CompanyEditorScreen: React.FC = () => {
     languages: [],
     services: null,
     logo: null,
+    photos: [],
+    certificates: [],
   });
-  const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(companyData.contactPersons || []);
-  const [companyPhotos, setCompanyPhotos] = useState<MediaType[]>(userCompany?.photos || []);
-  const [companyCertificates, setCompanyCertificates] = useState<MediaType[]>(userCompany?.certificates || []);
+  const [oldCompanyData, setOldCompanyData] = useState<CompanyDataType>();
   const [logoProgress, setLogoProgress] = useState<number | null>(null);
   const [photosProgress, setPhotosProgress] = useState<number | null>(null);
   const [certificatesProgress, setCertificatesProgress] = useState<number | null>(null);
@@ -62,6 +62,7 @@ const CompanyEditorScreen: React.FC = () => {
   const [editMode, setEditMode] = useState(false);
   const [showTips, setShowTips] = useState<boolean>(false);
   const [fields, setFields] = useState<FormFieldType[]>([]);
+  const { name, address, job_industry, description, nip_info, employees_amount, square_footage, account_instagram, account_facebook, account_linkedIn, website, logo, photos, certificates, contactPersons } = companyData;
 
   const router = useRouter();
   const companyPhotosLimit = 20;
@@ -71,33 +72,29 @@ const CompanyEditorScreen: React.FC = () => {
     if (userCompany) {
       setEditMode(true);
       setCompanyData(userCompany);
-      setCompanyPhotos(userCompany?.photos || []);
-      setCompanyCertificates(userCompany?.certificates || []);
-      setContactPersons(userCompany?.contactPersons || []);
+      setOldCompanyData(userCompany);
     };
   }, [userCompany]);
 
   useEffect(() => {
     console.log(companyData);
-    const { name, address, job_industry, services, description, nip_info, employees_amount, square_footage, languages, account_instagram, account_facebook, account_linkedIn, website, logo } = companyData;
-
     setFields([
       { name: 'name', isValid: !!(name && name.length > 2 && name.length <= 100), required: true },
       { name: 'address', isValid: !!address, required: true },
       { name: 'job_industry', isValid: !!job_industry, required: true },
       { name: 'services', isValid: !!services?.length, required: true },
-      { name: 'contactPersons', isValid: !!contactPersons.length, required: true },
+      { name: 'contactPersons', isValid: (!!contactPersons && !!contactPersons.length), required: true },
       { name: 'description', isValid: !!description, required: true },
       { name: 'nip_info', isValid: !!nip_info },
-      { name: 'logo', isValid: !!(logo) },
-      { name: 'photos', isValid: !!(companyPhotos.length) },
-      { name: 'certificates', isValid: !!(companyCertificates.length) },
+      { name: 'logo', isValid: !!logo },
+      { name: 'photos', isValid: !!photos?.length },
+      { name: 'certificates', isValid: !!certificates?.length },
       { name: 'square_footage', isValid: !!(square_footage && square_footage.length && square_footage.length <= 8) },
-      { name: 'employees_amount', isValid: !!(employees_amount) },
-      { name: 'languages', isValid: !!(languages?.length) },
+      { name: 'employees_amount', isValid: !!employees_amount },
+      { name: 'languages', isValid: !!languages?.length },
       { name: 'socialMedia', isValid: !!(account_instagram || account_facebook || account_linkedIn || website) },
     ]);
-  }, [companyData, contactPersons, companyPhotos, companyCertificates]);
+  }, [companyData]);
 
   const isFieldValid = (fieldName: keyof typeof companyData) => {
     const fieldIndex = fields.findIndex(item => item.name === fieldName);
@@ -126,13 +123,14 @@ const CompanyEditorScreen: React.FC = () => {
   };
 
   const submitCompanyData = async () => {
+    console.log(isEqual(companyData, oldCompanyData));
     if (validateData()) {
       setLoading(true);
       const isOk = await dispatch(companyServices[editMode ?
         'editUserCompany' :
         'createUserCompany'
       ]({
-        companyData, companyLogo: companyData.logo ?? null, companyPhotos, companyCertificates, contactPersons, oldCompanyData: userCompany || companyData
+        companyData, companyLogo: companyData.logo ?? null, companyPhotos: companyData.photos ?? [], companyCertificates: companyData.certificates ?? [], contactPersons: companyData.contactPersons, oldCompanyData: userCompany || companyData
       })
       );
       setLoading(false);
@@ -145,7 +143,7 @@ const CompanyEditorScreen: React.FC = () => {
     }
   };
 
-  const changeCompanyDataHandler = (name: keyof CompanyDataType, value: string | number | number[] | AddressType | CompanyRegistrationDataType |MediaFileType | MediaFileType[] | null, replaceSpaces: boolean = true) => {
+  const changeCompanyDataHandler = (name: keyof CompanyDataType, value: string | number | number[] | AddressType | CompanyRegistrationDataType | MediaType | MediaType[] | ContactPersonType[] | null, replaceSpaces: boolean = true) => {
     setCompanyData(prev => ({
       ...prev,
       [name]: value ?
@@ -153,6 +151,7 @@ const CompanyEditorScreen: React.FC = () => {
           value.replace(/\s/g, '')
           :
           !isArray(value) ? value : value.length === 0 ? null : value
+
         :
 
         null
@@ -160,20 +159,23 @@ const CompanyEditorScreen: React.FC = () => {
   };
 
   const deletePhotoHandler = (index: number, mode: 'photos' | 'certificates') => {
-    const callback: React.SetStateAction<MediaType[]> = photos => {
-      if (photos[index]) {
-        if (photos.length > 1)
-          return [
-            ...photos.slice(0, index),
-            ...photos.slice(index + 1)
+    const images = companyData[mode];
+    let newImages: MediaType[] = [];
+
+    if (!!images?.length) {
+      if (images[index]) {
+        if (images.length > 1) {
+          newImages = [
+            ...images.slice(0, index),
+            ...images.slice(index + 1)
           ];
-        else return [];
+        };
       } else {
-        return photos;
-      }
-    }
-    if (mode === 'photos') setCompanyPhotos(callback);
-    else if (mode === 'certificates') setCompanyCertificates(callback);
+        newImages = images;
+      };
+    };
+
+    changeCompanyDataHandler(mode, updateOrder(newImages), false);
   };
 
   const handleMultipleFiles = (files: MediaFileType[]) => {
@@ -223,8 +225,8 @@ const CompanyEditorScreen: React.FC = () => {
   }, [companyData.languages, languages]);
 
   const selectedEmployeesAmount = useMemo(() => {
-    return employeesAmount.find(item => companyData.employees_amount === item.id);
-  }, [companyData.employees_amount, employeesAmount]);
+    return employeesAmount.find(item => employees_amount === item.id);
+  }, [employees_amount, employeesAmount]);
 
   const handleDescriptionLayout = (event: { nativeEvent: { layout: { width: number; height: number; }; }; }) => {
     const { height } = event.nativeEvent.layout;
@@ -269,8 +271,8 @@ const CompanyEditorScreen: React.FC = () => {
       screen: 'CompanyEditorScreen',
       params: {
         subView: 'AddContactPersonsScreen',
-        contactPersons,
-        setContactPersons,
+        initialContactPersons: contactPersons,
+        callback: (contactPersons) => changeCompanyDataHandler('contactPersons', contactPersons, false),
       },
     });
   };
@@ -282,7 +284,7 @@ const CompanyEditorScreen: React.FC = () => {
       params: {
         subView: 'CompanyDescriptionScreen',
         callback: (value) => changeCompanyDataHandler('description', value, false),
-        description: companyData.description,
+        description: description,
         title: 'Dodaj opis firmy'
       },
     });
@@ -295,7 +297,7 @@ const CompanyEditorScreen: React.FC = () => {
       params: {
         subView: 'CompanyInvoiceScreen',
         callback: (data) => changeCompanyDataHandler('nip_info', data, false),
-        initialData: companyData.nip_info
+        initialData: nip_info
       }
     });
   };
@@ -314,7 +316,7 @@ const CompanyEditorScreen: React.FC = () => {
           itemsLabel: 'Ilość pracowników',
         },
         headerProps: { title: 'Ilość pracowników' },
-        initialSelected: [companyData.employees_amount as number] ?? undefined,
+        initialSelected: [employees_amount as number] ?? undefined,
         allowReturnEmptyList: true,
       },
     });
@@ -356,10 +358,10 @@ const CompanyEditorScreen: React.FC = () => {
           website: socialMedia.website,
         })),
         initialSocialMedia: {
-          facebook: companyData.account_facebook,
-          instagram: companyData.account_instagram,
-          linkedIn: companyData.account_linkedIn,
-          website: companyData.website,
+          facebook: account_facebook,
+          instagram: account_instagram,
+          linkedIn: account_linkedIn,
+          website: website,
         },
       },
     });
@@ -402,7 +404,7 @@ const CompanyEditorScreen: React.FC = () => {
         }
       </View>
     );
-  }, []);
+  }, [photos, certificates]);
 
   return (
     <ScreenHeaderProvider
@@ -427,7 +429,7 @@ const CompanyEditorScreen: React.FC = () => {
         <View style={styles.CompanyName}>
           <TextField
             label="Nazwa firmy*"
-            value={companyData.name || ''}
+            value={name || ''}
             maxLength={100}
             onChangeText={text => changeCompanyDataHandler('name', text, false)}
             {...(showTips && !isFieldValid('name') && {
@@ -438,14 +440,14 @@ const CompanyEditorScreen: React.FC = () => {
         <View style={{ marginBottom: 24 }}>
           <MapPreview
             label='Lokalizacja*'
-            place={companyData.address?.formattedAddress}
+            place={address?.formattedAddress}
             onPress={() => router.push({
               stack: 'ProfileStack',
               screen: 'CompanyEditorScreen',
               params: {
                 subView: 'GoogleMapScreen',
                 callback: (address) => changeCompanyDataHandler('address', address),
-                initialAddress: companyData.address
+                initialAddress: address
               }
             })}
           />
@@ -457,7 +459,7 @@ const CompanyEditorScreen: React.FC = () => {
           borderBottom
           onPress={() => goToJobCategoryScreen()}
         >
-          {companyData.job_industry ?
+          {job_industry ?
             <View style={styles.JobIndustry}>
               <View style={styles.JobIndustryIcon}>
                 <View style={{ position: 'absolute' }}>
@@ -465,9 +467,9 @@ const CompanyEditorScreen: React.FC = () => {
                     <Skeleton style={styles.JobIndustryIconSkeleton} />
                   </SkeletonContainer>
                 </View>
-                <SvgUriImage width={34} height={34} src={jobIndustries.find(curr => curr.id === companyData.job_industry)?.icon || ''} />
+                <SvgUriImage width={34} height={34} src={jobIndustries.find(curr => curr.id === job_industry)?.icon || ''} />
               </View>
-              <Typography variant='h5' weight='SemiBold'>{jobIndustries.find(curr => curr.id === companyData.job_industry)?.name || ''}</Typography>
+              <Typography variant='h5' weight='SemiBold'>{jobIndustries.find(curr => curr.id === job_industry)?.name || ''}</Typography>
             </View>
 
             :
@@ -529,7 +531,7 @@ const CompanyEditorScreen: React.FC = () => {
             </Typography>
           </Button>
         }
-        {companyData.description ?
+        {description ?
           <>
             <View style={styles.FilledDescription}>
               <View style={styles.FilledDescriptionHeader}>
@@ -552,7 +554,7 @@ const CompanyEditorScreen: React.FC = () => {
                 color={Colors.Basic600}
                 onLayout={handleDescriptionLayout}
               >
-                {companyData.description}
+                {description}
               </Typography>
 
               {((!descriptionExpanded && descriptionHeight > 53) || descriptionExpanded && descriptionHeight !== 54) &&
@@ -586,7 +588,7 @@ const CompanyEditorScreen: React.FC = () => {
             </Typography>
           </Button>
         }
-        {contactPersons.length ?
+        {!!contactPersons && !!contactPersons.length ?
           <>
             <View style={styles.ContactPersonsFilled}>
               <View style={styles.ContactPersonsFilledTitle}>
@@ -624,7 +626,7 @@ const CompanyEditorScreen: React.FC = () => {
             </Typography>
           </Button>
         }
-        {!!companyData.nip_info ?
+        {!!nip_info ?
           <>
             <View style={styles.ContactPersonsFilled}>
               <View style={styles.ContactPersonsFilledTitle}>
@@ -715,7 +717,7 @@ const CompanyEditorScreen: React.FC = () => {
 
                   :
 
-                  !!companyData.logo ?
+                  !!logo ?
                     <View style={styles.LoadedImages}>
                       <View style={styles.LoadedImagesButtons}>
                         <Button
@@ -740,7 +742,7 @@ const CompanyEditorScreen: React.FC = () => {
                       <View style={styles.LoadedLogoContainer}>
                         <Image
                           style={styles.LoadedLogo}
-                          source={{ uri: companyData.logo.path }}
+                          source={{ uri: logo.path }}
                         />
                       </View>
                     </View>
@@ -774,11 +776,11 @@ const CompanyEditorScreen: React.FC = () => {
           type='image'
           multiple
           selectionLimit={companyPhotosLimit}
-          initialSelected={companyPhotos as any}
+          initialSelected={photos as any}
           imageSettings={{
             compressionProgress: (progress) => (Math.round(progress * 100)) === 100 ? setPhotosProgress(null) : setPhotosProgress(progress),
           }}
-          callback={(images) => setCompanyPhotos(handleMultipleFiles(images))}
+          callback={(images) => changeCompanyDataHandler('photos', handleMultipleFiles(images), false)}
           render={(onPress) =>
             <>
               {!!photosProgress && photosProgress < 100 ?
@@ -800,19 +802,19 @@ const CompanyEditorScreen: React.FC = () => {
 
                 :
 
-                !!companyPhotos.length ?
+                (!!photos && photos.length) ?
                   <View style={styles.LoadedImages}>
                     <View style={styles.LoadedImagesButtons}>
                       <Button
                         variant='TouchableOpacity'
                         style={styles.LoadedImagesButton}
-                        onPress={() => setCompanyPhotos([])}
+                        onPress={() => changeCompanyDataHandler('photos', handleMultipleFiles([]), false)}
                       >
                         <Typography variant='h5' weight="Bold" style={styles.DeleteImagesButton}>
                           Usuń wszystkie
                         </Typography>
                       </Button>
-                      {(companyPhotos.length < companyPhotosLimit) &&
+                      {(photos.length < companyPhotosLimit) &&
                         <Button
                           variant='TouchableOpacity'
                           style={styles.LoadedImagesButton}
@@ -827,13 +829,13 @@ const CompanyEditorScreen: React.FC = () => {
                     <View style={styles.DraggableImagesContainer}>
                       <DraggableList
                         horizontal
-                        data={companyPhotos.sort((a, b) => {
+                        data={photos?.sort((a, b) => {
                           const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
                           const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
 
                           return orderA - orderB;
-                        })}
-                        onDragEnd={({ data }) => setCompanyPhotos(updateOrder(data))}
+                        }) || []}
+                        onDragEnd={({ data }) => changeCompanyDataHandler('photos', handleMultipleFiles(data), false)}
                         keyExtractor={({ path }) => path}
                         renderItem={(props: RenderItemParams<MediaType>) => renderScrollPhotoItem({ ...props, mode: 'photos' })}
                         contentContainerStyle={styles.DraggableImagesContent}
@@ -878,11 +880,11 @@ const CompanyEditorScreen: React.FC = () => {
           type='image'
           multiple
           selectionLimit={companyCertificatesLimit}
-          initialSelected={companyCertificates as any}
+          initialSelected={certificates as any}
           imageSettings={{
             compressionProgress: (progress) => (Math.round(progress * 100)) === 100 ? setCertificatesProgress(null) : setCertificatesProgress(progress),
           }}
-          callback={(images) => setCompanyCertificates(handleMultipleFiles(images))}
+          callback={(images) => changeCompanyDataHandler('certificates', handleMultipleFiles(images), false)}
           render={(onPress) =>
             <>
               {(!!certificatesProgress && (certificatesProgress < 100)) ?
@@ -905,19 +907,19 @@ const CompanyEditorScreen: React.FC = () => {
 
                 :
 
-                !!companyCertificates.length ?
+                (!!certificates && !!certificates.length) ?
                   <View style={styles.LoadedImages}>
                     <View style={styles.LoadedImagesButtons}>
                       <Button
                         variant='TouchableOpacity'
                         style={styles.LoadedImagesButton}
-                        onPress={() => setCompanyCertificates([])}
+                        onPress={() => changeCompanyDataHandler('certificates', handleMultipleFiles([]), false)}
                       >
                         <Typography variant='h5' weight="Bold" style={styles.DeleteImagesButton}>
                           Usuń wszystkie
                         </Typography>
                       </Button>
-                      {(companyCertificates.length < companyCertificatesLimit) &&
+                      {(certificates.length < companyCertificatesLimit) &&
                         <Button
                           variant='TouchableOpacity'
                           style={styles.LoadedImagesButton}
@@ -932,13 +934,13 @@ const CompanyEditorScreen: React.FC = () => {
                     <View style={styles.DraggableImagesContainer}>
                       <DraggableList
                         horizontal
-                        data={companyCertificates.sort((a, b) => {
+                        data={certificates.sort((a, b) => {
                           const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
                           const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
 
                           return orderA - orderB;
                         })}
-                        onDragEnd={({ data }) => setCompanyCertificates(updateOrder(data))}
+                        onDragEnd={({ data }) => changeCompanyDataHandler('certificates', updateOrder(data), false)}
                         keyExtractor={({ path }) => path}
                         renderItem={(props: RenderItemParams<MediaType>) => renderScrollPhotoItem({ ...props, mode: 'certificates' })}
                         contentContainerStyle={styles.DraggableImagesContent}
@@ -989,11 +991,11 @@ const CompanyEditorScreen: React.FC = () => {
             height={44}
             keyboardType='number-pad'
             right={<Typography>m²</Typography>}
-            value={companyData.square_footage || ''}
+            value={square_footage || ''}
             onChangeText={(text) => changeCompanyDataHandler('square_footage', text.replace(/^0/, '').replace(/[^0-9]/g, ''))}
           />
         </View>
-        {companyData.employees_amount ?
+        {employees_amount ?
           <>
             <View style={styles.SelectedItemsContainer}>
               <View style={styles.SelectedItemsHeader}>
@@ -1084,7 +1086,7 @@ const CompanyEditorScreen: React.FC = () => {
             </Typography>
           </Button>
         }
-        {(companyData.account_facebook || companyData.account_instagram || companyData.account_linkedIn || companyData.website) ?
+        {(account_facebook || account_instagram || account_linkedIn || website) ?
           <View style={styles.FilledSocialMediaContainer}>
             <View style={styles.FilledSocialMedia}>
               <Typography variant='h5' weight='Bold'>
@@ -1101,10 +1103,10 @@ const CompanyEditorScreen: React.FC = () => {
               </Button>
             </View>
             <View style={styles.SocialMediaIcons}>
-              <SvgIcon icon={'facebook'} fill={companyData.account_facebook ? Colors.Basic900 : Colors.Basic600} />
-              <SvgIcon icon={'instagram'} fill={companyData.account_instagram ? Colors.Basic900 : Colors.Basic600} />
-              <SvgIcon icon={'instagram'} fill={companyData.account_linkedIn ? Colors.Basic900 : Colors.Basic600} />
-              <SvgIcon icon={'internet'} fill={companyData.website ? Colors.Basic900 : Colors.Basic600} />
+              <SvgIcon icon={'facebook'} fill={account_facebook ? Colors.Basic900 : Colors.Basic600} />
+              <SvgIcon icon={'instagram'} fill={account_instagram ? Colors.Basic900 : Colors.Basic600} />
+              <SvgIcon icon={'instagram'} fill={account_linkedIn ? Colors.Basic900 : Colors.Basic600} />
+              <SvgIcon icon={'internet'} fill={website ? Colors.Basic900 : Colors.Basic600} />
             </View>
             <Separator marginTop={12} />
           </View>
