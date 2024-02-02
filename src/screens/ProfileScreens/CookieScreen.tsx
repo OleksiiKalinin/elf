@@ -11,29 +11,8 @@ import { useActions } from '../../hooks/useActions';
 import useRouter from '../../hooks/useRouter';
 import { Separator } from 'tamagui';
 
-const consents = [
-  {
-    id: 1,
-    name: 'Niezbędne pliki cookie',
-    content:
-      'Niezbędne pliki cookie są konieczne do funkcjonowania witryny i umożliwiają dostęp do jej bezpiecznych obszarów oraz wybór funduszy w celu dokonania inwestycji. Są to przede wszystkim pliki cookie sesji i są one usuwane po opuszczeniu witryny lub zakończeniu transakcji.',
-  },
-  {
-    id: 2,
-    name: 'Funkcjonalne pliki cookie',
-    content:
-      'Funkcjonalne pliki cookie sprawiają, że aplikacja jest wygodniejsza w nawigacji, a niektóre z jej obszarów - spersonalizowane.  Jeżeli je wyłączysz, nie będziemy w stanie zapewnić prawidłowego wykonania wszystkich usług, Funkcjonalne pliki cookie są ustawiane przez nas lub zewnętrznych dostawców.',
-  },
-  {
-    id: 3,
-    name: 'Pliki cookie social media',
-    content:
-      'Pliki cookie powiązane z social media są ustawiane przez portale społecznościowe. Aplikacja potrzebuje tych plików, aby użytkownicy mogli kontaktować się np. przez Facebook Messenger i udostępniać treści na zewnątrz (m.in. oferty pracy).',
-  },
-];
-
 const CookieScreen: React.FC = () => {
-  const { userSettings } = useTypedSelector(state => state.general);
+  const { userSettings, cookieConsents } = useTypedSelector(state => state.general);
   const { setUserSettings } = useActions();
   const [selectedConsents, setSelectedConsents] = useState<number[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -81,8 +60,8 @@ const CookieScreen: React.FC = () => {
         <View style={styles.Buttons}>
           <Separator />
           <Switch
-            checked={selectedConsents.length === consents.length}
-            onCheckedChange={(isOn) => isOn ? setSelectedConsents(consents.map(item => item.id)) : setSelectedConsents([1])}
+            checked={selectedConsents.length === cookieConsents.length}
+            onCheckedChange={(isOn) => isOn ? setSelectedConsents(cookieConsents.map(item => item.id)) : setSelectedConsents([1])}
             containerStyle={styles.AcceptAllSwitch}
             leftTextView={
               <Typography style={styles.SwitchText} size={18}>
@@ -90,7 +69,7 @@ const CookieScreen: React.FC = () => {
               </Typography>
             }
           />
-          {consents.map((item, index) => (
+          {cookieConsents.map((item, index) => (
             <>
               {index === 0 &&
                 <Separator />

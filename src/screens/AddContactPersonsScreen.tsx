@@ -24,13 +24,15 @@ const emptyPerson: ContactPersonType = {
 };
 
 export type AddContactPersonsScreenProps = {
-  contactPersons: ContactPersonType[],
-  setContactPersons: React.Dispatch<React.SetStateAction<ContactPersonType[]>>,
+  initialContactPersons: ContactPersonType[],
+  callback: (contactPersons: ContactPersonType[]) => void,
 };
 
-const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) => {
-  const { contactPersons: initContactPersons, setContactPersons: changeContactPersonsHandler } = props;
-  const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(initContactPersons.length ? [...initContactPersons].sort((a, b) => {
+const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
+  initialContactPersons,
+  callback,
+}) => {
+  const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(initialContactPersons.length ? [...initialContactPersons].sort((a, b) => {
     const orderA = a.id ?? Number.MAX_SAFE_INTEGER;
     const orderB = b.id ?? Number.MAX_SAFE_INTEGER;
     return orderA - orderB;
@@ -41,6 +43,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
   const { backToRemoveParams } = useRouter();
 
   useEffect(() => {
+    console.log(contactPersons);
     setIsDataValid(validateContactPersons());
   }, [contactPersons]);
 
@@ -100,7 +103,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
 
   const handleConfirm = () => {
     if (isDataValid) {
-      changeContactPersonsHandler(contactPersons);
+      callback(contactPersons);
       backToRemoveParams();
     } else {
       setShowTips(true);
@@ -238,10 +241,11 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
             }
             {contact_hours &&
               <TimePickerModal
+                key={id}
                 visible={!!showTimepicker}
                 onDismiss={() => setShowTimepicker(false)}
-                hours={startHours(contact_hours)}
-                minutes={startMinutes(contact_hours)}
+                hours={startHours(contact_hours) ?? '08:00-18:00'}
+                minutes={startMinutes(contact_hours) ?? '08:00-18:00'}
                 onConfirm={({ hours, minutes }) => {
                   const time = `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
                   if (showTimepicker === 'start') {
@@ -268,11 +272,12 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = (props) 
             }
           </View>))}
       </ScrollView>
-      <View>
-        <Button onPress={() => handleConfirm()}>
-          Potwierdź
-        </Button>
-      </View>
+      <Button
+        stickyBottom
+        onPress={() => handleConfirm()}
+      >
+        Potwierdź
+      </Button>
     </ScreenHeaderProvider>
   );
 };

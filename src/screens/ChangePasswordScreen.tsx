@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import TextField from '../components/molecules/TextField';
 import ScreenHeaderProvider from '../components/organismes/ScreenHeaderProvider';
 import Button from '../components/molecules/Button';
@@ -8,8 +8,6 @@ import useRouter from '../hooks/useRouter';
 import { ScrollView } from '../components/molecules/ScrollView';
 import { useTypedDispatch } from '../hooks/useTypedDispatch';
 import authServices from '../services/authServices';
-import { useTypedSelector } from '../hooks/useTypedSelector';
-import { Snackbar } from 'react-native-paper';
 import { useActions } from '../hooks/useActions';
 
 type PasswordType = {
@@ -22,9 +20,7 @@ const ChangePasswordScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const { setSnackbarMessage } = useActions();
   const { backToRemoveParams } = useRouter();
-  const { userData } = useTypedSelector(state => state.general);
   const [showTips, setShowTips] = useState<boolean>(false);
-  const [error, setError] = useState<null | string>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<PasswordType>({
     currentPassword: '',
@@ -45,7 +41,7 @@ const ChangePasswordScreen: React.FC = () => {
       return true;
     } else {
       setShowTips(true);
-      setError('Wprowadź poprawnie nowe hasło')
+      setSnackbarMessage({ type: 'error', text: 'Wprowadź poprawnie nowe hasło' })
       return false;
     };
   };
@@ -54,17 +50,16 @@ const ChangePasswordScreen: React.FC = () => {
     setLoading(true);
     const { currentPassword, newPassword } = formData;
     if (validateData()) {
-      const validCurrentPassword = await dispatch(authServices.checkPassword({ username: userData?.email as string, password: formData.currentPassword }));
-      if (validCurrentPassword && currentPassword !== newPassword) {
-        setSnackbarMessage({type: 'success', text: 'Hasło zostało zmienione'});
-        backToRemoveParams();
-      } else if (validCurrentPassword && currentPassword === newPassword) {
-        setError('Nowe hasło musi się różnić od obecnego');
+      if (currentPassword !== newPassword) {
+        const changePassword = await dispatch(authServices.changePassword(currentPassword, newPassword));
+        if (changePassword) {
+          setSnackbarMessage({ type: 'success', text: 'Hasło zostało zmienione' });
+          backToRemoveParams();
+        }
+      } else if (currentPassword === newPassword) {
+        setSnackbarMessage({ type: 'error', text: 'Nowe hasło musi się różnić od obecnego' })
         setLoading(false);
-      } else if (!validCurrentPassword) {
-        setError('Niepoprawne aktualne hasło');
-        setLoading(false);
-      };
+      }
     } else {
       setShowTips(true);
       setLoading(false);
@@ -115,22 +110,6 @@ const ChangePasswordScreen: React.FC = () => {
           Zaktualizuj
         </Button>
       </View>
-      <Snackbar
-        visible={!!error}
-        onDismiss={() => setError(null)}
-        duration={4000}
-        wrapperStyle={{
-          maxWidth: 768,
-          alignItems: 'center',
-          position: Platform.OS === 'web' ? 'fixed' : 'absolute',
-        }}
-        style={{
-          backgroundColor: Colors.Danger,
-          maxWidth: 500,
-        }}
-      >
-        {error}
-      </Snackbar>
     </ScreenHeaderProvider>
   );
 };

@@ -140,7 +140,6 @@ const CompanyInvoiceScreen: React.FC<CompanyInvoiceScreenProps> = ({
             <View style={{ width: 160 }}>
               <TextField
                 label="NIP"
-                onBlur={getCompanyDataFromGUS}
                 keyboardType='number-pad'
                 maxLength={10}
                 value={Nip || ''}
@@ -148,7 +147,6 @@ const CompanyInvoiceScreen: React.FC<CompanyInvoiceScreenProps> = ({
               />
             </View>
             <Button
-              /* withLoading */
               disabled={loading}
               variant='secondary'
               onPress={() => getCompanyDataFromGUS()}
@@ -159,14 +157,6 @@ const CompanyInvoiceScreen: React.FC<CompanyInvoiceScreenProps> = ({
                 Pobierz dane
               </Typography>
             </Button>
-            {/* {loading &&
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 15 }}>
-                <Spinner />
-                <Typography>
-                  Pobieranie danych
-                </Typography>
-              </View>
-            } */}
           </View>
           {(showNipTips && !Nip || (Nip && Nip.length < 10)) &&
             <Typography size={12} color={Colors.Danger}>

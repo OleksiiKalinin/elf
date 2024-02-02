@@ -27,6 +27,8 @@ const initialState: generalReducerState = {
     jobExperiences: [],
     languages: [],
     services: [],
+    cookieConsents: [],
+    notificationConsents: [],
     employeesAmount: [],
     appLoading: true,
     userData: null,

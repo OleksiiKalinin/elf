@@ -26,6 +26,8 @@ export interface generalReducerState {
     jobExperiences: JobExperienceType[],
     languages: LanguageType[],
     services: ServiceType[],
+    cookieConsents: ConsentType[],
+    notificationConsents: ConsentType[],
     employeesAmount: EmployeesAmountType[],
     userCompany: CompanyDataType | null,
     userAdverts: UserAdvertType[],
@@ -65,6 +67,8 @@ export type AppDataType = {
     languages: generalReducerState['languages'],
     employeesAmount: generalReducerState['employeesAmount'],
     services: generalReducerState['services'],
+    cookieConsents: generalReducerState['cookieConsents'],
+    notificationConsents: generalReducerState['notificationConsents'],
     userEvents: generalReducerState['userEvents'],
     marksData: generalReducerState['marksData'],
     notesData: generalReducerState['notesData'],
@@ -442,4 +446,10 @@ export interface UserSettingsType {
 export interface SnackbarMessageType {
     type: 'success' | 'error',
     text: string,
-};
+}
+
+export interface ConsentType {
+    id: number,
+    name: string,
+    content?: string,
+}

@@ -11,41 +11,8 @@ import Button from '../../components/molecules/Button';
 import { useActions } from '../../hooks/useActions';
 import useRouter from '../../hooks/useRouter';
 
-const notifications = [
-  {
-    id: 1,
-    name: 'Wiadomości',
-    content: 'Otrzymuj powiadomienia za każdym razem, gdy dostaniesz nową wiadomość.',
-  },
-  {
-    id: 2,
-    name: 'Kalendarz',
-    content: 'Powiadomimy Cię o umówionych spotkaniach oraz ich modyfikacjach.',
-  },
-  {
-    id: 3,
-    name: 'Statusy kandydatów',
-    content: 'Damy Ci znać, gdy status kandydata ulegnie zmianie.',
-  },
-  {
-    id: 4,
-    name: 'Inne oferty',
-    content: 'Bądź na bieżąco z konkurencyjnymi ofertami pracy w pobliżu.',
-  },
-  {
-    id: 5,
-    name: 'Wiedza',
-    content: 'Otrzymuj komunikaty dotyczące publikacji nowych artykułów, materiałów i informacji w bazie wiedzy.',
-  },
-  {
-    id: 6,
-    name: 'Aplikacje',
-    content: 'Nie przegap nowych aplikacji na Twoje oferty pracy.',
-  },
-];
-
 const NotificationScreen: React.FC = () => {
-  const { userSettings } = useTypedSelector(state => state.general);
+  const { userSettings, notificationConsents } = useTypedSelector(state => state.general);
   const { setUserSettings } = useActions();
   const [selectedNotifications, setSelectedNotifications] = useState<number[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -87,7 +54,7 @@ const NotificationScreen: React.FC = () => {
         <Separator />
         <Switch
           checked={!selectedNotifications.length}
-          onCheckedChange={(isOn) => isOn ? setSelectedNotifications([]) : setSelectedNotifications(notifications.map(notification => notification.id))}
+          onCheckedChange={(isOn) => isOn ? setSelectedNotifications([]) : setSelectedNotifications(notificationConsents.map(notification => notification.id))}
           containerStyle={styles.HoldAllSwitch}
           leftTextView={
             <Typography style={styles.NotificationText} size={18}>
@@ -97,7 +64,7 @@ const NotificationScreen: React.FC = () => {
         />
         <Separator />
         <View style={{ marginTop: 24 }}>
-          {notifications.map((item, index) => (
+          {notificationConsents.map((item, index) => (
             <>
               {index === 0 &&
                 <Separator />
