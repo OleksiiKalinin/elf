@@ -236,6 +236,7 @@ export interface UserAdvertType {
     trial_time_id: number | null,
     known_languages_id: number[],
     requirements_ids: number[],
+    responsibilities: string[],
     benefits_ids: number[],
     duties_ids: number[],
     candidate_data: {

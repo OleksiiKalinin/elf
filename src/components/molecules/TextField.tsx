@@ -23,6 +23,7 @@ type TextFieldProps = ({
   lineHeight?: number,
   multiline?: boolean;
 }) & {
+  disableNewLineSymbol?: boolean,
   label?: string,
   left?: ReactNode,
   right?: ReactNode,
@@ -49,6 +50,7 @@ const TextField: FC<TextFieldProps> = ({
   numberOfLines = 1,
   lineHeight,
   style,
+  disableNewLineSymbol = false,
   ...props
 }) => {
   const [moveLabelDir, setMoveLabelDir] = useState<boolean>(!!props.value || !!props.defaultValue || !!activeLabel);
@@ -131,6 +133,11 @@ const TextField: FC<TextFieldProps> = ({
             ref={inputRef}
             textAlignVertical={props.multiline ? 'top' : 'center'}
             {...props}
+            onChangeText={(masked, unmasked, obfuscated) => {
+              const [newMasked, newUnmasked, newObfuscated] = [masked, unmasked, obfuscated].map(v => disableNewLineSymbol ? v.replace(/\n/g, '') : v);
+
+              props.onChangeText?.(newMasked, newUnmasked, newObfuscated);
+            }}
             secureTextEntry={isSecured}
             numberOfLines={(autoGrow && Platform.OS === 'web') ? (numberOfLines > lineCount ? numberOfLines : lineCount) : numberOfLines}
           />

@@ -10,6 +10,7 @@ import { GoogleMapScreenProps } from '../screens/GoogleMapScreen';
 import { ItemSelectorScreenProps } from '../screens/ItemSelectorScreen';
 import { CompanyDescriptionScreenProps } from '../screens/CompanyDescriptionScreen';
 import PaymentReturnScreen from '../screens/AdvertScreens/PaymentReturnScreen';
+import { EditableItemSelectorScreenProps } from '../screens/EditableItemSelectorScreen';
 
 type SubView<T extends keyof AdvertStackParamList['extended']> = ({ subView: T } & AdvertStackParamList['extended'][T]) | { subView?: never };
 
@@ -30,6 +31,7 @@ export type AdvertStackParamList = {
       | SubView<'GoogleMapScreen'>
       | SubView<'JobCategoryScreen'>
       | SubView<'ItemSelectorScreen'>
+      | SubView<'EditableItemSelectorScreen'>
       | SubView<'CompanyDescriptionScreen'>
     ),
     PaymentReturnScreen: undefined,
@@ -39,6 +41,7 @@ export type AdvertStackParamList = {
     GoogleMapScreen: GoogleMapScreenProps,
     JobCategoryScreen: JobCategoryScreenProps,
     ItemSelectorScreen: ItemSelectorScreenProps,
+    EditableItemSelectorScreen: EditableItemSelectorScreenProps,
     CompanyDescriptionScreen: CompanyDescriptionScreenProps,
   }
 };

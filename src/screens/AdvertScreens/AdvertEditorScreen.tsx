@@ -17,7 +17,7 @@ import { AdvertStackParamList } from '../../navigators/AdvertNavigator';
 import { AddressType, NewUserAdvertType, UserAdvertType } from '../../store/reducers/types';
 import { useDispatch } from 'react-redux';
 import advertsServices from '../../services/advertsServices';
-import ScreenHeaderProvider, { SCREEN_HEADER_HEIGHT } from '../../components/organismes/ScreenHeaderProvider';
+import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { ScrollView } from '../../components/molecules/ScrollView';
 import Typography from '../../components/atoms/Typography';
 import SvgIcon from '../../components/atoms/SvgIcon';
@@ -195,6 +195,8 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
     // to fix on server
     known_languages_id: [],
     // to add on server
+    responsibilities: [],
+    // to add on server
     // withoutCV: false,
     description: null,
     job_mode_id: null,
@@ -299,7 +301,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
     }
   }, [id, userAdverts]);
 
-  const changeAdvertDataHandler = (name: keyof UserAdvertType, value: string | number | number[] | AddressType | null, replaceSpaces: boolean = true) => {
+  const changeAdvertDataHandler = (name: keyof UserAdvertType, value: string | string[] | number | number[] | AddressType | null, replaceSpaces: boolean = true) => {
     setAdvertData(prev => ({
       ...prev,
       [name]: value ?
@@ -437,6 +439,23 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
     });
   };
 
+  const goToSelectResponsibilitiesScreen = () => {
+    router.push({
+      stack: 'AdvertStack',
+      screen: 'AdvertEditorScreen',
+      params: {
+        subView: 'EditableItemSelectorScreen',
+        callback: (data) => changeAdvertDataHandler('responsibilities', data),
+        itemSelectorList: [{
+          id: 1, 
+          name: 'dcs'
+        }],
+        initialData: advertData.responsibilities,
+        headerProps: {title: 'Zakres obowiązków'}
+      },
+    });
+  };
+
   return (
     <ScreenHeaderProvider
       title={advertExists ? existedAdvertHeaders[step] : newAdvertHeaders[step]}
@@ -454,6 +473,9 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           flex: Platform.select({ native: 1 })
         } : {
           paddingBottom: 30,
+        }}
+        style={{
+          flex: 1
         }}
       >
         {step === 'fillData' && <>
@@ -798,7 +820,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                   </Typography>
                   <Button
                     variant='TouchableOpacity'
-                    onPress={() => goToSelectLanguagesScreen()}
+                    onPress={() => goToSelectResponsibilitiesScreen()}
                   >
                     <Typography variant='h5' weight='Bold' color={Colors.Blue500}>
                       Edytuj
@@ -806,7 +828,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                   </Button>
                 </View>
                 <Typography color={Colors.Basic600}>
-                  {selectedLanguages.map(({ name }) => name).join(', ')}
+                  {advertData.responsibilities.join('\n')}
                 </Typography>
               </View>
             </>
@@ -814,7 +836,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
             <Button
               variant='text'
               arrowRight
-              onPress={() => goToSelectLanguagesScreen()}
+              onPress={() => goToSelectResponsibilitiesScreen()}
             >
               <Typography variant='h5'>
                 Zakres obowiązków
