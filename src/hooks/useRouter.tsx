@@ -249,8 +249,9 @@ export default function useRouter() {
                 backOrReplace();
             } else {
                 replace(getPathnameFromScreen(currentScreen))
+                setSwipeablePanelProps(null);
             }
-            setSwipeablePanelProps(null);
+            // setSwipeablePanelProps(null);
         },
         push: (url: WithUrlProps, as?: PushParams[1], transitionOptions?: PushParams[2]) => {
             const access = preProcessHandler(url);

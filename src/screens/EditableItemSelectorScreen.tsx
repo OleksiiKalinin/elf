@@ -1,18 +1,17 @@
-import React, { Fragment, useEffect, useState } from 'react';
-import { StyleSheet, View, } from 'react-native';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
+import { Platform, StyleSheet, View, ScrollView as ScrollViewNative, BackHandler } from 'react-native';
 import Colors from '../colors/Colors';
 import ScreenHeaderProvider from '../components/organismes/ScreenHeaderProvider';
 import { ScrollView } from '../components/molecules/ScrollView';
 import TextField from '../components/molecules/TextField';
 import SvgIcon from '../components/atoms/SvgIcon';
 import Typography from '../components/atoms/Typography';
-import { Separator } from 'tamagui';
 import useRouter from '../hooks/useRouter';
 import Button from '../components/molecules/Button';
-import CheckBox from '../components/atoms/CheckBox';
 import ItemSelectorScreen from './ItemSelectorScreen';
 import { uuidv4 } from 'react-native-compressor';
 import { CornerUpLeft } from '@tamagui/lucide-icons';
+import { createParam } from 'solito';
 
 export type EditableItemSelectorScreenProps = {
   itemSelectorList: {
@@ -22,28 +21,79 @@ export type EditableItemSelectorScreenProps = {
   initialData: string[],
   callback: (data: string[]) => void,
   headerProps?: Omit<React.ComponentProps<typeof ScreenHeaderProvider>, 'children'>,
+  isSubView?: boolean,
 };
+
+const stepsOrder = ['fill', 'select'] as const;
+export type StepType = typeof stepsOrder[number];
+
+const { useParam } = createParam<{ subViewMode: StepType }>();
+
+type DataType = { id: string, value: string, valueCopy: string, inEditting: boolean };
 
 const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
   itemSelectorList,
   callback,
   headerProps,
-  initialData
+  initialData,
+  isSubView = true,
 }) => {
-  const [showItemSelectorList, setShowItemSelectorList] = useState<boolean>(false);
   const [newItem, setNewItem] = useState<string>('');
-  const [data, setData] = useState<{ id: string, value: string, valueCopy: string, inEditting: boolean }[]>(initialData.map(value => ({ id: uuidv4(), value, valueCopy: value, inEditting: false })));
+  const [stepInitialParam, setStepInitialParam] = useParam('subViewMode', { initial: 'fill' });
+  const [step, setStep] = useState<StepType>('fill');
+  const [data, setData] = useState<DataType[]>(initialData.map(value => ({ id: uuidv4(), value, valueCopy: value, inEditting: false })));
+  const ElementsViewRef = useRef<ScrollViewNative>(null);
+  const scrollAccess = useRef(false);
+  const { back, backToRemoveParams } = useRouter();
 
+  useEffect(() => {
+    setStepInitialParam('fill', { webBehavior: 'replace' });
+    setStep('fill');
+  }, []);
+
+  useEffect(() => {
+    if (stepsOrder.includes(stepInitialParam as any)) {
+      setStep(stepInitialParam as any);
+    }
+  }, [stepInitialParam]);
+
+  useEffect(() => {
+    if (ElementsViewRef.current && scrollAccess.current) {
+      ElementsViewRef.current.scrollToEnd();
+      scrollAccess.current = false;
+    }
+  }, [data]);
+
+  const backHandler = () => {
+    if (step === 'select' && Platform.OS !== 'web') {
+      setStepInitialParam('fill');
+    } else {
+      back();
+    }
+  }
+
+  useEffect(() => {
+    const handler = BackHandler.addEventListener('hardwareBackPress', () => {
+      backHandler();
+      return true;
+    });
+
+    return () => {
+      handler.remove();
+    }
+  }, [step]);
 
   const addNewItemHandler = () => {
     const value = newItem.trim();
     if (value) {
+      scrollAccess.current = true;
       setData(prev => [...prev, { id: uuidv4(), value, valueCopy: value, inEditting: false }]);
       setNewItem('');
     }
   }
 
   const deleteItemHandler = (id: string) => {
+    scrollAccess.current = false;
     setData(prev => {
       const index = data.findIndex((e) => e.id === id);
       if (index === -1) return prev;
@@ -56,13 +106,14 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
   }
 
   const changeItemHandler = (id: string, value: string) => {
+    scrollAccess.current = false;
     setData(prev => {
       const index = data.findIndex((e) => e.id === id);
       if (index === -1) return prev;
 
       return [
         ...prev.slice(0, index),
-        { ...prev[index], valueCopy: value.trim() },
+        { ...prev[index], valueCopy: value },
         ...prev.slice(index + 1)
       ]
     });
@@ -73,6 +124,7 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
     { id: string, inEditting: false, withSave: boolean }
   ) => {
     const { id, inEditting, withSave = false } = props;
+    scrollAccess.current = false;
 
     setData(prev => {
       const index = data.findIndex((e) => e.id === id);
@@ -84,9 +136,9 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
           ...prev[index],
           inEditting,
           ...(withSave ? {
-            value: prev[index].valueCopy
+            value: prev[index].valueCopy.trim()
           } : {
-            valueCopy: prev[index].value
+            valueCopy: prev[index].value.trim()
           })
         },
         ...prev.slice(index + 1)
@@ -94,80 +146,120 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
     });
   }
 
-  const content = showItemSelectorList ?
-    <ItemSelectorScreen
-      mode='multiple'
-      list={itemSelectorList}
-      callback={(languages) => { }}
-      labels={{
-        searchLabel: 'Znajdź język',
-        itemsLabel: 'Pozostałe języki',
-        popularItemsLabel: 'Popularne języki',
-      }}
-      // headerProps: { title: 'Preferowane języki' }
-      // initialSelected: advertData.known_languages_id
-      allowReturnEmptyList
-    />
-    :
+  const submitHandler = () => {
+    callback(data.map(e => e.value));
+    if (isSubView) {
+      backToRemoveParams();
+    };
+  }
+
+  const SelectFromListButton = () => (
+    <Button
+      variant='secondary'
+      borderRadius={4}
+      fullwidth={false}
+      size='small'
+      contentWeight='Medium'
+      paddingHorizontal={10}
+      margin={10}
+      onPress={() => setStepInitialParam('select', { webBehavior: 'push' })}
+    >
+      Wybierz z listy
+    </Button>
+  );
+
+  const content = (
     <View style={styles.Wrapper}>
-      <View style={styles.Textfield}>
-        <TextField
-          label="Obowiązek"
-          multiline
-          height={'auto'}
-          returnKeyType='none'
-          maxLength={300}
-          containerStyles={{ borderWidth: 1, padding: 10, paddingBottom: 15, borderRadius: 4 }}
-          value={newItem}
-          onChangeText={setNewItem}
-          numberOfLines={2}
-          autoGrow
-          lineHeight={20}
-          disableNewLineSymbol
-        // {...(showTips && (!value || value.length < minChars) && {
-        //   bottomText: !value ? 'Wprowadź opis' : `Opis musi zawierać minimum ${minChars} znaków`,
-        // })}
-        />
-      </View>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 9, paddingVertical: 5 }}>
-        <Button
-          variant='secondary'
-          borderRadius={4}
-          fullwidth={false}
-          size='small'
-          contentWeight='Medium'
-          paddingHorizontal={10}
-          margin={10}
-        >
-          Wybierz z listy
-        </Button>
-        <Button
-          borderRadius={4}
-          fullwidth={false}
-          size='small'
-          contentWeight='Medium'
-          paddingHorizontal={10}
-          margin={10}
-          onPress={addNewItemHandler}
-        >
-          Dodaj
-        </Button>
-      </View>
-      <View style={{ alignItems: 'center' }}>
-        <View style={{ height: 2, width: '20%', backgroundColor: Colors.Basic300, borderRadius: 1 }} />
-      </View>
-      {!data.length ?
-        <View style={{ flex: 1 }}>
-          <Typography
-            style={{ padding: 19 }}
-            color={Colors.Basic600}
-            textAlign='center'
-          >
-            Nie dodano jeszcze żadnych informacji
-          </Typography>
+      {step === 'select' && <ItemSelectorScreen
+        subViewMode={false}
+        mode='multiple'
+        list={itemSelectorList}
+        callback={(newIds) => {
+          scrollAccess.current = true;
+          const newData: string[] = [];
+
+          for (let index = 0; index < itemSelectorList.length; ++index) {
+            const element = itemSelectorList[index];
+            if (newIds.includes(element.id) && !data.find(e => e.value === element.name)) {
+              newData.push(element.name);
+            }
+          }
+
+          setData(prev => [
+            ...prev,
+            ...newData.map(value => ({ id: uuidv4(), value, valueCopy: value, inEditting: false }))
+          ]);
+          backHandler();
+        }}
+        initialSelected={itemSelectorList.reduce<number[]>((prev, curr) => data.find(d => d.value === curr.name) ? [...prev, curr.id] : prev, [])}
+        labels={{
+          searchLabel: 'Znajdź obowiązek',
+          itemsLabel: '',
+          popularItemsLabel: '',
+        }}
+        allowReturnEmptyList
+      />}
+      <View style={step === 'select' ? { visibility: 'hidden', height: 0, width: 0, position: 'absolute', left: '100%' } : { flex: 1 }}>
+        <View style={styles.Textfield}>
+          <TextField
+            label="Obowiązek"
+            multiline
+            height={'auto'}
+            returnKeyType='none'
+            maxLength={300}
+            containerStyles={{ borderWidth: 1, padding: 10, paddingBottom: 15, borderRadius: 4 }}
+            value={newItem}
+            onChangeText={setNewItem}
+            numberOfLines={2}
+            autoGrow
+            lineHeight={20}
+            disableNewLineSymbol
+          // {...(showTips && (!value || value.length < minChars) && {
+          //   bottomText: !value ? 'Wprowadź opis' : `Opis musi zawierać minimum ${minChars} znaków`,
+          // })}
+          />
         </View>
-        :
-        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ marginTop: 11, paddingBottom: 30 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 9, paddingVertical: 5 }}>
+          <SelectFromListButton />
+          <Button
+            borderRadius={4}
+            fullwidth={false}
+            size='small'
+            contentWeight='Medium'
+            paddingHorizontal={10}
+            margin={10}
+            onPress={addNewItemHandler}
+          >
+            Dodaj
+          </Button>
+        </View>
+        <View style={{ alignItems: 'center' }}>
+          <View style={{ height: 2, width: '20%', backgroundColor: Colors.Basic300, borderRadius: 1 }} />
+        </View>
+        <ScrollView
+          ref={ElementsViewRef}
+          disableWindowScroll
+          style={{
+            flex: Platform.select({ native: 1 }),
+            height: Platform.select({ web: 1 }),
+          }}
+          contentContainerStyle={{
+            marginTop: 11,
+            paddingBottom: 30
+          }}
+        >
+          {!data.length && <>
+            <Typography
+              style={{ paddingHorizontal: 19 }}
+              color={Colors.Basic600}
+              textAlign='center'
+            >
+              Nie dodano jeszcze żadnych informacji
+            </Typography>
+            <View style={{ height: 90, justifyContent: 'center', alignItems: 'center' }}>
+              <SelectFromListButton />
+            </View>
+          </>}
           {data.map(({ id, value, valueCopy, inEditting }) => (
             <View
               key={id}
@@ -180,11 +272,16 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
               }}
             >
               <View
-                style={{
-                  padding: 10,
+                style={[{
                   paddingRight: 0,
-                  flex: 1
-                }}
+                  flex: 1,
+                  padding: 10,
+                  borderWidth: 1,
+                  borderColor: Colors.White
+                }, inEditting ? {
+                  borderWidth: 0,
+                  padding: 0,
+                } : {}]}
               >
                 {inEditting ?
                   <TextField
@@ -195,10 +292,11 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
                     containerStyles={{ borderWidth: 1, padding: 10, paddingBottom: 15, borderRadius: 4 }}
                     value={valueCopy}
                     onChangeText={(value) => changeItemHandler(id, value)}
-                    numberOfLines={2}
+                    numberOfLines={3}
                     autoGrow
-                    lineHeight={20}
+                    lineHeight={21}
                     disableNewLineSymbol
+                    autoFocus
                   // {...(showTips && (!value || value.length < minChars) && {
                   //   bottomText: !value ? 'Wprowadź opis' : `Opis musi zawierać minimum ${minChars} znaków`,
                   // })}
@@ -245,19 +343,24 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
             </View>
           ))}
         </ScrollView>
-      }
-      <Button
-        stickyBottom
-      // onPress={handleConfirmMultiple}
-      // disabled={allowReturnEmptyList ? false : selectedItems.length === 0}
-      >
-        Potwierdź
-      </Button>
+        <Button
+          stickyBottom
+          onPress={submitHandler}
+        >
+          Potwierdź
+        </Button>
+      </View>
     </View>
+  );
 
   return (
     headerProps ?
-      <ScreenHeaderProvider {...headerProps}>{content}</ScreenHeaderProvider>
+      <ScreenHeaderProvider
+        {...headerProps}
+        callback={Platform.OS !== 'web' ? backHandler : undefined}
+      >
+        {content}
+      </ScreenHeaderProvider>
       :
       content
   );

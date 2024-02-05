@@ -84,10 +84,10 @@ const TextField: FC<TextFieldProps> = ({
   useEffect(() => {
     if (moveLabelDir) moveTextTop();
     else if (!moveLabelDir && !props.value) moveTextBottom();
-  }, [moveLabelDir]);
+  }, [moveLabelDir, props.value]);
 
   useEffect(() => {
-    setMoveLabelDir(prev => !!props.value || prev);
+    setMoveLabelDir(!!props.value);
   }, [props.value]);
 
   const moveTextTop = () => {
@@ -118,7 +118,7 @@ const TextField: FC<TextFieldProps> = ({
       <View style={[styles.Row, rowStyles, { height: props.height || 'auto' }]}>
         {left && <View style={[styles.Adornment, { paddingRight: 10 }]}>{left}</View>}
         <View style={[styles.InputWrapper]}>
-          <Animated.View style={[styles.Label, { transform: [{ translateY }] }]}>
+          <Animated.View pointerEvents='none' style={[styles.Label, { transform: [{ translateY }] }]}>
             <Typography {...(isOnTop ? { color: Colors.Basic600 } : { variant: 'h5' })} style={{ lineHeight: 16 }}>
               {label}
             </Typography>
