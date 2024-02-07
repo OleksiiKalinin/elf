@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { Platform, StyleSheet, View, ScrollView as ScrollViewNative, BackHandler } from 'react-native';
 import Colors from '../colors/Colors';
 import ScreenHeaderProvider from '../components/organismes/ScreenHeaderProvider';
@@ -10,8 +10,10 @@ import useRouter from '../hooks/useRouter';
 import Button from '../components/molecules/Button';
 import ItemSelectorScreen from './ItemSelectorScreen';
 import { uuidv4 } from 'react-native-compressor';
-import { CornerUpLeft } from '@tamagui/lucide-icons';
+import { Undo as UndoIcon, Equal as DragIcon } from '@tamagui/lucide-icons';
 import { createParam } from 'solito';
+import DraggableList, { RenderItemParams } from '../components/organismes/DraggableList';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
 export type EditableItemSelectorScreenProps = {
   itemSelectorList: {
@@ -58,7 +60,7 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
   }, [stepInitialParam]);
 
   useEffect(() => {
-    if (ElementsViewRef.current && scrollAccess.current) {
+    if (ElementsViewRef.current && ElementsViewRef.current.scrollToEnd && scrollAccess.current) {
       ElementsViewRef.current.scrollToEnd();
       scrollAccess.current = false;
     }
@@ -199,7 +201,7 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
         }}
         allowReturnEmptyList
       />}
-      <View style={step === 'select' ? { visibility: 'hidden', height: 0, width: 0, position: 'absolute', left: '100%' } : { flex: 1 }}>
+      <View style={step === 'select' ? { visibility: 'hidden', opacity: 0, height: 0, width: 0, position: 'absolute', left: '1000%' } : { flex: 1 }}>
         <View style={styles.Textfield}>
           <TextField
             label="Obowiązek"
@@ -214,6 +216,7 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
             autoGrow
             lineHeight={20}
             disableNewLineSymbol
+            autoFocus
           // {...(showTips && (!value || value.length < minChars) && {
           //   bottomText: !value ? 'Wprowadź opis' : `Opis musi zawierać minimum ${minChars} znaków`,
           // })}
@@ -236,113 +239,127 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
         <View style={{ alignItems: 'center' }}>
           <View style={{ height: 2, width: '20%', backgroundColor: Colors.Basic300, borderRadius: 1 }} />
         </View>
-        <ScrollView
+        {!data.length && <>
+          <Typography
+            style={{ paddingHorizontal: 19, marginTop: 19, }}
+            color={Colors.Basic600}
+            textAlign='center'
+          >
+            Nie dodano jeszcze żadnych informacji
+          </Typography>
+          <View style={{ height: 90, justifyContent: 'center', alignItems: 'center' }}>
+            <SelectFromListButton />
+          </View>
+        </>}
+        <DraggableList
           ref={ElementsViewRef}
           disableWindowScroll
           style={{
-            flex: Platform.select({ native: 1 }),
+            marginTop: 11,
             height: Platform.select({ web: 1 }),
           }}
           contentContainerStyle={{
-            marginTop: 11,
             paddingBottom: 30
           }}
-        >
-          {!data.length && <>
-            <Typography
-              style={{ paddingHorizontal: 19 }}
-              color={Colors.Basic600}
-              textAlign='center'
-            >
-              Nie dodano jeszcze żadnych informacji
-            </Typography>
-            <View style={{ height: 90, justifyContent: 'center', alignItems: 'center' }}>
-              <SelectFromListButton />
-            </View>
-          </>}
-          {data.map(({ id, value, valueCopy, inEditting }) => (
-            <View
-              key={id}
-              style={{
-                marginHorizontal: 19,
-                marginVertical: 8,
-                backgroundColor: Colors.White,
-                borderRadius: 4,
-                flexDirection: 'row'
-              }}
-            >
+          data={data}
+          onDragEnd={({ data }) => setData(data)}
+          keyExtractor={({ id }) => id}
+          renderItem={({ item, drag }: RenderItemParams<DataType>) => {
+            const { id, inEditting, value, valueCopy } = item;
+            return (
               <View
-                style={[{
-                  paddingRight: 0,
-                  flex: 1,
-                  padding: 10,
-                  borderWidth: 1,
-                  borderColor: Colors.White
-                }, inEditting ? {
-                  borderWidth: 0,
-                  padding: 0,
-                } : {}]}
+                style={{
+                  marginHorizontal: 19,
+                  marginVertical: 8,
+                  backgroundColor: Colors.White,
+                  borderRadius: 4,
+                  flexDirection: 'row',
+                }}
               >
-                {inEditting ?
-                  <TextField
-                    multiline
-                    height={'auto'}
-                    returnKeyType='none'
-                    maxLength={300}
-                    containerStyles={{ borderWidth: 1, padding: 10, paddingBottom: 15, borderRadius: 4 }}
-                    value={valueCopy}
-                    onChangeText={(value) => changeItemHandler(id, value)}
-                    numberOfLines={3}
-                    autoGrow
-                    lineHeight={21}
-                    disableNewLineSymbol
-                    autoFocus
-                  // {...(showTips && (!value || value.length < minChars) && {
-                  //   bottomText: !value ? 'Wprowadź opis' : `Opis musi zawierać minimum ${minChars} znaków`,
-                  // })}
-                  />
-                  :
-                  <Typography variant='h5'>
-                    {value}
-                  </Typography>
-                }
+                {!inEditting && <Button
+                  variant='TouchableOpacity'
+                  style={{
+                    padding: 10,
+                    cursor: 'grab',
+                    justifyContent: 'center',
+                    flex: 1
+                  }}
+                  onPressIn={drag}
+                >
+                  <DragIcon />
+                </Button>}
+                <View
+                  style={[{
+                    flex: 1,
+                    paddingVertical: 10,
+                    borderWidth: 1,
+                    borderColor: Colors.White
+                  }, inEditting ? {
+                    borderWidth: 0,
+                    paddingVertical: 0,
+                  } : {}]}
+                >
+                  {inEditting ?
+                    <TextField
+                      multiline
+                      height={'auto'}
+                      returnKeyType='none'
+                      maxLength={300}
+                      containerStyles={{ borderWidth: 1, padding: 10, paddingBottom: 15, borderRadius: 4 }}
+                      value={valueCopy}
+                      onChangeText={(value) => changeItemHandler(id, value)}
+                      numberOfLines={3}
+                      autoGrow
+                      lineHeight={21}
+                      disableNewLineSymbol
+                      autoFocus
+                    // {...(showTips && (!value || value.length < minChars) && {
+                    //   bottomText: !value ? 'Wprowadź opis' : `Opis musi zawierać minimum ${minChars} znaków`,
+                    // })}
+                    />
+                    :
+                    <Typography variant='h5'>
+                      {value}
+                    </Typography>
+                  }
+                </View>
+                <View style={{ padding: 5, justifyContent: 'center' }}>
+                  {inEditting ? <>
+                    <Button
+                      variant='TouchableOpacity'
+                      onPress={() => itemInEdittingHandler({ id, inEditting: false, withSave: false })}
+                      style={{ padding: 5 }}
+                    >
+                      <UndoIcon />
+                    </Button>
+                    <Button
+                      variant='TouchableOpacity'
+                      onPress={() => itemInEdittingHandler({ id, inEditting: false, withSave: true })}
+                      style={{ padding: 5 }}
+                    >
+                      <SvgIcon icon='check' />
+                    </Button>
+                  </> : <>
+                    <Button
+                      variant='TouchableOpacity'
+                      onPress={() => deleteItemHandler(id)}
+                      style={{ padding: 5 }}
+                    >
+                      <SvgIcon icon='closeX' />
+                    </Button>
+                    <Button
+                      variant='TouchableOpacity'
+                      onPress={() => itemInEdittingHandler({ id, inEditting: true })}
+                      style={{ padding: 5 }}
+                    >
+                      <SvgIcon icon='pencil' />
+                    </Button>
+                  </>}
+                </View>
               </View>
-              <View style={{ padding: 5, justifyContent: 'center' }}>
-                {inEditting ? <>
-                  <Button
-                    variant='TouchableOpacity'
-                    onPress={() => itemInEdittingHandler({ id, inEditting: false, withSave: false })}
-                    style={{ padding: 5 }}
-                  >
-                    <CornerUpLeft />
-                  </Button>
-                  <Button
-                    variant='TouchableOpacity'
-                    onPress={() => itemInEdittingHandler({ id, inEditting: false, withSave: true })}
-                    style={{ padding: 5 }}
-                  >
-                    <SvgIcon icon='check' />
-                  </Button>
-                </> : <>
-                  <Button
-                    variant='TouchableOpacity'
-                    onPress={() => deleteItemHandler(id)}
-                    style={{ padding: 5 }}
-                  >
-                    <SvgIcon icon='closeX' />
-                  </Button>
-                  <Button
-                    variant='TouchableOpacity'
-                    onPress={() => itemInEdittingHandler({ id, inEditting: true })}
-                    style={{ padding: 5 }}
-                  >
-                    <SvgIcon icon='pencil' />
-                  </Button>
-                </>}
-              </View>
-            </View>
-          ))}
-        </ScrollView>
+            );
+          }}
+        />
         <Button
           stickyBottom
           onPress={submitHandler}

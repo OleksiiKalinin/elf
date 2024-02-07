@@ -1,35 +1,34 @@
-import React from 'react';
+import React, { ComponentProps, forwardRef } from 'react';
 import { View } from 'react-native';
 import { DragDropContext, Draggable, DraggableProvided, DraggableRubric, DraggableStateSnapshot, DropResult, Droppable } from 'react-beautiful-dnd';
 import { DraggableListProps } from '.';
 import { isString } from 'lodash';
 import { ScrollView } from '../../molecules/ScrollView';
 
-const DraggableList: React.FC<DraggableListProps> = ({
+const DraggableList: React.FC<DraggableListProps> = forwardRef(({
 	data,
 	onDragEnd,
 	renderItem,
 	horizontal = false,
 	contentContainerStyle,
 	style,
-}) => {
-
+	disableWindowScroll,
+}, ref: any) => {
 	const handleDragEnd = (result: DropResult) => {
-		if (!result.destination) {
-			return;
-		}
+		if (!result.destination) return;
 
 		const reorderedList = Array.from(data);
 		const [moved] = reorderedList.splice(result.source.index, 1);
 		reorderedList.splice(result.destination.index, 0, moved);
 
-		return onDragEnd({ data: reorderedList });
+		return onDragEnd({ data: reorderedList, from: 0, to: 0 });
 	};
 
-	const getRenderItem = (items: any[]) => (provided: DraggableProvided, snapshot: DraggableStateSnapshot,
-		rubric: DraggableRubric) => {
+	const getRenderItem = (provided: DraggableProvided, snapshot: DraggableStateSnapshot, rubric: DraggableRubric) => {
+		const index = rubric.source.index;
+		const item = data[index];
 
-		const index = isString(rubric.source.index) ? parseInt(rubric.source.index) : rubric.source.index;
+		if (!item) return <div />
 
 		return (
 			<div
@@ -42,61 +41,45 @@ const DraggableList: React.FC<DraggableListProps> = ({
 				}}
 			>
 				{renderItem({
-					item: items[index],
+					item,
 					drag: () => { },
 					getIndex: () => index,
-					isActive: snapshot.isDragging,
+					isActive: snapshot.isDragging
 				})}
 			</div>
 		)
 	};
 
-	const DraggableContent = () => (
+	return (
 		<DragDropContext onDragEnd={handleDragEnd}>
 			<Droppable
 				droppableId="droppable"
 				direction={horizontal ? 'horizontal' : 'vertical'}
-				renderClone={renderElement}
+				renderClone={getRenderItem}
 			>
 				{(provided) => (
-					<View
-						ref={provided.innerRef as any}
-						style={{
-							width: '100%',
-							flexDirection: horizontal ? 'row' : 'column',
-							...contentContainerStyle,
+					<ScrollView
+						ref={(node) => {
+							provided.innerRef(node as any);
+							if (ref) ref.current = node;
 						}}
+						disableWindowScroll={disableWindowScroll}
+						horizontal={horizontal}
+						style={style}
+						contentContainerStyle={contentContainerStyle}
 						{...provided.droppableProps}
 					>
-						{data.map((item: any, index) => (
-							<Draggable key={index} draggableId={index.toString()} index={index}>
-								{renderElement}
+						{data.map((item, index) => (
+							<Draggable key={index} draggableId={index.toString()} index={index} shouldRespectForcePress isDragDisabled={data.length < 2}>
+								{getRenderItem}
 							</Draggable>
 						))}
 						{provided.placeholder}
-					</View>
+					</ScrollView>
 				)}
 			</Droppable>
 		</DragDropContext>
 	)
-
-	const renderElement = getRenderItem(data);
-
-	return (
-		<>
-			{horizontal ?
-				<ScrollView horizontal>
-					<DraggableContent />
-				</ScrollView>
-
-				:
-
-				<View style={style}>
-					<DraggableContent />
-				</View>
-			}
-		</>
-	);
-};
+});
 
 export default DraggableList;

@@ -383,6 +383,7 @@ const CompanyEditorScreen: React.FC = () => {
         <Button
           variant='TouchableOpacity'
           onLongPress={drag}
+          style={{ cursor: 'grab' }}
         >
           <Image style={styles.DraggableItemImage} source={{ uri: item.path }} />
         </Button>

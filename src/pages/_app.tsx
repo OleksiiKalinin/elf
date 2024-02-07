@@ -105,7 +105,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
           alignItems: 'center',
           justifyContent: 'center',
           //@ts-ignore
-          background: 'linear-gradient(188deg, #311374 -0.09%, #0C0E2C 98.73%)',
+          background: 'linear-gradient(224deg, rgb(49, 19, 116) -0.09%, rgb(3, 4, 18) 98.73%)',
         }}
       >
         <Lottie
