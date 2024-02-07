@@ -111,7 +111,7 @@ const validateUrl = (props: WithUrlProps): string => {
 
 export default function useRouter() {
     const { currentScreen, userData, userCompany } = useTypedSelector(s => s.general);
-    const { setSwipeablePanelProps, setShowUserShouldBeLogedInModal, setShowUserShouldHaveCompanyModal } = useActions();
+    const { setSwipeablePanelProps, setShowUserShouldBeLogedInModal, setShowUserShouldHaveCompanyModal, setBlockedScreen } = useActions();
     const { back, parseNextPath, push, replace } = useSolitoRouter();
     const { params, setParams } = useParams();
     const id = useRef(Math.random().toString() + Math.random().toString());
@@ -247,6 +247,7 @@ export default function useRouter() {
         backToRemoveParams: () => {
             if (Platform.OS === 'web') {
                 backOrReplace();
+                setBlockedScreen({blockedBack: false, blockedExit: false});
             } else {
                 replace(getPathnameFromScreen(currentScreen))
                 setSwipeablePanelProps(null);

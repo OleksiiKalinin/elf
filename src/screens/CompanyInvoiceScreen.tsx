@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, BackHandler, Platform } from 'react-native';
 import Colors from '../colors/Colors';
 import { useActions } from '../hooks/useActions';
 import TextField from '../components/molecules/TextField';
@@ -13,6 +13,7 @@ import companyServices from '../services/companyServices';
 import Typography from '../components/atoms/Typography';
 import { Spinner } from 'tamagui';
 import { isEqual } from 'lodash';
+import { useTypedSelector } from '../hooks/useTypedSelector';
 
 const emptyFormData = {
   Regon: null,
@@ -43,15 +44,55 @@ const CompanyInvoiceScreen: React.FC<CompanyInvoiceScreenProps> = ({
   callback
 }) => {
   const dispatch = useTypedDispatch();
-  const { setSnackbarMessage } = useActions();
+  const { setSnackbarMessage, setShowExitWarningModal, setBlockedScreen } = useActions();
+  const { backToRemoveParams } = useRouter();
   const [dataFromGus, setDataFromGus] = useState<CompanyRegistrationDataType | null>(null);
+  const oldFormData = initialData || emptyFormData;
   const [formData, setFormData] = useState<CompanyRegistrationDataType>(initialData || emptyFormData);
   const [showForm, setShowForm] = useState(false);
   const [showNipTips, setShowNipTips] = useState<boolean>(false);
   const [showFormTips, setShowFormTips] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
-  const { backToRemoveParams } = useRouter();
+  const [unsavedData, setUnsavedData] = useState<boolean>(false);
+  const { blockedScreen } = useTypedSelector(s => s.general);
+
   const { Nip, Nazwa, Ulica, NrNieruchomosci, NrLokalu, KodPocztowy, Miejscowosc } = formData;
+
+  useEffect(() => {
+    setUnsavedData(!isEqual(oldFormData, formData));
+  }, [oldFormData, formData]);
+
+  useEffect(() => {
+    /* const beforeUnloadHandler = (event: { preventDefault: () => void; }) => {
+      if (unsavedData) event.preventDefault();
+    };
+
+    if (Platform.OS === 'web') {
+      if (unsavedData) {
+        window.addEventListener("beforeunload", beforeUnloadHandler);
+      } else {
+        window.removeEventListener("beforeunload", beforeUnloadHandler);
+      }
+    } else {
+      if (unsavedData) {
+        const handler = BackHandler.addEventListener('hardwareBackPress', () => {
+          setShowExitWarningModal({ state: true, callback: backToRemoveParams });
+          return true;
+        });
+
+        return () => {
+          handler.remove();
+        };
+      };
+    };
+
+    return () => {
+      if (Platform.OS === 'web') {
+        window.removeEventListener("beforeunload", beforeUnloadHandler);
+      }
+    } */
+    setBlockedScreen({...blockedScreen, blockedBack: unsavedData});
+  }, [unsavedData]);
 
   const changeFormDataHandler = (name: keyof CompanyRegistrationDataType, text: string) => {
     setFormData(prev => ({ ...prev, [name]: name === 'KodPocztowy' ? formatPostalCode(text) : text }));

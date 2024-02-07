@@ -9,7 +9,8 @@ import Popover from '../components/molecules/Popover';
 import SvgIcon from '../components/atoms/SvgIcon';
 import Typography from '../components/atoms/Typography';
 import { useTypedSelector } from '../hooks/useTypedSelector';
-import { ScrollView } from '../components/molecules/ScrollView';
+import { isEqual } from 'lodash';
+import { useActions } from '../hooks/useActions';
 
 export type CompanyDescriptionScreenProps = {
   description: string | null,
@@ -19,11 +20,22 @@ export type CompanyDescriptionScreenProps = {
 
 const CompanyDescriptionScreen: React.FC<CompanyDescriptionScreenProps> = (props) => {
   const { callback, description, title } = props;
+  const oldValue = description || '';
   const [value, setValue] = useState<string>(description || '');
   const [showTips, setShowTips] = useState<boolean>(false);
+  const [unsavedData, setUnsavedData] = useState<boolean>(false);
   const { backToRemoveParams } = useRouter();
-  const { windowSizes } = useTypedSelector(state => state.general);
+  const { setBlockedScreen } = useActions();
+  const { windowSizes, blockedScreen } = useTypedSelector(state => state.general);
   const minChars = 20;
+
+  useEffect(() => {
+    setUnsavedData(!isEqual(oldValue, value));
+  }, [oldValue, value]);
+
+  useEffect(() => {
+    setBlockedScreen({ ...blockedScreen, blockedBack: unsavedData});
+  }, [unsavedData]);
 
   const handleConfirm = () => {
     if(value.length >= minChars){

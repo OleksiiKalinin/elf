@@ -129,8 +129,8 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   backgroundContent,
 }) => {
   const { backToRemoveParams, back } = useRouter();
-  const { currentScreen, userData, userCompany, windowSizes, swipeablePanelProps, isTabbarVisible, appLoading } = useTypedSelector(s => s.general);
-  const { setShowUserShouldBeLogedInModal, setShowUserShouldHaveCompanyModal } = useActions();
+  const { currentScreen, userData, userCompany, windowSizes, swipeablePanelProps, isTabbarVisible, appLoading, blockedScreen } = useTypedSelector(s => s.general);
+  const { setShowUserShouldBeLogedInModal, setShowUserShouldHaveCompanyModal, setShowExitWarningModal } = useActions();
   const [contentProtected, setContentProtected] = useState<boolean>(true);
   // @ts-ignore
   const currentTitle: string = screensTitles[currentScreen.stack][currentScreen.screen] || '';
@@ -191,7 +191,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
                 width={50}
                 height='100%'
                 icon={<SvgIcon icon='arrowLeft' fill={headerItemsColor} />}
-                onPress={callback ? callback : (!!swipeablePanelProps ? backToRemoveParams : back)}
+                onPress={()=> {callback ? callback() : blockedScreen.blockedBack ? setShowExitWarningModal(true) : (!!swipeablePanelProps ? backToRemoveParams() : back())}}
               />
               <Typography variant="h4" weight="Bold" style={{ alignSelf: 'center', color: headerItemsColor, paddingRight: 15 }}>
                 {title || currentTitle}

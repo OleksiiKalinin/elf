@@ -1,13 +1,13 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { MediaFileType, MediaSelectorProps } from '.';
-import Typography from '../../atoms/Typography';
 import ReactCrop, { type Crop, PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import Colors from '../../../colors/Colors';
 import Button from '../../molecules/Button';
 import imageCompression from 'browser-image-compression';
 import Modal from '../../atoms/Modal';
+import { useActions } from '../../../hooks/useActions';
 
 const defaultImageSettings = {
 	maxWidth: 1920,
@@ -35,9 +35,9 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 	const [files, setFiles] = useState<MediaFileType[]>([]);
 	const [beforeCropData, setBeforeCropData] = useState<File>();
 	const [cropModal, setCropModal] = useState(false);
-	const [errorModal, setErrorModal] = useState<string | null>(null);
 	const [cropData, setCropData] = useState<Crop>();
 	const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
+	const { setSnackbarMessage } = useActions();
 	const imgRef = useRef<HTMLImageElement>(null);
 
 	const mergedImageSettings = { ...defaultImageSettings, ...imageSettings };
@@ -58,7 +58,7 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 							filteredFiles.push(item);
 						};
 					});
-					if(compressionProgress) compressionProgress(1);
+					if (compressionProgress) compressionProgress(1);
 					callback([...initialSelected, ...filteredFiles]);
 				};
 			} else if (type === 'video') {
@@ -80,7 +80,7 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 				const files = (event.target as any)?.files;
 
 				if (multiple && files.length > (selectionLimit - initialSelected.length)) {
-					setErrorModal(`Maksymalna liczba obrazów to ${selectionLimit}`);
+					setSnackbarMessage({ type: 'error', text: `Maksymalna liczba obrazów to ${selectionLimit}` });
 				} else {
 
 					const base64Array = await processFiles(files);
@@ -89,7 +89,7 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 					};
 				};
 			} catch (error) {
-				setErrorModal('Błąd przesyłania!');
+				setSnackbarMessage({ type: 'error', text: 'Błąd przesyłania!' });
 			};
 
 			fileInput.remove();
@@ -105,9 +105,9 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 
 		for (const file of files) {
 			if (!file.type.startsWith(`${type}/`)) {
-				return setErrorModal(`Niepoprawny format. Możesz wybrać tylko pliki ${type === 'image' ? 'graficzne' : 'wideo.'}`);
+				return setSnackbarMessage({ type: 'error', text: `Niepoprawny format. Możesz wybrać tylko pliki ${type === 'image' ? 'graficzne' : 'wideo.'}` });
 			} else if (file.size > megabytesToBytes(maxFileSize)) {
-				return setErrorModal(`Maksymalny rozmiar jednego pliku wynosi ${maxInputFileSize} MB`);
+				return setSnackbarMessage({ type: 'error', text: `Maksymalny rozmiar jednego pliku wynosi ${maxInputFileSize} MB` });
 			};
 		};
 
@@ -249,7 +249,7 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 						useWebWorker: true,
 						onProgress: compressionProgress ?
 							(progress: number) => {
-								if(progress < 97) compressionProgress(progress / 100);
+								if (progress < 97) compressionProgress(progress / 100);
 							}
 
 							:
@@ -260,7 +260,7 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 					const canvasToFile = await imageCompression.canvasToFile(croppedCanvas, beforeCropData.type, beforeCropData.name, beforeCropData.lastModified);
 					const compressedFile = await imageCompression(canvasToFile, options);
 					const base64Data = await convertToBase64(compressedFile);
-					if(compressionProgress) compressionProgress(1);
+					if (compressionProgress) compressionProgress(1);
 
 					setCropModal(false);
 					callback([{
@@ -288,6 +288,7 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 					transparent={true}
 					visible={cropModal}
 					onClose={() => setCropModal(false)}
+					withoutUrl
 				>
 					<View style={styles.Modal}>
 						<View style={styles.CropContainer}>
@@ -316,26 +317,6 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 					</View>
 				</Modal>
 			}
-			<Modal
-				transparent={true}
-				visible={!!errorModal}
-				onClose={() => setErrorModal(null)}
-			>
-				<View style={styles.ErrorModalContainer}>
-					<View style={styles.ErrorModalContent}>
-						<Typography>
-							{errorModal}
-						</Typography>
-						<Button
-							style={{ height: 30 }}
-							variant='text'
-							onPress={() => setErrorModal(null)}
-						>
-							Ok
-						</Button>
-					</View>
-				</View>
-			</Modal>
 		</View>
 	);
 };

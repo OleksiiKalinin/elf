@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { useActions } from '../../../hooks/useActions';
 import ImagePicker from 'react-native-image-crop-picker';
 import MediaPicker from './MediaPicker';
 import { Image, Video } from 'react-native-compressor';
 import { stat } from 'react-native-fs';
-import Typography from '../../atoms/Typography';
-import Button from '../../molecules/Button';
-import Colors from '../../../colors/Colors';
 import { MediaFileType, MediaSelectorProps } from '.';
-import Modal from '../../atoms/Modal';
 
 const defaultImageSettings = {
 	maxWidth: 1920,
@@ -37,8 +33,7 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
 }) => {
   const [files, setFiles] = useState<any[]>();
   const [pickerActive, setPickerActive] = useState(false);
-  const [sizeInfoModal, setSizeInfoModal] = useState(false);
-  const { setSwipeablePanelProps } = useActions();
+  const { setSwipeablePanelProps, setSnackbarMessage } = useActions();
 
   const mergedImageSettings = { ...defaultImageSettings, ...imageSettings };
 	const { maxWidth, maxHeight, quality} = mergedImageSettings;
@@ -191,7 +186,8 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
               } else {
                 const statFile = await stat(result.path);
                 if (statFile.size > megabytesToBytes(maxAllowedFileSize)) {
-                  setSizeInfoModal(true);
+                  setSnackbarMessage({type: 'error', text: `Zbyt duży rozmiar pliku. Maksymalny rozmiar wynosi: ${maxAllowedFileSize} MB`});
+
                 } else {
                   return setFiles([result]);
                 };
@@ -217,47 +213,8 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
   return (
     <View>
       {render(handlePress)}
-      {type === 'video' &&
-        <Modal
-          transparent={true}
-          visible={sizeInfoModal}
-          onClose={() => setSizeInfoModal(false)}
-        >
-          <View style={styles.SizeModalContainer}>
-            <View style={styles.SizeModalContent}>
-              <Typography>
-                Zbyt duży rozmiar pliku. Maksymalny rozmiar wynosi: {maxAllowedFileSize} MB
-              </Typography>
-              <Button
-                style={{ height: 30 }}
-                variant='text'
-                onPress={() => setSizeInfoModal(false)}
-              >
-                Ok
-              </Button>
-            </View>
-          </View>
-        </Modal>
-      }
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  SizeModalContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    height: '100%',
-  },
-  SizeModalContent: {
-    width: 300,
-    backgroundColor: Colors.White,
-    borderRadius: 4,
-    padding: 20,
-    justifyContent: 'space-between',
-    gap: 20,
-  },
-});
 
 export default MediaSelector;
