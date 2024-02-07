@@ -1,4 +1,4 @@
-import { StyleSheet, View, Platform } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Colors from '../../colors/Colors';
 import authServices from '../../services/authServices';
@@ -13,37 +13,47 @@ import Button from '../../components/molecules/Button';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { ScrollView } from '../../components/molecules/ScrollView';
 import useRouter from '../../hooks/useRouter';
-import { Snackbar } from 'react-native-paper';
 import { createParam } from 'solito';
+import { isEqual } from 'lodash';
 
 export type RegistDataType = {
   email: string,
   first_name: string,
   last_name: string,
   mobile_number: string | null,
-}
+};
 
 const { useParam } = createParam<NonNullable<ProfileStackParamList['default']['AccountDataScreen']>>();
 
 const AccountDataScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const { userData, token } = useTypedSelector(state => state.general);
-  const { setSwipeablePanelProps, setSnackbarMessage } = useActions();
+  const { setSwipeablePanelProps, setBlockedScreen, setSnackbarMessage } = useActions();
   const [subView] = useParam('subView');
   const router = useRouter();
-  const [formData, setFormData] = useState<RegistDataType>({
-    email: userData ? userData.email : 'twoj_email@elf.pl',
-    first_name: userData ? userData.first_name : 'Kochany',
-    last_name: userData ? userData.last_name : 'Użytkownik',
-    mobile_number: userData ? userData.mobile_number : '123456789',
-  });
+  const initialFormData = {
+    email: userData ? userData.email : '',
+    first_name: userData ? userData.first_name : '',
+    last_name: userData ? userData.last_name : '',
+    mobile_number: userData ? userData.mobile_number : '',
+  };
+  const [oldFormData, setOldFormData] = useState<RegistDataType>(initialFormData);
+  const [formData, setFormData] = useState<RegistDataType>(initialFormData);
   const [loading, setLoading] = useState<boolean>(false);
   const [showTips, setShowTips] = useState<boolean>(false);
   const [isDataValid, setIsDataValid] = useState<boolean>(false);
+  const [unsavedData, setUnsavedData] = useState<boolean>(false);
 
   const changeFormDataHandler = (name: keyof RegistDataType, text: string | boolean) => {
     setFormData(prev => ({ ...prev, [name]: typeof text === 'string' ? text.replace(/\s/g, '') : text }));
   };
+
+  useEffect(() => {
+    if (userData) {
+      setOldFormData(initialFormData);
+      setFormData(initialFormData);
+    };
+  }, [userData]);
 
   useEffect(() => {
     const { email, first_name, last_name, mobile_number } = formData;
@@ -54,6 +64,15 @@ const AccountDataScreen: React.FC = () => {
       (mobile_number?.length === 0 || formData.mobile_number?.length === 3 || mobile_number?.length === 12)
     ))
   }, [formData]);
+
+  useEffect(() => {
+    console.log(oldFormData);
+    setUnsavedData(!isEqual(oldFormData, formData));
+  }, [oldFormData, formData]);
+
+  useEffect(() => {
+    setBlockedScreen({ blockedExit: unsavedData, blockedBack: unsavedData });
+  }, [unsavedData]);
 
   useEffect(() => {
     if (subView !== 'ChangePasswordScreen') {
@@ -107,26 +126,11 @@ const AccountDataScreen: React.FC = () => {
   const changeHandler = async () => {
     if (isDataValid) {
       setLoading(true);
-      const data: any = {};
-      let diff: boolean = false;
-      const fields: Array<'first_name' | 'last_name' | 'mobile_number'> = ['first_name', 'last_name', 'mobile_number'];
-      fields.forEach(field => {
-        if (formData[field] !== userData?.[field]) {
-          data[field] = formData[field];
-          diff = true;
-        }
-      });
-      if (diff) {
-        const isOk = await dispatch(generalServices.setUserData(data, 'put'));
+      if (unsavedData) {
+        const isOk = await dispatch(generalServices.setUserData(formData, 'put'));
         if (!!isOk) {
-          setSwipeablePanelProps({
-            title: 'Dane zostały zmienione!',
-            closeButton: false,
-            buttons: [{
-              children: 'OK',
-              onPress: () => goToProfile()
-            }]
-          })
+          setSnackbarMessage({ type: 'success', text: 'Dane konta zostały zaktualizowane' });
+          goToProfile();
         };
       } else {
         goToProfile();
@@ -178,55 +182,55 @@ const AccountDataScreen: React.FC = () => {
       {...(!userData ? { title: 'Przykładowe dane' } : {})}
       backgroundContent={Colors.Basic100}
     >
-        <ScrollView style={styles.Content}>
-          <View style={[styles.TextField, { marginTop: 45 }]}>
-            <TextField
-              label='Email'
-              value={formData.email}
-              inputStyles={{ backgroundColor: Colors.Basic300, borderRadius: 4, color: Colors.TextDark, padding: 10 }}
-              underline={false}
-              editable={false}
-              selectTextOnFocus={false}
-              caretHidden
-            />
-          </View>
-          <View style={styles.TextField}>
-            <TextField
-              label='Imię'
-              textContentType='name'
-              value={formData.first_name}
-              onChangeText={text => changeFormDataHandler('first_name', text)}
-              {...(showTips && !formData.first_name && { bottomText: 'Nie zostało podane imię' })}
-            />
-          </View>
-          <View style={styles.TextField}>
-            <TextField
-              label='Nazwisko'
-              textContentType='name'
-              value={formData.last_name}
-              onChangeText={text => changeFormDataHandler('last_name', text)}
-              {...(showTips && !formData.last_name && { bottomText: 'Nie zostało podane nazwisko' })}
-            />
-          </View>
-          <View style={styles.TextField}>
-            <TextField
-              label='Telefon (opcjonalne)'
-              textContentType='telephoneNumber'
-              keyboardType='phone-pad'
-              mask={['+', '4', '8', ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/]}
-              activeLabel
-              value={formData.mobile_number || ''}
-              onChangeText={text => changeFormDataHandler('mobile_number', text)}
-              {...(showTips && !(formData.mobile_number?.length === 0 || formData.mobile_number?.length === 3 || formData.mobile_number?.length === 12) && { bottomText: 'Niepoprawny numer telefonu' })}
-            />
-          </View>
-        </ScrollView>
-          <Button
-            stickyBottom
-            withLoading={!!token}
-            disabled={!token || loading}
-            onPress={changeHandler}>Zaktualizuj
-          </Button>
+      <ScrollView style={styles.Content}>
+        <View style={[styles.TextField, { marginTop: 45 }]}>
+          <TextField
+            label='Email'
+            value={formData.email}
+            inputStyles={{ backgroundColor: Colors.Basic300, borderRadius: 4, color: Colors.TextDark, padding: 10 }}
+            underline={false}
+            editable={false}
+            selectTextOnFocus={false}
+            caretHidden
+          />
+        </View>
+        <View style={styles.TextField}>
+          <TextField
+            label='Imię'
+            textContentType='name'
+            value={formData.first_name}
+            onChangeText={text => changeFormDataHandler('first_name', text)}
+            {...(showTips && !formData.first_name && { bottomText: 'Nie zostało podane imię' })}
+          />
+        </View>
+        <View style={styles.TextField}>
+          <TextField
+            label='Nazwisko'
+            textContentType='name'
+            value={formData.last_name}
+            onChangeText={text => changeFormDataHandler('last_name', text)}
+            {...(showTips && !formData.last_name && { bottomText: 'Nie zostało podane nazwisko' })}
+          />
+        </View>
+        <View style={styles.TextField}>
+          <TextField
+            label='Telefon (opcjonalne)'
+            textContentType='telephoneNumber'
+            keyboardType='phone-pad'
+            mask={['+', '4', '8', ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/]}
+            activeLabel
+            value={formData.mobile_number || ''}
+            onChangeText={text => changeFormDataHandler('mobile_number', text)}
+            {...(showTips && !(formData.mobile_number?.length === 0 || formData.mobile_number?.length === 3 || formData.mobile_number?.length === 12) && { bottomText: 'Niepoprawny numer telefonu' })}
+          />
+        </View>
+      </ScrollView>
+      <Button
+        stickyBottom
+        withLoading={!!token}
+        disabled={!token || loading}
+        onPress={changeHandler}>Zaktualizuj
+      </Button>
     </ScreenHeaderProvider>
   );
 };

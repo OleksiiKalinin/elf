@@ -43,11 +43,19 @@ export interface generalReducerState {
     snackbarMessage: SnackbarMessageType | null,
     showUserShouldBeLogedInModal: ShowUserShouldBeLogedInModalType,
     showUserShouldHaveCompanyModal: ShowUserShouldBeLogedInModalType,
+    showExitWarningModal: boolean,
+    blockedScreen: BlockedScreenType,
 }
 
 export type ShowUserShouldBeLogedInModalType = {
     state: boolean,
     closeAction: 'close' | 'redirectToRoot'
+};
+
+export type BlockedScreenType = {
+    blockedExit: boolean,
+    blockedBack: boolean,
+    backTo?: ()=> void,
 };
 
 export type WindowSizesType = ScaledSize;

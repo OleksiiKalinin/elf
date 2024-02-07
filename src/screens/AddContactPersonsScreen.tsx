@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, StyleSheet, BackHandler, Platform } from 'react-native';
 import { ContactPersonType } from '../store/reducers/types';
 import Typography from '../components/atoms/Typography';
 import TextField from '../components/molecules/TextField';
@@ -10,10 +10,11 @@ import useRouter from '../hooks/useRouter';
 import { ScrollView } from '../components/molecules/ScrollView';
 import TimePickerModal from '../components/modified_modules/react-native-paper-dates/Time/TimePickerModal';
 import validateMail from '../hooks/validateMail';
-import Modal from '../components/atoms/Modal';
 import CheckBox from '../components/atoms/CheckBox';
 import { Separator } from 'tamagui';
-import { isString } from 'lodash';
+import { isEqual, isString } from 'lodash';
+import { useActions } from '../hooks/useActions';
+import { useTypedSelector } from '../hooks/useTypedSelector';
 
 const emptyPerson: ContactPersonType = {
   email: null,
@@ -32,20 +33,63 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
   initialContactPersons,
   callback,
 }) => {
+  const oldContactPersons = initialContactPersons.length ? [...initialContactPersons].sort((a, b) => {
+    const orderA = a.id ?? Number.MAX_SAFE_INTEGER;
+    const orderB = b.id ?? Number.MAX_SAFE_INTEGER;
+    return orderA - orderB;
+  }) : [emptyPerson];
   const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(initialContactPersons.length ? [...initialContactPersons].sort((a, b) => {
     const orderA = a.id ?? Number.MAX_SAFE_INTEGER;
     const orderB = b.id ?? Number.MAX_SAFE_INTEGER;
     return orderA - orderB;
   }) : [emptyPerson]);
+  const [unsavedData, setUnsavedData] = useState<boolean>(false);
   const [showTips, setShowTips] = useState<boolean>(false);
   const [showTimepicker, setShowTimepicker] = useState<'start' | 'end' | false>(false);
   const [isDataValid, setIsDataValid] = useState<boolean>(false);
   const { backToRemoveParams } = useRouter();
+  const { blockedScreen } = useTypedSelector(s => s.general);
+  const { setBlockedScreen } = useActions();
 
   useEffect(() => {
-    console.log(contactPersons);
     setIsDataValid(validateContactPersons());
   }, [contactPersons]);
+
+  useEffect(() => {
+    setUnsavedData(!isEqual(oldContactPersons, contactPersons));
+  }, [oldContactPersons, contactPersons]);
+
+  useEffect(() => {
+    /* const beforeUnloadHandler = (event: { preventDefault: () => void; }) => {
+      if (unsavedData) event.preventDefault();
+    };
+
+    if (Platform.OS === 'web') {
+      if (unsavedData) {
+        window.addEventListener("beforeunload", beforeUnloadHandler);
+      } else {
+        window.removeEventListener("beforeunload", beforeUnloadHandler);
+      }
+    } else {
+      if (unsavedData) {
+        const handler = BackHandler.addEventListener('hardwareBackPress', () => {
+          setShowExitWarningModal({ state: true, callback: backToRemoveParams });
+          return true;
+        });
+
+        return () => {
+          handler.remove();
+        };
+      };
+    };
+
+    return () => {
+      if (Platform.OS === 'web') {
+        window.removeEventListener("beforeunload", beforeUnloadHandler);
+      }
+    } */
+    setBlockedScreen({...blockedScreen, blockedBack: unsavedData});
+  }, [unsavedData]);
 
   const validateContactPersons = (index?: number) => {
     const array = index ? [contactPersons[index]] : contactPersons;
@@ -125,7 +169,10 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
   };
 
   return (
-    <ScreenHeaderProvider title='Dane do kontaktu'>
+    <ScreenHeaderProvider
+      title='Dane do kontaktu'
+      /* callback={() => { unsavedData ? setShowExitWarningModal({ state: true, callback: backToRemoveParams }) : backToRemoveParams() }} */
+    >
       <ScrollView style={styles.ScrollView} contentContainerStyle={{ paddingTop: 25 }}>
         {contactPersons.map(({ email, mobile_number, id, contact_hours, preferred_mobile_number, preferred_email }, index) => (
           <View style={styles.ContactPerson} key={id}>

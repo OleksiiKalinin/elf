@@ -10,32 +10,45 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import Button from '../../components/molecules/Button';
 import { useActions } from '../../hooks/useActions';
 import useRouter from '../../hooks/useRouter';
+import { isEqual } from 'lodash';
 
 const NotificationScreen: React.FC = () => {
   const { userSettings, notificationConsents } = useTypedSelector(state => state.general);
-  const { setUserSettings } = useActions();
-  const [selectedNotifications, setSelectedNotifications] = useState<number[]>([]);
+  const { setUserSettings, setBlockedScreen } = useActions();
+  const [oldFormData, setOldFormData] = useState<number[]>(userSettings?.notifications || []);
+  const [formData, setFormData] = useState<number[]>(userSettings?.notifications || []);
+  const [unsavedData, setUnsavedData] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
-    setSelectedNotifications(userSettings?.notifications || []);
+    setOldFormData(userSettings?.notifications || []);
+    setFormData(userSettings?.notifications || []);
   }, [userSettings]);
 
+  useEffect(() => {
+    setUnsavedData(!isEqual(oldFormData, formData));
+  }, [oldFormData, formData]);
+
+  useEffect(() => {
+    setBlockedScreen({ blockedExit: unsavedData, blockedBack: unsavedData});
+  }, [unsavedData]);
+
   const handleSelectedItems = (id: number) => {
-    const mySet = new Set([...selectedNotifications]);
+    const mySet = new Set([...formData]);
     if (mySet.has(id)) {
       mySet.delete(id);
     } else {
       mySet.add(id);
-    }
-    setSelectedNotifications([...mySet]);
+    };
+    
+    setFormData([...mySet].sort((a, b) => a - b));
   };
 
   const changeHandler = () => {
     setLoading(true);
     if(userSettings){
-      setUserSettings({ ...userSettings, notifications: selectedNotifications });
+      setUserSettings({ ...userSettings, notifications: formData });
     };
     goToSettingsScreen();
   };
@@ -53,8 +66,8 @@ const NotificationScreen: React.FC = () => {
       <ScrollView contentContainerStyle={{paddingTop: 50}} style={styles.Content}>
         <Separator />
         <Switch
-          checked={!selectedNotifications.length}
-          onCheckedChange={(isOn) => isOn ? setSelectedNotifications([]) : setSelectedNotifications(notificationConsents.map(notification => notification.id))}
+          checked={!formData.length}
+          onCheckedChange={(isOn) => isOn ? setFormData([]) : setFormData(notificationConsents.map(notification => notification.id))}
           containerStyle={styles.HoldAllSwitch}
           leftTextView={
             <Typography style={styles.NotificationText} size={18}>
@@ -71,7 +84,7 @@ const NotificationScreen: React.FC = () => {
               }
               <Switch
                 key={index}
-                checked={selectedNotifications.includes(item.id)}
+                checked={formData.includes(item.id)}
                 onCheckedChange={() => handleSelectedItems(item.id)}
                 containerStyle={styles.NotificationSwitch}
                 leftTextView={

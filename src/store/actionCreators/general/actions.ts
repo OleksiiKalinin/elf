@@ -1,7 +1,7 @@
 import { SwipeablePanelProps } from "../../../components/organismes/SwipeablePanel";
 import { CurrentScreenType } from "../../../hooks/withUrl";
 import { generalActionTypes } from "../../actions";
-import { AppDataType, CandidateMarkType, CandidateNotesType, CandidatesFiltersType, CompanyDataType, InvoiceType, JobIndustryType, ShowUserShouldBeLogedInModalType, SnackbarMessageType, UserAdvertType, UserDataType, UserEventType, UserQuestionsType, UserSettingsType, WindowSizesType } from "../../reducers/types";
+import { AppDataType, BlockedScreenType, CandidateMarkType, CandidateNotesType, CandidatesFiltersType, CompanyDataType, InvoiceType, JobIndustryType,ShowUserShouldBeLogedInModalType, SnackbarMessageType, UserAdvertType, UserDataType, UserEventType, UserQuestionsType, UserSettingsType, WindowSizesType } from "../../reducers/types";
 import { generalReducerAction } from "./types";
 
 const setToken = (payload: {token: string | null, refresh_token: string | null}): generalReducerAction => ({
@@ -21,6 +21,11 @@ const setShowUserShouldBeLogedInModal = (payload: ShowUserShouldBeLogedInModalTy
 
 const setShowUserShouldHaveCompanyModal = (payload: ShowUserShouldBeLogedInModalType): generalReducerAction => ({
     type: generalActionTypes.SET_SHOW_USER_SHOULD_HAVE_COMPANY_MODAL,
+    payload
+})
+
+const setShowExitWarningModal = (payload: boolean): generalReducerAction => ({
+    type: generalActionTypes.SET_SHOW_EXIT_WARNING_MODAL,
     payload
 })
 
@@ -127,6 +132,11 @@ const setSnackbarMessage = (payload: SnackbarMessageType | null): generalReducer
     payload
 });
 
+const setBlockedScreen= (payload: BlockedScreenType): generalReducerAction => ({
+    type: generalActionTypes.SET_BLOCKED_SCREEN,
+    payload
+});
+
 const generalActions = {
     setToken,
     setIsTabbarVisible,
@@ -153,6 +163,8 @@ const generalActions = {
     setUserSettings,
     setShowUserShouldBeLogedInModal,
     setShowUserShouldHaveCompanyModal,
+    setShowExitWarningModal,
+    setBlockedScreen
 };
 
 export default generalActions;

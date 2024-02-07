@@ -10,32 +10,45 @@ import Button from '../../components/molecules/Button';
 import { useActions } from '../../hooks/useActions';
 import useRouter from '../../hooks/useRouter';
 import { Separator } from 'tamagui';
+import { isEqual } from 'lodash';
 
 const CookieScreen: React.FC = () => {
   const { userSettings, cookieConsents } = useTypedSelector(state => state.general);
-  const { setUserSettings } = useActions();
-  const [selectedConsents, setSelectedConsents] = useState<number[]>([]);
+  const { setUserSettings, setBlockedScreen } = useActions();
+  const [oldFormData, setOldFormData] = useState<number[]>(userSettings?.notifications || []);
+  const [formData, setFormData] = useState<number[]>(userSettings?.notifications || []);
+  const [unsavedData, setUnsavedData] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
-    setSelectedConsents(userSettings?.cookies || []);
+    setOldFormData(userSettings?.cookies || []);
+    setFormData(userSettings?.cookies || []);
   }, [userSettings]);
 
+  useEffect(() => {
+    setUnsavedData(!isEqual(oldFormData, formData));
+  }, [oldFormData, formData]);
+
+  useEffect(() => {
+    setBlockedScreen({ blockedExit: unsavedData, blockedBack: unsavedData });
+  }, [unsavedData]);
+
   const handleSelectedItems = (id: number) => {
-    const mySet = new Set([...selectedConsents]);
+    const mySet = new Set([...formData]);
     if (mySet.has(id)) {
       mySet.delete(id);
     } else {
       mySet.add(id);
-    }
-    setSelectedConsents([...mySet]);
+    };
+    
+    setFormData([...mySet].sort((a, b) => a - b));
   };
 
   const changeHandler = () => {
     setLoading(true);
     if (userSettings) {
-      setUserSettings({ ...userSettings, cookies: selectedConsents });
+      setUserSettings({ ...userSettings, cookies: formData });
     };
     goToSettingsScreen();
   };
@@ -60,8 +73,8 @@ const CookieScreen: React.FC = () => {
         <View style={styles.Buttons}>
           <Separator />
           <Switch
-            checked={selectedConsents.length === cookieConsents.length}
-            onCheckedChange={(isOn) => isOn ? setSelectedConsents(cookieConsents.map(item => item.id)) : setSelectedConsents([1])}
+            checked={formData.length === cookieConsents.length}
+            onCheckedChange={(isOn) => isOn ? setFormData(cookieConsents.map(item => item.id)) : setFormData([1])}
             containerStyle={styles.AcceptAllSwitch}
             leftTextView={
               <Typography style={styles.SwitchText} size={18}>
@@ -76,10 +89,10 @@ const CookieScreen: React.FC = () => {
               }
               <Switch
                 key={index}
-                checked={item.id === 0 || selectedConsents.includes(item.id)}
+                checked={item.id === 0 || formData.includes(item.id)}
                 onCheckedChange={() => item.id !== 1 && handleSelectedItems(item.id)}
                 containerStyle={styles.ConsentSwitch}
-                style={{opacity: item.id === 1 ? .7 : 1}}
+                style={{ opacity: item.id === 1 ? .7 : 1 }}
                 leftTextView={
                   <>
                     <Typography style={styles.SwitchText} size={18} textAlign='left'>
@@ -122,7 +135,7 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   AcceptAllSwitch: {
-    paddingHorizontal: 19, 
+    paddingHorizontal: 19,
     height: 58
   },
   SwitchText: {

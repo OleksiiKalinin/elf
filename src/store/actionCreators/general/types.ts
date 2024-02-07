@@ -1,7 +1,7 @@
 import { SwipeablePanelProps } from "../../../components/organismes/SwipeablePanel";
 import { CurrentScreenType } from "../../../hooks/withUrl";
 import { generalActionTypes } from "../../actions";
-import { AppDataType, CandidateMarkType, CandidateNotesType, CandidatesFiltersType, CompanyDataType, InvoiceType, JobExperienceType, JobIndustryType, JobSalaryModeType, JobSalaryTaxType, MarkDataType, NoteDataType, ShowUserShouldBeLogedInModalType, SnackbarMessageType, UserAdvertType, UserDataType, UserEventType, UserQuestionsType, UserSettingsType, WindowSizesType } from "../../reducers/types";
+import { AppDataType, BlockedScreenType, CandidateMarkType, CandidateNotesType, CandidatesFiltersType, CompanyDataType, InvoiceType, JobExperienceType, JobIndustryType, JobSalaryModeType, JobSalaryTaxType, MarkDataType, NoteDataType, ShowUserShouldBeLogedInModalType, SnackbarMessageType, UserAdvertType, UserDataType, UserEventType, UserQuestionsType, UserSettingsType, WindowSizesType } from "../../reducers/types";
 
 interface setToken {
     type: generalActionTypes.SET_TOKEN,
@@ -21,6 +21,11 @@ interface setShowUserShouldBeLogedInModal {
 interface setShowUserShouldHaveCompanyModal {
     type: generalActionTypes.SET_SHOW_USER_SHOULD_HAVE_COMPANY_MODAL,
     payload: ShowUserShouldBeLogedInModalType
+}
+
+interface setShowExitWarningModal {
+    type: generalActionTypes.SET_SHOW_EXIT_WARNING_MODAL,
+    payload: boolean,
 }
 
 interface setUserData {
@@ -126,6 +131,11 @@ interface setSnackbarMessage {
     payload: SnackbarMessageType | null,
 }
 
+interface setBlockedScreen {
+    type: generalActionTypes.SET_BLOCKED_SCREEN,
+    payload: BlockedScreenType,
+}
+
 export type generalReducerAction = 
     setToken |
     setIsTabbarVisible |
@@ -151,4 +161,6 @@ export type generalReducerAction =
     resetStore |
     setSnackbarMessage |
     setShowUserShouldBeLogedInModal |
-    setShowUserShouldHaveCompanyModal
+    setShowUserShouldHaveCompanyModal |
+    setShowExitWarningModal |
+    setBlockedScreen

@@ -56,6 +56,11 @@ const initialState: generalReducerState = {
         state: false,
         closeAction: 'close'
     },
+    showExitWarningModal: false,
+    blockedScreen: {
+        blockedExit: false,
+        blockedBack: false
+    },
 }
 
 export const generalReducer = (state = initialState, action: generalReducerAction): generalReducerState => {
@@ -96,6 +101,8 @@ export const generalReducer = (state = initialState, action: generalReducerActio
             return { ...state, showUserShouldBeLogedInModal: action.payload };
         case generalActionTypes.SET_SHOW_USER_SHOULD_HAVE_COMPANY_MODAL:
             return { ...state, showUserShouldHaveCompanyModal: action.payload };
+        case generalActionTypes.SET_SHOW_EXIT_WARNING_MODAL:
+            return { ...state, showExitWarningModal: action.payload };
         case generalActionTypes.SET_IS_MAIN_MENU_FLAT_LIST:
             AsyncStorage.setItem('isMainMenuFlatList', Number(action.payload).toString());
             return { ...state, isMainMenuFlatList: action.payload };
@@ -111,6 +118,8 @@ export const generalReducer = (state = initialState, action: generalReducerActio
             return { ...state, candidatesFilters: action.payload };
         case generalActionTypes.SET_CANDIDATES_FILTERS:
             return { ...state, candidatesFilters: action.payload };
+        case generalActionTypes.SET_BLOCKED_SCREEN:
+            return { ...state, blockedScreen: action.payload };
         case generalActionTypes.SET_USER_SETTINGS:
             if (action.payload) {
                 if (action.payload.notifications) {

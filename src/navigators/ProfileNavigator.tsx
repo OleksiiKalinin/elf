@@ -34,6 +34,7 @@ export type ProfileStackParamList = {
     // PaymentTemporalScreen: undefined,
     CompanyEditorScreen:
     & (
+      { subView?: 'options' }
       | SubView<'GoogleMapScreen'>
       | SubView<'CompanyInvoiceScreen'>
       | SubView<'JobCategoryScreen'>

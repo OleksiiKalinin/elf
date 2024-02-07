@@ -1,5 +1,7 @@
 import {
+  BackHandler,
   Image,
+  Platform,
   ScrollView,
   StyleSheet,
   View,
@@ -27,33 +29,42 @@ import { Separator } from 'tamagui';
 import DraggableList from '../../components/organismes/DraggableList';
 import { useActions } from '../../hooks/useActions';
 import FormProgressBar, { FormFieldType } from '../../components/organismes/FormProgressBar';
+import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
+import { createParam } from 'solito';
+import { sub } from 'react-native-reanimated';
+
+const emptyCompanyData = {
+  id: -1,
+  job_industry: null,
+  name: null,
+  nip_info: null,
+  address: null,
+  description: null,
+  employees_amount: null,
+  square_footage: null,
+  contactPersons: [],
+  website: null,
+  account_facebook: null,
+  account_instagram: null,
+  account_linkedIn: null,
+  languages: [],
+  services: null,
+  logo: null,
+  photos: [],
+  certificates: [],
+};
+
+const { useParam } = createParam<NonNullable<ProfileStackParamList['default']['CompanyEditorScreen']>>();
 
 const CompanyEditorScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
-  const { setSnackbarMessage } = useActions();
+  const { setSnackbarMessage, setBlockedScreen, setShowExitWarningModal } = useActions();
+  const [subView] = useParam('subView');
+  const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
   const { jobIndustries, userCompany, languages, services, employeesAmount } = useTypedSelector(state => state.general);
-  const [companyData, setCompanyData] = useState<CompanyDataType>(userCompany || {
-    id: -1,
-    job_industry: null,
-    name: null,
-    nip_info: null,
-    address: null,
-    description: null,
-    employees_amount: null,
-    square_footage: null,
-    contactPersons: [],
-    website: null,
-    account_facebook: null,
-    account_instagram: null,
-    account_linkedIn: null,
-    languages: [],
-    services: null,
-    logo: null,
-    photos: [],
-    certificates: [],
-  });
-  const [oldCompanyData, setOldCompanyData] = useState<CompanyDataType>();
+  const [companyData, setCompanyData] = useState<CompanyDataType>(userCompany || emptyCompanyData);
+  const [oldCompanyData, setOldCompanyData] = useState<CompanyDataType>(userCompany || emptyCompanyData);
   const [logoProgress, setLogoProgress] = useState<number | null>(null);
   const [photosProgress, setPhotosProgress] = useState<number | null>(null);
   const [certificatesProgress, setCertificatesProgress] = useState<number | null>(null);
@@ -62,9 +73,9 @@ const CompanyEditorScreen: React.FC = () => {
   const [editMode, setEditMode] = useState(false);
   const [showTips, setShowTips] = useState<boolean>(false);
   const [fields, setFields] = useState<FormFieldType[]>([]);
+  const [unsavedData, setUnsavedData] = useState<boolean>(false);
   const { name, address, job_industry, description, nip_info, employees_amount, square_footage, account_instagram, account_facebook, account_linkedIn, website, logo, photos, certificates, contactPersons } = companyData;
 
-  const router = useRouter();
   const companyPhotosLimit = 20;
   const companyCertificatesLimit = 20;
 
@@ -77,7 +88,7 @@ const CompanyEditorScreen: React.FC = () => {
   }, [userCompany]);
 
   useEffect(() => {
-    console.log(companyData);
+    /* console.log(companyData); */
     setFields([
       { name: 'name', isValid: !!(name && name.length > 2 && name.length <= 100), required: true },
       { name: 'address', isValid: !!address, required: true },
@@ -95,6 +106,18 @@ const CompanyEditorScreen: React.FC = () => {
       { name: 'socialMedia', isValid: !!(account_instagram || account_facebook || account_linkedIn || website) },
     ]);
   }, [companyData]);
+
+  useEffect(() => {
+    setUnsavedData(!isEqual(oldCompanyData, companyData));
+  }, [oldCompanyData, companyData]);
+
+  useEffect(() => {
+    console.log(subView);
+  }, [subView]);
+
+  useEffect(() => {
+    setBlockedScreen({ blockedExit: unsavedData, blockedBack: unsavedData,/*  backTo: goToCompanyScreen  */});
+  }, [unsavedData]);
 
   const isFieldValid = (fieldName: keyof typeof companyData) => {
     const fieldIndex = fields.findIndex(item => item.name === fieldName);
@@ -411,13 +434,13 @@ const CompanyEditorScreen: React.FC = () => {
       title={editMode ? 'Edytuj profil firmy' : 'Utwórz profil firmy'}
       backgroundContent={Colors.Basic100}
     >
-      <FormProgressBar
+      {/* <FormProgressBar
         fields={fields}
         giftInfoText={{
           requiredFields: 'Uzupełnij podstawowe pola, aby zakończyć proces tworzenia profilu firmy.',
           optionalFields: 'Uzupełnij dodatkowe pola, aby otrzymać prezent w postaci możliwości dodania darmowego ogłoszenia.',
         }}
-      />
+      /> */}
       <ScrollView style={styles.Content} contentContainerStyle={{ paddingTop: 20 }}>
         <Typography
           size={20}
