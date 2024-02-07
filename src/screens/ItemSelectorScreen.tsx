@@ -109,7 +109,7 @@ const ItemSelectorScreen: React.FC<ItemSelectorScreenProps> = ({
 
     return (
       <>
-        {!!filteredList.length &&
+        {!!filteredList.length && !!label &&
           <Typography color={Colors.Basic600} style={styles.ItemsLabel}>
             {label}
           </Typography>

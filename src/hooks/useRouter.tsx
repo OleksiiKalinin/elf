@@ -250,8 +250,9 @@ export default function useRouter() {
                 setBlockedScreen({blockedBack: false, blockedExit: false});
             } else {
                 replace(getPathnameFromScreen(currentScreen))
+                setSwipeablePanelProps(null);
             }
-            setSwipeablePanelProps(null);
+            // setSwipeablePanelProps(null);
         },
         push: (url: WithUrlProps, as?: PushParams[1], transitionOptions?: PushParams[2]) => {
             const access = preProcessHandler(url);

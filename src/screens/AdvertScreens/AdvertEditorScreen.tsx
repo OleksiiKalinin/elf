@@ -212,7 +212,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
   const [advertExists, setAdvertExists] = useState<boolean>(false);
   const [id] = useParam('id', { initial: idInitial })
   const [showTimepicker, setShowTimepicker] = useState<'start' | 'end' | false>(false);
-  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
+  const [expanded, setExpanded] = useState<{ [k in keyof NewUserAdvertType]?: boolean }>({});
   const [selectedPaymentPlan, setSelectedPaymentPlan] = useState<number | null>(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
   const [paymentSuccess, setPaymentSuccess] = useState<boolean | null>(null);
@@ -446,12 +446,22 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
       params: {
         subView: 'EditableItemSelectorScreen',
         callback: (data) => changeAdvertDataHandler('responsibilities', data),
-        itemSelectorList: [{
-          id: 1, 
-          name: 'dcs'
-        }],
+        itemSelectorList: [
+          {
+            id: 1,
+            name: 'Blaa obo bobo tak mak 1'
+          },
+          {
+            id: 2,
+            name: 'Blaa obo bobo tak mak 2'
+          },
+          {
+            id: 3,
+            name: 'Blaa obo bobo tak mak 3'
+          },
+        ],
         initialData: advertData.responsibilities,
-        headerProps: {title: 'Zakres obowiązków'}
+        headerProps: { title: 'Zakres obowiązków' }
       },
     });
   };
@@ -626,6 +636,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                       <View style={{ justifyContent: 'flex-end', paddingHorizontal: 10, paddingBottom: 16 }}>
                         {salarySetsByContractType[type_of_contract_id].map((e, i) => (
                           <Button
+                            key={i}
                             variant='TouchableOpacity'
                             style={{ justifyContent: 'flex-end', marginBottom: i === 0 ? 10 : 0 }}
                             onPress={() => changeAdvertSalaryHandler({ id: salary_id, newValues: { salary_tax_type_id: e.salary_tax_type_id, salary_time_type_id: e.salary_time_type_id } })}
@@ -695,7 +706,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                   </Button>
                 </View>
                 <Typography
-                  numberOfLines={descriptionExpanded ? undefined : 3}
+                  numberOfLines={expanded.description ? undefined : 3}
                   color={Colors.Basic600}
                 >
                   {advertData.description}
@@ -703,12 +714,12 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                 <Button
                   variant='text'
                   size='small'
-                  onPress={() => setDescriptionExpanded(prev => !prev)}
+                  onPress={() => setExpanded(prev => ({ ...prev, description: !prev.description }))}
                 >
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <SvgIcon icon={descriptionExpanded ? "arrowTop" : "arrowBottom"} fill={Colors.Basic500} />
+                    <SvgIcon icon={expanded.description ? "arrowTop" : "arrowBottom"} fill={Colors.Basic500} />
                     <Typography>
-                      {descriptionExpanded ? 'Ukryj' : 'Zobacz cały opis'}
+                      {expanded.description ? 'Ukryj' : 'Rozwiń'}
                     </Typography>
                   </View>
                 </Button>
@@ -811,7 +822,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
             />
           </Accordion>
           <Separator />
-          {advertData.duties_ids.length ?
+          {advertData.responsibilities.length ?
             <>
               <View style={{ paddingHorizontal: 19, paddingVertical: 12 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
@@ -827,9 +838,26 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                     </Typography>
                   </Button>
                 </View>
-                <Typography color={Colors.Basic600}>
-                  {advertData.responsibilities.join('\n')}
+                <Typography
+                  numberOfLines={expanded.responsibilities ? undefined : 3}
+
+                >
+                  {advertData.responsibilities.map((e, i, array) => <Typography color={Colors.Basic600}>
+                    &#x2022;{' '}{e}{i === array.length - 1 ? '' : '\n'}
+                  </Typography>)}
                 </Typography>
+                <Button
+                  variant='text'
+                  size='small'
+                  onPress={() => setExpanded(prev => ({ ...prev, responsibilities: !prev.responsibilities }))}
+                >
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <SvgIcon icon={expanded.responsibilities ? "arrowTop" : "arrowBottom"} fill={Colors.Basic500} />
+                    <Typography>
+                      {expanded.responsibilities ? 'Ukryj' : 'Rozwiń'}
+                    </Typography>
+                  </View>
+                </Button>
               </View>
             </>
             :
@@ -958,7 +986,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
         {step === 'paymentPlan' && <>
           <ScrollView contentContainerStyle={{ padding: 19 }}>
             {packageTypes.map((item) =>
-              <View style={{
+              <View key={item.id} style={{
                 // maxWidth: MaxPlanCardWidth - (windowSizes.width > MaxPlanCardWidth * 2 ? 40 : 0),
                 // width: windowSizes.width - 70,
                 marginBottom: 20,
@@ -1035,6 +1063,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           <View style={{ padding: 19, alignItems: 'flex-start' }}>
             {['BLIK', 'DZIK', 'KLIK'].map((e) => (
               <Button
+                key={e}
                 size='medium'
                 variant={selectedPaymentMethod === e ? 'secondarySelected' : 'secondary'}
                 icon={selectedPaymentMethod === e ? <SvgIcon icon='check' /> : undefined}
