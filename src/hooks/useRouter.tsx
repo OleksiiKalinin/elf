@@ -110,7 +110,7 @@ const validateUrl = (props: WithUrlProps): string => {
 }
 
 export default function useRouter() {
-    const { currentScreen, userData, userCompany } = useTypedSelector(s => s.general);
+    const { currentScreen, userData, userCompany, blockedScreen } = useTypedSelector(s => s.general);
     const { setSwipeablePanelProps, setShowUserShouldBeLogedInModal, setShowUserShouldHaveCompanyModal, setBlockedScreen } = useActions();
     const { back, parseNextPath, push, replace } = useSolitoRouter();
     const { params, setParams } = useParams();
@@ -247,7 +247,7 @@ export default function useRouter() {
         backToRemoveParams: () => {
             if (Platform.OS === 'web') {
                 backOrReplace();
-                setBlockedScreen({blockedBack: false, blockedExit: false});
+                setBlockedScreen({...blockedScreen, blockedBack: false,});
             } else {
                 replace(getPathnameFromScreen(currentScreen))
                 setSwipeablePanelProps(null);
@@ -265,9 +265,9 @@ export default function useRouter() {
             if (!access) return;
 
             let options: any = {};
-            if (currentScreen.stack === url.stack) {
+            /* if (currentScreen.stack === url.stack) {
                 options = { experimental: { nativeBehavior: 'stack-replace', isNestedNavigator: true } };
-            }
+            } */
             replace(validateUrl(url), as, { ...transitionOptions, ...options });
         },
     }

@@ -117,7 +117,7 @@ const CompanyEditorScreen: React.FC = () => {
 
   useEffect(() => {
     setBlockedScreen({ blockedExit: unsavedData, blockedBack: unsavedData,/*  backTo: goToCompanyScreen  */});
-  }, [unsavedData]);
+  }, [unsavedData, subView]);
 
   const isFieldValid = (fieldName: keyof typeof companyData) => {
     const fieldIndex = fields.findIndex(item => item.name === fieldName);

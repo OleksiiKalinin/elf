@@ -16,7 +16,7 @@ const Modal: FC<ComponentProps<typeof RNModal> & { onClose: () => void, withoutU
 
 	const closeRequest = () => {
 		onClose();
-		if (Platform.OS === 'web' && windowExists()) {
+		if (Platform.OS === 'web' && windowExists() && !withoutUrl) {
 			// if (wasVisible.current) {
 			// 	window.history.back();
 			// } else {
