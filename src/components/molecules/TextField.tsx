@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, FC, ComponentProps, ReactNode } from 'react';
+import React, { useEffect, useState, useRef, FC, ComponentProps, ReactNode, forwardRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -16,13 +16,12 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 
 type TextFieldProps = ({
   autoGrow?: true,
-  lineHeight: number,
   multiline: true;
 } | {
   autoGrow?: false,
-  lineHeight?: number,
   multiline?: boolean;
 }) & {
+  lineHeight?: number,
   disableNewLineSymbol?: boolean,
   label?: string,
   left?: ReactNode,
@@ -36,7 +35,7 @@ type TextFieldProps = ({
   containerStyles?: StyleProp<TextStyle>,
 } & ComponentProps<typeof TextInput>;
 
-const TextField: FC<TextFieldProps> = ({
+const TextField: FC<TextFieldProps> = forwardRef(({
   label = null,
   left = null,
   right = null,
@@ -52,7 +51,7 @@ const TextField: FC<TextFieldProps> = ({
   style,
   disableNewLineSymbol = false,
   ...props
-}) => {
+}, ref) => {
   const [moveLabelDir, setMoveLabelDir] = useState<boolean>(!!props.value || !!props.defaultValue || !!activeLabel);
   const [isOnTop, setIsOnTop] = useState<boolean>(moveLabelDir);
   const [isSecured, setIsSecured] = useState<boolean>(!!props.secureTextEntry);
@@ -124,13 +123,16 @@ const TextField: FC<TextFieldProps> = ({
             </Typography>
           </Animated.View>
           <TextInput
+            ref={(node) => {
+              (inputRef as any).current = node;
+              if (ref) (ref as any).current = node;
+            }}
             placeholderTextColor={Colors.Basic600}
             style={[styles.Input, inputStyles, { lineHeight: lineHeight }, (autoGrow && Platform.OS === 'web') ? { overflow: 'hidden' } : {}]}
             onFocus={() => setMoveLabelDir(true)}
             onBlur={() => !activeLabel && setMoveLabelDir(false)}
             blurOnSubmit={!props.multiline}
             selectionColor={Colors.TextDark}
-            ref={inputRef}
             textAlignVertical={props.multiline ? 'top' : 'center'}
             {...props}
             onChangeText={(masked, unmasked, obfuscated) => {
@@ -172,7 +174,8 @@ const TextField: FC<TextFieldProps> = ({
     </View>
     {bottomText && <Typography variant='small' color={Colors.Danger}>{bottomText}</Typography>}
   </>);
-};
+});
+
 export default TextField;
 
 const styles = StyleSheet.create({

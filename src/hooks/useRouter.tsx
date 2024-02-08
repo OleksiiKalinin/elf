@@ -110,7 +110,7 @@ const validateUrl = (props: WithUrlProps): string => {
 }
 
 export default function useRouter() {
-    const { currentScreen, userData, userCompany } = useTypedSelector(s => s.general);
+    const { currentScreen, userData, userCompany, swipeablePanelProps } = useTypedSelector(s => s.general);
     const { setSwipeablePanelProps, setShowUserShouldBeLogedInModal, setShowUserShouldHaveCompanyModal, setBlockedScreen } = useActions();
     const { back, parseNextPath, push, replace } = useSolitoRouter();
     const { params, setParams } = useParams();
@@ -205,7 +205,7 @@ export default function useRouter() {
         }
     }, [params]);
 
-    const backOrReplace = () => {
+    const backOrReplaceToRoot = () => {
         if (Platform.OS === 'web') {
             const win: any = window;
 
@@ -243,10 +243,10 @@ export default function useRouter() {
             }
         },
         parseNextPath,
-        back: backOrReplace,
+        back: backOrReplaceToRoot,
         backToRemoveParams: () => {
             if (Platform.OS === 'web') {
-                backOrReplace();
+                backOrReplaceToRoot();
                 setBlockedScreen({blockedBack: false, blockedExit: false});
             } else {
                 replace(getPathnameFromScreen(currentScreen))
@@ -265,7 +265,7 @@ export default function useRouter() {
             if (!access) return;
 
             let options: any = {};
-            if (currentScreen.stack === url.stack) {
+            if ((currentScreen.stack === url.stack) && !swipeablePanelProps) {
                 options = { experimental: { nativeBehavior: 'stack-replace', isNestedNavigator: true } };
             }
             replace(validateUrl(url), as, { ...transitionOptions, ...options });

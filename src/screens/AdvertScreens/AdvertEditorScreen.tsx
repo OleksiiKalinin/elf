@@ -459,6 +459,34 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
             id: 3,
             name: 'Blaa obo bobo tak mak 3'
           },
+          {
+            id: 4,
+            name: 'Blaa obo bobo tak mak 4'
+          },
+          {
+            id: 5,
+            name: 'Blaa obo bobo tak mak 5'
+          },
+          {
+            id: 6,
+            name: 'Blaa obo bobo tak mak 6'
+          },
+          {
+            id: 7,
+            name: 'Blaa obo bobo tak mak 7'
+          },
+          {
+            id: 8,
+            name: 'Blaa obo bobo tak mak 8'
+          },
+          {
+            id: 9,
+            name: 'Blaa obo bobo tak mak 9'
+          },
+          {
+            id: 10,
+            name: 'Blaa obo bobo tak mak 10'
+          },
         ],
         initialData: advertData.responsibilities,
         headerProps: { title: 'Zakres obowiązków' }

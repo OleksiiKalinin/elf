@@ -1,5 +1,5 @@
-import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
-import { Platform, StyleSheet, View, ScrollView as ScrollViewNative, BackHandler } from 'react-native';
+import React, { Fragment, Ref, RefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { Platform, StyleSheet, View, ScrollView as ScrollViewNative, BackHandler, TextInput } from 'react-native';
 import Colors from '../colors/Colors';
 import ScreenHeaderProvider from '../components/organismes/ScreenHeaderProvider';
 import { ScrollView } from '../components/molecules/ScrollView';
@@ -13,7 +13,6 @@ import { uuidv4 } from 'react-native-compressor';
 import { Undo as UndoIcon, Equal as DragIcon } from '@tamagui/lucide-icons';
 import { createParam } from 'solito';
 import DraggableList, { RenderItemParams } from '../components/organismes/DraggableList';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
 export type EditableItemSelectorScreenProps = {
   itemSelectorList: {
@@ -45,12 +44,17 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
   const [step, setStep] = useState<StepType>('fill');
   const [data, setData] = useState<DataType[]>(initialData.map(value => ({ id: uuidv4(), value, valueCopy: value, inEditting: false })));
   const ElementsViewRef = useRef<ScrollViewNative>(null);
+  const MainTextFieldRef = useRef<TextInput>(null);
   const scrollAccess = useRef(false);
   const { back, backToRemoveParams } = useRouter();
 
   useEffect(() => {
     setStepInitialParam('fill', { webBehavior: 'replace' });
     setStep('fill');
+
+    setTimeout(() => {
+      MainTextFieldRef.current?.focus();
+    }, 10);
   }, []);
 
   useEffect(() => {
@@ -91,6 +95,7 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
       scrollAccess.current = true;
       setData(prev => [...prev, { id: uuidv4(), value, valueCopy: value, inEditting: false }]);
       setNewItem('');
+      MainTextFieldRef.current?.focus();
     }
   }
 
@@ -122,15 +127,22 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
   }
 
   const itemInEdittingHandler = (props:
-    { id: string, inEditting: true, withSave?: never } |
-    { id: string, inEditting: false, withSave: boolean }
+    { id: string, ref: RefObject<TextInput>, inEditting: true, withSave?: never } |
+    { id: string, ref?: never, inEditting: false, withSave: boolean }
   ) => {
-    const { id, inEditting, withSave = false } = props;
+    const { id, inEditting, withSave = false, ref } = props;
     scrollAccess.current = false;
+
 
     setData(prev => {
       const index = data.findIndex((e) => e.id === id);
       if (index === -1) return prev;
+
+      if (ref?.current && inEditting) {
+        ref.current.focus();
+        (ref.current as any).selectionStart = prev[index].valueCopy.length;
+        (ref.current as any).selectionEnd = prev[index].valueCopy.length;
+      }
 
       return [
         ...prev.slice(0, index),
@@ -201,9 +213,10 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
         }}
         allowReturnEmptyList
       />}
-      <View style={step === 'select' ? { visibility: 'hidden', opacity: 0, height: 0, width: 0, position: 'absolute', left: '1000%' } : { flex: 1 }}>
+      <View style={step === 'select' ? { visibility: 'hidden', opacity: 0, position: 'absolute', left: '1000%' } : { flex: 1 }}>
         <View style={styles.Textfield}>
           <TextField
+            ref={MainTextFieldRef}
             label="Obowiązek"
             multiline
             height={'auto'}
@@ -266,6 +279,8 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
           keyExtractor={({ id }) => id}
           renderItem={({ item, drag }: RenderItemParams<DataType>) => {
             const { id, inEditting, value, valueCopy } = item;
+            const inputRef = useRef<TextInput>(null);
+
             return (
               <View
                 style={{
@@ -293,35 +308,29 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
                     flex: 1,
                     paddingVertical: 10,
                     borderWidth: 1,
-                    borderColor: Colors.White
+                    borderColor: Colors.White,
                   }, inEditting ? {
                     borderWidth: 0,
                     paddingVertical: 0,
                   } : {}]}
                 >
-                  {inEditting ?
-                    <TextField
-                      multiline
-                      height={'auto'}
-                      returnKeyType='none'
-                      maxLength={300}
-                      containerStyles={{ borderWidth: 1, padding: 10, paddingBottom: 15, borderRadius: 4 }}
-                      value={valueCopy}
-                      onChangeText={(value) => changeItemHandler(id, value)}
-                      numberOfLines={3}
-                      autoGrow
-                      lineHeight={21}
-                      disableNewLineSymbol
-                      autoFocus
-                    // {...(showTips && (!value || value.length < minChars) && {
-                    //   bottomText: !value ? 'Wprowadź opis' : `Opis musi zawierać minimum ${minChars} znaków`,
-                    // })}
-                    />
-                    :
-                    <Typography variant='h5'>
-                      {value}
-                    </Typography>
-                  }
+                  <TextField
+                    ref={inputRef}
+                    multiline
+                    height='auto'
+                    returnKeyType='none'
+                    underline={inEditting}
+                    maxLength={inEditting ? 300 : undefined}
+                    containerStyles={inEditting ? { borderWidth: 1, padding: 10, paddingBottom: 15, borderRadius: 4 } : { borderWidth: 0 }}
+                    value={valueCopy}
+                    onChangeText={(value) => changeItemHandler(id, value)}
+                    numberOfLines={3}
+                    autoGrow
+                    lineHeight={21}
+                    disableNewLineSymbol
+                    editable={inEditting}
+                    pointerEvents={inEditting ? 'auto' : 'none'}
+                  />
                 </View>
                 <View style={{ padding: 5, justifyContent: 'center' }}>
                   {inEditting ? <>
@@ -349,7 +358,7 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
                     </Button>
                     <Button
                       variant='TouchableOpacity'
-                      onPress={() => itemInEdittingHandler({ id, inEditting: true })}
+                      onPress={() => itemInEdittingHandler({ id, ref: inputRef, inEditting: true })}
                       style={{ padding: 5 }}
                     >
                       <SvgIcon icon='pencil' />
