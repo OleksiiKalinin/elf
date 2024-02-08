@@ -116,7 +116,7 @@ const CompanyEditorScreen: React.FC = () => {
   }, [subView]);
 
   useEffect(() => {
-    setBlockedScreen({ blockedExit: unsavedData, blockedBack: unsavedData,/*  backTo: goToCompanyScreen  */});
+    setBlockedScreen({ blockedExit: unsavedData, blockedBack: unsavedData,/*  backTo: goToCompanyScreen  */ });
   }, [unsavedData, subView]);
 
   const isFieldValid = (fieldName: keyof typeof companyData) => {
@@ -435,13 +435,13 @@ const CompanyEditorScreen: React.FC = () => {
       title={editMode ? 'Edytuj profil firmy' : 'Utwórz profil firmy'}
       backgroundContent={Colors.Basic100}
     >
-      {/* <FormProgressBar
+      <FormProgressBar
         fields={fields}
         giftInfoText={{
           requiredFields: 'Uzupełnij podstawowe pola, aby zakończyć proces tworzenia profilu firmy.',
           optionalFields: 'Uzupełnij dodatkowe pola, aby otrzymać prezent w postaci możliwości dodania darmowego ogłoszenia.',
         }}
-      /> */}
+      />
       <ScrollView style={styles.Content} contentContainerStyle={{ paddingTop: 20 }}>
         <Typography
           size={20}
