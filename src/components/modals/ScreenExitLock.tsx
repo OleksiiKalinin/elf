@@ -22,50 +22,56 @@ const ScreenExitLock = () => {
   const [subView] = useParam('subView');
   const [prevScreen, setPrevScreen] = useState<CurrentScreenType>();
   const [currentScreenState, setCurrentScreenState] = useState<CurrentScreenType>();
-  const [prevBlockedScreen, setPrevBlockedScreen] = useState<BlockedScreenType>();
+  const [prevBlockedScreen, setPrevBlockedScreen] = useState<BlockedScreenType | null>(null);
   const [popstate, setPopstate] = useState(false);
+  const [lockPopstate, setLockPopstate] = useState(false);
 
   const goBack = blockedScreen.backTo ? blockedScreen.backTo : !!swipeablePanelProps ? backToRemoveParams : back;
 
   useEffect(() => {
-    if (subView === undefined) {
+    console.log('swipeablePanelProps', swipeablePanelProps);
+    if (!swipeablePanelProps) {
       setBlockedScreen({ ...blockedScreen, blockedBack: blockedScreen.blockedExit });
     } else {
       setBlockedScreen({ ...blockedScreen, blockedBack: false });
     };
-  }, [subView]);
 
-    useEffect(() => {
-      console.log('prev', prevScreen?.screen);
-      console.log('current', currentScreen?.screen);
-      console.log('popstate', popstate);
-      console.log('subView', subView);
-    }, [currentScreen, prevScreen, popstate, subView]);
-
-  useEffect(() => {
     if (Platform.OS === 'web') {
-      if (subView === undefined && prevBlockedScreen) {
+      if (swipeablePanelProps?.mode === 'screen') {
+        if (!prevBlockedScreen && (blockedScreen.blockedExit || blockedScreen.blockedBack)) {
+          setPrevBlockedScreen(blockedScreen);
+        };
+      };
+      if (!swipeablePanelProps && prevBlockedScreen) {
         setBlockedScreen(prevBlockedScreen);
       };
-    }
-  }, [prevBlockedScreen, subView]);
+    };
+    setPopstate(false);
+  }, [swipeablePanelProps]);
 
   useEffect(() => {
-    if (Platform.OS === 'web') {
-      if (subView === undefined) {
-        setPrevBlockedScreen(blockedScreen);
-      };
-    }
-  }, [blockedScreen]);
+    /*     console.log('prev', prevScreen?.screen);
+        console.log('current', currentScreen?.screen);
+        console.log('popstate', popstate); */
+/*     console.log('prevBlockedScreen', prevBlockedScreen);
+    console.log('blockedScreen', prevBlockedScreen); */
+    /*     console.log('swipeablePanelProps', swipeablePanelProps); */
+  }, [/* currentScreen, prevScreen, popstate, swipeablePanelProps */prevBlockedScreen, blockedScreen]);
 
   useEffect(() => {
     if (!isEqual(currentScreen, currentScreenState)) {
       setPrevScreen(currentScreenState);
       setCurrentScreenState(currentScreen);
-      setBlockedScreen({ blockedExit: false, blockedBack: false });
-      setShowExitWarningModal(false);
     };
+    setPrevBlockedScreen(null);
+    setShowExitWarningModal(false);
+    setBlockedScreen({ blockedExit: false, blockedBack: false });
+    setPopstate(false);
   }, [currentScreen]);
+
+  useEffect(() => {
+    console.log(popstate);
+  }, [popstate]);
 
   useEffect(() => {
     const beforeUnloadHandler = (event: { preventDefault: () => void; }) => {
@@ -73,7 +79,7 @@ const ScreenExitLock = () => {
     };
 
     if (Platform.OS === 'web') {
-      if (blockedScreen.blockedExit || blockedScreen.blockedBack) {
+      if (blockedScreen.blockedExit || blockedScreen.blockedBack && !showExitWarningModal) {
         window.addEventListener("beforeunload", beforeUnloadHandler);
         window.addEventListener('popstate', popstateHandler);
       } else {
@@ -99,37 +105,49 @@ const ScreenExitLock = () => {
         window.removeEventListener('popstate', popstateHandler);
       }
     }
-  }, [blockedScreen]);
+  }, [blockedScreen, showExitWarningModal]);
 
   const popstateHandler = () => {
-    if (subView === undefined) {
-      setPopstate(true);
-      setShowExitWarningModal(true);
+    if (!popstate) {
+      if (subView === undefined) {
+        setPopstate(true);
+        setShowExitWarningModal(true);
 
-      // @ts-ignore
-      router.replace({
-        stack: currentScreen.stack,
-        screen: currentScreen.screen,
-        params: undefined,
-      });
-    } else if (!!subView && subView !== 'options' && blockedScreen.blockedBack) {
-      setPopstate(true);
-      setShowExitWarningModal(true);
+        // @ts-ignore
+        router.replace({
+          stack: currentScreen.stack,
+          screen: currentScreen.screen,
+          params: undefined,
+        });
 
-      // @ts-ignore
-      router.replace({
-        stack: currentScreen.stack,
-        screen: currentScreen.screen,
-        params: {
-          subView: subView
-        },
-      });
-    };
+        console.log(showExitWarningModal)
+        console.log('popstateHandler')
+      } else if (!!subView && subView !== 'options' && blockedScreen.blockedBack) {
+        setPopstate(true);
+        setShowExitWarningModal(true);
+
+        // @ts-ignore
+        router.replace({
+          stack: currentScreen.stack,
+          screen: currentScreen.screen,
+          params: {
+            subView: subView
+          },
+        });
+      };
+    } else {
+      console.log('test');
+      /* if (prevScreen) { */
+        (!!subView && subView !== 'options') ? subViewPopstateGoBack() : screenPopstateGoBack();
+        setShowExitWarningModal(false);
+  /*     } */
+    }
   };
 
   const screenPopstateGoBack = () => {
     if (Platform.OS === 'web') {
       if (prevScreen) {
+        console.log('screenPopstateGoBack');
         // @ts-ignore
         router.push({
           stack: prevScreen.stack,
@@ -137,20 +155,19 @@ const ScreenExitLock = () => {
           params: undefined,
         });
       };
-    }
+    };
   };
 
   const subViewPopstateGoBack = () => {
     if (Platform.OS === 'web') {
-      if (prevScreen) {
-        // @ts-ignore
-        router.replace({
-          stack: currentScreen.stack,
-          screen: currentScreen.screen,
-          params: undefined,
-        });
-      };
-    }
+      console.log('subViewPopstateGoBack');
+      // @ts-ignore
+      router.replace({
+        stack: currentScreen.stack,
+        screen: currentScreen.screen,
+        params: undefined,
+      });
+    };
   };
 
   const closeHandler = () => {
@@ -159,12 +176,12 @@ const ScreenExitLock = () => {
 
   const exitHandler = () => {
     (popstate && prevScreen && Platform.OS === 'web') ? (!!subView && subView !== 'options') ? subViewPopstateGoBack() : screenPopstateGoBack() : goBack();
-    closeHandler();
-    if(Platform.OS === 'web'){
+    if (Platform.OS === 'web') {
       setBlockedScreen({ blockedExit: false, blockedBack: false })
-    } else{
-      subView === undefined ? setBlockedScreen({ blockedExit: false, blockedBack: false }) : setBlockedScreen({ ...blockedScreen, blockedBack: false })
+    } else {
+      !swipeablePanelProps ? setBlockedScreen({ blockedExit: false, blockedBack: false }) : setBlockedScreen({ ...blockedScreen, blockedBack: false })
     };
+    closeHandler();
     setPopstate(false);
   };
 
