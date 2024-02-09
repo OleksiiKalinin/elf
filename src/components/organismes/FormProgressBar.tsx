@@ -12,6 +12,7 @@ export type FormFieldType = {
   name: string,
   isValid: boolean,
   required?: boolean,
+  value?: any,
 };
 
 type FormProgressBarProps = ({

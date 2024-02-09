@@ -1,7 +1,5 @@
 import {
-  BackHandler,
   Image,
-  Platform,
   ScrollView,
   StyleSheet,
   View,
@@ -31,7 +29,6 @@ import { useActions } from '../../hooks/useActions';
 import FormProgressBar, { FormFieldType } from '../../components/organismes/FormProgressBar';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { createParam } from 'solito';
-import { sub } from 'react-native-reanimated';
 
 const emptyCompanyData = {
   id: -1,
@@ -52,17 +49,18 @@ const emptyCompanyData = {
   logo: null,
   photos: [],
   certificates: [],
+  is_premium: false,
 };
 
 const { useParam } = createParam<NonNullable<ProfileStackParamList['default']['CompanyEditorScreen']>>();
 
 const CompanyEditorScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
-  const { setSnackbarMessage, setBlockedScreen, setShowExitWarningModal } = useActions();
+  const { setSnackbarMessage, setBlockedScreen, setShowDraftFormModal } = useActions();
   const [subView] = useParam('subView');
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
-  const { jobIndustries, userCompany, languages, services, employeesAmount } = useTypedSelector(state => state.general);
+  const { jobIndustries, userCompany, languages, services, employeesAmount, currentScreen } = useTypedSelector(state => state.general);
   const [companyData, setCompanyData] = useState<CompanyDataType>(userCompany || emptyCompanyData);
   const [oldCompanyData, setOldCompanyData] = useState<CompanyDataType>(userCompany || emptyCompanyData);
   const [logoProgress, setLogoProgress] = useState<number | null>(null);
@@ -70,40 +68,61 @@ const CompanyEditorScreen: React.FC = () => {
   const [certificatesProgress, setCertificatesProgress] = useState<number | null>(null);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [descriptionHeight, setDescriptionHeight] = useState(0);
-  const [editMode, setEditMode] = useState(false);
+  const [mode, setMode] = useState<'draft' | 'edit' | 'new'>('new');
   const [showTips, setShowTips] = useState<boolean>(false);
   const [fields, setFields] = useState<FormFieldType[]>([]);
   const [unsavedData, setUnsavedData] = useState<boolean>(false);
+  const [formSent, setFormSent] = useState<boolean>(false);
   const { name, address, job_industry, description, nip_info, employees_amount, square_footage, account_instagram, account_facebook, account_linkedIn, website, logo, photos, certificates, contactPersons } = companyData;
 
   const companyPhotosLimit = 20;
   const companyCertificatesLimit = 20;
 
   useLayoutEffect(() => {
+    console.log(userCompany);
     if (userCompany) {
-      setEditMode(true);
       setCompanyData(userCompany);
       setOldCompanyData(userCompany);
+      if (userCompany.is_premium) {
+        setMode('edit');
+      } else {
+        setMode('draft')
+      };
     };
   }, [userCompany]);
 
   useEffect(() => {
-    /* console.log(companyData); */
+    if(mode === 'draft' && !unsavedData && !formSent){
+      console.log(mode)
+      console.log(unsavedData)
+      setShowDraftFormModal({
+        type: 'info',
+        textInfo: 'Wypełnij obowiązkowe pola aby dokończyć proces zakładania profilu firmy.'
+      })
+    };
+  }, [mode, unsavedData]);
+
+  /*   useEffect(() => {
+      console.log(fields);
+    }, [fields]);
+   */
+  useEffect(() => {
+    /*     console.log(companyData); */
     setFields([
-      { name: 'name', isValid: !!(name && name.length > 2 && name.length <= 100), required: true },
-      { name: 'address', isValid: !!address, required: true },
-      { name: 'job_industry', isValid: !!job_industry, required: true },
-      { name: 'services', isValid: !!services?.length, required: true },
-      { name: 'contactPersons', isValid: (!!contactPersons && !!contactPersons.length), required: true },
-      { name: 'description', isValid: !!description, required: true },
-      { name: 'nip_info', isValid: !!nip_info },
-      { name: 'logo', isValid: !!logo },
-      { name: 'photos', isValid: !!photos?.length },
-      { name: 'certificates', isValid: !!certificates?.length },
-      { name: 'square_footage', isValid: !!(square_footage && square_footage.length && square_footage.length <= 8) },
-      { name: 'employees_amount', isValid: !!employees_amount },
-      { name: 'languages', isValid: !!languages?.length },
-      { name: 'socialMedia', isValid: !!(account_instagram || account_facebook || account_linkedIn || website) },
+      { name: 'name', value: name, isValid: !!(name && name.length > 2 && name.length <= 100), required: true },
+      { name: 'address', value: address, isValid: !!address, required: true },
+      { name: 'job_industry', value: job_industry, isValid: !!job_industry, required: true },
+      { name: 'services', value: services, isValid: !!companyData.services?.length, required: true },
+      { name: 'contactPersons', value: contactPersons, isValid: (!!contactPersons && !!contactPersons.length), required: true },
+      { name: 'description', value: description, isValid: !!description, required: true },
+      { name: 'nip_info', value: nip_info, isValid: !!nip_info },
+      { name: 'logo', value: logo, isValid: !!logo },
+      { name: 'photos', value: photos, isValid: !!photos?.length },
+      { name: 'certificates', value: certificates, isValid: !!certificates?.length },
+      { name: 'square_footage', value: square_footage, isValid: !!(square_footage && square_footage.length && square_footage.length <= 8) },
+      { name: 'employees_amount', value: employees_amount, isValid: !!employees_amount },
+      { name: 'languages', value: languages, isValid: !!companyData.languages?.length },
+      { name: 'socialMedia', value: !!(account_instagram || account_facebook || account_linkedIn || website) ?? null, isValid: !!(account_instagram || account_facebook || account_linkedIn || website) },
     ]);
   }, [companyData]);
 
@@ -112,11 +131,7 @@ const CompanyEditorScreen: React.FC = () => {
   }, [oldCompanyData, companyData]);
 
   useEffect(() => {
-    console.log(subView);
-  }, [subView]);
-
-  useEffect(() => {
-    setBlockedScreen({ blockedExit: unsavedData, blockedBack: unsavedData,/*  backTo: goToCompanyScreen  */ });
+    setBlockedScreen({ blockedExit: unsavedData, blockedBack: unsavedData });
   }, [unsavedData, subView]);
 
   const isFieldValid = (fieldName: keyof typeof companyData) => {
@@ -124,7 +139,25 @@ const CompanyEditorScreen: React.FC = () => {
     return fieldIndex !== -1 && fields[fieldIndex].isValid;
   };
 
-  const validateData = () => {
+  const validateDataToCreateDraft = () => {
+    if (
+      !(
+        !isNumber(logoProgress)
+        && !isNumber(photosProgress)
+        && !isNumber(certificatesProgress)
+      )
+    ) {
+      setSnackbarMessage({ type: 'error', text: 'Trwa ładowanie zdjęć' });
+      return false;
+    } else if (!fields.every(item => item.isValid || (item.value === null || [])) || !fields.some(item => item.isValid)) {
+      setSnackbarMessage({ type: 'error', text: 'Wypełnij poprawnie pola!' });
+      return false;
+    } else {
+      return true;
+    };
+  };
+
+  const validateDataToCreateCompany = () => {
     if (
       !(
         !isNumber(logoProgress)
@@ -135,35 +168,73 @@ const CompanyEditorScreen: React.FC = () => {
       setSnackbarMessage({ type: 'error', text: 'Trwa ładowanie zdjęć' });
       return false;
     } else if (!fields.filter(field => field.required).every(item => item.isValid)) {
-      setSnackbarMessage({ type: 'error', text: 'Wypełnij wszystkie obowiązkowe pola z gwiazdką!' });
+      /*       setSnackbarMessage({ type: 'error', text: 'Wypełnij wszystkie obowiązkowe pola z gwiazdką!' }); */
       return false;
     } else if (!(isFieldValid('square_footage') || companyData.square_footage === null)) {
-      setSnackbarMessage({ type: 'error', text: 'Wypełnij poprawnie dodatkowe pola lub pozostaw je puste' });
+      /* setSnackbarMessage({ type: 'error', text: 'Wypełnij poprawnie dodatkowe pola lub pozostaw je puste' }); */
       return false;
     } else {
       return true;
     };
   };
 
-  const submitCompanyData = async () => {
-    console.log(isEqual(companyData, oldCompanyData));
-    if (validateData()) {
-      setLoading(true);
-      const isOk = await dispatch(companyServices[editMode ?
-        'editUserCompany' :
-        'createUserCompany'
-      ]({
-        companyData, companyLogo: companyData.logo ?? null, companyPhotos: companyData.photos ?? [], companyCertificates: companyData.certificates ?? [], contactPersons: companyData.contactPersons, oldCompanyData: userCompany || companyData
-      })
-      );
-      setLoading(false);
-      if (!!isOk) {
-        if (editMode) setSnackbarMessage({ type: 'success', text: 'Zaktualizowano profil' });
-        goToCompanyScreen();
+  const submitCompanyData = () => {
+    let validate = false;
+    let is_premium = false;
+
+    if (validateDataToCreateCompany()) {
+      validate = true;
+      is_premium = true;
+    } else {
+      if (validateDataToCreateDraft()) {
+        validate = true;
+        is_premium = false;
+        setMode('draft');
+        setBlockedScreen({ blockedBack: false, blockedExit: false });
+        setShowDraftFormModal({
+          type: 'saveDraft',
+          saveDraftCallback: ()=>  {
+            saveForm();
+          }
+        });
       };
+    };
+
+    setCompanyData({ ...companyData, is_premium });
+    console.log({...companyData, is_premium });
+
+    if (validate && is_premium) {
+      setBlockedScreen({ blockedBack: false, blockedExit: false });
+      saveForm();
     } else {
       setShowTips(true);
-    }
+    };
+  };
+
+  const saveForm = async () => {
+    console.log(mode)
+    setLoading(true);
+    const isOk = await dispatch(companyServices[companyData.id !== -1 ?
+      'editUserCompany' :
+      'createUserCompany'
+    ]({
+      companyData, companyLogo: companyData.logo ?? null, companyPhotos: companyData.photos ?? [], companyCertificates: companyData.certificates ?? [], contactPersons: companyData.contactPersons, oldCompanyData: userCompany || companyData
+    })
+    );
+    setLoading(false);
+    if (!!isOk) {
+      setFormSent(true);
+      if (mode === 'edit'){
+        setSnackbarMessage({ type: 'success', text: 'Zaktualizowano profil' });
+        goToCompanyScreen();
+      } else if(mode === 'draft'){
+        setSnackbarMessage({ type: 'success', text: 'Zapisano wersję roboczą' });
+        goToNoCompanyScreen();
+      } else if(mode === 'new'){
+        setSnackbarMessage({ type: 'success', text: 'Utworzono profil' });
+        goToCompanyScreen();
+      }
+    };
   };
 
   const changeCompanyDataHandler = (name: keyof CompanyDataType, value: string | number | number[] | AddressType | CompanyRegistrationDataType | MediaType | MediaType[] | ContactPersonType[] | null, replaceSpaces: boolean = true) => {
@@ -398,6 +469,14 @@ const CompanyEditorScreen: React.FC = () => {
     });
   };
 
+  const goToNoCompanyScreen = () => {
+    router.push({
+      stack: 'ProfileStack',
+      screen: 'NoCompanyScreen',
+      params: undefined,
+    });
+  };
+
   const renderScrollPhotoItem = useCallback(({ item, drag, isActive, getIndex, mode }: RenderItemParams<MediaType> & { mode: 'photos' | 'certificates' }) => {
     const index = getIndex();
 
@@ -432,7 +511,7 @@ const CompanyEditorScreen: React.FC = () => {
 
   return (
     <ScreenHeaderProvider
-      title={editMode ? 'Edytuj profil firmy' : 'Utwórz profil firmy'}
+      title={mode === 'new' ? 'Utwórz profil firmy' : mode === 'edit' ? 'Edytuj profil firmy' : 'Utwórz profil firmy (wersja robocza)'}
       backgroundContent={Colors.Basic100}
     >
       <FormProgressBar
@@ -1151,13 +1230,20 @@ const CompanyEditorScreen: React.FC = () => {
           </View>
         }
       </ScrollView>
+      {/* <Modal
+        visible={showExitWarningModal && !!blockedScreen}
+        onClose={closeHandler}
+        withoutUrl
+      >
+
+      </Modal> */}
       <Button
         stickyBottom
         withLoading
         disabled={loading}
         onPress={() => submitCompanyData()}
       >
-        {editMode ? 'Zaktualizuj' : 'Utwórz'}
+        {mode === 'edit' ? 'Zaktualizuj' : 'Utwórz'}
       </Button>
     </ScreenHeaderProvider>
   );

@@ -1,7 +1,7 @@
 import { SwipeablePanelProps } from "../../../components/organismes/SwipeablePanel";
 import { CurrentScreenType } from "../../../hooks/withUrl";
 import { generalActionTypes } from "../../actions";
-import { AppDataType, BlockedScreenType, CandidateMarkType, CandidateNotesType, CandidatesFiltersType, CompanyDataType, InvoiceType, JobExperienceType, JobIndustryType, JobSalaryModeType, JobSalaryTaxType, MarkDataType, NoteDataType, ShowUserShouldBeLogedInModalType, SnackbarMessageType, UserAdvertType, UserDataType, UserEventType, UserQuestionsType, UserSettingsType, WindowSizesType } from "../../reducers/types";
+import { AppDataType, BlockedScreenType, CandidateMarkType, CandidateNotesType, CandidatesFiltersType, CompanyDataType, InvoiceType, JobExperienceType, JobIndustryType, JobSalaryModeType, JobSalaryTaxType, MarkDataType, NoteDataType, ShowDraftFormModalType, ShowUserShouldBeLogedInModalType, SnackbarMessageType, UserAdvertType, UserDataType, UserEventType, UserQuestionsType, UserSettingsType, WindowSizesType } from "../../reducers/types";
 
 interface setToken {
     type: generalActionTypes.SET_TOKEN,
@@ -136,6 +136,11 @@ interface setBlockedScreen {
     payload: BlockedScreenType,
 }
 
+interface setShowDraftFormModal {
+    type: generalActionTypes.SET_SHOW_DRAFT_FORM_MODAL,
+    payload: ShowDraftFormModalType | null,
+}
+
 export type generalReducerAction = 
     setToken |
     setIsTabbarVisible |
@@ -163,4 +168,5 @@ export type generalReducerAction =
     setShowUserShouldBeLogedInModal |
     setShowUserShouldHaveCompanyModal |
     setShowExitWarningModal |
-    setBlockedScreen
+    setBlockedScreen |
+    setShowDraftFormModal

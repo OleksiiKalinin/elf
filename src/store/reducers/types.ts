@@ -2,6 +2,7 @@ import { SwipeablePanelProps } from "../../components/organismes/SwipeablePanel"
 import { ScaledSize } from 'react-native';
 import { NonNullableKeys, PartialBy } from "../../hooks/types";
 import { CurrentScreenType, WithUrlProps } from "../../hooks/withUrl";
+import { ReactNode } from "react";
 
 export interface generalReducerState {
     isTabbarVisible: boolean,
@@ -44,8 +45,9 @@ export interface generalReducerState {
     showUserShouldBeLogedInModal: ShowUserShouldBeLogedInModalType,
     showUserShouldHaveCompanyModal: ShowUserShouldBeLogedInModalType,
     showExitWarningModal: boolean,
+    showDraftFormModal: ShowDraftFormModalType | null,
     blockedScreen: BlockedScreenType,
-}
+};
 
 export type ShowUserShouldBeLogedInModalType = {
     state: boolean,
@@ -57,6 +59,21 @@ export type BlockedScreenType = {
     blockedBack: boolean,
     backTo?: ()=> void,
 };
+
+export type ShowDraftFormModalType = ({
+    type: 'saveDraft',
+    saveDraftCallback: ()=> void,
+    info?: ReactNode;
+    confirmButton?: string,
+    cancelButton?: string,
+} | {
+    type: 'info',
+    textInfo?: string,
+    info?: ReactNode;
+    saveDraftCallback?: never,
+    confirmButton?: never,
+    cancelButton?: never;
+});
 
 export type WindowSizesType = ScaledSize;
 
@@ -387,6 +404,7 @@ export interface CompanyDataType {
     account_facebook?: string | null,
     account_instagram?: string | null,
     account_linkedIn?: string | null,
+    is_premium?: boolean,
 }
 
 export type MediaType = {

@@ -4,7 +4,7 @@ import Colors from '../../colors/Colors';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { useActions } from '../../hooks/useActions';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import { CompanyDataType, LanguageType } from '../../store/reducers/types';
+import { CompanyDataType } from '../../store/reducers/types';
 import companyServices from '../../services/companyServices';
 import SvgIcon from '../../components/atoms/SvgIcon';
 import ScreenHeaderProvider, { SCREEN_HEADER_HEIGHT } from '../../components/organismes/ScreenHeaderProvider';
@@ -20,8 +20,6 @@ import { createParam } from 'solito';
 import { InitialPropsFromParams } from '../../hooks/types';
 import { Snackbar } from 'react-native-paper';
 import Button from '../../components/molecules/Button';
-import { Skeleton, SkeletonContainer } from 'react-native-skeleton-component';
-import SvgUriImage from '../../components/atoms/SvgUriImage';
 
 const companyExample: CompanyDataType = {
   id: -1,
@@ -97,111 +95,14 @@ const companyExample: CompanyDataType = {
   ],
 };
 
-const services: LanguageType[] = [
-  {
-    id: 1,
-    name: 'Manicure',
-  },
-  {
-    id: 2,
-    name: 'Pedicure',
-  },
-  {
-    id: 3,
-    name: 'Przedłużanie rzęs',
-  },
-  {
-    id: 4,
-    name: 'Regulacja i henna brwi',
-  },
-  {
-    id: 5,
-    name: 'Zabiegi na twarz',
-  },
-  {
-    id: 6,
-    name: 'Zabiegi na ciało',
-  },
-  {
-    id: 7,
-    name: 'Usługi fryzjerskie',
-  },
-];
-
-const languages: LanguageType[] = [
-  {
-    id: 1,
-    name: 'Polski',
-  },
-  {
-    id: 2,
-    name: 'Angielski',
-  },
-  {
-    id: 3,
-    name: 'Włoski',
-  },
-  {
-    id: 4,
-    name: 'Francuski',
-  },
-  {
-    id: 5,
-    name: 'Ukraiński',
-  },
-  {
-    id: 6,
-    name: 'Hiszpański',
-  },
-  {
-    id: 7,
-    name: 'Niemiecki',
-  },
-];
-
-const employeesAmount: LanguageType[] = [
-  {
-    id: 1,
-    name: '1 - 5',
-  },
-  {
-    id: 2,
-    name: '5 - 20',
-  },
-  {
-    id: 3,
-    name: '20 - 50',
-  },
-  {
-    id: 4,
-    name: '50 - 100',
-  },
-  {
-    id: 5,
-    name: '100 - 500',
-  },
-  {
-    id: 6,
-    name: '500 - 1000',
-  },
-  {
-    id: 7,
-    name: '1000 - 5000',
-  },
-  {
-    id: 8,
-    name: '5000+',
-  },
-];
-
 type InitialParams = NonNullable<ProfileStackParamList['default']['CompanyScreen']>;
 
 const { useParam } = createParam<NonNullable<ProfileStackParamList['default']['CompanyScreen']>>();
 
 const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newProfileInitial }) => {
   const dispatch = useTypedDispatch();
-  const { setSwipeablePanelProps } = useActions();
-  const { userCompany } = useTypedSelector(state => state.general);
+  const { setSwipeablePanelProps, setSnackbarMessage } = useActions();
+  const { userCompany, services, languages, employeesAmount } = useTypedSelector(state => state.general);
   const [companyData, setCompanyData] = useState<CompanyDataType | null>(companyExample);
   const [descriptionExpanded, setDescriptionExpanded] = useState(true);
   const [servicesExpanded, setServicesExpanded] = useState(true);
@@ -274,6 +175,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
             closeAction: 'none',
             onPress: () => setSwipeablePanelProps({
               title: 'Naprawdę chcesz usunąć?',
+              closeButton: true,
               buttons: [
                 {
                   children: 'TAK',
@@ -285,16 +187,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
                       if (companyData?.id) {
                         const isOk = await dispatch(companyServices.deleteUserCompany(companyData.id));
                         if (!!isOk) {
-                          setSwipeablePanelProps({
-                            title: 'Firma została usunięta!',
-                            closeButton: false,
-                            buttons: [
-                              {
-                                children: 'OK',
-                                onPress: () => goToNoCompanyScreen()
-                              }
-                            ]
-                          });
+                          setSnackbarMessage({type: 'success', text: 'Profil firmy został usunięty'});
                           goToNoCompanyScreen();
                         }
                       }

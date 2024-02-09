@@ -56,7 +56,7 @@ export const withCompanyUrls: ProtectedUrlsType = {
     CalendarStack: ['EventEditorScreen'],
     MenuStack: [],
     MessengerStack: [],
-    ProfileStack: ['CompanyScreen'],
+    ProfileStack: [/* 'CompanyScreen' */],
 }
 
 const validateUrl = (props: WithUrlProps): string => {

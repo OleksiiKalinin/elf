@@ -1,7 +1,7 @@
 import { SwipeablePanelProps } from "../../../components/organismes/SwipeablePanel";
 import { CurrentScreenType } from "../../../hooks/withUrl";
 import { generalActionTypes } from "../../actions";
-import { AppDataType, BlockedScreenType, CandidateMarkType, CandidateNotesType, CandidatesFiltersType, CompanyDataType, InvoiceType, JobIndustryType,ShowUserShouldBeLogedInModalType, SnackbarMessageType, UserAdvertType, UserDataType, UserEventType, UserQuestionsType, UserSettingsType, WindowSizesType } from "../../reducers/types";
+import { AppDataType, BlockedScreenType, CandidateMarkType, CandidateNotesType, CandidatesFiltersType, CompanyDataType, InvoiceType, JobIndustryType,ShowDraftFormModalType,ShowUserShouldBeLogedInModalType, SnackbarMessageType, UserAdvertType, UserDataType, UserEventType, UserQuestionsType, UserSettingsType, WindowSizesType } from "../../reducers/types";
 import { generalReducerAction } from "./types";
 
 const setToken = (payload: {token: string | null, refresh_token: string | null}): generalReducerAction => ({
@@ -137,6 +137,11 @@ const setBlockedScreen= (payload: BlockedScreenType): generalReducerAction => ({
     payload
 });
 
+const setShowDraftFormModal = (payload: ShowDraftFormModalType | null): generalReducerAction => ({
+    type: generalActionTypes.SET_SHOW_DRAFT_FORM_MODAL,
+    payload
+});
+
 const generalActions = {
     setToken,
     setIsTabbarVisible,
@@ -164,7 +169,8 @@ const generalActions = {
     setShowUserShouldBeLogedInModal,
     setShowUserShouldHaveCompanyModal,
     setShowExitWarningModal,
-    setBlockedScreen
+    setBlockedScreen,
+    setShowDraftFormModal
 };
 
 export default generalActions;

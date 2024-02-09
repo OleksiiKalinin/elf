@@ -20,16 +20,12 @@ const ScreenExitLock = () => {
   const router = useRouter();
   const { back, backToRemoveParams } = useRouter();
   const [subView] = useParam('subView');
-  const [prevScreen, setPrevScreen] = useState<CurrentScreenType>();
+  const [prevScreenState, setPrevScreenState] = useState<CurrentScreenType>();
   const [currentScreenState, setCurrentScreenState] = useState<CurrentScreenType>();
   const [prevBlockedScreen, setPrevBlockedScreen] = useState<BlockedScreenType | null>(null);
   const [popstate, setPopstate] = useState(false);
-  const [lockPopstate, setLockPopstate] = useState(false);
-
-  const goBack = blockedScreen.backTo ? blockedScreen.backTo : !!swipeablePanelProps ? backToRemoveParams : back;
 
   useEffect(() => {
-    console.log('swipeablePanelProps', swipeablePanelProps);
     if (!swipeablePanelProps) {
       setBlockedScreen({ ...blockedScreen, blockedBack: blockedScreen.blockedExit });
     } else {
@@ -41,8 +37,7 @@ const ScreenExitLock = () => {
         if (!prevBlockedScreen && (blockedScreen.blockedExit || blockedScreen.blockedBack)) {
           setPrevBlockedScreen(blockedScreen);
         };
-      };
-      if (!swipeablePanelProps && prevBlockedScreen) {
+      } else if (!swipeablePanelProps && prevBlockedScreen) {
         setBlockedScreen(prevBlockedScreen);
       };
     };
@@ -50,17 +45,8 @@ const ScreenExitLock = () => {
   }, [swipeablePanelProps]);
 
   useEffect(() => {
-    /*     console.log('prev', prevScreen?.screen);
-        console.log('current', currentScreen?.screen);
-        console.log('popstate', popstate); */
-/*     console.log('prevBlockedScreen', prevBlockedScreen);
-    console.log('blockedScreen', prevBlockedScreen); */
-    /*     console.log('swipeablePanelProps', swipeablePanelProps); */
-  }, [/* currentScreen, prevScreen, popstate, swipeablePanelProps */prevBlockedScreen, blockedScreen]);
-
-  useEffect(() => {
     if (!isEqual(currentScreen, currentScreenState)) {
-      setPrevScreen(currentScreenState);
+      setPrevScreenState(currentScreenState);
       setCurrentScreenState(currentScreen);
     };
     setPrevBlockedScreen(null);
@@ -70,16 +56,12 @@ const ScreenExitLock = () => {
   }, [currentScreen]);
 
   useEffect(() => {
-    console.log(popstate);
-  }, [popstate]);
-
-  useEffect(() => {
     const beforeUnloadHandler = (event: { preventDefault: () => void; }) => {
       event.preventDefault();
     };
 
     if (Platform.OS === 'web') {
-      if (blockedScreen.blockedExit || blockedScreen.blockedBack && !showExitWarningModal) {
+      if (blockedScreen.blockedExit || blockedScreen.blockedBack) {
         window.addEventListener("beforeunload", beforeUnloadHandler);
         window.addEventListener('popstate', popstateHandler);
       } else {
@@ -109,7 +91,7 @@ const ScreenExitLock = () => {
 
   const popstateHandler = () => {
     if (!popstate) {
-      if (subView === undefined) {
+      if (!swipeablePanelProps) {
         setPopstate(true);
         setShowExitWarningModal(true);
 
@@ -119,10 +101,7 @@ const ScreenExitLock = () => {
           screen: currentScreen.screen,
           params: undefined,
         });
-
-        console.log(showExitWarningModal)
-        console.log('popstateHandler')
-      } else if (!!subView && subView !== 'options' && blockedScreen.blockedBack) {
+      } else if (!!swipeablePanelProps && swipeablePanelProps.mode === 'screen' && blockedScreen.blockedBack) {
         setPopstate(true);
         setShowExitWarningModal(true);
 
@@ -136,22 +115,20 @@ const ScreenExitLock = () => {
         });
       };
     } else {
-      console.log('test');
-      /* if (prevScreen) { */
-        (!!subView && subView !== 'options') ? subViewPopstateGoBack() : screenPopstateGoBack();
-        setShowExitWarningModal(false);
-  /*     } */
+      setPopstate(false);
+      popstateGoBack();
+      setShowExitWarningModal(false);
     }
   };
 
   const screenPopstateGoBack = () => {
     if (Platform.OS === 'web') {
-      if (prevScreen) {
+      if (prevScreenState) {
         console.log('screenPopstateGoBack');
         // @ts-ignore
         router.push({
-          stack: prevScreen.stack,
-          screen: prevScreen.screen,
+          stack: prevScreenState.stack,
+          screen: prevScreenState.screen,
           params: undefined,
         });
       };
@@ -175,15 +152,28 @@ const ScreenExitLock = () => {
   };
 
   const exitHandler = () => {
-    (popstate && prevScreen && Platform.OS === 'web') ? (!!subView && subView !== 'options') ? subViewPopstateGoBack() : screenPopstateGoBack() : goBack();
+    if (popstate && prevScreenState && Platform.OS === 'web') {
+      popstateGoBack();
+    } else {
+      goBack();
+    };
+
     if (Platform.OS === 'web') {
       setBlockedScreen({ blockedExit: false, blockedBack: false })
     } else {
-      !swipeablePanelProps ? setBlockedScreen({ blockedExit: false, blockedBack: false }) : setBlockedScreen({ ...blockedScreen, blockedBack: false })
+      if (!swipeablePanelProps) {
+        setBlockedScreen({ blockedExit: false, blockedBack: false });
+      } else {
+        setBlockedScreen({ ...blockedScreen, blockedBack: false });
+      };
     };
+
     closeHandler();
     setPopstate(false);
   };
+
+  const goBack = blockedScreen.backTo ? blockedScreen.backTo : !!swipeablePanelProps ? backToRemoveParams : back;
+  const popstateGoBack = !!swipeablePanelProps && swipeablePanelProps.mode === 'screen' ? subViewPopstateGoBack : screenPopstateGoBack;
 
   return (
     <Modal
@@ -192,7 +182,7 @@ const ScreenExitLock = () => {
       withoutUrl
     >
       <View style={styles.Modal}>
-        <View style={styles.CropContainer}>
+        <View style={styles.TextContainer}>
           <Typography weight='Bold' variant='h4' textAlign='center'>
             Uwaga!
           </Typography>
@@ -203,11 +193,11 @@ const ScreenExitLock = () => {
             Czy na pewno chcesz opuścić ekran?
           </Typography>
         </View>
-        <View style={{ flexDirection: "row", padding: 7.5 }}>
+        <View style={styles.ButtonsContainer}>
           <Button
             fullwidth={false}
             size='medium'
-            style={{ margin: 7.5, flex: 1 }}
+            style={styles.Button}
             borderRadius={4}
             onPress={() => exitHandler()}
           >
@@ -216,7 +206,7 @@ const ScreenExitLock = () => {
           <Button
             fullwidth={false}
             size='medium'
-            style={{ margin: 7.5, flex: 1 }}
+            style={styles.Button}
             variant='secondary'
             borderRadius={4}
             onPress={() => closeHandler()}
@@ -234,9 +224,17 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.White,
     borderRadius: 4,
   },
-  CropContainer: {
+  TextContainer: {
     padding: 15,
     gap: 10
+  },
+  ButtonsContainer: {
+    flexDirection: "row",
+    padding: 7.5
+  },
+  Button: {
+    margin: 7.5,
+    flex: 1,
   },
 });
 

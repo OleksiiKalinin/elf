@@ -22,7 +22,8 @@ import { convertToFrontEndAddress } from '../../hooks/convertAddress';
 import UserShouldBeLogedInModal from '../modals/UserShouldBeLogedInModal';
 import SnackbarMessage from '../modals/SnackbarMessage';
 import UserShouldHaveCompanyModal from '../modals/UserShouldHaveCompanyModal';
-import ScreenExitLock from '../modals/ScreenExitLock';
+import ScreenExitLock from './ScreenExitLock';
+import DraftFormModal from '../modals/DraftFormModal';
 
 calendarLocaleConfig();
 geocoder.fallbackToGoogle('AIzaSyCuD83IZtlNNM3sxn9Hac4YSOXkRZurb9c');
@@ -152,6 +153,7 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
           <SnackbarMessage />
           <UserShouldBeLogedInModal />
           <UserShouldHaveCompanyModal />
+          <DraftFormModal />
           <ScreenExitLock />
         </PaperProvider>
       </MenuProvider >

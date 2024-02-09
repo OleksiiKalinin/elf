@@ -57,6 +57,7 @@ const initialState: generalReducerState = {
         closeAction: 'close'
     },
     showExitWarningModal: false,
+    showDraftFormModal: null,
     blockedScreen: {
         blockedExit: false,
         blockedBack: false
@@ -103,6 +104,8 @@ export const generalReducer = (state = initialState, action: generalReducerActio
             return { ...state, showUserShouldHaveCompanyModal: action.payload };
         case generalActionTypes.SET_SHOW_EXIT_WARNING_MODAL:
             return { ...state, showExitWarningModal: action.payload };
+        case generalActionTypes.SET_SHOW_DRAFT_FORM_MODAL:
+            return { ...state, showDraftFormModal: action.payload };
         case generalActionTypes.SET_IS_MAIN_MENU_FLAT_LIST:
             AsyncStorage.setItem('isMainMenuFlatList', Number(action.payload).toString());
             return { ...state, isMainMenuFlatList: action.payload };
