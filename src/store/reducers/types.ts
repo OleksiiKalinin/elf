@@ -404,7 +404,7 @@ export interface CompanyDataType {
     account_facebook?: string | null,
     account_instagram?: string | null,
     account_linkedIn?: string | null,
-    is_premium?: boolean,
+    is_active?: boolean,
 }
 
 export type MediaType = {

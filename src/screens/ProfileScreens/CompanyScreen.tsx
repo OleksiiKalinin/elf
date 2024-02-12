@@ -99,7 +99,7 @@ type InitialParams = NonNullable<ProfileStackParamList['default']['CompanyScreen
 
 const { useParam } = createParam<NonNullable<ProfileStackParamList['default']['CompanyScreen']>>();
 
-const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newProfileInitial }) => {
+const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = () => {
   const dispatch = useTypedDispatch();
   const { setSwipeablePanelProps, setSnackbarMessage } = useActions();
   const { userCompany, services, languages, employeesAmount } = useTypedSelector(state => state.general);
@@ -110,30 +110,17 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
   const [carouselHeight, setCarouselHeight] = useState(0);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isHeaderTransparent, setIsHeaderTransparent] = useState(true);
-  const [snackbar, setSnackbar] = React.useState(false);
   const router = useRouter();
   const { replace } = useRouter();
   const [subView] = useParam('subView');
-  const [newProfile] = useParam('newProfile', { initial: newProfileInitial });
 
   const { jobIndustries } = useTypedSelector(state => state.general);
   const currentIndustry = jobIndustries.find(curr => curr.id === companyData?.job_industry) || null;
 
   useEffect(() => {
-    if (userCompany) setCompanyData(userCompany);
-    console.log('Get:', userCompany?.certificates);
+    console.log(userCompany)
+    if (userCompany && userCompany.is_active) setCompanyData(userCompany);
   }, [userCompany]);
-
-  useEffect(() => {
-    if (newProfile) {
-      setSnackbar(true);
-      replace({
-        stack: 'ProfileStack',
-        screen: 'CompanyScreen',
-        params: undefined,
-      });
-    };
-  }, [newProfile]);
 
   useEffect(() => {
     if (Platform.OS === 'web') {
@@ -187,7 +174,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
                       if (companyData?.id) {
                         const isOk = await dispatch(companyServices.deleteUserCompany(companyData.id));
                         if (!!isOk) {
-                          setSnackbarMessage({type: 'success', text: 'Profil firmy został usunięty'});
+                          setSnackbarMessage({ type: 'success', text: 'Profil firmy został usunięty' });
                           goToNoCompanyScreen();
                         }
                       }
@@ -216,6 +203,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
   const filteredEmployeesAmount = employeesAmount.find(item => companyData?.employees_amount === item.id);
 
   const basicLogo = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBRo59C4lpyB_h0LvmiSSZjOrgSMAwaz-mRw&usqp=CAU';
+  const basicCompanyPhoto = 'https://cdn.pixabay.com/photo/2013/07/12/17/47/test-pattern-152459_960_720.png';
 
   const goToCompanyEditorScreen = () => {
     replace({
@@ -250,7 +238,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
   return (
     <ScreenHeaderProvider
       transparent
-      actions={userCompany ? [{
+      actions={(userCompany && userCompany.is_active) ? [{
         icon: 'threeDots',
         onPress: setOptions,
       }] : []}
@@ -263,7 +251,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
       >
         {!!companyData &&
           <>
-            {companyData.photos?.length &&
+            {companyData.photos?.length ?
               <Carousel
                 innerPagination
                 data={companyData.photos.sort((a, b) => (a.order || 0) - (b.order || 0)).map(item => item.path)}
@@ -280,6 +268,18 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
                   </View>
                 )}
               />
+
+              :
+
+              <View
+                style={styles.CarouselImageContainer}
+                onLayout={handleLayout}
+              >
+                <Image
+                  source={{ uri: basicCompanyPhoto }}
+                  style={styles.CarouselImage}
+                />
+              </View>
             }
             <View style={styles.BasicCompanyData}>
               <Image source={{ uri: companyData.logo?.path ?? basicLogo }} style={styles.CompanyLogo} />
@@ -453,7 +453,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
         }
         <View style={{ height: 100 }} />
       </ScrollView>
-      <Snackbar
+      {/* <Snackbar
         visible={snackbar}
         duration={5000}
         onDismiss={() => setSnackbar(false)}
@@ -487,7 +487,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = ({ newPro
             </Typography>
           </Button>
         </View>
-      </Snackbar>
+      </Snackbar> */}
     </ScreenHeaderProvider>
   );
 };

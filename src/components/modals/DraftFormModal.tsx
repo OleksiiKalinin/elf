@@ -8,12 +8,8 @@ import Colors from '../../colors/Colors';
 import Button from '../molecules/Button';
 
 const DraftFormModal = () => {
-  const { showDraftFormModal, currentScreen } = useTypedSelector(s => s.general);
+  const { showDraftFormModal } = useTypedSelector(s => s.general);
   const { setShowDraftFormModal } = useActions();
-
-/*   useEffect(() => {
-    setShowDraftFormModal(null);
-  }, [currentScreen]); */
 
   useEffect(() => {
     if (Platform.OS === 'web') {
@@ -102,7 +98,7 @@ const DraftFormModal = () => {
                 borderRadius={4}
                 onPress={() => confirmHandler()}
               >
-                Zapisz
+                {showDraftFormModal?.confirmButton ?? 'Zapisz'}
               </Button>
               <Button
                 fullwidth={false}
@@ -112,7 +108,7 @@ const DraftFormModal = () => {
                 borderRadius={4}
                 onPress={() => closeHandler()}
               >
-                Anuluj
+                {showDraftFormModal?.cancelButton ?? 'Anuluj'}
               </Button>
             </>
           }

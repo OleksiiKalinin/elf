@@ -45,11 +45,11 @@ const emptyCompanyData = {
   account_instagram: null,
   account_linkedIn: null,
   languages: [],
-  services: null,
+  services: [],
   logo: null,
   photos: [],
   certificates: [],
-  is_premium: false,
+  is_active: false,
 };
 
 const { useParam } = createParam<NonNullable<ProfileStackParamList['default']['CompanyEditorScreen']>>();
@@ -60,7 +60,7 @@ const CompanyEditorScreen: React.FC = () => {
   const [subView] = useParam('subView');
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
-  const { jobIndustries, userCompany, languages, services, employeesAmount, currentScreen } = useTypedSelector(state => state.general);
+  const { jobIndustries, userCompany, languages, services, employeesAmount } = useTypedSelector(state => state.general);
   const [companyData, setCompanyData] = useState<CompanyDataType>(userCompany || emptyCompanyData);
   const [oldCompanyData, setOldCompanyData] = useState<CompanyDataType>(userCompany || emptyCompanyData);
   const [logoProgress, setLogoProgress] = useState<number | null>(null);
@@ -69,46 +69,42 @@ const CompanyEditorScreen: React.FC = () => {
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [descriptionHeight, setDescriptionHeight] = useState(0);
   const [mode, setMode] = useState<'draft' | 'edit' | 'new'>('new');
-  const [showTips, setShowTips] = useState<boolean>(false);
   const [fields, setFields] = useState<FormFieldType[]>([]);
   const [unsavedData, setUnsavedData] = useState<boolean>(false);
+  const [isValid, setIsValid] = useState<'toSaveDraft' | 'toCreateCompany' | false>(false);
+  const [showTips, setShowTips] = useState<boolean>(false);
+  const [isActive, setIsActive] = useState<boolean>(false);
   const [formSent, setFormSent] = useState<boolean>(false);
   const { name, address, job_industry, description, nip_info, employees_amount, square_footage, account_instagram, account_facebook, account_linkedIn, website, logo, photos, certificates, contactPersons } = companyData;
 
   const companyPhotosLimit = 20;
   const companyCertificatesLimit = 20;
+  const squareFootageIndustries = [2, 3, 5];
 
   useLayoutEffect(() => {
-    console.log(userCompany);
     if (userCompany) {
       setCompanyData(userCompany);
       setOldCompanyData(userCompany);
-      if (userCompany.is_premium) {
+      if (userCompany.is_active) {
         setMode('edit');
       } else {
-        setMode('draft')
+        setMode('draft');
       };
     };
   }, [userCompany]);
 
   useEffect(() => {
-    if(mode === 'draft' && !unsavedData && !formSent){
-      console.log(mode)
-      console.log(unsavedData)
+    if (mode === 'draft' && !unsavedData && !formSent) {
       setShowDraftFormModal({
         type: 'info',
         textInfo: 'Wypełnij obowiązkowe pola aby dokończyć proces zakładania profilu firmy.'
-      })
+      });
     };
   }, [mode, unsavedData]);
 
-  /*   useEffect(() => {
-      console.log(fields);
-    }, [fields]);
-   */
   useEffect(() => {
-    /*     console.log(companyData); */
-    setFields([
+    console.log(companyData);
+    const fields = [
       { name: 'name', value: name, isValid: !!(name && name.length > 2 && name.length <= 100), required: true },
       { name: 'address', value: address, isValid: !!address, required: true },
       { name: 'job_industry', value: job_industry, isValid: !!job_industry, required: true },
@@ -119,11 +115,18 @@ const CompanyEditorScreen: React.FC = () => {
       { name: 'logo', value: logo, isValid: !!logo },
       { name: 'photos', value: photos, isValid: !!photos?.length },
       { name: 'certificates', value: certificates, isValid: !!certificates?.length },
-      { name: 'square_footage', value: square_footage, isValid: !!(square_footage && square_footage.length && square_footage.length <= 8) },
       { name: 'employees_amount', value: employees_amount, isValid: !!employees_amount },
       { name: 'languages', value: languages, isValid: !!companyData.languages?.length },
       { name: 'socialMedia', value: !!(account_instagram || account_facebook || account_linkedIn || website) ?? null, isValid: !!(account_instagram || account_facebook || account_linkedIn || website) },
-    ]);
+    ];
+
+    const squareFootage = { name: 'square_footage', value: square_footage, isValid: !!(square_footage && square_footage.length && square_footage.length <= 8) };
+
+    if (job_industry && squareFootageIndustries.includes(job_industry)) {
+      setFields([...fields, squareFootage]);
+    } else {
+      setFields(fields);
+    };
   }, [companyData]);
 
   useEffect(() => {
@@ -134,23 +137,26 @@ const CompanyEditorScreen: React.FC = () => {
     setBlockedScreen({ blockedExit: unsavedData, blockedBack: unsavedData });
   }, [unsavedData, subView]);
 
+  useEffect(() => {
+    if (validateDataToCreateCompany()) {
+      setIsValid('toCreateCompany');
+      setIsActive(true);
+    } else if (validateDataToCreateDraft() && !companyData.is_active) {
+      setIsValid('toSaveDraft');
+      setIsActive(false);
+    } else {
+      setIsValid(false);
+      setIsActive(false);
+    };
+  }, [fields]);
+
   const isFieldValid = (fieldName: keyof typeof companyData) => {
     const fieldIndex = fields.findIndex(item => item.name === fieldName);
     return fieldIndex !== -1 && fields[fieldIndex].isValid;
   };
 
   const validateDataToCreateDraft = () => {
-    if (
-      !(
-        !isNumber(logoProgress)
-        && !isNumber(photosProgress)
-        && !isNumber(certificatesProgress)
-      )
-    ) {
-      setSnackbarMessage({ type: 'error', text: 'Trwa ładowanie zdjęć' });
-      return false;
-    } else if (!fields.every(item => item.isValid || (item.value === null || [])) || !fields.some(item => item.isValid)) {
-      setSnackbarMessage({ type: 'error', text: 'Wypełnij poprawnie pola!' });
+    if (!fields.every(item => item.isValid || (item.value === null || [])) || !fields.some(item => item.isValid)) {
       return false;
     } else {
       return true;
@@ -158,6 +164,14 @@ const CompanyEditorScreen: React.FC = () => {
   };
 
   const validateDataToCreateCompany = () => {
+    if (!fields.filter(field => field.required).every(item => item.isValid)) {
+      return false;
+    } else {
+      return true;
+    };
+  };
+
+  const submitCompanyData = () => {
     if (
       !(
         !isNumber(logoProgress)
@@ -166,74 +180,52 @@ const CompanyEditorScreen: React.FC = () => {
       )
     ) {
       setSnackbarMessage({ type: 'error', text: 'Trwa ładowanie zdjęć' });
-      return false;
-    } else if (!fields.filter(field => field.required).every(item => item.isValid)) {
-      /*       setSnackbarMessage({ type: 'error', text: 'Wypełnij wszystkie obowiązkowe pola z gwiazdką!' }); */
-      return false;
-    } else if (!(isFieldValid('square_footage') || companyData.square_footage === null)) {
-      /* setSnackbarMessage({ type: 'error', text: 'Wypełnij poprawnie dodatkowe pola lub pozostaw je puste' }); */
-      return false;
     } else {
-      return true;
-    };
-  };
-
-  const submitCompanyData = () => {
-    let validate = false;
-    let is_premium = false;
-
-    if (validateDataToCreateCompany()) {
-      validate = true;
-      is_premium = true;
-    } else {
-      if (validateDataToCreateDraft()) {
-        validate = true;
-        is_premium = false;
-        setMode('draft');
+      if (isValid === 'toCreateCompany') {
         setBlockedScreen({ blockedBack: false, blockedExit: false });
+        saveForm();
+      } else if (isValid === 'toSaveDraft') {
         setShowDraftFormModal({
           type: 'saveDraft',
-          saveDraftCallback: ()=>  {
+          saveDraftCallback: () => {
             saveForm();
-          }
+          },
         });
+        setBlockedScreen({ blockedBack: false, blockedExit: false });
+      } else {
+        if (companyData.is_active) {
+          setSnackbarMessage({ type: 'error', text: 'Wypełnij wszystkie wymagane pola' });
+        } else {
+          setSnackbarMessage({ type: 'error', text: 'Wypełnij poprawnie pola' });
+        };
+        setShowTips(true);
       };
-    };
-
-    setCompanyData({ ...companyData, is_premium });
-    console.log({...companyData, is_premium });
-
-    if (validate && is_premium) {
-      setBlockedScreen({ blockedBack: false, blockedExit: false });
-      saveForm();
-    } else {
-      setShowTips(true);
     };
   };
 
   const saveForm = async () => {
-    console.log(mode)
+    const newCompanyData = { ...companyData, is_active: isActive };
     setLoading(true);
     const isOk = await dispatch(companyServices[companyData.id !== -1 ?
       'editUserCompany' :
       'createUserCompany'
     ]({
-      companyData, companyLogo: companyData.logo ?? null, companyPhotos: companyData.photos ?? [], companyCertificates: companyData.certificates ?? [], contactPersons: companyData.contactPersons, oldCompanyData: userCompany || companyData
+      companyData: newCompanyData, companyLogo: companyData.logo ?? null, companyPhotos: companyData.photos ?? [], companyCertificates: companyData.certificates ?? [], contactPersons: companyData.contactPersons, oldCompanyData: userCompany || companyData
     })
     );
     setLoading(false);
     if (!!isOk) {
       setFormSent(true);
-      if (mode === 'edit'){
-        setSnackbarMessage({ type: 'success', text: 'Zaktualizowano profil' });
-        goToCompanyScreen();
-      } else if(mode === 'draft'){
-        setSnackbarMessage({ type: 'success', text: 'Zapisano wersję roboczą' });
-        goToNoCompanyScreen();
-      } else if(mode === 'new'){
+      if (isValid === 'toCreateCompany' && mode === ('draft' || 'new')) {
         setSnackbarMessage({ type: 'success', text: 'Utworzono profil' });
         goToCompanyScreen();
-      }
+      } else if (isValid === 'toSaveDraft') {
+        setSnackbarMessage({ type: 'success', text: 'Zapisano wersję roboczą' });
+        goToNoCompanyScreen();
+      } else if (isValid === 'toCreateCompany' && mode === 'edit') {
+        setSnackbarMessage({ type: 'success', text: 'Zaktualizowano profil' });
+        goToCompanyScreen();
+      };
     };
   };
 
@@ -244,7 +236,7 @@ const CompanyEditorScreen: React.FC = () => {
         (typeof value === 'string') && replaceSpaces ?
           value.replace(/\s/g, '')
           :
-          !isArray(value) ? value : value.length === 0 ? null : value
+          !isArray(value) ? value : value.length === 0 ? companyData.id === -1 ? null : [] : value
 
         :
 
@@ -575,6 +567,19 @@ const CompanyEditorScreen: React.FC = () => {
               <Typography variant='h5' weight='SemiBold'>{jobIndustries.find(curr => curr.id === job_industry)?.name || ''}</Typography>
             </View>
 
+            // <View style={styles.JobIndustry}>
+            //   <SvgIcon icon='doneCircleGreen' />
+            //   <View style={styles.JobIndustryIcon}>
+            //     <View style={{ position: 'absolute' }}>
+            //       <SkeletonContainer animation='wave' speed={600}>
+            //         <Skeleton style={styles.JobIndustryIconSkeleton} />
+            //       </SkeletonContainer>
+            //     </View>
+            //     <SvgUriImage width={34} height={34} src={jobIndustries.find(curr => curr.id === job_industry)?.icon || ''} />
+            //   </View>
+            //   <Typography variant='h5' weight='SemiBold'>{jobIndustries.find(curr => curr.id === job_industry)?.name || ''}</Typography>
+            // </View>
+
             :
 
             <>
@@ -589,7 +594,7 @@ const CompanyEditorScreen: React.FC = () => {
             </>
           }
         </Button>
-        {companyData.services ?
+        {companyData.services?.length ?
           <>
             <View style={styles.SelectedItemsContainer}>
               <View style={styles.SelectedItemsHeader}>
@@ -677,6 +682,23 @@ const CompanyEditorScreen: React.FC = () => {
 
           :
 
+          // <Button
+          //   variant='text'
+          //   arrowRight
+          //   borderBottom
+          //   onPress={() => goToCompanyDescriptionScreen()}
+          // >
+          //   <View style={{ flexDirection: 'row', alignItems: 'center' }} >
+          //     {/* <View style={{ borderRadius: 50, width: 20, height: 20, borderWidth: 2, borderColor: Colors.Basic400 }} /> */}
+          //     <View style={{ borderRadius: 50, width: 20, height: 20, backgroundColor: Colors.Basic400, marginLeft: 2, marginRight: 13 }} />
+          //     <Typography variant='h5'>
+          //       Opis firmy
+          //     </Typography>
+          //     <Typography style={{ color: Colors.Red }}>
+          //       *
+          //     </Typography>
+          //   </View>
+          // </Button>
           <Button
             variant='text'
             arrowRight
@@ -787,6 +809,12 @@ const CompanyEditorScreen: React.FC = () => {
             Logo firmy{' '}
           </Typography>
         </View>
+        {/* <View style={[styles.CompanyLogoTitle, {alignItems: 'center', gap: 10}]}>
+          <SvgIcon icon='doneCircleGreen' />
+          <Typography weight="Bold" variant="h5">
+            Logo firmy{' '}
+          </Typography>
+        </View> */}
         <View style={styles.CompanyLogo}>
           <MediaSelector
             type='image'
@@ -1079,25 +1107,29 @@ const CompanyEditorScreen: React.FC = () => {
             </>
           }
         />
-        <Separator marginTop={16} />
-        <View style={styles.SquareFootageTitle}>
-          <Typography weight="Bold" variant="h5">
-            Metraż miejsca pracy{' '}
-          </Typography>
-        </View>
-        <View style={styles.SquareFootage}>
-          <TextField
-            placeholder='0'
-            maxLength={5}
-            placeholderTextColor={Colors.Basic600}
-            containerStyles={styles.SquareFootageTextField}
-            height={44}
-            keyboardType='number-pad'
-            right={<Typography>m²</Typography>}
-            value={square_footage || ''}
-            onChangeText={(text) => changeCompanyDataHandler('square_footage', text.replace(/^0/, '').replace(/[^0-9]/g, ''))}
-          />
-        </View>
+        {job_industry && squareFootageIndustries.includes(job_industry) &&
+          <>
+            <Separator marginTop={16} />
+            <View style={styles.SquareFootageTitle}>
+              <Typography weight="Bold" variant="h5">
+                Metraż miejsca pracy{' '}
+              </Typography>
+            </View>
+            <View style={styles.SquareFootage}>
+              <TextField
+                placeholder='0'
+                maxLength={5}
+                placeholderTextColor={Colors.Basic600}
+                containerStyles={styles.SquareFootageTextField}
+                height={44}
+                keyboardType='number-pad'
+                right={<Typography>m²</Typography>}
+                value={square_footage || ''}
+                onChangeText={(text) => changeCompanyDataHandler('square_footage', text.replace(/^0/, '').replace(/[^0-9]/g, ''))}
+              />
+            </View>
+          </>
+        }
         {employees_amount ?
           <>
             <View style={styles.SelectedItemsContainer}>
@@ -1230,13 +1262,6 @@ const CompanyEditorScreen: React.FC = () => {
           </View>
         }
       </ScrollView>
-      {/* <Modal
-        visible={showExitWarningModal && !!blockedScreen}
-        onClose={closeHandler}
-        withoutUrl
-      >
-
-      </Modal> */}
       <Button
         stickyBottom
         withLoading

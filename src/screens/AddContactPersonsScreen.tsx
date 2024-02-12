@@ -33,12 +33,12 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
   initialContactPersons,
   callback,
 }) => {
-  const oldContactPersons = initialContactPersons.length ? [...initialContactPersons].sort((a, b) => {
+  const oldContactPersons = initialContactPersons && initialContactPersons.length ? [...initialContactPersons].sort((a, b) => {
     const orderA = a.id ?? Number.MAX_SAFE_INTEGER;
     const orderB = b.id ?? Number.MAX_SAFE_INTEGER;
     return orderA - orderB;
   }) : [emptyPerson];
-  const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(initialContactPersons.length ? [...initialContactPersons].sort((a, b) => {
+  const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(initialContactPersons &&initialContactPersons.length ? [...initialContactPersons].sort((a, b) => {
     const orderA = a.id ?? Number.MAX_SAFE_INTEGER;
     const orderB = b.id ?? Number.MAX_SAFE_INTEGER;
     return orderA - orderB;

@@ -50,6 +50,25 @@ const MapPreview: React.FC<MapPreviewProps> = ({ latitude, longitude, onPress, p
                     </View>
                 </View>
             </Button>
+            {/* <Button variant='TouchableOpacity' activeOpacity={.9} onPress={onPress}>
+                <View style={{ backgroundColor: Colors.Basic200, flexDirection: 'row', paddingVertical: 14, alignItems: 'center' }}>
+                    <SvgIcon icon='doneCircleGreen' style={{ marginLeft: 19 }} />
+                    <View style={styles.mapIcon}>
+                        <SvgIcon icon="mapMarker" />
+                    </View>
+                    <View style={{ flex: 1, paddingHorizontal: 14, borderLeftWidth: 1, borderColor: Colors.Basic300, }}>
+                        <Typography color={Colors.Basic600} variant='h5'>
+                            {label || 'Lokalizacja*'}
+                        </Typography>
+                        <Typography weight='SemiBold' variant='h5'>
+                            {place || 'Wybierz adres'}
+                        </Typography>
+                    </View>
+                    <View style={styles.mapIcon}>
+                        <SvgIcon icon={rightIcon} />
+                    </View>
+                </View>
+            </Button> */}
             {!!latitude && !!longitude && !hideMap && (
                 <Map
                     style={styles.Map}

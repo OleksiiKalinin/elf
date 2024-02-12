@@ -71,7 +71,7 @@ const NoCompanyScreen: React.FC = () => {
     router.push({
       stack: 'ProfileStack',
       screen: 'CompanyScreen',
-      params: { newProfile: 'true' }
+      params: undefined
     });
   };
 

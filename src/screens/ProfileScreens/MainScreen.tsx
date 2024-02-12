@@ -70,7 +70,7 @@ const MainScreen: React.FC = () => {
       screen: 'MainScreen',
       params: { subView: 'options' }
     });
-  }
+  };
 
   const goToPointsScreen = () => {
     router.push({
@@ -215,7 +215,7 @@ const MainScreen: React.FC = () => {
           arrowRight
           borderBottom
           onPress={() => {
-            userCompany ? goToCompanyScreen() : goToNoCompanyScreen()
+            userCompany?.is_active ? goToCompanyScreen() : goToNoCompanyScreen()
           }}
         >
           <View style={styles.ArrowButton}>
