@@ -244,11 +244,11 @@ const editUserCompany = (props: {
         // @ts-ignore
         companyPhotosFormData.append("company_id", oldCompanyData.id);
 
-        console.log('FormData:', ...companyPhotosFormData as any)
+/*         console.log('FormData:', ...companyPhotosFormData as any)
         console.log('Order:', orderData);
         console.log('All:', companyCertificates);
         console.log('Push:', forPushArray);
-        console.log('Delete:', forDeleteArray);
+        console.log('Delete:', forDeleteArray); */
 
         await Promise.all([
           ...(forPushArray.length ? [axios.post(`/employer/company_photos/`, companyPhotosFormData, {
@@ -293,12 +293,12 @@ const editUserCompany = (props: {
         // @ts-ignore
         companyCertificatesFormData.append("company_id", oldCompanyData.id);
 
-        console.log('FormData:', ...companyCertificatesFormData as any) 
+/*         console.log('FormData:', ...companyCertificatesFormData as any) 
         console.log('Order:', orderData);
         console.log('All:', companyCertificates);
         console.log('Push:', forPushArray);
         console.log('Delete:', forDeleteArray);
-
+ */
         await Promise.all([
           ...(forPushArray.length ? [axios.post(`/employer/company_certificates/`, companyCertificatesFormData, {
             headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },

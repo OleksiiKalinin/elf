@@ -20,6 +20,7 @@ import { createParam } from 'solito';
 import { InitialPropsFromParams } from '../../hooks/types';
 import { Snackbar } from 'react-native-paper';
 import Button from '../../components/molecules/Button';
+import { Linkedin } from '@tamagui/lucide-icons';
 
 const companyExample: CompanyDataType = {
   id: -1,
@@ -398,6 +399,17 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = () => {
                   Social media
                 </Typography>
                 <View style={styles.SocialMedia}>
+                  {companyData.account_linkedIn &&
+                    <Button
+                      variant='TouchableOpacity'
+                      onPress={() => Linking.openURL(companyData.account_linkedIn as string)}
+                      activeOpacity={.5}
+                    >
+                      <View style={styles.LinkedInIcon}>
+                        <Linkedin color={Colors.Blue500} />
+                      </View>
+                    </Button>
+                  }
                   {companyData.account_instagram &&
                     <Button
                       variant='TouchableOpacity'
@@ -407,6 +419,7 @@ const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = () => {
                       <SvgIcon icon={'instagram'} fill={Colors.Blue500} />
                     </Button>
                   }
+
                   {companyData.account_facebook &&
                     <Button
                       variant='TouchableOpacity'
@@ -565,6 +578,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 24,
     marginTop: 20,
+    alignItems: 'center'
+  },
+  LinkedInIcon: {
+    borderWidth: 2,
+    borderColor: Colors.Blue500,
+    borderRadius: 4,
+    padding: 1,
   },
   Languages: {
     marginTop: 32,

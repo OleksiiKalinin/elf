@@ -199,7 +199,7 @@ const CompanyInvoiceScreen: React.FC<CompanyInvoiceScreenProps> = ({
               </Typography>
             </Button>
           </View>
-          {(showNipTips && !Nip || (Nip && Nip.length < 10)) &&
+          {(showNipTips && (!Nip || (Nip && Nip.length < 10))) &&
             <Typography size={12} color={Colors.Danger}>
               Wprowadź poprawnie nr NIP
             </Typography>

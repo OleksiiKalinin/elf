@@ -29,7 +29,7 @@ const { useParam } = createParam<NonNullable<ProfileStackParamList['default']['M
 const MainScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const { userCompany, token } = useTypedSelector(state => state.general);
-  const { setSwipeablePanelProps } = useActions();
+  const { setSwipeablePanelProps, setSnackbarMessage } = useActions();
   const router = useRouter();
   const [subView] = useParam('subView');
 
@@ -46,16 +46,8 @@ const MainScreen: React.FC = () => {
             closeAction: 'none',
             onPress: async () => {
               await dispatch(authServices.logout());
-              setSwipeablePanelProps({
-                title: 'Zostałeś wylogowany!',
-                buttons: [
-                  {
-                    children: 'Ok',
-                    closeAction: 'none',
-                    onPress: () => goHomeScreen()
-                  },
-                ]
-              })
+              setSnackbarMessage({ type: 'success', text: 'Zostałeś wylogowany' });
+              goHomeScreen();
             }
           },
         ]

@@ -22,8 +22,8 @@ import { convertToFrontEndAddress } from '../../hooks/convertAddress';
 import UserShouldBeLogedInModal from '../modals/UserShouldBeLogedInModal';
 import SnackbarMessage from '../modals/SnackbarMessage';
 import UserShouldHaveCompanyModal from '../modals/UserShouldHaveCompanyModal';
-import ScreenExitLock from './ScreenExitLock';
 import DraftFormModal from '../modals/DraftFormModal';
+import ScreenExitLock from './ScreenExitLock';
 
 calendarLocaleConfig();
 geocoder.fallbackToGoogle('AIzaSyCuD83IZtlNNM3sxn9Hac4YSOXkRZurb9c');

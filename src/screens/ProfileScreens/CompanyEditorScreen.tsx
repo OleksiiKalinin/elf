@@ -1,5 +1,6 @@
 import {
   Image,
+  Platform,
   ScrollView,
   StyleSheet,
   View,
@@ -29,6 +30,7 @@ import { useActions } from '../../hooks/useActions';
 import FormProgressBar, { FormFieldType } from '../../components/organismes/FormProgressBar';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { createParam } from 'solito';
+import { Eraser, Linkedin, Pencil, PlusCircle, Trash2, XCircle } from '@tamagui/lucide-icons';
 
 const emptyCompanyData = {
   id: -1,
@@ -56,11 +58,12 @@ const { useParam } = createParam<NonNullable<ProfileStackParamList['default']['C
 
 const CompanyEditorScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
-  const { setSnackbarMessage, setBlockedScreen, setShowDraftFormModal } = useActions();
+  const { setSnackbarMessage, setBlockedScreen, setShowDraftFormModal, setSwipeablePanelProps } = useActions();
   const [subView] = useParam('subView');
+  const { backToRemoveParams } = useRouter();
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
-  const { jobIndustries, userCompany, languages, services, employeesAmount } = useTypedSelector(state => state.general);
+  const { jobIndustries, userCompany, languages, services, employeesAmount, swipeablePanelProps } = useTypedSelector(state => state.general);
   const [companyData, setCompanyData] = useState<CompanyDataType>(userCompany || emptyCompanyData);
   const [oldCompanyData, setOldCompanyData] = useState<CompanyDataType>(userCompany || emptyCompanyData);
   const [logoProgress, setLogoProgress] = useState<number | null>(null);
@@ -75,6 +78,7 @@ const CompanyEditorScreen: React.FC = () => {
   const [showTips, setShowTips] = useState<boolean>(false);
   const [isActive, setIsActive] = useState<boolean>(false);
   const [formSent, setFormSent] = useState<boolean>(false);
+  const [deleteSubView, setDeleteSubView] = useState<{ name: keyof CompanyDataType, value: any, text: string } | null>(null);
   const { name, address, job_industry, description, nip_info, employees_amount, square_footage, account_instagram, account_facebook, account_linkedIn, website, logo, photos, certificates, contactPersons } = companyData;
 
   const companyPhotosLimit = 20;
@@ -82,16 +86,16 @@ const CompanyEditorScreen: React.FC = () => {
   const squareFootageIndustries = [2, 3, 5];
 
   useLayoutEffect(() => {
-    if (userCompany) {
+    if (userCompany && !formSent) {
       setCompanyData(userCompany);
-      setOldCompanyData(userCompany);
+      setOldCompanyData({ ...userCompany, photos: userCompany.photos?.length ? companyData.photos : [], certificates: userCompany.certificates?.length ? userCompany.certificates : [] });
       if (userCompany.is_active) {
         setMode('edit');
       } else {
         setMode('draft');
       };
     };
-  }, [userCompany]);
+  }, [userCompany, formSent]);
 
   useEffect(() => {
     if (mode === 'draft' && !unsavedData && !formSent) {
@@ -150,6 +154,45 @@ const CompanyEditorScreen: React.FC = () => {
     };
   }, [fields]);
 
+  useEffect(() => {
+    if (subView === undefined) {
+      setDeleteSubView(null);
+    };
+  }, [subView]);
+
+  useEffect(() => {
+    if (!!deleteSubView) {
+      router.push({
+        stack: 'ProfileStack',
+        screen: 'CompanyEditorScreen',
+        params: { subView: 'options' }
+      });
+    }
+  }, [deleteSubView]);
+
+  useEffect(() => {
+    if (!!deleteSubView) {
+      setSwipeablePanelProps((() => {
+        if (subView === 'options') return {
+          title: deleteSubView.text,
+          closeButton: true,
+          buttons: [
+            {
+              children: 'TAK',
+              contentColor: Colors.Danger,
+              onPress: () => {
+                changeCompanyDataHandler(deleteSubView.name, deleteSubView.value);
+                setDeleteSubView(null);
+              },
+              closeAction: 'props-null',
+            },
+          ]
+        }
+        return null;
+      })());
+    };
+  }, [deleteSubView, subView]);
+
   const isFieldValid = (fieldName: keyof typeof companyData) => {
     const fieldIndex = fields.findIndex(item => item.name === fieldName);
     return fieldIndex !== -1 && fields[fieldIndex].isValid;
@@ -182,16 +225,12 @@ const CompanyEditorScreen: React.FC = () => {
       setSnackbarMessage({ type: 'error', text: 'Trwa ładowanie zdjęć' });
     } else {
       if (isValid === 'toCreateCompany') {
-        setBlockedScreen({ blockedBack: false, blockedExit: false });
         saveForm();
       } else if (isValid === 'toSaveDraft') {
         setShowDraftFormModal({
           type: 'saveDraft',
-          saveDraftCallback: () => {
-            saveForm();
-          },
+          saveDraftCallback: () => saveForm()
         });
-        setBlockedScreen({ blockedBack: false, blockedExit: false });
       } else {
         if (companyData.is_active) {
           setSnackbarMessage({ type: 'error', text: 'Wypełnij wszystkie wymagane pola' });
@@ -210,12 +249,14 @@ const CompanyEditorScreen: React.FC = () => {
       'editUserCompany' :
       'createUserCompany'
     ]({
-      companyData: newCompanyData, companyLogo: companyData.logo ?? null, companyPhotos: companyData.photos ?? [], companyCertificates: companyData.certificates ?? [], contactPersons: companyData.contactPersons, oldCompanyData: userCompany || companyData
+      companyData: newCompanyData, companyLogo: companyData.logo ? companyData.logo : null, companyPhotos: companyData.photos?.length ? companyData.photos : [], companyCertificates: companyData.certificates?.length ? companyData.certificates : [], contactPersons: companyData.contactPersons, oldCompanyData: oldCompanyData
     })
     );
     setLoading(false);
     if (!!isOk) {
       setFormSent(true);
+      setShowDraftFormModal(null);
+      setBlockedScreen({ blockedBack: false, blockedExit: false });
       if (isValid === 'toCreateCompany' && mode === ('draft' || 'new')) {
         setSnackbarMessage({ type: 'success', text: 'Utworzono profil' });
         goToCompanyScreen();
@@ -242,6 +283,10 @@ const CompanyEditorScreen: React.FC = () => {
 
         null
     }));
+
+    if (subView === 'options') {
+      backToRemoveParams();
+    };
   };
 
   const deletePhotoHandler = (index: number, mode: 'photos' | 'certificates') => {
@@ -689,8 +734,8 @@ const CompanyEditorScreen: React.FC = () => {
           //   onPress={() => goToCompanyDescriptionScreen()}
           // >
           //   <View style={{ flexDirection: 'row', alignItems: 'center' }} >
-          //     {/* <View style={{ borderRadius: 50, width: 20, height: 20, borderWidth: 2, borderColor: Colors.Basic400 }} /> */}
-          //     <View style={{ borderRadius: 50, width: 20, height: 20, backgroundColor: Colors.Basic400, marginLeft: 2, marginRight: 13 }} />
+          //     <View style={{ borderRadius: 50, width: 20, height: 20, borderWidth: 2, borderColor: Colors.Basic400, marginLeft: 2, marginRight: 13 }} />
+          //     {/* <View style={{ borderRadius: 50, width: 20, height: 20, backgroundColor: Colors.Basic400, marginLeft: 2, marginRight: 13 }} /> */}
           //     <Typography variant='h5'>
           //       Opis firmy
           //     </Typography>
@@ -764,11 +809,15 @@ const CompanyEditorScreen: React.FC = () => {
                 <Button
                   variant='TouchableOpacity'
                   style={styles.EditButton}
-                  onPress={() => changeCompanyDataHandler('nip_info', null, false)}
+                  onPress={() => {
+                    setDeleteSubView({ name: 'nip_info', value: null, text: 'Czy na pewno chcesz usunąć dane do faktury?' });
+                  }}
                 >
                   <Typography variant='h5' weight='Bold' style={styles.DeleteImagesButton}>
                     Usuń
                   </Typography>
+                {/*   <Trash2 style={{marginRight: 5}}/>
+                  <Eraser /> */}
                 </Button>
                 <Button
                   variant='TouchableOpacity'
@@ -778,6 +827,9 @@ const CompanyEditorScreen: React.FC = () => {
                   <Typography variant='h5' weight='Bold' style={styles.EditButtonText}>
                     Edytuj
                   </Typography>
+                  {/*                   <SvgIcon icon='pencil' fill={Colors.Blue500}/> */}
+                  {/* <SvgIcon icon='pencil' /> */}
+                  {/* <Pencil /> */}
                 </Button>
               </View>
             </View>
@@ -903,11 +955,38 @@ const CompanyEditorScreen: React.FC = () => {
             Zdjęcia firmy{' '}
           </Typography>
         </View>
+
+        {/* <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginLeft: 19}}>
+          <Typography weight="Bold" variant="h5">
+            Zdjęcia firmy{' '}
+          </Typography>
+          <View style={styles.LoadedImagesButtons}>
+            <Button
+              variant='TouchableOpacity'
+              style={styles.LoadedImagesButton}
+              onPress={() => {
+                setDeleteSubView({ name: 'photos', value: [], text: 'Czy na pewno chcesz wszystkie zdjęcia firmy?' });
+              }}
+            >
+
+              <Trash2 />
+            </Button>
+            {(photos && photos.length < companyPhotosLimit) &&
+              <Button
+                variant='TouchableOpacity'
+                style={styles.LoadedImagesButton}
+              >
+                <PlusCircle />
+              </Button>
+            }
+          </View>
+        </View> */}
+
         <MediaSelector
           type='image'
           multiple
           selectionLimit={companyPhotosLimit}
-          initialSelected={photos as any}
+          initialSelected={photos?.length ? photos as any : []}
           imageSettings={{
             compressionProgress: (progress) => (Math.round(progress * 100)) === 100 ? setPhotosProgress(null) : setPhotosProgress(progress),
           }}
@@ -939,11 +1018,14 @@ const CompanyEditorScreen: React.FC = () => {
                       <Button
                         variant='TouchableOpacity'
                         style={styles.LoadedImagesButton}
-                        onPress={() => changeCompanyDataHandler('photos', handleMultipleFiles([]), false)}
+                        onPress={() => {
+                          setDeleteSubView({ name: 'photos', value: [], text: 'Czy na pewno chcesz wszystkie zdjęcia firmy?' });
+                        }}
                       >
                         <Typography variant='h5' weight="Bold" style={styles.DeleteImagesButton}>
                           Usuń wszystkie
                         </Typography>
+                        {/* <Trash2 /> */}
                       </Button>
                       {(photos.length < companyPhotosLimit) &&
                         <Button
@@ -954,25 +1036,24 @@ const CompanyEditorScreen: React.FC = () => {
                           <Typography variant='h5' weight="Bold" style={styles.AddMoreImages}>
                             Dodaj kolejne
                           </Typography>
+                          {/* <PlusCircle /> */}
                         </Button>
                       }
                     </View>
-                    <View style={styles.DraggableImagesContainer}>
-                      <DraggableList
-                        horizontal
-                        data={photos?.sort((a, b) => {
-                          const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
-                          const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
+                    <DraggableList
+                      horizontal
+                      data={photos?.sort((a, b) => {
+                        const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
+                        const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
 
-                          return orderA - orderB;
-                        }) || []}
-                        onDragEnd={({ data }) => changeCompanyDataHandler('photos', handleMultipleFiles(data), false)}
-                        keyExtractor={({ path }) => path}
-                        renderItem={(props: RenderItemParams<MediaType>) => renderScrollPhotoItem({ ...props, mode: 'photos' })}
-                        contentContainerStyle={styles.DraggableImagesContent}
-                        style={styles.DraggableImages}
-                      />
-                    </View>
+                        return orderA - orderB;
+                      }) || []}
+                      onDragEnd={({ data }) => changeCompanyDataHandler('photos', handleMultipleFiles(data), false)}
+                      keyExtractor={({ path }) => path}
+                      renderItem={(props: RenderItemParams<MediaType>) => renderScrollPhotoItem({ ...props, mode: 'photos' })}
+                      contentContainerStyle={styles.DraggableImagesContent}
+                      style={styles.DraggableImages}
+                    />
                   </View>
 
                   :
@@ -1011,7 +1092,7 @@ const CompanyEditorScreen: React.FC = () => {
           type='image'
           multiple
           selectionLimit={companyCertificatesLimit}
-          initialSelected={certificates as any}
+          initialSelected={certificates?.length ? certificates as any : []}
           imageSettings={{
             compressionProgress: (progress) => (Math.round(progress * 100)) === 100 ? setCertificatesProgress(null) : setCertificatesProgress(progress),
           }}
@@ -1044,7 +1125,9 @@ const CompanyEditorScreen: React.FC = () => {
                       <Button
                         variant='TouchableOpacity'
                         style={styles.LoadedImagesButton}
-                        onPress={() => changeCompanyDataHandler('certificates', handleMultipleFiles([]), false)}
+                        onPress={() => {
+                          setDeleteSubView({ name: 'certificates', value: [], text: 'Czy na pewno chcesz wszystkie certyfikaty?' });
+                        }}
                       >
                         <Typography variant='h5' weight="Bold" style={styles.DeleteImagesButton}>
                           Usuń wszystkie
@@ -1062,22 +1145,20 @@ const CompanyEditorScreen: React.FC = () => {
                         </Button>
                       }
                     </View>
-                    <View style={styles.DraggableImagesContainer}>
-                      <DraggableList
-                        horizontal
-                        data={certificates.sort((a, b) => {
-                          const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
-                          const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
+                    <DraggableList
+                      horizontal
+                      data={certificates.sort((a, b) => {
+                        const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
+                        const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
 
-                          return orderA - orderB;
-                        })}
-                        onDragEnd={({ data }) => changeCompanyDataHandler('certificates', updateOrder(data), false)}
-                        keyExtractor={({ path }) => path}
-                        renderItem={(props: RenderItemParams<MediaType>) => renderScrollPhotoItem({ ...props, mode: 'certificates' })}
-                        contentContainerStyle={styles.DraggableImagesContent}
-                        style={styles.DraggableImages}
-                      />
-                    </View>
+                        return orderA - orderB;
+                      })}
+                      onDragEnd={({ data }) => changeCompanyDataHandler('certificates', updateOrder(data), false)}
+                      keyExtractor={({ path }) => path}
+                      renderItem={(props: RenderItemParams<MediaType>) => renderScrollPhotoItem({ ...props, mode: 'certificates' })}
+                      contentContainerStyle={styles.DraggableImagesContent}
+                      style={styles.DraggableImages}
+                    />
                   </View>
 
                   :
@@ -1141,7 +1222,10 @@ const CompanyEditorScreen: React.FC = () => {
                   <Button
                     variant='TouchableOpacity'
                     style={styles.EditButton}
-                    onPress={() => changeCompanyDataHandler('employees_amount', null)}
+
+                    onPress={() => {
+                      setDeleteSubView({ name: 'employees_amount', value: null, text: 'Czy na pewno chcesz usunąć dane do faktury?' });
+                    }}
                   >
                     <Typography variant='h5' weight='Bold' style={styles.DeleteImagesButton}>
                       Usuń
@@ -1238,9 +1322,11 @@ const CompanyEditorScreen: React.FC = () => {
               </Button>
             </View>
             <View style={styles.SocialMediaIcons}>
-              <SvgIcon icon={'facebook'} fill={account_facebook ? Colors.Basic900 : Colors.Basic600} />
+              <View style={[styles.LinkedInIcon, { borderColor: account_linkedIn ? Colors.Basic900 : Colors.Basic600 }]}>
+                <Linkedin color={account_linkedIn ? Colors.Basic900 : Colors.Basic600} />
+              </View>
               <SvgIcon icon={'instagram'} fill={account_instagram ? Colors.Basic900 : Colors.Basic600} />
-              <SvgIcon icon={'instagram'} fill={account_linkedIn ? Colors.Basic900 : Colors.Basic600} />
+              <SvgIcon icon={'facebook'} fill={account_facebook ? Colors.Basic900 : Colors.Basic600} />
               <SvgIcon icon={'internet'} fill={website ? Colors.Basic900 : Colors.Basic600} />
             </View>
             <Separator marginTop={12} />
@@ -1327,6 +1413,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 9,
+    flexWrap: 'wrap',
   },
   LoadedImagesButton: {
     padding: 10,
@@ -1340,12 +1427,10 @@ const styles = StyleSheet.create({
     color: Colors.Blue500,
     textDecorationLine: 'underline',
   },
-  DraggableImagesContainer: {
-    height: 105,
-    flexDirection: 'row'
-  },
   DraggableImagesContent: {
-    paddingLeft: 19, paddingVertical: 10
+    paddingLeft: 19,
+    paddingTop: 10,
+    paddingBottom: 15
   },
   DraggableImages: {
     flex: 1
@@ -1526,6 +1611,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 24,
     paddingHorizontal: 19,
+    alignItems: 'center',
+  },
+  LinkedInIcon: {
+    borderWidth: 2,
+    borderRadius: 4,
+    padding: 1,
+    width: 31,
+    height: 31,
+    alignItems: 'center'
   },
   ErrorModalContainer: {
     justifyContent: 'center',

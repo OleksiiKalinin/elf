@@ -7,6 +7,7 @@ import Colors from '../colors/Colors';
 import useRouter from '../hooks/useRouter';
 import { ScrollView } from '../components/molecules/ScrollView';
 import SvgIcon from '../components/atoms/SvgIcon';
+import { Linkedin } from '@tamagui/lucide-icons';
 
 type SocialMediaType = {
   facebook?: string | null,
@@ -39,12 +40,12 @@ const SocialMediaScreen: React.FC<SocialMediaScreenProps> = ({
   }, [socialMedia]);
 
   const validateSocialMedia = () => {
-    if(
+    if (
       (socialMedia.facebook?.length && !urlPattern.test(socialMedia.facebook)) ||
       (socialMedia.instagram?.length && !urlPattern.test(socialMedia.instagram)) ||
       (socialMedia.linkedIn?.length && !urlPattern.test(socialMedia.linkedIn)) ||
       (socialMedia.website?.length && !urlPattern.test(socialMedia.website))
-    ){
+    ) {
       return false;
     };
 
@@ -65,14 +66,18 @@ const SocialMediaScreen: React.FC<SocialMediaScreenProps> = ({
 
   return (
     <ScreenHeaderProvider title='Social media'>
-      <ScrollView style={styles.ScrollView} contentContainerStyle={{ paddingTop: 25}}>
+      <ScrollView style={styles.ScrollView} contentContainerStyle={{ paddingTop: 25 }}>
         <View style={styles.TextFieldContainer}>
           <TextField
-            left={<SvgIcon icon='facebook' />}
-            label="Link do profilu na Facebook"
-            value={socialMedia.facebook || ''}
-            onChangeText={text => setSocialMedia(prev=> ({...prev, facebook: (text.length ? text : null)}))}
-            {...(showTips && socialMedia.facebook?.length && !urlPattern.test(socialMedia.facebook) && {
+            left={
+              <View style={styles.LinkedInIcon}>
+                <Linkedin />
+              </View>
+            }
+            label="Link do profilu na LinkedIn"
+            value={socialMedia.linkedIn || ''}
+            onChangeText={text => setSocialMedia(prev => ({ ...prev, linkedIn: (text.length ? text : null) }))}
+            {...(showTips && socialMedia.linkedIn?.length && !urlPattern.test(socialMedia.linkedIn) && {
               bottomText: 'Niepoprawny adres url',
             })}
           />
@@ -82,7 +87,7 @@ const SocialMediaScreen: React.FC<SocialMediaScreenProps> = ({
             left={<SvgIcon icon='instagram' />}
             label="Link do profilu na Instagram"
             value={socialMedia.instagram || ''}
-            onChangeText={text => setSocialMedia(prev=> ({...prev, instagram: (text.length ? text : null)}))}
+            onChangeText={text => setSocialMedia(prev => ({ ...prev, instagram: (text.length ? text : null) }))}
             {...(showTips && socialMedia.instagram?.length && !urlPattern.test(socialMedia.instagram) && {
               bottomText: 'Niepoprawny adres url',
             })}
@@ -90,11 +95,11 @@ const SocialMediaScreen: React.FC<SocialMediaScreenProps> = ({
         </View>
         <View style={styles.TextFieldContainer}>
           <TextField
-            left={<SvgIcon icon='instagram' />}
-            label="Link do profilu na LinkedIn"
-            value={socialMedia.linkedIn || ''}
-            onChangeText={text => setSocialMedia(prev=> ({...prev, linkedIn: (text.length ? text : null)}))}
-            {...(showTips && socialMedia.linkedIn?.length && !urlPattern.test(socialMedia.linkedIn) && {
+            left={<SvgIcon icon='facebook' />}
+            label="Link do profilu na Facebook"
+            value={socialMedia.facebook || ''}
+            onChangeText={text => setSocialMedia(prev => ({ ...prev, facebook: (text.length ? text : null) }))}
+            {...(showTips && socialMedia.facebook?.length && !urlPattern.test(socialMedia.facebook) && {
               bottomText: 'Niepoprawny adres url',
             })}
           />
@@ -104,7 +109,7 @@ const SocialMediaScreen: React.FC<SocialMediaScreenProps> = ({
             left={<SvgIcon icon='internet' />}
             label="Link do strony internetowej"
             value={socialMedia.website || ''}
-            onChangeText={text => setSocialMedia(prev=> ({...prev, website: (text.length ? text : null)}))}
+            onChangeText={text => setSocialMedia(prev => ({ ...prev, website: (text.length ? text : null) }))}
             {...(showTips && socialMedia.website?.length && !urlPattern.test(socialMedia.website) && {
               bottomText: 'Niepoprawny adres url',
             })}
@@ -126,9 +131,16 @@ const styles = StyleSheet.create({
     flex: 1
   },
   TextFieldContainer: {
-    marginBottom: 20, 
+    marginBottom: 20,
     marginHorizontal: 19,
-  }
+  },
+  LinkedInIcon: {
+    marginLeft: 5,
+    marginBottom: 3,
+    borderWidth: 2,
+    borderRadius: 4,
+    padding: 1,
+  },
 });
 
 export default SocialMediaScreen;

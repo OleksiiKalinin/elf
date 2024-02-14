@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useLayoutEffect } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -19,11 +19,17 @@ import { useActions } from '../../hooks/useActions';
 const { useParam } = createParam<NonNullable<ProfileStackParamList['default']['NoCompanyScreen']>>();
 
 const NoCompanyScreen: React.FC = () => {
-  const { token } = useTypedSelector(state => state.general);
+  const { token, userCompany } = useTypedSelector(state => state.general);
   const { replace } = useRouter();
   const router = useRouter();
   const [subView] = useParam('subView');
   const { setSwipeablePanelProps } = useActions();
+
+  useLayoutEffect(() => {
+    if(userCompany && userCompany.is_active){
+      goToCompanyScreen();
+    };
+  }, [userCompany]);
 
   useEffect(() => {
     setSwipeablePanelProps((() => {

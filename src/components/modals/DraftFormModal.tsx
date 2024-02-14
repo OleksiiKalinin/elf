@@ -8,8 +8,14 @@ import Colors from '../../colors/Colors';
 import Button from '../molecules/Button';
 
 const DraftFormModal = () => {
-  const { showDraftFormModal } = useTypedSelector(s => s.general);
+  const { showDraftFormModal, currentScreen } = useTypedSelector(s => s.general);
   const { setShowDraftFormModal } = useActions();
+
+/*   useEffect(() => {
+    if(Platform.OS !== 'web'){
+      setShowDraftFormModal(null);
+    };
+  }, [currentScreen]); */
 
   useEffect(() => {
     if (Platform.OS === 'web') {
