@@ -82,7 +82,7 @@ const changePassword = (currentPassword: string, newPassword: string) => async (
         /* dispatch(generalActions.setAppLoading(false)); */
         return true;
     } catch (error: any) {
-        return await errorHandler({ error, dispatch, getState, caller: changePassword.bind(this, currentPassword, newPassword) });
+        return await errorHandler({ error, dispatch, getState, caller: changePassword.bind(this, currentPassword, newPassword), ignoreRefreshToken: true });
     }
 };
 

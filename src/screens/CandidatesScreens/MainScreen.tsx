@@ -24,8 +24,8 @@ import Typography from '../../components/atoms/Typography';
 import CandidateCard from '../../components/organismes/CandidateCard';
 import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvider';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
-import { useRouter } from 'solito/router';
 import Button from '../../components/molecules/Button';
+import useRouter from '../../hooks/useRouter';
 
 const MainScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
@@ -358,7 +358,7 @@ const MainScreen: React.FC = () => {
           </Typography>
         </View>
       )}
-      renderItem={({ item }) => (
+      /* renderItem={({ item }) => (
         <Button
           variant='TouchableOpacity'
           style={{ marginBottom: 10 }}
@@ -367,7 +367,7 @@ const MainScreen: React.FC = () => {
           <CandidateCard {...item} />
         </Button>
       )
-      } />
+      } */ />
   </View>), [candidates]);//!!!!!deps!!!!!
 
   // const swipePanels: SwipeablePanelProps[] = [
@@ -427,6 +427,17 @@ const MainScreen: React.FC = () => {
       {loading ? <LoadingScreen /> : <>
         {CandidatesList}
       </>}
+      <Button
+        onPress={() =>
+          router.push({
+            stack: 'CandidatesStack',
+            screen: 'ProfileScreen',
+            params: { id: '1' }
+          })
+        }
+      >
+        Profil kandydata
+      </Button>
     </ScreenHeaderProvider>
   );
 };

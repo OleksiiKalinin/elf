@@ -96,11 +96,9 @@ const companyExample: CompanyDataType = {
   ],
 };
 
-type InitialParams = NonNullable<ProfileStackParamList['default']['CompanyScreen']>;
-
 const { useParam } = createParam<NonNullable<ProfileStackParamList['default']['CompanyScreen']>>();
 
-const CompanyScreen: React.FC<InitialPropsFromParams<InitialParams>> = () => {
+const CompanyScreen: React.FC = () => {
   const dispatch = useTypedDispatch();
   const { setSwipeablePanelProps, setSnackbarMessage } = useActions();
   const { userCompany, services, languages, employeesAmount } = useTypedSelector(state => state.general);

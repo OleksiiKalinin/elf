@@ -18,9 +18,9 @@ export type CandidatesStackParamList = {
     MainScreen: undefined,
     FavouritesScreen: undefined,
     FavSettingsScreen: undefined,
-    ProfileScreen: { id: string },
+    ProfileScreen: { id: string, subView?: 'options' },
     VideoScreen: { id: string },
-    FilterScreen: 
+    FilterScreen:
     | undefined
     | SubView<'GoogleMapScreen'>
     | SubView<'JobCategoryScreen'>

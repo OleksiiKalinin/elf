@@ -87,8 +87,9 @@ const CompanyEditorScreen: React.FC = () => {
 
   useLayoutEffect(() => {
     if (userCompany && !formSent) {
-      setCompanyData(userCompany);
-      setOldCompanyData({ ...userCompany, photos: userCompany.photos?.length ? companyData.photos : [], certificates: userCompany.certificates?.length ? userCompany.certificates : [] });
+      const newUserCompany = { ...userCompany, photos: userCompany.photos?.length ? companyData.photos : [], certificates: userCompany.certificates?.length ? userCompany.certificates : [] };
+      setCompanyData(newUserCompany);
+      setOldCompanyData(newUserCompany);
       if (userCompany.is_active) {
         setMode('edit');
       } else {
@@ -135,6 +136,8 @@ const CompanyEditorScreen: React.FC = () => {
 
   useEffect(() => {
     setUnsavedData(!isEqual(oldCompanyData, companyData));
+    console.log(oldCompanyData, 'oldCompanyData');
+    console.log(companyData, 'companyData');
   }, [oldCompanyData, companyData]);
 
   useEffect(() => {
@@ -567,20 +570,30 @@ const CompanyEditorScreen: React.FC = () => {
           Podstawowe
         </Typography>
         <View style={styles.CompanyName}>
-          <TextField
-            label="Nazwa firmy*"
-            value={name || ''}
-            maxLength={100}
-            onChangeText={text => changeCompanyDataHandler('name', text, false)}
-            {...(showTips && !isFieldValid('name') && {
-              bottomText: 'Nazwa firmy musi zawierać od 3 do 100 znaków',
-            })}
-          />
+          {isFieldValid('name') ?
+            <SvgIcon icon='doneCircleGreen' style={styles.DoneCircle} />
+
+            :
+
+            <View style={styles.OutlineCircle} />
+          }
+          <View style={{ width: '50%', marginRight: 19 }}>
+            <TextField
+              label="Nazwa firmy*"
+              value={name || ''}
+              maxLength={100}
+              onChangeText={text => changeCompanyDataHandler('name', text, false)}
+              {...(showTips && !isFieldValid('name') && {
+                bottomText: 'Nazwa firmy musi zawierać od 3 do 100 znaków',
+              })}
+            />
+          </View>
         </View>
         <View style={{ marginBottom: 24 }}>
           <MapPreview
             label='Lokalizacja*'
             place={address?.formattedAddress}
+            statusCircle
             onPress={() => router.push({
               stack: 'ProfileStack',
               screen: 'CompanyEditorScreen',
@@ -600,20 +613,7 @@ const CompanyEditorScreen: React.FC = () => {
           onPress={() => goToJobCategoryScreen()}
         >
           {job_industry ?
-            <View style={styles.JobIndustry}>
-              <View style={styles.JobIndustryIcon}>
-                <View style={{ position: 'absolute' }}>
-                  <SkeletonContainer animation='wave' speed={600}>
-                    <Skeleton style={styles.JobIndustryIconSkeleton} />
-                  </SkeletonContainer>
-                </View>
-                <SvgUriImage width={34} height={34} src={jobIndustries.find(curr => curr.id === job_industry)?.icon || ''} />
-              </View>
-              <Typography variant='h5' weight='SemiBold'>{jobIndustries.find(curr => curr.id === job_industry)?.name || ''}</Typography>
-            </View>
-
             // <View style={styles.JobIndustry}>
-            //   <SvgIcon icon='doneCircleGreen' />
             //   <View style={styles.JobIndustryIcon}>
             //     <View style={{ position: 'absolute' }}>
             //       <SkeletonContainer animation='wave' speed={600}>
@@ -625,9 +625,23 @@ const CompanyEditorScreen: React.FC = () => {
             //   <Typography variant='h5' weight='SemiBold'>{jobIndustries.find(curr => curr.id === job_industry)?.name || ''}</Typography>
             // </View>
 
+            <View style={styles.JobIndustry}>
+              <SvgIcon icon='doneCircleGreen' style={styles.DoneCircle} />
+              <View style={styles.JobIndustryIcon}>
+                <View style={{ position: 'absolute' }}>
+                  <SkeletonContainer animation='wave' speed={600}>
+                    <Skeleton style={styles.JobIndustryIconSkeleton} />
+                  </SkeletonContainer>
+                </View>
+                <SvgUriImage width={34} height={34} src={jobIndustries.find(curr => curr.id === job_industry)?.icon || ''} />
+              </View>
+              <Typography variant='h5' weight='SemiBold'>{jobIndustries.find(curr => curr.id === job_industry)?.name || ''}</Typography>
+            </View>
+
             :
 
-            <>
+            <View style={{ flexDirection: 'row' }}>
+              <View style={styles.OutlineCircle} />
               <Typography
                 variant='h5'
               >
@@ -636,16 +650,19 @@ const CompanyEditorScreen: React.FC = () => {
               <Typography style={{ color: Colors.Red }}>
                 *
               </Typography>
-            </>
+            </View>
           }
         </Button>
         {companyData.services?.length ?
           <>
             <View style={styles.SelectedItemsContainer}>
               <View style={styles.SelectedItemsHeader}>
-                <Typography variant='h5' weight='Bold'>
-                  Usługi
-                </Typography>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <SvgIcon icon='doneCircleGreen' style={styles.DoneCircle} />
+                  <Typography variant='h5' weight='Bold'>
+                    Usługi
+                  </Typography>
+                </View>
                 <Button
                   variant='TouchableOpacity'
                   style={styles.EditButton}
@@ -676,12 +693,17 @@ const CompanyEditorScreen: React.FC = () => {
             arrowRight
             onPress={() => goToSelectServicesScreen()}
           >
-            <Typography variant='h5'>
-              Usługi
-            </Typography>
-            <Typography style={{ color: Colors.Red }}>
-              *
-            </Typography>
+            <View style={{ flexDirection: 'row' }}>
+              <View style={styles.OutlineCircle} />
+              <Typography
+                variant='h5'
+              >
+                Usługi
+              </Typography>
+              <Typography style={{ color: Colors.Red }}>
+                *
+              </Typography>
+            </View>
           </Button>
         }
         {description ?
@@ -727,36 +749,36 @@ const CompanyEditorScreen: React.FC = () => {
 
           :
 
-          // <Button
-          //   variant='text'
-          //   arrowRight
-          //   borderBottom
-          //   onPress={() => goToCompanyDescriptionScreen()}
-          // >
-          //   <View style={{ flexDirection: 'row', alignItems: 'center' }} >
-          //     <View style={{ borderRadius: 50, width: 20, height: 20, borderWidth: 2, borderColor: Colors.Basic400, marginLeft: 2, marginRight: 13 }} />
-          //     {/* <View style={{ borderRadius: 50, width: 20, height: 20, backgroundColor: Colors.Basic400, marginLeft: 2, marginRight: 13 }} /> */}
-          //     <Typography variant='h5'>
-          //       Opis firmy
-          //     </Typography>
-          //     <Typography style={{ color: Colors.Red }}>
-          //       *
-          //     </Typography>
-          //   </View>
-          // </Button>
           <Button
             variant='text'
             arrowRight
             borderBottom
             onPress={() => goToCompanyDescriptionScreen()}
           >
-            <Typography variant='h5'>
-              Opis firmy
-            </Typography>
-            <Typography style={{ color: Colors.Red }}>
-              *
-            </Typography>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }} >
+              <View style={{ borderRadius: 50, width: 20, height: 20, borderWidth: 2, borderColor: Colors.Basic400, marginLeft: 2, marginRight: 13 }} />
+              {/* <View style={{ borderRadius: 50, width: 20, height: 20, backgroundColor: Colors.Basic400, marginLeft: 2, marginRight: 13 }} /> */}
+              <Typography variant='h5'>
+                Opis firmy
+              </Typography>
+              <Typography style={{ color: Colors.Red }}>
+                *
+              </Typography>
+            </View>
           </Button>
+          // <Button
+          //   variant='text'
+          //   arrowRight
+          //   borderBottom
+          //   onPress={() => goToCompanyDescriptionScreen()}
+          // >
+          //   <Typography variant='h5'>
+          //     Opis firmy
+          //   </Typography>
+          //   <Typography style={{ color: Colors.Red }}>
+          //     *
+          //   </Typography>
+          // </Button>
         }
         {!!contactPersons && !!contactPersons.length ?
           <>
@@ -788,12 +810,15 @@ const CompanyEditorScreen: React.FC = () => {
             borderBottom
             onPress={() => goToAddPersonsContactScreen()}
           >
-            <Typography variant='h5'>
-              Dane do kontaktu
-            </Typography>
-            <Typography style={{ color: Colors.Red }}>
-              *
-            </Typography>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }} >
+              <View style={{ borderRadius: 50, width: 20, height: 20, borderWidth: 2, borderColor: Colors.Basic400, marginLeft: 2, marginRight: 13 }} />
+              <Typography variant='h5'>
+                Dane do kontaktu
+              </Typography>
+              <Typography style={{ color: Colors.Red }}>
+                *
+              </Typography>
+            </View>
           </Button>
         }
         {!!nip_info ?
@@ -813,23 +838,23 @@ const CompanyEditorScreen: React.FC = () => {
                     setDeleteSubView({ name: 'nip_info', value: null, text: 'Czy na pewno chcesz usunąć dane do faktury?' });
                   }}
                 >
-                  <Typography variant='h5' weight='Bold' style={styles.DeleteImagesButton}>
+                  {/* <Typography variant='h5' weight='Bold' style={styles.DeleteImagesButton}>
                     Usuń
-                  </Typography>
-                {/*   <Trash2 style={{marginRight: 5}}/>
-                  <Eraser /> */}
+                  </Typography> */}
+                  <Trash2 style={{ marginRight: 5 }} />
+                  {/* <Eraser /> */}
                 </Button>
                 <Button
                   variant='TouchableOpacity'
                   style={styles.EditButton}
                   onPress={() => goToCompanyInvoiceScreen()}
                 >
-                  <Typography variant='h5' weight='Bold' style={styles.EditButtonText}>
+                  {/* <Typography variant='h5' weight='Bold' style={styles.EditButtonText}>
                     Edytuj
-                  </Typography>
+                  </Typography> */}
                   {/*                   <SvgIcon icon='pencil' fill={Colors.Blue500}/> */}
                   {/* <SvgIcon icon='pencil' /> */}
-                  {/* <Pencil /> */}
+                  <Pencil />
                 </Button>
               </View>
             </View>
@@ -950,13 +975,13 @@ const CompanyEditorScreen: React.FC = () => {
             }
           />
         </View>
-        <View style={styles.ImagesTitle}>
+        {/* <View style={styles.ImagesTitle}>
           <Typography weight="Bold" variant="h5">
             Zdjęcia firmy{' '}
           </Typography>
-        </View>
+        </View> */}
 
-        {/* <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginLeft: 19}}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginLeft: 19 }}>
           <Typography weight="Bold" variant="h5">
             Zdjęcia firmy{' '}
           </Typography>
@@ -980,7 +1005,7 @@ const CompanyEditorScreen: React.FC = () => {
               </Button>
             }
           </View>
-        </View> */}
+        </View>
 
         <MediaSelector
           type='image'
@@ -1014,7 +1039,7 @@ const CompanyEditorScreen: React.FC = () => {
 
                 (!!photos && photos.length) ?
                   <View style={styles.LoadedImages}>
-                    <View style={styles.LoadedImagesButtons}>
+                    {/* <View style={styles.LoadedImagesButtons}>
                       <Button
                         variant='TouchableOpacity'
                         style={styles.LoadedImagesButton}
@@ -1025,7 +1050,7 @@ const CompanyEditorScreen: React.FC = () => {
                         <Typography variant='h5' weight="Bold" style={styles.DeleteImagesButton}>
                           Usuń wszystkie
                         </Typography>
-                        {/* <Trash2 /> */}
+                        <Trash2 />
                       </Button>
                       {(photos.length < companyPhotosLimit) &&
                         <Button
@@ -1036,10 +1061,10 @@ const CompanyEditorScreen: React.FC = () => {
                           <Typography variant='h5' weight="Bold" style={styles.AddMoreImages}>
                             Dodaj kolejne
                           </Typography>
-                          {/* <PlusCircle /> */}
+                          <PlusCircle />
                         </Button>
                       }
-                    </View>
+                    </View> */}
                     <DraggableList
                       horizontal
                       data={photos?.sort((a, b) => {
@@ -1365,8 +1390,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   CompanyName: {
+    flexDirection: 'row',
     marginHorizontal: 19,
     marginBottom: 30,
+    alignItems: 'flex-end',
   },
   CompanyLogoTitle: {
     marginHorizontal: 19,
@@ -1635,6 +1662,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 20,
   },
+  OutlineCircle: {
+    borderRadius: 50,
+    width: 20,
+    height: 20,
+    borderWidth: 2,
+    borderColor: Colors.Basic400,
+    marginLeft: 2,
+    marginRight: 13,
+    marginBottom: 2
+  },
+  DoneCircle: {
+    marginRight: 13
+  }
 });
 
 export default CompanyEditorScreen;

@@ -52,18 +52,17 @@ const ChangePasswordScreen: React.FC = () => {
     if (validateData()) {
       if (currentPassword !== newPassword) {
         const changePassword = await dispatch(authServices.changePassword(currentPassword, newPassword));
-        if (changePassword) {
+        if (!!changePassword) {
           setSnackbarMessage({ type: 'success', text: 'Hasło zostało zmienione' });
           backToRemoveParams();
-        }
+        };
       } else if (currentPassword === newPassword) {
-        setSnackbarMessage({ type: 'error', text: 'Nowe hasło musi się różnić od obecnego' })
-        setLoading(false);
-      }
+        setSnackbarMessage({ type: 'error', text: 'Nowe hasło musi się różnić od obecnego' });
+      };
     } else {
       setShowTips(true);
-      setLoading(false);
     };
+    setLoading(false);
   };
 
   return (

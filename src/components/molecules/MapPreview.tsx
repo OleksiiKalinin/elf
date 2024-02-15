@@ -27,12 +27,13 @@ type MapPreviewProps = {
     label?: string;
     hideMap?: boolean;
     rightIcon?: IconTypes;
+    statusCircle?: boolean;
 };
 
-const MapPreview: React.FC<MapPreviewProps> = ({ latitude, longitude, onPress, place, label, hideMap, rightIcon = 'arrowRight' }) => {
+const MapPreview: React.FC<MapPreviewProps> = ({ latitude, longitude, onPress, place, label, hideMap, rightIcon = 'arrowRight', statusCircle }) => {
     return (
         <View>
-            <Button variant='TouchableOpacity' activeOpacity={.9} onPress={onPress}>
+            {/* <Button variant='TouchableOpacity' activeOpacity={.9} onPress={onPress}>
                 <View style={{ backgroundColor: Colors.Basic200, flexDirection: 'row', paddingVertical: 14 }}>
                     <View style={styles.mapIcon}>
                         <SvgIcon icon="mapMarker" />
@@ -49,10 +50,20 @@ const MapPreview: React.FC<MapPreviewProps> = ({ latitude, longitude, onPress, p
                         <SvgIcon icon={rightIcon} />
                     </View>
                 </View>
-            </Button>
-            {/* <Button variant='TouchableOpacity' activeOpacity={.9} onPress={onPress}>
+            </Button> */}
+            <Button variant='TouchableOpacity' activeOpacity={.9} onPress={onPress}>
                 <View style={{ backgroundColor: Colors.Basic200, flexDirection: 'row', paddingVertical: 14, alignItems: 'center' }}>
-                    <SvgIcon icon='doneCircleGreen' style={{ marginLeft: 19 }} />
+                    {statusCircle &&
+                        <>
+                            {place ?
+                                <SvgIcon icon='doneCircleGreen' style={{ marginLeft: 19 }} />
+
+                                :
+
+                                <View style={styles.OutlineCircle} />
+                            }
+                        </>
+                    }
                     <View style={styles.mapIcon}>
                         <SvgIcon icon="mapMarker" />
                     </View>
@@ -68,7 +79,7 @@ const MapPreview: React.FC<MapPreviewProps> = ({ latitude, longitude, onPress, p
                         <SvgIcon icon={rightIcon} />
                     </View>
                 </View>
-            </Button> */}
+            </Button>
             {!!latitude && !!longitude && !hideMap && (
                 <Map
                     style={styles.Map}
@@ -116,6 +127,15 @@ const styles = StyleSheet.create({
         width: 50,
         justifyContent: 'center',
         alignItems: "center",
+    },
+    OutlineCircle: {
+        borderRadius: 50,
+        width: 20,
+        height: 20,
+        borderWidth: 2,
+        borderColor: Colors.Basic400,
+        marginLeft: 21,
+        marginRight: 13
     },
 });
 
