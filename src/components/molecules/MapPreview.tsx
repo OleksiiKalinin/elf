@@ -11,6 +11,7 @@ import SvgIcon, { IconTypes } from '../atoms/SvgIcon';
 import Typography from '../atoms/Typography';
 import Colors from '../../colors/Colors';
 import Button from './Button';
+import FieldStatusCircle from '../atoms/FieldStatusCircle';
 
 const Map = MapView as unknown as FC<ComponentProps<typeof MapView> & { options: any }> & { Marker: typeof MapMarker };
 if (Platform.OS === 'android' || Platform.OS === 'ios') {
@@ -28,41 +29,20 @@ type MapPreviewProps = {
     hideMap?: boolean;
     rightIcon?: IconTypes;
     statusCircle?: boolean;
+    statusWarning?: boolean;
 };
 
-const MapPreview: React.FC<MapPreviewProps> = ({ latitude, longitude, onPress, place, label, hideMap, rightIcon = 'arrowRight', statusCircle }) => {
+const MapPreview: React.FC<MapPreviewProps> = ({ latitude, longitude, onPress, place, label, hideMap, rightIcon = 'arrowRight', statusCircle, statusWarning = false }) => {
     return (
         <View>
-            {/* <Button variant='TouchableOpacity' activeOpacity={.9} onPress={onPress}>
-                <View style={{ backgroundColor: Colors.Basic200, flexDirection: 'row', paddingVertical: 14 }}>
-                    <View style={styles.mapIcon}>
-                        <SvgIcon icon="mapMarker" />
-                    </View>
-                    <View style={{ flex: 1, paddingHorizontal: 14, borderLeftWidth: 1, borderColor: Colors.Basic300, }}>
-                        <Typography color={Colors.Basic600} variant='h5'>
-                            {label || 'Lokalizacja*'}
-                        </Typography>
-                        <Typography weight='SemiBold' variant='h5'>
-                            {place || 'Wybierz adres'}
-                        </Typography>
-                    </View>
-                    <View style={styles.mapIcon}>
-                        <SvgIcon icon={rightIcon} />
-                    </View>
-                </View>
-            </Button> */}
             <Button variant='TouchableOpacity' activeOpacity={.9} onPress={onPress}>
                 <View style={{ backgroundColor: Colors.Basic200, flexDirection: 'row', paddingVertical: 14, alignItems: 'center' }}>
                     {statusCircle &&
-                        <>
-                            {place ?
-                                <SvgIcon icon='doneCircleGreen' style={{ marginLeft: 19 }} />
-
-                                :
-
-                                <View style={styles.OutlineCircle} />
-                            }
-                        </>
+                        <FieldStatusCircle
+                            status={!!place}
+                            warning={statusWarning}
+                            style={{ marginLeft: 19 }}
+                        />
                     }
                     <View style={styles.mapIcon}>
                         <SvgIcon icon="mapMarker" />
@@ -127,15 +107,6 @@ const styles = StyleSheet.create({
         width: 50,
         justifyContent: 'center',
         alignItems: "center",
-    },
-    OutlineCircle: {
-        borderRadius: 50,
-        width: 20,
-        height: 20,
-        borderWidth: 2,
-        borderColor: Colors.Basic400,
-        marginLeft: 21,
-        marginRight: 13
     },
 });
 
