@@ -11,15 +11,18 @@ import { useActions } from '../../hooks/useActions';
 import useRouter from '../../hooks/useRouter';
 import { Separator } from 'tamagui';
 import { isEqual } from 'lodash';
+import { useTypedDispatch } from '../../hooks/useTypedDispatch';
+import generalServices from '../../services/generalServices';
 
 const CookieScreen: React.FC = () => {
-  const { userSettings, cookieConsents } = useTypedSelector(state => state.general);
-  const { setUserSettings, setBlockedScreen } = useActions();
+  const { userSettings, cookieConsents, userData } = useTypedSelector(state => state.general);
+  const { setUserSettings, setBlockedScreen, setSnackbarMessage } = useActions();
   const [oldFormData, setOldFormData] = useState<number[]>(userSettings?.notifications || []);
   const [formData, setFormData] = useState<number[]>(userSettings?.notifications || []);
   const [unsavedData, setUnsavedData] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
+  const dispatch = useTypedDispatch();
 
   useEffect(() => {
     setOldFormData(userSettings?.cookies || []);
@@ -41,16 +44,29 @@ const CookieScreen: React.FC = () => {
     } else {
       mySet.add(id);
     };
-    
+
     setFormData([...mySet].sort((a, b) => a - b));
   };
 
-  const changeHandler = () => {
+  const changeHandler = async () => {
     setLoading(true);
-    if (userSettings) {
-      setUserSettings({ ...userSettings, cookies: formData });
+    let isOk = false;
+    if (userData) {
+      isOk = await dispatch(generalServices.setUserSettings({
+        notifications: userSettings?.notifications,
+        cookie_consents: formData,
+      }));
+    } else {
+      if (userSettings) {
+        setUserSettings({ ...userSettings, cookies: formData });
+        isOk = true;
+      };
     };
-    goToSettingsScreen();
+    if (!!isOk) {
+      setSnackbarMessage({ type: 'success', text: 'Zaktualizowano ustawienia coookies' });
+      goToSettingsScreen();
+    };
+    setLoading(false);
   };
 
   const goToSettingsScreen = () => {
