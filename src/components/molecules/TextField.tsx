@@ -160,7 +160,6 @@ const TextField: FC<TextFieldProps> = forwardRef(({
                 circular
                 bg='transparent'
                 style={{ height: 'auto', width: 'auto', minHeight: 0, minWidth: 0 }}
-                // _pressed={{ bg: Colors.Basic100 }}
                 onPress={() => setIsSecured(prev => !prev)}
                 icon={<SvgIcon icon={isSecured ? 'eyeOff' : 'eyeOn'} />}
               />

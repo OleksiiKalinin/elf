@@ -63,11 +63,7 @@ const DraggableList: React.FC<DraggableListProps> = forwardRef(({
 							provided.innerRef(node as any);
 							if (ref) ref.current = node;
 						}}
-						disableWindowScroll={disableWindowScroll}
-						horizontal={horizontal}
-						style={style}
-						contentContainerStyle={contentContainerStyle}
-						{...provided.droppableProps}
+						{...{ ...provided.droppableProps, disableWindowScroll, horizontal, style, contentContainerStyle }}
 					>
 						{data.map((item, index) => (
 							<Draggable key={index} draggableId={index.toString()} index={index} shouldRespectForcePress isDragDisabled={data.length < 2}>

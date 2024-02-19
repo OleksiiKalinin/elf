@@ -358,16 +358,17 @@ const MainScreen: React.FC = () => {
           </Typography>
         </View>
       )}
-      /* renderItem={({ item }) => (
+      renderItem={({ item }) => (
         <Button
           variant='TouchableOpacity'
           style={{ marginBottom: 10 }}
-          onPress={() => router.push(`/candidates/ProfileScreen?id=${item.id}`)}
+          // onPress={() => router.push(`/candidates/ProfileScreen?id=${item.id}`)}
         >
           <CandidateCard {...item} />
         </Button>
       )
-      } */ />
+      }
+    />
   </View>), [candidates]);//!!!!!deps!!!!!
 
   // const swipePanels: SwipeablePanelProps[] = [

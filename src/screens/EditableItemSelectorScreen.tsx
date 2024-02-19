@@ -46,7 +46,7 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
   const ElementsViewRef = useRef<ScrollViewNative>(null);
   const MainTextFieldRef = useRef<TextInput>(null);
   const scrollAccess = useRef(false);
-  const { back, backToRemoveParams } = useRouter();
+  const { backToRemoveParams } = useRouter();
 
   useEffect(() => {
     setStepInitialParam('fill', { webBehavior: 'replace' });
@@ -74,7 +74,7 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
     if (step === 'select' && Platform.OS !== 'web') {
       setStepInitialParam('fill');
     } else {
-      back();
+      backToRemoveParams();
     }
   }
 
