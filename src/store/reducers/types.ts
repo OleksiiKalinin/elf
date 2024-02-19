@@ -57,12 +57,12 @@ export type ShowUserShouldBeLogedInModalType = {
 export type BlockedScreenType = {
     blockedExit: boolean,
     blockedBack: boolean,
-    backTo?: ()=> void,
+    backTo?: () => void,
 };
 
 export type ShowDraftFormModalType = ({
     type: 'saveDraft',
-    saveDraftCallback: ()=> void,
+    saveDraftCallback: () => void,
     info?: ReactNode;
     confirmButton?: string,
     cancelButton?: string,
@@ -100,6 +100,7 @@ export type AppDataType = {
     userQuestions: generalReducerState['userQuestions'],
     candidatesFilters: generalReducerState['candidatesFilters'],
     appLoading: generalReducerState['appLoading'],
+    userSettings: generalReducerState['userSettings'],
 };
 
 export interface InvoiceType {
@@ -405,6 +406,14 @@ export interface CompanyDataType {
     account_instagram?: string | null,
     account_linkedIn?: string | null,
     is_active?: boolean,
+    other_locations?: OtherCompanyLocationType[],
+}
+
+export interface OtherCompanyLocationType {
+    id?: number,
+    name: string | null,
+    location: AddressType | null,
+    contact_persons: number[] | null,
 }
 
 export type MediaType = {

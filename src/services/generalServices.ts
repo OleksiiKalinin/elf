@@ -34,16 +34,16 @@ const getAppData = (token: generalReducerState['token']) => async (dispatch: App
     dispatch(generalActions.setIsMainMenuFlatList(Boolean(Number(isMainMenuFlatList))));
     dispatch(generalActions.setProfileHelpScreenDisplayed(Boolean(profileHelpScreenDisplayed)));
 
-
     await Promise.allSettled([
         axios.get('/categorical_data/employer_app_categorical/'),
         ...(token ? [
             axios.get(`/api-auth/currentUser/`, { headers: dynamicHeaders({ token }) }),
             axios.get(`/employer/companies/`, { headers: dynamicHeaders({ token }) }),
             axios.get(`/employer/events/`, { headers: dynamicHeaders({ token }) }),
+            axios.get(`/employer/cookies_notifications/`, { headers: dynamicHeaders({ token }) }),
         ] : [])
     ]).then(async res => {
-        const [appData, userData, userCompanyData, userEventsData] = res.map(p => getAllSettledValue(p));
+        const [appData, userData, userCompanyData, userEventsData, settings] = res.map(p => getAllSettledValue(p));
 
         // console.log(JSON.stringify(appData.data, null, 4));
 
@@ -90,6 +90,10 @@ const getAppData = (token: generalReducerState['token']) => async (dispatch: App
             userQuestions: [],
             candidatesFilters: null,
             appLoading: false,
+            userSettings: {
+                notifications: settings.notifications || (AsyncStorage.getItem('notifications') || [appData?.notification]),
+                cookies: settings.cookie_consents || (AsyncStorage.getItem('cookies') || [1]),
+            }
         }));
         isOk = true;
         console.log(appData)
@@ -113,7 +117,34 @@ const setUserData = (data: any, protocol: 'post' | 'put') => async (dispatch: Ap
     }
 };
 
+const setUserSettings = (data: any) => async (dispatch: AppDispatch, getState: () => rootState) => {
+    const { token } = getState().general;
+    try {
+        const res = await axios.post(`/employer/cookies_notifications/`, data, { headers: dynamicHeaders({ token }) });
+        dispatch(generalActions.setUserSettings({
+            cookies: res.data.cookie_consents,
+            notifications: res.data.notifications,
+        }));
+        return true;
+    } catch (error: any) {
+        await errorHandler({ error, dispatch, getState, caller: setUserSettings.bind(this, data) });
+        return false;
+    };
+};
+
+const getUserSettings = () => async (dispatch: AppDispatch, getState: () => rootState) => {
+    const { token } = getState().general;
+    try {
+        const res = await axios.get(`/employer/cookies_notifications/`, { headers: dynamicHeaders({ token }) });
+        return res.data;
+    } catch (error: any) {
+        return await errorHandler({ error, returnDefaulValue: null, dispatch, getState, caller: getUserSettings.bind(this) });
+    };
+};
+
 export default {
     getAppData,
     setUserData,
+    setUserSettings,
+    getUserSettings
 }

@@ -21,6 +21,10 @@ const registrate = (formData: RegistDataType) => async (dispatch: AppDispatch, g
             await axios.post('/employer/create_user/', {}, { headers: dynamicHeaders({ token: access_token }) });
             await dispatch(generalActions.setToken({ token: access_token, refresh_token }));
             await dispatch(generalServices.getAppData(access_token));
+            /* await dispatch(generalServices.setUserSettings({
+                notifications: AsyncStorage.getItem('notifications') || [],
+                cookie_consents: AsyncStorage.getItem('cookies') || [1],
+            })); */
         } else {
             throw new (CustomRequestException as any)('unknown error', 400);
         }

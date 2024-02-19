@@ -30,7 +30,7 @@ import { useActions } from '../../hooks/useActions';
 import FormProgressBar, { FormFieldType } from '../../components/organismes/FormProgressBar';
 import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { createParam } from 'solito';
-import { Eraser, Linkedin, Pencil, PlusCircle, Trash2, XCircle } from '@tamagui/lucide-icons';
+import { Linkedin, Pencil, PlusCircle, Trash2 } from '@tamagui/lucide-icons';
 import FieldStatusCircle from '../../components/atoms/FieldStatusCircle';
 
 const emptyCompanyData = {
@@ -79,7 +79,7 @@ const CompanyEditorScreen: React.FC = () => {
   const [showTips, setShowTips] = useState<boolean>(false);
   const [isActive, setIsActive] = useState<boolean>(false);
   const [formSent, setFormSent] = useState<boolean>(false);
-  const [deleteSubView, setDeleteSubView] = useState<{ name: keyof CompanyDataType, value: any, text: string } | null>(null);
+  const [deleteSubView, setDeleteSubView] = useState<{ name: keyof CompanyDataType | 'social_media', value: any, text: string } | null>(null);
   const { name, address, job_industry, description, nip_info, employees_amount, square_footage, account_instagram, account_facebook, account_linkedIn, website, logo, photos, certificates, contactPersons } = companyData;
 
   const companyPhotosLimit = 20;
@@ -109,7 +109,6 @@ const CompanyEditorScreen: React.FC = () => {
   }, [mode, unsavedData]);
 
   useEffect(() => {
-    console.log(companyData);
     const fields = [
       { name: 'name', value: name, isValid: !!(name && name.length > 2 && name.length <= 100), required: true },
       { name: 'address', value: address, isValid: !!address, required: true },
@@ -137,8 +136,6 @@ const CompanyEditorScreen: React.FC = () => {
 
   useEffect(() => {
     setUnsavedData(!isEqual(oldCompanyData, companyData));
-    console.log(oldCompanyData, 'oldCompanyData');
-    console.log(companyData, 'companyData');
   }, [oldCompanyData, companyData]);
 
   useEffect(() => {
@@ -185,7 +182,11 @@ const CompanyEditorScreen: React.FC = () => {
               children: 'TAK',
               contentColor: Colors.Danger,
               onPress: () => {
-                changeCompanyDataHandler(deleteSubView.name, deleteSubView.value);
+                if (deleteSubView.name === 'social_media') {
+                  setCompanyData({ ...companyData, account_instagram: null, account_facebook: null, account_linkedIn: null, website: null });
+                } else {
+                  changeCompanyDataHandler(deleteSubView.name, deleteSubView.value, false);
+                }
                 setDeleteSubView(null);
               },
               closeAction: 'props-null',
@@ -262,7 +263,7 @@ const CompanyEditorScreen: React.FC = () => {
       setFormSent(true);
       setShowDraftFormModal(null);
       setBlockedScreen({ blockedBack: false, blockedExit: false });
-      if (isValid === 'toCreateCompany' && mode === ('draft' || 'new')) {
+      if (isValid === 'toCreateCompany' && (mode === 'new' || mode === 'draft')) {
         setSnackbarMessage({ type: 'success', text: 'Utworzono profil' });
         goToCompanyScreen();
       } else if (isValid === 'toSaveDraft') {
@@ -921,7 +922,6 @@ const CompanyEditorScreen: React.FC = () => {
                     <View style={styles.LoadedImagesButtons}>
                       <Button
                         variant='TouchableOpacity'
-                        style={styles.LoadedImagesButton}
                         onPress={() => {
                           setDeleteSubView({ name: 'logo', value: null, text: 'Czy na pewno chcesz usunąć logo' });
                         }}
@@ -930,7 +930,7 @@ const CompanyEditorScreen: React.FC = () => {
                       </Button>
                       <Button
                         variant='TouchableOpacity'
-                        style={styles.LoadedImagesButton}
+
                         onPress={() => onPress()}
                       >
                         <PlusCircle />
@@ -1014,7 +1014,6 @@ const CompanyEditorScreen: React.FC = () => {
                     <View style={styles.LoadedImagesButtons}>
                       <Button
                         variant='TouchableOpacity'
-                        style={styles.LoadedImagesButton}
                         onPress={() => {
                           setDeleteSubView({ name: 'photos', value: [], text: 'Czy na pewno chcesz wszystkie zdjęcia firmy?' });
                         }}
@@ -1023,7 +1022,6 @@ const CompanyEditorScreen: React.FC = () => {
                       </Button>
                       <Button
                         variant='TouchableOpacity'
-                        style={styles.LoadedImagesButton}
                         onPress={() => {
                           (photos.length < companyPhotosLimit) ?
                             onPress()
@@ -1126,7 +1124,6 @@ const CompanyEditorScreen: React.FC = () => {
                     <View style={styles.LoadedImagesButtons}>
                       <Button
                         variant='TouchableOpacity'
-                        style={styles.LoadedImagesButton}
                         onPress={() => {
                           setDeleteSubView({ name: 'certificates', value: [], text: 'Czy na pewno chcesz wszystkie certyfikaty?' });
                         }}
@@ -1135,7 +1132,6 @@ const CompanyEditorScreen: React.FC = () => {
                       </Button>
                       <Button
                         variant='TouchableOpacity'
-                        style={styles.LoadedImagesButton}
                         onPress={() => {
                           (certificates.length < companyCertificatesLimit) ?
                             onPress()
@@ -1253,23 +1249,18 @@ const CompanyEditorScreen: React.FC = () => {
                   <Button
                     variant='TouchableOpacity'
                     style={styles.EditButton}
-
                     onPress={() => {
-                      setDeleteSubView({ name: 'employees_amount', value: null, text: 'Czy na pewno chcesz usunąć dane do faktury?' });
+                      setDeleteSubView({ name: 'employees_amount', value: null, text: 'Czy na pewno chcesz usunąć liczbę pracowników?' });
                     }}
                   >
-                    <Typography variant='h5' weight='Bold' style={styles.DeleteImagesButton}>
-                      Usuń
-                    </Typography>
+                    <Trash2 />
                   </Button>
                   <Button
                     variant='TouchableOpacity'
                     style={styles.EditButton}
                     onPress={() => goToSelectEmployeesAmountScreen()}
                   >
-                    <Typography variant='h5' weight='Bold' style={styles.EditButtonText}>
-                      Edytuj
-                    </Typography>
+                    <Pencil />
                   </Button>
                 </View>
               </View>
@@ -1309,15 +1300,24 @@ const CompanyEditorScreen: React.FC = () => {
                     Preferowane języki w komunikacji
                   </Typography>
                 </View>
-                <Button
-                  variant='TouchableOpacity'
-                  style={styles.EditButton}
-                  onPress={() => goToSelectLanguagesScreen()}
-                >
-                  <Typography variant='h5' weight='Bold' style={styles.EditButtonText}>
-                    Edytuj
-                  </Typography>
-                </Button>
+                <View style={styles.EditButtons}>
+                  <Button
+                    variant='TouchableOpacity'
+                    style={styles.EditButton}
+                    onPress={() => {
+                      setDeleteSubView({ name: 'languages', value: null, text: 'Czy na pewno chcesz usunąć języki?' });
+                    }}
+                  >
+                    <Trash2 />
+                  </Button>
+                  <Button
+                    variant='TouchableOpacity'
+                    style={styles.EditButton}
+                    onPress={() => goToSelectLanguagesScreen()}
+                  >
+                    <Pencil />
+                  </Button>
+                </View>
               </View>
               <Typography style={styles.SelectedItems}>
                 {selectedLanguages.map(({ id, name }, i) =>
@@ -1358,15 +1358,24 @@ const CompanyEditorScreen: React.FC = () => {
                   Social media
                 </Typography>
               </View>
-              <Button
-                variant='text'
-                style={{ width: 'auto', padding: 0 }}
-                onPress={() => goToSocialMediaScreen()}
-              >
-                <Typography variant='h5' weight='Bold' color={Colors.Blue500} >
-                  Edytuj
-                </Typography>
-              </Button>
+              <View style={styles.EditButtons}>
+                <Button
+                  variant='TouchableOpacity'
+                  style={styles.EditButton}
+                  onPress={() => {
+                    setDeleteSubView({ name: 'social_media', value: null, text: 'Czy na pewno chcesz usunąć social media?' });
+                  }}
+                >
+                  <Trash2 />
+                </Button>
+                <Button
+                  variant='TouchableOpacity'
+                  style={styles.EditButton}
+                  onPress={() => goToSocialMediaScreen()}
+                >
+                  <Pencil />
+                </Button>
+              </View>
             </View>
             <View style={styles.SocialMediaIcons}>
               <View style={[styles.LinkedInIcon, { borderColor: account_linkedIn ? Colors.Basic900 : Colors.Basic600 }]}>
@@ -1421,7 +1430,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 19,
     marginBottom: 30,
     alignItems: 'flex-end',
-    /*     width: '100%', */
   },
   CompanyLogoTitle: {
     marginHorizontal: 19,
@@ -1479,11 +1487,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     marginRight: 19,
     gap: 15
-  },
-  LoadedImagesButton: {
-    /* padding: 10,
-    marginVertical: 10, */
-
   },
   DeleteImagesButton: {
     color: Colors.Basic600,

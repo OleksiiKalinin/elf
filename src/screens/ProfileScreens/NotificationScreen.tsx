@@ -11,15 +11,18 @@ import Button from '../../components/molecules/Button';
 import { useActions } from '../../hooks/useActions';
 import useRouter from '../../hooks/useRouter';
 import { isEqual } from 'lodash';
+import { useTypedDispatch } from '../../hooks/useTypedDispatch';
+import generalServices from '../../services/generalServices';
 
 const NotificationScreen: React.FC = () => {
-  const { userSettings, notificationConsents } = useTypedSelector(state => state.general);
-  const { setUserSettings, setBlockedScreen } = useActions();
+  const { userSettings, notificationConsents, userData } = useTypedSelector(state => state.general);
+  const { setUserSettings, setBlockedScreen, setSnackbarMessage } = useActions();
   const [oldFormData, setOldFormData] = useState<number[]>(userSettings?.notifications || []);
   const [formData, setFormData] = useState<number[]>(userSettings?.notifications || []);
   const [unsavedData, setUnsavedData] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
+  const dispatch = useTypedDispatch();
 
   useEffect(() => {
     setOldFormData(userSettings?.notifications || []);
@@ -31,7 +34,7 @@ const NotificationScreen: React.FC = () => {
   }, [oldFormData, formData]);
 
   useEffect(() => {
-    setBlockedScreen({ blockedExit: unsavedData, blockedBack: unsavedData});
+    setBlockedScreen({ blockedExit: unsavedData, blockedBack: unsavedData });
   }, [unsavedData]);
 
   const handleSelectedItems = (id: number) => {
@@ -41,16 +44,29 @@ const NotificationScreen: React.FC = () => {
     } else {
       mySet.add(id);
     };
-    
+
     setFormData([...mySet].sort((a, b) => a - b));
   };
 
-  const changeHandler = () => {
+  const changeHandler = async () => {
     setLoading(true);
-    if(userSettings){
-      setUserSettings({ ...userSettings, notifications: formData });
+    let isOk = false;
+    if (userData) {
+      isOk = await dispatch(generalServices.setUserSettings({
+        cookie_consents: userSettings?.cookies,
+        notifications: formData,
+      }));
+    } else {
+      if (userSettings) {
+        setUserSettings({ ...userSettings, notifications: formData });
+        isOk = true;
+      };
     };
-    goToSettingsScreen();
+    if (!!isOk) {
+      setSnackbarMessage({type: 'success', text: 'Zaktualizowano ustawienia powiadomień'});
+      goToSettingsScreen();
+    };
+    setLoading(false);
   };
 
   const goToSettingsScreen = () => {
@@ -63,7 +79,7 @@ const NotificationScreen: React.FC = () => {
 
   return (
     <ScreenHeaderProvider backgroundContent={Colors.Basic100}>
-      <ScrollView contentContainerStyle={{paddingTop: 50}} style={styles.Content}>
+      <ScrollView contentContainerStyle={{ paddingTop: 50 }} style={styles.Content}>
         <Separator />
         <Switch
           checked={!formData.length}
@@ -120,7 +136,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   HoldAllSwitch: {
-    paddingHorizontal: 19, 
+    paddingHorizontal: 19,
     height: 58
   },
   NotificationSwitch: {
