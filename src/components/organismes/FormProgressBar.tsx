@@ -139,19 +139,19 @@ const FormProgressBar: FC<FormProgressBarProps> = ({
         >
           {(!!giftInfoText && !giftInfo) &&
             <View style={styles.InfoWrapper}>
-              <View style={styles.InfoText}>
+              <View style={styles.InfoTextWrapper}>
                 <View style={styles.InfoIcon}>
                   <Check />
                 </View>
-                <Typography>
+                <Typography style={styles.InfoText}>
                   {giftInfoText.requiredFields}
                 </Typography>
               </View>
-              <View style={styles.InfoText}>
+              <View style={styles.InfoTextWrapper}>
                 <View style={styles.InfoIcon}>
                   <Gift />
                 </View>
-                <Typography>
+                <Typography style={styles.InfoText}>
                   {giftInfoText.optionalFields}
                 </Typography>
               </View>
@@ -206,9 +206,12 @@ const styles = StyleSheet.create({
     paddingVertical: 30,
     gap: 20,
   },
-  InfoText: {
+  InfoTextWrapper: {
     flexDirection: 'row',
-    gap: 5
+    gap: 5,
+  },
+  InfoText: {
+    flex: 1
   },
   InfoIcon: {
     width: 30,

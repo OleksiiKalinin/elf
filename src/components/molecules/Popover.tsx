@@ -1,11 +1,12 @@
-import React, { ComponentProps, FC, ReactNode, useEffect, useState } from 'react';
-import { StyleProp, View, ViewStyle } from 'react-native';
+import React, { ComponentProps, FC, ReactNode, useEffect, useRef, useState } from 'react';
+import { Platform, StyleProp, View, ViewStyle } from 'react-native';
 import { Popover as TamaPopover, Separator } from 'tamagui';
 import Colors from '../../colors/Colors';
 import BlurBackground from '../atoms/BlurBackground';
 import Typography from '../atoms/Typography';
-import { isFunction } from 'lodash';
+import { isArray, isFunction } from 'lodash';
 import ScrollLock from '../atoms/ScrollLock';
+import useShadow from '../../hooks/useShadow';
 
 type Props = {
   triggerComponent: (open: () => void) => ReactNode,
@@ -27,12 +28,27 @@ type Props = {
  * - {(close) => <></>}
  * - <></>
 */
-const Popover: FC<Props> = ({ triggerComponent, closeButtonComponent, children, hideArrow = false, hideBlur = false, hideCloseButton = false, contentContainerStyle, containerStyle, ...props }) => {
+const Popover: FC<Props> = ({ triggerComponent, closeButtonComponent, children, hideArrow = false, hideBlur = true, hideCloseButton = false, contentContainerStyle, containerStyle, ...props }) => {
   const [open, setOpen] = useState(!!props.open);
+  const [visibleOnNative, setVisibleOnNative] = useState(false);
+  const firstLoad = useRef(true);
 
   useEffect(() => {
     setOpen(open);
   }, [props.open]);
+
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      if (open) {
+        setTimeout(() => {
+          setVisibleOnNative(true);
+          firstLoad.current = false;
+        }, open && firstLoad.current ? 200 : 0);
+      } else {
+        setVisibleOnNative(false);
+      }
+    }
+  }, [open]);
 
   return (
     <View style={containerStyle}>
@@ -45,7 +61,17 @@ const Popover: FC<Props> = ({ triggerComponent, closeButtonComponent, children, 
           <TamaPopover.Trigger>
             {triggerComponent(() => setOpen(true))}
           </TamaPopover.Trigger>
-          <TamaPopover.Content p={0} br={4} overflow='hidden' backgroundColor={hideBlur ? Colors.White : Colors.White10} shadowColor={Colors.Basic500} shadowRadius={25} minWidth={175} style={contentContainerStyle}>
+          <TamaPopover.Content
+            p={0} br={4} overflow='hidden' minWidth={175}
+            backgroundColor={hideBlur ? Colors.White : Colors.White10}
+            style={[
+              {
+                ...useShadow(20),
+                opacity: Platform.select({ web: 1, native: visibleOnNative ? 1 : 0 })
+              },
+              ...(isArray(contentContainerStyle) ? contentContainerStyle : [contentContainerStyle]),
+            ]}
+          >
             {/* {!hideArrow && <TamaPopover.Arrow />} */}
             <TamaPopover.ScrollView style={{ width: '100%' }}>
               {!hideBlur && <BlurBackground blurAmount={30} />}

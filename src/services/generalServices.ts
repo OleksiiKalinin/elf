@@ -40,10 +40,12 @@ const getAppData = (token: generalReducerState['token']) => async (dispatch: App
             axios.get(`/api-auth/currentUser/`, { headers: dynamicHeaders({ token }) }),
             axios.get(`/employer/companies/`, { headers: dynamicHeaders({ token }) }),
             axios.get(`/employer/events/`, { headers: dynamicHeaders({ token }) }),
-            axios.get(`/employer/cookies_notifications/`, { headers: dynamicHeaders({ token }) }),
+            // axios.get(`/employer/cookies_notifications/`, { headers: dynamicHeaders({ token }) }),
         ] : [])
     ]).then(async res => {
-        const [appData, userData, userCompanyData, userEventsData, settings] = res.map(p => getAllSettledValue(p));
+        const [appData, userData, userCompanyData, userEventsData,
+            // settings
+        ] = res.map(p => getAllSettledValue(p));
 
         // console.log(JSON.stringify(appData.data, null, 4));
 
@@ -91,9 +93,13 @@ const getAppData = (token: generalReducerState['token']) => async (dispatch: App
             candidatesFilters: null,
             appLoading: false,
             userSettings: {
-                notifications: settings.notifications || (AsyncStorage.getItem('notifications') || [appData?.notification]),
-                cookies: settings.cookie_consents || (AsyncStorage.getItem('cookies') || [1]),
+                notifications: [],
+                cookies: [],
             }
+            // userSettings: {
+            //     notifications: settings.notifications || (AsyncStorage.getItem('notifications') || [appData?.notification]),
+            //     cookies: settings.cookie_consents || (AsyncStorage.getItem('cookies') || [1]),
+            // }
         }));
         isOk = true;
         console.log(appData)

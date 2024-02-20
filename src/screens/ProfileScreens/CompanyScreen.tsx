@@ -242,7 +242,7 @@ const CompanyScreen: React.FC = () => {
         onPress: setOptions,
       }] : []}
       headerItemsColor={isHeaderTransparent ? Colors.White : Colors.Black}
-      backgroundHeader={isHeaderTransparent ? 'rgba(0, 0, 0, .3)' : Colors.White}
+      backgroundHeader={isHeaderTransparent ? Colors.Black30 : Colors.White}
     >
       <ScrollView
         style={styles.ScrollView}

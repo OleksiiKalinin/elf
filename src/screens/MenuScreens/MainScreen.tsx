@@ -16,6 +16,7 @@ import CornerCircleButton from '../../components/molecules/CornerCircleButton';
 import { createParam } from 'solito';
 import { MenuStackParamList } from '../../navigators/MenuNavigator';
 import useRouter from '../../hooks/useRouter';
+import useShadow from '../../hooks/useShadow';
 
 const { useParam } = createParam<NonNullable<MenuStackParamList['default']['MainScreen']>>();
 
@@ -342,7 +343,6 @@ const MainScreen: React.FC = ({ }) => {
     </>
   );
 };
-
 const styles = StyleSheet.create({
   FlatSectionWrapper: {
     paddingHorizontal: 20,
@@ -381,11 +381,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'column',
     borderRadius: 14,
-    shadowColor: Colors.Basic600,
-    shadowOpacity: 1,
-    elevation: 15,
     width: '100%',
     height: '100%',
+    ...useShadow(15),
   },
   GridIconBG: {
     width: 40,

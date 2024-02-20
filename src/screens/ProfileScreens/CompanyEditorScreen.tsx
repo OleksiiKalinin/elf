@@ -11,7 +11,7 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { AddressType, CompanyDataType, MediaType, ContactPersonType, CompanyRegistrationDataType } from '../../store/reducers/types';
 import { RenderItemParams } from 'react-native-draggable-flatlist';
 import companyServices from '../../services/companyServices';
-import { isArray, isEqual, isNumber } from 'lodash';
+import { isArray, isEqual, isNumber, uniqueId } from 'lodash';
 import SvgIcon from '../../components/atoms/SvgIcon';
 import Typography from '../../components/atoms/Typography';
 import TextField from '../../components/molecules/TextField';
@@ -333,7 +333,7 @@ const CompanyEditorScreen: React.FC = () => {
 
   const handleSingleFile = (files: MediaFileType[]) => {
     return {
-      id: Math.random(),
+      id: Number(uniqueId()),
       name: files[0].name,
       path: files[0].path,
       mime: files[0].mime,
@@ -578,7 +578,7 @@ const CompanyEditorScreen: React.FC = () => {
             warning={showTips && !isFieldValid('name')}
             style={{ transform: Platform.OS !== 'web' ? [{ translateX: 0 }, { translateY: (showTips && !isFieldValid('name')) ? -16 : 0 }] : `translateY(${(showTips && !isFieldValid('name')) ? '-16px' : 0})` }}
           />
-          <View style={{ width: '90%' }}>
+          <View style={{ flex: 1 }}>
             <TextField
               label="Nazwa firmy*"
               value={name || ''}
