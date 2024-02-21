@@ -33,7 +33,6 @@ export type ButtonPropsTouchableOpacity = {
 
 export type ButtonPropsGeneral = ButtonPropsOriginal | ButtonPropsTouchableOpacity;
 
-
 const variants: { [k in VariantType]: {
   activeColor: string,
   disabledColor: string,
@@ -138,7 +137,7 @@ const Button: React.FC<ButtonPropsGeneral> = (props) => {
     borderBottom,
     stickyBottom,
     size = 'large',
-    activeOpacity = 0.6,
+    activeOpacity = 0.8,
     ...rest
   } = props;
 
@@ -149,7 +148,7 @@ const Button: React.FC<ButtonPropsGeneral> = (props) => {
         hoverStyle={{
           bg: hoverColor || variants[variant].hoverColor,
           borderBottomColor: props.borderBottomColor,
-          opacity: activeOpacity + 0.2,
+          // opacity: activeOpacity + 0.2,
         }}
         pressStyle={{
           bg: hoverColor || variants[variant].hoverColor,

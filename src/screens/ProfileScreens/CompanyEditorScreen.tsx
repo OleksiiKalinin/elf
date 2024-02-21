@@ -123,7 +123,7 @@ const CompanyEditorScreen: React.FC = () => {
     }, [contactPersons]); */
 
   useEffect(() => {
-    const fields = [
+    const fields: FormFieldType[] = [
       { name: 'name', value: name, isValid: !!(name && name.length > 2 && name.length <= 100), required: true },
       { name: 'address', value: address, isValid: !!address, required: true },
       { name: 'job_industry', value: job_industry, isValid: !!job_industry, required: true },

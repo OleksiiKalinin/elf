@@ -9,11 +9,11 @@ const appConfig = createTamagui({
   shouldAddPrefersColorThemes: true,
   // themeClassNameOnRoot: true,
   animations,
-  fonts,
   shorthands,
+  media,
+  fonts,
   themes,
   tokens,
-  media,
 });
 
 //@ts-ignore

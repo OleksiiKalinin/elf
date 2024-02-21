@@ -23,6 +23,10 @@ export type EditableItemSelectorScreenProps = {
   callback: (data: string[]) => void,
   headerProps?: Omit<React.ComponentProps<typeof ScreenHeaderProvider>, 'children'>,
   isSubView?: boolean,
+  labels: {
+    searchLabel: string,
+    customInputLabel: string,
+  }
 };
 
 const stepsOrder = ['fill', 'select'] as const;
@@ -38,6 +42,7 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
   headerProps,
   initialData,
   isSubView = true,
+  labels,
 }) => {
   const [newItem, setNewItem] = useState<string>('');
   const [stepInitialParam, setStepInitialParam] = useParam('subViewMode', { initial: 'fill' });
@@ -207,7 +212,7 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
         }}
         initialSelected={itemSelectorList.reduce<number[]>((prev, curr) => data.find(d => d.value === curr.name) ? [...prev, curr.id] : prev, [])}
         labels={{
-          searchLabel: 'Znajdź obowiązek',
+          searchLabel: labels.searchLabel,
           itemsLabel: '',
           popularItemsLabel: '',
         }}
@@ -217,7 +222,7 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
         <View style={styles.Textfield}>
           <TextField
             ref={MainTextFieldRef}
-            label="Obowiązek"
+            label={labels.customInputLabel}
             multiline
             height={'auto'}
             returnKeyType='none'

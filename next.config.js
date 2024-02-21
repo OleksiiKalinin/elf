@@ -49,11 +49,6 @@ module.exports = function () {
   /** @type {import('next').NextConfig} */
   let config = {
     transpilePackages,
-    // images: {
-    //   loader: 'akamai',
-    //   path: '',
-    // },
-    // assetPrefix: './',
     pageExtensions: ['jsx', 'js', 'tsx', 'ts'],
     // output: 'standalone',
     // distDir: 'build-web',

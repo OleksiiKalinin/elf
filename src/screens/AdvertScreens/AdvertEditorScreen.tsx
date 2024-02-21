@@ -32,15 +32,143 @@ import useRouter from '../../hooks/useRouter';
 import MapPreview from '../../components/molecules/MapPreview';
 import getJobPositionsFrom from '../../hooks/getJobPositionsFrom';
 import Accordion from '../../components/molecules/Accordion';
-import { isNumber, uniqueId } from 'lodash';
+import { isEqual, isNumber, uniqueId } from 'lodash';
 import CheckBox from '../../components/atoms/CheckBox';
 import { TimePickerModal } from '../../components/modified_modules/react-native-paper-dates/Time/TimePickerModal';
 import AdvertLarge from '../../components/organismes/AdvertLarge';
 import MainDataCard from '../ProfileScreens/CompanyScreenRoutes/MainDataCard/MainDataCard';
 import { WebView } from 'react-native-webview';
 import HorizontalButtonsSelector from '../../components/molecules/HorizontalButtonsSelector';
+import FormProgressBar, { FormFieldType } from '../../components/organismes/FormProgressBar';
 
-const MaxPlanCardWidth = 310;
+const dutiesList = [
+  {
+    id: 1,
+    name: 'responsibility 1'
+  },
+  {
+    id: 2,
+    name: 'responsibility 2'
+  },
+  {
+    id: 3,
+    name: 'responsibility 3'
+  },
+  {
+    id: 4,
+    name: 'responsibility 4'
+  },
+  {
+    id: 5,
+    name: 'responsibility 5'
+  },
+  {
+    id: 6,
+    name: 'responsibility 6'
+  },
+  {
+    id: 7,
+    name: 'responsibility 7'
+  },
+  {
+    id: 8,
+    name: 'responsibility 8'
+  },
+  {
+    id: 9,
+    name: 'responsibility 9'
+  },
+  {
+    id: 10,
+    name: 'responsibility 10'
+  },
+];
+
+const requirementsList = [
+  {
+    id: 1,
+    name: 'requirement 1'
+  },
+  {
+    id: 2,
+    name: 'requirement 2'
+  },
+  {
+    id: 3,
+    name: 'requirement 3'
+  },
+  {
+    id: 4,
+    name: 'requirement 4'
+  },
+  {
+    id: 5,
+    name: 'requirement 5'
+  },
+  {
+    id: 6,
+    name: 'requirement 6'
+  },
+  {
+    id: 7,
+    name: 'requirement 7'
+  },
+  {
+    id: 8,
+    name: 'requirement 8'
+  },
+  {
+    id: 9,
+    name: 'requirement 9'
+  },
+  {
+    id: 10,
+    name: 'requirement 10'
+  },
+];
+
+const benefitsList = [
+  {
+    id: 1,
+    name: 'benefit 1'
+  },
+  {
+    id: 2,
+    name: 'benefit 2'
+  },
+  {
+    id: 3,
+    name: 'benefit 3'
+  },
+  {
+    id: 4,
+    name: 'benefit 4'
+  },
+  {
+    id: 5,
+    name: 'benefit 5'
+  },
+  {
+    id: 6,
+    name: 'benefit 6'
+  },
+  {
+    id: 7,
+    name: 'benefit 7'
+  },
+  {
+    id: 8,
+    name: 'benefit 8'
+  },
+  {
+    id: 9,
+    name: 'benefit 9'
+  },
+  {
+    id: 10,
+    name: 'benefit 10'
+  },
+];
 
 const packageTypes: {
   id: number,
@@ -195,8 +323,6 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
     // to fix on server
     known_languages_id: [],
     // to add on server
-    responsibilities: [],
-    // to add on server
     // withoutCV: false,
     description: null,
     job_mode_id: null,
@@ -206,6 +332,8 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
     working_hour_down: null,
     working_hour_up: null,
   });
+  const prevAdvertData = useRef<NewUserAdvertType>(advertData);
+  const [fields, setFields] = useState<FormFieldType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [woCV, setwoCV] = useState<boolean>(false);
   // ssr fix
@@ -217,16 +345,42 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
   const [paymentSuccess, setPaymentSuccess] = useState<boolean | null>(null);
   const stepHistory = useRef<AdvertEditorStepType[]>([]);
-  // const [isMainMenuSender] = useParam('isMainMenuSender');
-  // const { setSwipeablePanelProps } = useActions();
+  const [unsavedData, setUnsavedData] = useState<boolean>(false);
+  const [mode, setMode] = useState<'draft' | 'edit' | 'new'>('new');
+  const [isValid, setIsValid] = useState<'toSaveDraft' | 'toCreateAdvert' | false>(false);
+  const [deleteSubView, setDeleteSubView] = useState<{ name: keyof NewUserAdvertType, value: any, text: string } | null>(null);
+  const [showTips, setShowTips] = useState<boolean>(false);
 
   const selectedLanguages = useMemo(() => {
     return languages.filter(item => advertData.known_languages_id.includes(item.id));
   }, [advertData.known_languages_id, languages]);
 
-  // useEffect(() => {
-  //   console.log(advertData);
-  // }, [advertData]);
+  useEffect(() => {
+    const { job_position_id, trial_type_id, trial_time_id, working_hour_down, working_hour_up, known_languages_id, location, job_experience_id, job_mode_id, job_start_id, description, duties_ids, benefits_ids, requirements_ids } = advertData;
+
+    const fields: FormFieldType[] = [
+      { name: 'job_position_id', value: job_position_id, isValid: isNumber(job_position_id), required: true },
+      { name: 'location', value: location, isValid: !!location, required: true },
+      { name: 'job_experience_id', value: job_experience_id, isValid: isNumber(job_experience_id), required: true },
+      { name: 'job_mode_id', value: job_mode_id, isValid: isNumber(job_mode_id), required: true },
+      { name: 'job_start_id', value: job_start_id, isValid: isNumber(job_start_id), required: true },
+      //stawka
+      { name: 'description', value: description, isValid: !!description },
+      { name: 'trial', value: !!(trial_type_id && trial_time_id), isValid: !!(trial_type_id && trial_time_id) },
+      { name: 'working_hours', value: !!(working_hour_down && working_hour_up), isValid: !!(working_hour_down && working_hour_up) },
+      { name: 'duties_ids', value: duties_ids, isValid: !!duties_ids.length },
+      { name: 'languages', value: known_languages_id, isValid: !!known_languages_id.length },
+      { name: 'requirements_ids', value: requirements_ids, isValid: !!requirements_ids.length },
+      { name: 'benefits_ids', value: benefits_ids, isValid: !!benefits_ids.length },
+    ];
+
+    setFields(fields);
+    setUnsavedData(!isEqual(prevAdvertData.current, advertData));
+  }, [advertData]);
+
+  useEffect(() => {
+    console.log(advertData);
+  }, [advertData]);
 
   useEffect(() => {
     if (stepInitialParam && stepsOrder.includes(stepInitialParam)) {
@@ -297,6 +451,22 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           ],
           // to delete
         });
+        prevAdvertData.current = {
+          ...data,
+          // to delete
+          known_languages_id: [],
+          salary: [
+            {
+              id: Number(uniqueId()),
+              salary_amount_low: null,
+              salary_amount_up: null,
+              salary_tax_type_id: null,
+              salary_time_type_id: null,
+              type_of_contract_id: null,
+            }
+          ],
+          // to delete
+        };
       }
     }
   }, [id, userAdverts]);
@@ -373,7 +543,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
 
   const submitHandler = async (createAdvertNoPayment: boolean = false) => {
     if (id && advertExists && step === 'fillData') {
-      // validate and put
+      // advertExists, validate and put
 
       router.replace({ stack: 'AdvertStack', screen: 'AdvertScreen', params: { id } });
       return;
@@ -439,57 +609,56 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
     });
   };
 
-  const goToSelectResponsibilitiesScreen = () => {
+  const goToSelectDutiesScreen = () => {
     router.push({
       stack: 'AdvertStack',
       screen: 'AdvertEditorScreen',
       params: {
         subView: 'EditableItemSelectorScreen',
-        callback: (data) => changeAdvertDataHandler('responsibilities', data),
-        itemSelectorList: [
-          {
-            id: 1,
-            name: 'Blaa obo bobo tak mak 1'
-          },
-          {
-            id: 2,
-            name: 'Blaa obo bobo tak mak 2'
-          },
-          {
-            id: 3,
-            name: 'Blaa obo bobo tak mak 3'
-          },
-          {
-            id: 4,
-            name: 'Blaa obo bobo tak mak 4'
-          },
-          {
-            id: 5,
-            name: 'Blaa obo bobo tak mak 5'
-          },
-          {
-            id: 6,
-            name: 'Blaa obo bobo tak mak 6'
-          },
-          {
-            id: 7,
-            name: 'Blaa obo bobo tak mak 7'
-          },
-          {
-            id: 8,
-            name: 'Blaa obo bobo tak mak 8'
-          },
-          {
-            id: 9,
-            name: 'Blaa obo bobo tak mak 9'
-          },
-          {
-            id: 10,
-            name: 'Blaa obo bobo tak mak 10'
-          },
-        ],
-        initialData: advertData.responsibilities,
-        headerProps: { title: 'Zakres obowiązków' }
+        callback: (data) => changeAdvertDataHandler('duties_ids', data),
+        itemSelectorList: dutiesList,
+        initialData: advertData.duties_ids,
+        headerProps: { title: 'Zakres obowiązków' },
+        labels: {
+          customInputLabel: 'Obowiązek',
+          searchLabel: 'Znajdź obowiązek',
+        }
+      },
+    });
+  };
+
+  const goToSelectRequirementsScreen = () => {
+    router.push({
+      stack: 'AdvertStack',
+      screen: 'AdvertEditorScreen',
+      params: {
+        subView: 'EditableItemSelectorScreen',
+        callback: (data) => changeAdvertDataHandler('requirements_ids', data),
+        itemSelectorList: requirementsList,
+        initialData: advertData.requirements_ids,
+        headerProps: { title: 'Wymagania' },
+        labels: {
+          customInputLabel: 'Wymaganie',
+          searchLabel: 'Znajdź wymaganie',
+        }
+      },
+    });
+  };
+
+  const goToSelectBenefitsScreen = () => {
+    router.push({
+      stack: 'AdvertStack',
+      screen: 'AdvertEditorScreen',
+      params: {
+        subView: 'EditableItemSelectorScreen',
+        callback: (data) => changeAdvertDataHandler('benefits_ids', data),
+        itemSelectorList: benefitsList,
+        initialData: advertData.benefits_ids,
+        headerProps: { title: 'Wymagania' },
+        labels: {
+          customInputLabel: 'Benefit',
+          searchLabel: 'Znajdź benefit',
+        }
       },
     });
   };
@@ -504,6 +673,13 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
         staticContentHeightOnWeb: true,
       })}
     >
+      <FormProgressBar
+        fields={fields}
+        giftInfoText={{
+          requiredFields: 'Uzupełnij podstawowe pola, aby zakończyć proces tworzenia ogłoszenia.',
+          optionalFields: 'Uzupełnij dodatkowe pola, aby otrzymać prezent w postaci możliwości dodania darmowego ogłoszenia.',
+        }}
+      />
       <ScrollView
         contentContainerStyle={step === 'payment' ? {
           paddingBottom: 0,
@@ -512,9 +688,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
         } : {
           paddingBottom: 30,
         }}
-        style={{
-          flex: 1
-        }}
+        style={{ flex: 1 }}
       >
         {step === 'fillData' && <>
           <View style={{ marginLeft: 19, marginTop: 32, marginBottom: 16 }}>
@@ -850,7 +1024,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
             />
           </Accordion>
           <Separator />
-          {advertData.responsibilities.length ?
+          {advertData.duties_ids.length ?
             <>
               <View style={{ paddingHorizontal: 19, paddingVertical: 12 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
@@ -859,7 +1033,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                   </Typography>
                   <Button
                     variant='TouchableOpacity'
-                    onPress={() => goToSelectResponsibilitiesScreen()}
+                    onPress={() => goToSelectDutiesScreen()}
                   >
                     <Typography variant='h5' weight='Bold' color={Colors.Blue500}>
                       Edytuj
@@ -867,22 +1041,22 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                   </Button>
                 </View>
                 <Typography
-                  numberOfLines={expanded.responsibilities ? undefined : 3}
+                  numberOfLines={expanded.duties_ids ? undefined : 3}
 
                 >
-                  {advertData.responsibilities.map((e, i, array) => <Typography color={Colors.Basic600}>
+                  {advertData.duties_ids.map((e, i, array) => <Typography color={Colors.Basic600}>
                     &#x2022;{' '}{e}{i === array.length - 1 ? '' : '\n'}
                   </Typography>)}
                 </Typography>
                 <Button
                   variant='text'
                   size='small'
-                  onPress={() => setExpanded(prev => ({ ...prev, responsibilities: !prev.responsibilities }))}
+                  onPress={() => setExpanded(prev => ({ ...prev, duties_ids: !prev.duties_ids }))}
                 >
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <SvgIcon icon={expanded.responsibilities ? "arrowTop" : "arrowBottom"} fill={Colors.Basic500} />
+                    <SvgIcon icon={expanded.duties_ids ? "arrowTop" : "arrowBottom"} fill={Colors.Basic500} />
                     <Typography>
-                      {expanded.responsibilities ? 'Ukryj' : 'Rozwiń'}
+                      {expanded.duties_ids ? 'Ukryj' : 'Rozwiń'}
                     </Typography>
                   </View>
                 </Button>
@@ -892,7 +1066,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
             <Button
               variant='text'
               arrowRight
-              onPress={() => goToSelectResponsibilitiesScreen()}
+              onPress={() => goToSelectDutiesScreen()}
             >
               <Typography variant='h5'>
                 Zakres obowiązków
@@ -940,23 +1114,39 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                   </Typography>
                   <Button
                     variant='TouchableOpacity'
-                    onPress={() => goToSelectLanguagesScreen()}
+                    onPress={() => goToSelectRequirementsScreen()}
                   >
-                    <Typography variant='h5' weight='Bold' color={Colors.Blue500} >
+                    <Typography variant='h5' weight='Bold' color={Colors.Blue500}>
                       Edytuj
                     </Typography>
                   </Button>
                 </View>
-                <Typography color={Colors.Basic600}>
-                  {selectedLanguages.map(({ name }) => name).join(', ')}
+                <Typography
+                  numberOfLines={expanded.requirements_ids ? undefined : 3}
+                >
+                  {advertData.requirements_ids.map((e, i, array) => <Typography color={Colors.Basic600}>
+                    &#x2022;{' '}{e}{i === array.length - 1 ? '' : '\n'}
+                  </Typography>)}
                 </Typography>
+                <Button
+                  variant='text'
+                  size='small'
+                  onPress={() => setExpanded(prev => ({ ...prev, requirements_ids: !prev.requirements_ids }))}
+                >
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <SvgIcon icon={expanded.requirements_ids ? "arrowTop" : "arrowBottom"} fill={Colors.Basic500} />
+                    <Typography>
+                      {expanded.requirements_ids ? 'Ukryj' : 'Rozwiń'}
+                    </Typography>
+                  </View>
+                </Button>
               </View>
             </>
             :
             <Button
               variant='text'
               arrowRight
-              onPress={() => goToSelectLanguagesScreen()}
+              onPress={() => goToSelectRequirementsScreen()}
             >
               <Typography variant='h5'>
                 Wymagania
@@ -973,23 +1163,39 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                   </Typography>
                   <Button
                     variant='TouchableOpacity'
-                    onPress={() => goToSelectLanguagesScreen()}
+                    onPress={() => goToSelectBenefitsScreen()}
                   >
-                    <Typography variant='h5' weight='Bold' color={Colors.Blue500} >
+                    <Typography variant='h5' weight='Bold' color={Colors.Blue500}>
                       Edytuj
                     </Typography>
                   </Button>
                 </View>
-                <Typography color={Colors.Basic600}>
-                  {selectedLanguages.map(({ name }) => name).join(', ')}
+                <Typography
+                  numberOfLines={expanded.benefits_ids ? undefined : 3}
+                >
+                  {advertData.benefits_ids.map((e, i, array) => <Typography color={Colors.Basic600}>
+                    &#x2022;{' '}{e}{i === array.length - 1 ? '' : '\n'}
+                  </Typography>)}
                 </Typography>
+                <Button
+                  variant='text'
+                  size='small'
+                  onPress={() => setExpanded(prev => ({ ...prev, benefits_ids: !prev.benefits_ids }))}
+                >
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <SvgIcon icon={expanded.benefits_ids ? "arrowTop" : "arrowBottom"} fill={Colors.Basic500} />
+                    <Typography>
+                      {expanded.benefits_ids ? 'Ukryj' : 'Rozwiń'}
+                    </Typography>
+                  </View>
+                </Button>
               </View>
             </>
             :
             <Button
               variant='text'
               arrowRight
-              onPress={() => goToSelectLanguagesScreen()}
+              onPress={() => goToSelectBenefitsScreen()}
             >
               <Typography variant='h5'>
                 Benefity
@@ -1015,8 +1221,6 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           <ScrollView contentContainerStyle={{ padding: 19 }}>
             {packageTypes.map((item) =>
               <View key={item.id} style={{
-                // maxWidth: MaxPlanCardWidth - (windowSizes.width > MaxPlanCardWidth * 2 ? 40 : 0),
-                // width: windowSizes.width - 70,
                 marginBottom: 20,
                 backgroundColor: selectedPaymentPlan === item.id ? Colors.Basic300 : Colors.Basic200,
                 borderRadius: 4

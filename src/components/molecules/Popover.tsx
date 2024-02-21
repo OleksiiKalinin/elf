@@ -1,5 +1,5 @@
 import React, { ComponentProps, FC, ReactNode, useEffect, useRef, useState } from 'react';
-import { Platform, StyleProp, View, ViewStyle } from 'react-native';
+import { Dimensions, Platform, StyleProp, View, ViewStyle } from 'react-native';
 import { Popover as TamaPopover, Separator } from 'tamagui';
 import Colors from '../../colors/Colors';
 import BlurBackground from '../atoms/BlurBackground';
@@ -34,29 +34,46 @@ const Popover: FC<Props> = ({ triggerComponent, closeButtonComponent, children, 
   const [open, setOpen] = useState(!!props.open);
   const [visibleOnNative, setVisibleOnNative] = useState(false);
   const firstLoad = useRef(true);
-  const { windowSizes } = useTypedSelector(s => s.general);
+  const openRef = useRef(open);
+  const wasOpened = useRef(false);
+  const resizedTimer = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    setOpen(open);
+    //fix for repositioning after window resize
+    Dimensions.addEventListener('change', () => {
+      if (!!resizedTimer.current) clearTimeout(resizedTimer.current);
+
+      if (openRef.current || wasOpened.current) {
+        wasOpened.current = true;
+        setOpen(false);
+
+        resizedTimer.current = setTimeout(() => {
+          setOpen(true);
+          resizedTimer.current = null;
+          wasOpened.current = false;
+        }, 60);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    setOpen(!!props.open);
   }, [props.open]);
 
-  // useEffect(() => {
-  //   if (Platform.OS !== 'web') {
-  //     if (open) {
-  //       setTimeout(() => {
-  //         setVisibleOnNative(true);
-  //         firstLoad.current = false;
-  //       }, open && firstLoad.current ? 200 : 0);
-  //     } else {
-  //       setVisibleOnNative(false);
-  //     }
-  //   }
-  // }, [open]);
-
   useEffect(() => {
-    console.log('changed');
-    
-  }, [windowSizes.width]);
+    openRef.current = open;
+
+    if (Platform.OS !== 'web') {
+      if (open) {
+        setTimeout(() => {
+          setVisibleOnNative(true);
+          firstLoad.current = false;
+        }, open && firstLoad.current ? 200 : 0);
+      } else {
+        setVisibleOnNative(false);
+      }
+    }
+  }, [open]);
 
   return (
     <View style={containerStyle}>
@@ -75,7 +92,7 @@ const Popover: FC<Props> = ({ triggerComponent, closeButtonComponent, children, 
             style={[
               {
                 ...useShadow(20),
-                // opacity: Platform.select({ native: visibleOnNative ? 1 : 0 })
+                opacity: Platform.select({ native: visibleOnNative ? 1 : 0 })
               },
               ...(isArray(contentContainerStyle) ? contentContainerStyle : [contentContainerStyle]),
             ]}
