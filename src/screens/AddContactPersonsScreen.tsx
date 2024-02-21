@@ -15,6 +15,7 @@ import { Separator } from 'tamagui';
 import { isEqual, isString } from 'lodash';
 import { useActions } from '../hooks/useActions';
 import { useTypedSelector } from '../hooks/useTypedSelector';
+import { uuidv4 } from 'react-native-compressor';
 
 const emptyPerson: ContactPersonType = {
   email: null,
@@ -38,7 +39,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
     const orderB = b.id ?? Number.MAX_SAFE_INTEGER;
     return orderA - orderB;
   }) : [emptyPerson];
-  const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(initialContactPersons &&initialContactPersons.length ? [...initialContactPersons].sort((a, b) => {
+  const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(initialContactPersons && initialContactPersons.length ? [...initialContactPersons].sort((a, b) => {
     const orderA = a.id ?? Number.MAX_SAFE_INTEGER;
     const orderB = b.id ?? Number.MAX_SAFE_INTEGER;
     return orderA - orderB;
@@ -60,7 +61,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
   }, [oldContactPersons, contactPersons]);
 
   useEffect(() => {
-    setBlockedScreen({...blockedScreen, blockedBack: unsavedData});
+    setBlockedScreen({ ...blockedScreen, blockedBack: unsavedData });
   }, [unsavedData]);
 
   const validateContactPersons = (index?: number) => {
@@ -68,9 +69,9 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
 
     for (const contact of array) {
       if (
-        contact.email && validateMail(contact.email) &&
-        contact.mobile_number && contact.mobile_number.length === 12 &&
-        contact.preferred_mobile_number || contact.preferred_email
+        contact.email && validateMail(contact.email)
+        && contact.mobile_number && contact.mobile_number.length === 12
+        && (contact.preferred_mobile_number || contact.preferred_email)
       ) {
         continue;
       } else {
@@ -119,7 +120,11 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
 
   const handleConfirm = () => {
     if (isDataValid) {
-      callback(contactPersons);
+      const updatedContactPersons = contactPersons.map(contact => ({
+        ...contact,
+        tempId: contact.tempId || Math.floor(Math.random() * 100000000000)
+      }));
+      callback(updatedContactPersons);
       backToRemoveParams();
     } else {
       setShowTips(true);
@@ -143,7 +148,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
   return (
     <ScreenHeaderProvider
       title='Dane do kontaktu'
-      /* callback={() => { unsavedData ? setShowExitWarningModal({ state: true, callback: backToRemoveParams }) : backToRemoveParams() }} */
+    /* callback={() => { unsavedData ? setShowExitWarningModal({ state: true, callback: backToRemoveParams }) : backToRemoveParams() }} */
     >
       <ScrollView style={styles.ScrollView} contentContainerStyle={{ paddingTop: 25 }}>
         {contactPersons.map(({ email, mobile_number, id, contact_hours, preferred_mobile_number, preferred_email }, index) => (

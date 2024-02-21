@@ -25,6 +25,7 @@ import { JobCategoryScreenProps } from '../screens/JobCategoryScreen';
 import { ItemSelectorScreenProps } from '../screens/ItemSelectorScreen';
 import { SocialMediaScreenProps } from '../screens/SocialMediaScreen';
 import CookieScreen from '../screens/ProfileScreens/CookieScreen';
+import { AddOtherCompanyLocationsScreenProps } from '../screens/AddOtherCompanyLocationsScreen';
 
 type SubView<T extends keyof ProfileStackParamList['extended']> = { subView: T } & ProfileStackParamList['extended'][T] | { subView?: never };
 
@@ -43,6 +44,7 @@ export type ProfileStackParamList = {
       | SubView<'CompanyDescriptionScreen'>
       | SubView<'ItemSelectorScreen'>
       | SubView<'SocialMediaScreen'>
+      | SubView<'AddOtherCompanyLocationsScreen'>
     ) | undefined
     ,
     NoCompanyScreen: undefined;
@@ -86,6 +88,7 @@ export type ProfileStackParamList = {
     ItemSelectorScreen: ItemSelectorScreenProps,
     SocialMediaScreen: SocialMediaScreenProps,
     ChangePasswordScreen: any,
+    AddOtherCompanyLocationsScreen: AddOtherCompanyLocationsScreenProps,
   }
 }
 

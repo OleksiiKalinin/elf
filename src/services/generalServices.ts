@@ -8,7 +8,7 @@ import { facebookSignOut } from "../components/organismes/FacebookSignin";
 import { AppDispatch, rootState } from "../store";
 import advertsServices from "./advertsServices";
 import { AxiosResponse } from "axios";
-import { generalReducerState } from "../store/reducers/types";
+import { UserSettingsType, generalReducerState } from "../store/reducers/types";
 
 export const getAllSettledValue = (promise: PromiseSettledResult<AxiosResponse<any, any>> | undefined): any | undefined => {
     if (promise?.status === 'fulfilled') return promise.value?.data;
@@ -56,6 +56,26 @@ const getAppData = (token: generalReducerState['token']) => async (dispatch: App
             facebookSignOut();
         }
 
+        let userSettings: UserSettingsType = {
+            notifications: appData?.notification.flatMap((item: { id: number; }) => item.id) || [],
+            cookies: appData?.CookieConsent.flatMap((item: { id: number; }) => item.id) || [1],
+        };
+
+        if (!!settings) {
+            userSettings = {
+                notifications: settings.notifications || userSettings.notifications,
+                cookies: settings.cookie_consents || userSettings.cookies,
+            }
+        } else {
+            const storageNotifications = await AsyncStorage.getItem('notifications');
+            const storageCookies = await AsyncStorage.getItem('cookies');
+
+            userSettings = {
+                notifications: !!storageNotifications ? JSON.parse(storageNotifications) : userSettings.notifications,
+                cookies: !!storageCookies ? JSON.parse(storageCookies) : userSettings.cookies,
+            }
+        };
+
         if (userCompanyData && userCompanyData[0]?.id) {
             await dispatch(advertsServices.getUserAdverts(userCompanyData[0].id));
         }
@@ -90,10 +110,14 @@ const getAppData = (token: generalReducerState['token']) => async (dispatch: App
             userQuestions: [],
             candidatesFilters: null,
             appLoading: false,
-            userSettings: {
-                notifications: settings.notifications || (AsyncStorage.getItem('notifications') || [appData?.notification]),
-                cookies: settings.cookie_consents || (AsyncStorage.getItem('cookies') || [1]),
-            }
+            userSettings: userSettings
+
+
+
+            // userSettings: {
+            //     notifications: settings.notifications || (AsyncStorage.getItem('notifications') || [appData?.notification]),
+            //     cookies: settings.cookie_consents || (AsyncStorage.getItem('cookies') || [1]),
+            // }
         }));
         isOk = true;
         console.log(appData)

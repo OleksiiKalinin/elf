@@ -13,6 +13,7 @@ export type FormFieldType = {
   isValid: boolean,
   required?: boolean,
   value?: any,
+  unpromoted?: boolean,
 };
 
 type FormProgressBarProps = ({
@@ -46,8 +47,8 @@ const FormProgressBar: FC<FormProgressBarProps> = ({
 
   useEffect(() => {
     if (fields.length) {
-      const requiredFields = fields.filter(field => field.required).sort((a, b) => Number(b.isValid) - Number(a.isValid));
-      const optionalFields = fields.filter(field => !field.required).sort((a, b) => Number(b.isValid) - Number(a.isValid));
+      const requiredFields = fields.filter(field => (field.required && !field.unpromoted)).sort((a, b) => Number(b.isValid) - Number(a.isValid));
+      const optionalFields = fields.filter(field => (!field.required && !field.unpromoted)).sort((a, b) => Number(b.isValid) - Number(a.isValid));
 
       setRequiredFields(requiredFields);
       setOptionalFields(optionalFields);
@@ -55,7 +56,8 @@ const FormProgressBar: FC<FormProgressBarProps> = ({
   }, [fields]);
 
   useEffect(() => {
-    const itemWidth = ((progressBarWidth - (optionalFields.length ? iconWidth * 2 : iconWidth) - ((fields.length - (optionalFields.length ? 2 : 1)) * stepGap) - (paddingHorizontal * 2))) / fields.length;
+    const filteredFields = fields.filter(field => !field.unpromoted)
+    const itemWidth = ((progressBarWidth - (optionalFields.length ? iconWidth * 2 : iconWidth) - ((filteredFields.length - (optionalFields.length ? 2 : 1)) * stepGap) - (paddingHorizontal * 2))) / filteredFields.length;
 
     setItemWidth(itemWidth);
   }, [fields, progressBarWidth]);

@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { ComponentProps, FC, HTMLFactory, useCallback, useEffect, useRef, useState } from 'react';
-import { Dimensions, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { BackHandler, Dimensions, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import geocoder from 'react-native-geocoder-reborn';
 import { AutocompleteRequestType, GooglePlacesAutocomplete as NativeAutocomplete } from 'react-native-google-places-autocomplete';
 import MapView, { MapMarker, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
@@ -42,10 +42,11 @@ export type GoogleMapScreenProps = {
      * @default geocode
      * @see https://developers.google.com/maps/documentation/places/web-service/supported_types#table3
      * */
-    optionsType?: AutocompleteRequestType
+    optionsType?: AutocompleteRequestType,
+    closeCallback?: () => void,
 }
 
-const GoogleMapScreen: FC<GoogleMapScreenProps> = ({ callback, initialAddress, hideControls = false, optionsType = 'geocode' }) => {
+const GoogleMapScreen: FC<GoogleMapScreenProps> = ({ callback, initialAddress, hideControls = false, optionsType = 'geocode', closeCallback }) => {
     const [location, setLocation] = useState(initialAddress);
     const [delta, setDelta] = useState<number>(2.2);
     const [lastCoordinates, setLastCoordinates] = useState({
@@ -68,11 +69,24 @@ const GoogleMapScreen: FC<GoogleMapScreenProps> = ({ callback, initialAddress, h
         }
     }, [location]);
 
+    useEffect(() => {
+        if (!!closeCallback) {
+            const handler = BackHandler.addEventListener('hardwareBackPress', () => {
+                closeCallback();
+                return true;
+            });
+
+            return () => {
+                handler.remove();
+            };
+        };
+    }, [closeCallback]);
+
     const BackButton = useCallback(() => (
         <Button
             variant='TouchableOpacity'
             style={styles.BackButton}
-            onPress={backToRemoveParams}
+            onPress={closeCallback || backToRemoveParams}
         >
             <SvgIcon icon="arrowLeft" />
         </Button>
@@ -203,7 +217,7 @@ const GoogleMapScreen: FC<GoogleMapScreenProps> = ({ callback, initialAddress, h
                     onPress={() => {
                         if (location) {
                             callback(location);
-                            backToRemoveParams();
+                            !!closeCallback ? closeCallback() : backToRemoveParams();
                         }
                     }}
                 >

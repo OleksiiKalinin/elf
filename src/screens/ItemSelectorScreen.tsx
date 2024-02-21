@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { StyleSheet, View, } from 'react-native';
+import { BackHandler, StyleSheet, View, } from 'react-native';
 import Colors from '../colors/Colors';
 import ScreenHeaderProvider from '../components/organismes/ScreenHeaderProvider';
 import { ScrollView } from '../components/molecules/ScrollView';
@@ -55,6 +55,7 @@ export type ItemSelectorScreenProps =
     initialSelected?: number[],
     subViewMode?: boolean,
     allowReturnEmptyList?: boolean,
+    closeCallback?: () => void,
   };
 
 const ItemSelectorScreen: React.FC<ItemSelectorScreenProps> = ({
@@ -68,19 +69,38 @@ const ItemSelectorScreen: React.FC<ItemSelectorScreenProps> = ({
   initialSelected,
   allowReturnEmptyList = false,
   highlightPopularItems = false,
+  closeCallback,
 }) => {
   const [search, setSearch] = useState<string>('');
   const [selectedItems, setSelectedItems] = useState<number[]>(initialSelected ? mode === 'multiple' ? initialSelected : [] : []);
   const { backToRemoveParams } = useRouter();
 
   useEffect(() => {
+    console.log(initialSelected)
+  }, [initialSelected]);
+
+  useEffect(() => {
     if (mode === 'single' && selectedItems.length > 0) {
       callback(selectedItems[0]);
       if (subViewMode) {
-        backToRemoveParams();
+        !!closeCallback ? closeCallback() : backToRemoveParams();
       };
     };
   }, [selectedItems]);
+
+  useEffect(() => {
+    if (!!closeCallback) {
+        const handler = BackHandler.addEventListener('hardwareBackPress', () => {
+            closeCallback();
+            return true;
+        });
+
+        return () => {
+            handler.remove();
+        };
+    };
+}, [closeCallback]);
+
 
   const handleSelectedItems = (id: number) => {
     const mySet = new Set([...selectedItems]);
@@ -96,7 +116,7 @@ const ItemSelectorScreen: React.FC<ItemSelectorScreenProps> = ({
     if (mode === 'multiple' && selectedItems) {
       callback(selectedItems);
       if (subViewMode) {
-        backToRemoveParams();
+        !!closeCallback ? closeCallback() : backToRemoveParams();
       };
     };
   };

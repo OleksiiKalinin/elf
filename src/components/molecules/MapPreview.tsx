@@ -30,21 +30,25 @@ type MapPreviewProps = {
     rightIcon?: IconTypes;
     statusCircle?: boolean;
     statusWarning?: boolean;
+    bgColor?: string;
 };
 
-const MapPreview: React.FC<MapPreviewProps> = ({ latitude, longitude, onPress, place, label, hideMap, rightIcon = 'arrowRight', statusCircle, statusWarning = false }) => {
+const MapPreview: React.FC<MapPreviewProps> = ({ latitude, longitude, onPress, place, label, hideMap, rightIcon = 'arrowRight', statusCircle, statusWarning = false, bgColor = Colors.Basic200 }) => {
     return (
         <View>
             <Button variant='TouchableOpacity' activeOpacity={.9} onPress={onPress}>
-                <View style={{ backgroundColor: Colors.Basic200, flexDirection: 'row', paddingVertical: 14, alignItems: 'center' }}>
+                <View style={{ backgroundColor: bgColor, flexDirection: 'row', paddingVertical: 14, alignItems: 'center' }}>
                     {statusCircle &&
-                        <FieldStatusCircle
-                            status={!!place}
-                            warning={statusWarning}
-                            style={{ marginLeft: 19 }}
-                        />
+                        <>
+                            <FieldStatusCircle
+                                status={!!place}
+                                warning={statusWarning}
+                                style={{ marginLeft: 19 }}
+                            />
+                            <View style={{ paddingHorizontal: 14, borderLeftWidth: 1, borderColor: Colors.Basic300, width: 1, height: '100%', }} />
+                        </>
                     }
-                    <View style={styles.mapIcon}>
+                    <View style={[styles.mapIcon, { marginLeft: statusCircle ? -25 : 0 }]}>
                         <SvgIcon icon="mapMarker" />
                     </View>
                     <View style={{ flex: 1, paddingHorizontal: 14, borderLeftWidth: 1, borderColor: Colors.Basic300, }}>

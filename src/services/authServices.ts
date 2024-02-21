@@ -7,6 +7,7 @@ import { LoginDataType } from '../screens/AuthScreens/LoginScreen';
 import { getTokens, hasPlayServices, signIn } from '../components/organismes/GoogleSignin';
 import generalServices from './generalServices';
 import { AppDispatch, rootState } from '../store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const registrate = (formData: RegistDataType) => async (dispatch: AppDispatch, getState: () => rootState) => {
     const { } = getState().general;
@@ -21,10 +22,12 @@ const registrate = (formData: RegistDataType) => async (dispatch: AppDispatch, g
             await axios.post('/employer/create_user/', {}, { headers: dynamicHeaders({ token: access_token }) });
             await dispatch(generalActions.setToken({ token: access_token, refresh_token }));
             await dispatch(generalServices.getAppData(access_token));
-            /* await dispatch(generalServices.setUserSettings({
-                notifications: AsyncStorage.getItem('notifications') || [],
-                cookie_consents: AsyncStorage.getItem('cookies') || [1],
-            })); */
+            const storageNotifications = await AsyncStorage.getItem('notifications');
+            const storageCookies = await AsyncStorage.getItem('cookies');
+            await dispatch(generalServices.setUserSettings({
+                notifications: !!storageNotifications ? JSON.parse(storageNotifications) : [],
+                cookie_consents: !!storageCookies ? JSON.parse(storageCookies) : [1],
+            }));
         } else {
             throw new (CustomRequestException as any)('unknown error', 400);
         }

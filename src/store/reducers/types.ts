@@ -413,7 +413,7 @@ export interface OtherCompanyLocationType {
     id?: number,
     name: string | null,
     location: AddressType | null,
-    contact_persons: number[] | null,
+    contact_persons: ContactPersonType[],
 }
 
 export type MediaType = {
@@ -428,6 +428,7 @@ export type MediaType = {
 
 export interface ContactPersonType {
     id?: number,
+    tempId?: number,
     company_id?: number,
     email: string | null,
     mobile_number: string | null,

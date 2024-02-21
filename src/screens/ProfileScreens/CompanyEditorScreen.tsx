@@ -8,7 +8,7 @@ import {
 import React, { Fragment, useCallback, useEffect, useState, useMemo, useLayoutEffect } from 'react';
 import Colors from '../../colors/Colors';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import { AddressType, CompanyDataType, MediaType, ContactPersonType, CompanyRegistrationDataType } from '../../store/reducers/types';
+import { AddressType, CompanyDataType, MediaType, ContactPersonType, CompanyRegistrationDataType, OtherCompanyLocationType } from '../../store/reducers/types';
 import { RenderItemParams } from 'react-native-draggable-flatlist';
 import companyServices from '../../services/companyServices';
 import { isArray, isEqual, isNumber } from 'lodash';
@@ -32,6 +32,7 @@ import { ProfileStackParamList } from '../../navigators/ProfileNavigator';
 import { createParam } from 'solito';
 import { Linkedin, Pencil, PlusCircle, Trash2 } from '@tamagui/lucide-icons';
 import FieldStatusCircle from '../../components/atoms/FieldStatusCircle';
+import { uuidv4 } from 'react-native-compressor';
 
 const emptyCompanyData = {
   id: -1,
@@ -53,6 +54,7 @@ const emptyCompanyData = {
   photos: [],
   certificates: [],
   is_active: false,
+  other_locations: [],
 };
 
 const { useParam } = createParam<NonNullable<ProfileStackParamList['default']['CompanyEditorScreen']>>();
@@ -64,7 +66,7 @@ const CompanyEditorScreen: React.FC = () => {
   const { backToRemoveParams } = useRouter();
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
-  const { jobIndustries, userCompany, languages, services, employeesAmount, swipeablePanelProps } = useTypedSelector(state => state.general);
+  const { jobIndustries, userCompany, languages, services, employeesAmount } = useTypedSelector(state => state.general);
   const [companyData, setCompanyData] = useState<CompanyDataType>(userCompany || emptyCompanyData);
   const [oldCompanyData, setOldCompanyData] = useState<CompanyDataType>(userCompany || emptyCompanyData);
   const [logoProgress, setLogoProgress] = useState<number | null>(null);
@@ -80,7 +82,7 @@ const CompanyEditorScreen: React.FC = () => {
   const [isActive, setIsActive] = useState<boolean>(false);
   const [formSent, setFormSent] = useState<boolean>(false);
   const [deleteSubView, setDeleteSubView] = useState<{ name: keyof CompanyDataType | 'social_media', value: any, text: string } | null>(null);
-  const { name, address, job_industry, description, nip_info, employees_amount, square_footage, account_instagram, account_facebook, account_linkedIn, website, logo, photos, certificates, contactPersons } = companyData;
+  const { name, address, job_industry, description, nip_info, employees_amount, square_footage, account_instagram, account_facebook, account_linkedIn, website, logo, photos, certificates, contactPersons, other_locations } = companyData;
 
   const companyPhotosLimit = 20;
   const companyCertificatesLimit = 20;
@@ -88,9 +90,14 @@ const CompanyEditorScreen: React.FC = () => {
 
   useLayoutEffect(() => {
     if (userCompany && !formSent) {
-      const newUserCompany = { ...userCompany, photos: userCompany.photos?.length ? companyData.photos : [], certificates: userCompany.certificates?.length ? userCompany.certificates : [] };
+      const updatedContactPersons = userCompany.contactPersons.map(contact => ({
+        ...contact,
+        tempId: contact.tempId || Math.floor(Math.random() * 100000000000)
+      }));
+      const newUserCompany = { ...userCompany, photos: userCompany.photos?.length ? companyData.photos : [], certificates: userCompany.certificates?.length ? userCompany.certificates : [], contactPersons: updatedContactPersons.length ? updatedContactPersons : [] };
       setCompanyData(newUserCompany);
       setOldCompanyData(newUserCompany);
+      console.log(newUserCompany);
       if (userCompany.is_active) {
         setMode('edit');
       } else {
@@ -108,6 +115,13 @@ const CompanyEditorScreen: React.FC = () => {
     };
   }, [mode, unsavedData]);
 
+  /*   useEffect(() => {
+      const updatedContactPersons = contactPersons.map(contact => ({
+        ...contact,
+        tempId: contact.tempId || generateRandomId() // Dodaj tempId lub wygeneruj losową liczbę
+      }));
+    }, [contactPersons]); */
+
   useEffect(() => {
     const fields = [
       { name: 'name', value: name, isValid: !!(name && name.length > 2 && name.length <= 100), required: true },
@@ -123,6 +137,7 @@ const CompanyEditorScreen: React.FC = () => {
       { name: 'employees_amount', value: employees_amount, isValid: !!employees_amount },
       { name: 'languages', value: languages, isValid: !!companyData.languages?.length },
       { name: 'socialMedia', value: !!(account_instagram || account_facebook || account_linkedIn || website) ?? null, isValid: !!(account_instagram || account_facebook || account_linkedIn || website) },
+      { name: 'other_locations', value: other_locations, isValid: (!!other_locations && !!other_locations.length), unpromoted: true },
     ];
 
     const squareFootage = { name: 'square_footage', value: square_footage, isValid: !!(square_footage && square_footage.length && square_footage.length <= 8) };
@@ -276,7 +291,7 @@ const CompanyEditorScreen: React.FC = () => {
     };
   };
 
-  const changeCompanyDataHandler = (name: keyof CompanyDataType, value: string | number | number[] | AddressType | CompanyRegistrationDataType | MediaType | MediaType[] | ContactPersonType[] | null, replaceSpaces: boolean = true) => {
+  const changeCompanyDataHandler = (name: keyof CompanyDataType, value: string | number | number[] | AddressType | CompanyRegistrationDataType | MediaType | MediaType[] | ContactPersonType[] | OtherCompanyLocationType[] | null, replaceSpaces: boolean = true) => {
     setCompanyData(prev => ({
       ...prev,
       [name]: value ?
@@ -439,6 +454,19 @@ const CompanyEditorScreen: React.FC = () => {
     });
   };
 
+  const goToAddOtherCompanyLocationsScreen = () => {
+    router.push({
+      stack: 'ProfileStack',
+      screen: 'CompanyEditorScreen',
+      params: {
+        subView: 'AddOtherCompanyLocationsScreen',
+        initialLocations: other_locations || [],
+        contactPersons: contactPersons,
+        callback: (locations) => changeCompanyDataHandler('other_locations', locations, false),
+      },
+    });
+  };
+
   const goToSelectEmployeesAmountScreen = () => {
     router.push({
       stack: 'ProfileStack',
@@ -578,7 +606,7 @@ const CompanyEditorScreen: React.FC = () => {
             warning={showTips && !isFieldValid('name')}
             style={{ transform: Platform.OS !== 'web' ? [{ translateX: 0 }, { translateY: (showTips && !isFieldValid('name')) ? -16 : 0 }] : `translateY(${(showTips && !isFieldValid('name')) ? '-16px' : 0})` }}
           />
-          <View style={{ width: '90%' }}>
+          <View style={{ flex: 1 }}>
             <TextField
               label="Nazwa firmy*"
               value={name || ''}
@@ -886,6 +914,57 @@ const CompanyEditorScreen: React.FC = () => {
                 variant='h5'
               >
                 Dane do faktury
+              </Typography>
+            </View>
+          </Button>
+        }
+        {!!other_locations?.length ?
+          <>
+            <View style={styles.FilledField}>
+              <View style={styles.FilledFieldTitle}>
+                <FieldStatusCircle status={true} />
+                <Typography variant='h5' weight='Bold'>
+                  Dodatkowe lokalizacje
+                </Typography>
+              </View>
+              <View style={styles.EditButtons}>
+                <Button
+                  variant='TouchableOpacity'
+                  style={styles.EditButton}
+                  onPress={() => {
+                    setDeleteSubView({ name: 'other_locations', value: null, text: 'Czy na pewno chcesz usunąć dodatkowe lokalizacje?' });
+                  }}
+                >
+                  <Trash2 />
+                </Button>
+                <Button
+                  variant='TouchableOpacity'
+                  style={styles.EditButton}
+                  onPress={() => goToAddOtherCompanyLocationsScreen()}
+                >
+                  <Pencil />
+                </Button>
+              </View>
+            </View>
+            <Separator />
+          </>
+
+          :
+
+          <Button
+            variant='text'
+            arrowRight
+            borderBottom
+            onPress={() => {
+              (!!contactPersons && contactPersons.length) ? goToAddOtherCompanyLocationsScreen() : setSnackbarMessage({type: 'error', text: 'Przed dodaniem dodatkowych lokalizacji uzupełnij dane do kontaktu'})
+            }}
+          >
+            <View style={styles.UnfilledFieldTitle}>
+              <FieldStatusCircle status={false} />
+              <Typography
+                variant='h5'
+              >
+                Dodatkowe lokalizacje
               </Typography>
             </View>
           </Button>
