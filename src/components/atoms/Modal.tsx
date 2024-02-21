@@ -1,15 +1,17 @@
 import React, { ComponentProps, FC, useEffect, useRef, useState } from 'react';
 import ScrollLock from './ScrollLock';
-import { Platform, Modal as RNModal, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Platform, Modal as RNModal, StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import windowExists from '../../hooks/windowExists';
 import Colors from '../../colors/Colors';
 import Button from '../molecules/Button';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
+import useShadow from '../../hooks/useShadow';
+import { isArray } from 'lodash';
 
 const MARGIN = 15;
 
 /** Custom Modal with good web support, including support onClose event (web history back button, dismiss, native hardware back button, etc.) */
-const Modal: FC<ComponentProps<typeof RNModal> & { onClose: () => void, withoutUrl?: boolean }> = ({ onClose, withoutUrl = false, children, ...props }) => {
+const Modal: FC<ComponentProps<typeof RNModal> & { onClose: () => void, withoutUrl?: boolean, resetStyles?: boolean, contentContainerStyle?: StyleProp<ViewStyle> }> = ({ onClose, withoutUrl = false, children, resetStyles = false, contentContainerStyle, ...props }) => {
 	const { windowSizes } = useTypedSelector(s => s.general);
 	const [sizes, setSizes] = useState({ height: 0, width: 0 });
 	const wasVisible = useRef<boolean>(false);
@@ -72,7 +74,7 @@ const Modal: FC<ComponentProps<typeof RNModal> & { onClose: () => void, withoutU
 						const { height, width } = layout;
 						setSizes({ height, width });
 					}}
-					style={{
+					style={[{
 						margin: MARGIN,
 						position: 'absolute',
 						maxHeight: '100%',
@@ -80,7 +82,14 @@ const Modal: FC<ComponentProps<typeof RNModal> & { onClose: () => void, withoutU
 						visibility: sizes.height ? 'visible' : 'hidden',
 						top: windowSizes.height / 2 - MARGIN - (sizes.height > 0 ? sizes.height / 2 : sizes.height),
 						left: windowSizes.width / 2 - MARGIN - (sizes.width > 0 ? sizes.width / 2 : sizes.width),
-					}}
+					}, resetStyles ? {} : {
+						backgroundColor: Colors.White,
+						borderRadius: 4,
+						maxWidth: 450,
+						...useShadow(15),
+					},
+					...(isArray(contentContainerStyle) ? contentContainerStyle : [contentContainerStyle]),
+					]}
 				>
 					{children}
 				</View>

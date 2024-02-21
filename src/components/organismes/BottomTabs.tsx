@@ -10,6 +10,7 @@ import withUrl from '../../hooks/withUrl';
 import { RootStackParamList } from '../../navigators/RootNavigator';
 import { notPublicUrls, withCompanyUrls } from '../../hooks/useRouter';
 import { useRouter } from 'solito/router';
+import useShadow from '../../hooks/useShadow';
 
 export const BOTTOM_TABS_HEIGHT = 45;
 
@@ -84,7 +85,7 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes }) => {
             flex: Platform.select({ web: 1 }),
             alignItems: 'center',
         }]}>
-            <View style={[{ flexDirection: 'row', backgroundColor: Colors.White, maxWidth: 768, width: '100%', flex: 1 }]}>
+            <View style={[{ flexDirection: 'row', backgroundColor: Colors.White, maxWidth: 768, width: '100%', flex: 1, ...useShadow(10) }]}>
                 {routes.map((route) => {
                     const stack = route as keyof RootStackParamList;
                     const isFocused = (currentScreen.stack === stack) || (stack === 'MenuStack' && currentScreen.stack === 'ProfileStack');

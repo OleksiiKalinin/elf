@@ -21,6 +21,7 @@ import CompanyDescriptionScreen from "../screens/CompanyDescriptionScreen";
 import SocialMediaScreen from "../screens/SocialMediaScreen";
 import ChangePasswordScreen from "../screens/ChangePasswordScreen";
 import EditableItemSelectorScreen from "../screens/EditableItemSelectorScreen";
+import { uuidv4 } from "react-native-compressor";
 import AddOtherCompanyLocationsScreen from "../screens/AddOtherCompanyLocationsScreen";
 
 export type SubViewType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? AllScreens<T, keyof RootStackParamList[T]['default']> : never;
@@ -116,7 +117,7 @@ export default function useRouter() {
     const { setSwipeablePanelProps, setShowUserShouldBeLogedInModal, setShowUserShouldHaveCompanyModal, setBlockedScreen } = useActions();
     const { back, parseNextPath, push, replace } = useSolitoRouter();
     const { params, setParams } = useParams();
-    const id = useRef(Math.random().toString() + Math.random().toString());
+    const id = useRef(uuidv4());
 
     const preProcessHandler = ({ stack, screen }: WithUrlProps): boolean => {
         let access = false;

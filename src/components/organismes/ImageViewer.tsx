@@ -60,8 +60,8 @@ const ImageViewer: FC<Props> = ({ close, visible, index = 0, data }) => {
     return (
         <Modal
             visible={visible}
-            transparent
             onClose={close}
+            resetStyles
         >
             <View style={{ flex: 1, backgroundColor: colorTransparent ? Colors.Black50 : Colors.Basic900 }}>
                 {Platform.OS === 'web' ?

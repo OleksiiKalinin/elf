@@ -81,7 +81,6 @@ const getAppData = (token: generalReducerState['token']) => async (dispatch: App
         }
 
         await dispatch(generalActions.setAppData({
-
             userData: userData || null,
             userCompany: userCompanyData && userCompanyData[0] ? {
                 ...userCompanyData[0],
@@ -111,13 +110,6 @@ const getAppData = (token: generalReducerState['token']) => async (dispatch: App
             candidatesFilters: null,
             appLoading: false,
             userSettings: userSettings
-
-
-
-            // userSettings: {
-            //     notifications: settings.notifications || (AsyncStorage.getItem('notifications') || [appData?.notification]),
-            //     cookies: settings.cookie_consents || (AsyncStorage.getItem('cookies') || [1]),
-            // }
         }));
         isOk = true;
         console.log(appData)

@@ -16,6 +16,7 @@ import CornerCircleButton from '../../components/molecules/CornerCircleButton';
 import { createParam } from 'solito';
 import { MenuStackParamList } from '../../navigators/MenuNavigator';
 import useRouter from '../../hooks/useRouter';
+import useShadow from '../../hooks/useShadow';
 
 const { useParam } = createParam<NonNullable<MenuStackParamList['default']['MainScreen']>>();
 
@@ -221,6 +222,7 @@ const MainScreen: React.FC = ({ }) => {
         mode="mainTitle"
         mainTitlePosition="flex-start"
         backgroundContent={Colors.Basic200}
+        shadowDepth={5}
         alterTitle={
           <View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 15 }}>
             <View style={{ marginRight: 12 }}>
@@ -342,7 +344,6 @@ const MainScreen: React.FC = ({ }) => {
     </>
   );
 };
-
 const styles = StyleSheet.create({
   FlatSectionWrapper: {
     paddingHorizontal: 20,
@@ -381,11 +382,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'column',
     borderRadius: 14,
-    shadowColor: Colors.Basic600,
-    shadowOpacity: 1,
-    elevation: 15,
     width: '100%',
     height: '100%',
+    ...useShadow(15),
   },
   GridIconBG: {
     width: 40,

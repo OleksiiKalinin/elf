@@ -285,12 +285,14 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 			{render(handleFilePick)}
 			{crop &&
 				<Modal
-					transparent={true}
 					visible={cropModal}
 					onClose={() => setCropModal(false)}
 					withoutUrl
+					contentContainerStyle={{
+						maxWidth: '100%'
+					}}
 				>
-					<View style={styles.Modal}>
+					<View>
 						<View style={styles.CropContainer}>
 							<ReactCrop
 								crop={cropData}
@@ -322,12 +324,6 @@ const MediaSelector: FC<MediaSelectorProps> = ({
 };
 
 const styles = StyleSheet.create({
-	Modal: {
-		justifyContent: 'center',
-		alignItems: 'center',
-		width: '100%',
-		height: '100%',
-	},
 	CropContainer: {
 		backgroundColor: Colors.White,
 		borderRadius: 4,

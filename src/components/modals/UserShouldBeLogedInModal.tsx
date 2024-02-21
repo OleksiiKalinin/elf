@@ -7,6 +7,7 @@ import { useActions } from '../../hooks/useActions';
 import Colors from '../../colors/Colors';
 import Button from '../molecules/Button';
 import useRouter from '../../hooks/useRouter';
+import useShadow from '../../hooks/useShadow';
 
 const UserShouldBeLogedInModal = () => {
     const { showUserShouldBeLogedInModal } = useTypedSelector(s => s.general);
@@ -25,8 +26,8 @@ const UserShouldBeLogedInModal = () => {
             visible={showUserShouldBeLogedInModal.state}
             onClose={closeHandler}
         >
-            <View style={styles.Modal}>
-                <View style={styles.CropContainer}>
+            <View>
+                <View style={{ padding: 15 }}>
                     <Typography weight='Bold' variant='h4' textAlign='center'>Ooopps!</Typography>
                     <Typography variant='h5' textAlign='center'>Nie jesteś zalogowany i nie masz dostępu do tej strony.</Typography>
                     <Typography color={Colors.Basic700} textAlign='center'>Zaloguj się lub stwórz konto!</Typography>
@@ -61,15 +62,6 @@ const UserShouldBeLogedInModal = () => {
 };
 
 const styles = StyleSheet.create({
-    Modal: {
-        backgroundColor: Colors.White,
-        borderRadius: 4,
-    },
-    CropContainer: {
-        padding: 15,
-        // width: 'auto',
-        // gap: 20,
-    },
 });
 
 export default UserShouldBeLogedInModal;

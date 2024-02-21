@@ -126,7 +126,7 @@
     "setimmediate": "^1.0.5",
     "sharp": "^0.31.3",
     "solito": "^3.0.0",
-    "tamagui": "1.7.2",
+    "tamagui": "^1.7.2",
     "xdate": "^0.8.2"
   },
   "devDependencies": {

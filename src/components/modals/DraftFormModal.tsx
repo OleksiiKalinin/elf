@@ -53,7 +53,7 @@ const DraftFormModal = () => {
       onClose={closeHandler}
       withoutUrl
     >
-      <View style={styles.Modal}>
+      <View>
         {showDraftFormModal?.type === 'saveDraft' &&
           !showDraftFormModal.info ?
           <View style={styles.TextContainer}>
@@ -136,10 +136,6 @@ const DraftFormModal = () => {
 };
 
 const styles = StyleSheet.create({
-  Modal: {
-    backgroundColor: Colors.White,
-    borderRadius: 4,
-  },
   TextContainer: {
     padding: 15,
     gap: 10

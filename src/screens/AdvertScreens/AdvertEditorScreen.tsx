@@ -32,7 +32,7 @@ import useRouter from '../../hooks/useRouter';
 import MapPreview from '../../components/molecules/MapPreview';
 import getJobPositionsFrom from '../../hooks/getJobPositionsFrom';
 import Accordion from '../../components/molecules/Accordion';
-import { isNumber } from 'lodash';
+import { isNumber, uniqueId } from 'lodash';
 import CheckBox from '../../components/atoms/CheckBox';
 import { TimePickerModal } from '../../components/modified_modules/react-native-paper-dates/Time/TimePickerModal';
 import AdvertLarge from '../../components/organismes/AdvertLarge';
@@ -178,7 +178,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
     //_end to remove
     salary: [
       {
-        id: Math.random(),
+        id: Number(uniqueId()),
         salary_amount_low: null,
         salary_amount_up: null,
         salary_tax_type_id: null,
@@ -287,7 +287,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           known_languages_id: [],
           salary: [
             {
-              id: Math.random(),
+              id: Number(uniqueId()),
               salary_amount_low: null,
               salary_amount_up: null,
               salary_tax_type_id: null,
@@ -333,7 +333,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           salary: [
             ...prev.salary,
             {
-              id: Math.random(),
+              id: Number(uniqueId()),
               salary_amount_low: null,
               salary_amount_up: null,
               salary_tax_type_id: null,

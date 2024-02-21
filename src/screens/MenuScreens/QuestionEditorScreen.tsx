@@ -16,6 +16,7 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useActions } from '../../hooks/useActions';
 import useRouter from '../../hooks/useRouter';
 import { InitialPropsFromParams } from '../../hooks/types';
+import { uuidv4 } from 'react-native-compressor';
 
 const Questions: QuestionsCategoryType[] = [
   {
@@ -224,7 +225,7 @@ const QuestionEditorScreen: React.FC<InitialPropsFromParams<Params>> = ({ idInit
       const newUserQuestions = cloneDeep(userQuestions);
       if (!id) {
         newUserQuestions.push({
-          id: Math.random().toString(),
+          id: uuidv4(),
           name: name,
           list: filteredList,
         });

@@ -25,8 +25,8 @@ const UserShouldHaveCompanyModal = () => {
             visible={showUserShouldHaveCompanyModal.state}
             onClose={closeHandler}
         >
-            <View style={styles.Modal}>
-                <View style={styles.CropContainer}>
+            <View>
+                <View style={{ padding: 15 }}>
                     <Typography weight='Bold' variant='h4' textAlign='center'>Ooopps!</Typography>
                     <Typography variant='h5' textAlign='center'>
                         {'Jeszcze nie stworzyłeś profil firmy więc nie masz dostępu do tej '}
@@ -64,16 +64,6 @@ const UserShouldHaveCompanyModal = () => {
 };
 
 const styles = StyleSheet.create({
-    Modal: {
-        backgroundColor: Colors.White,
-        borderRadius: 4,
-        maxWidth: 400,
-    },
-    CropContainer: {
-        padding: 15,
-        // width: 'auto',
-        // gap: 20,
-    },
 });
 
 export default UserShouldHaveCompanyModal;

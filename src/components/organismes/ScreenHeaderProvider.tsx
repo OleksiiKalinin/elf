@@ -10,6 +10,8 @@ import useRouter, { notPublicUrls, withCompanyUrls } from '../../hooks/useRouter
 import { BOTTOM_TABS_HEIGHT } from './BottomTabs';
 import { useActions } from '../../hooks/useActions';
 import windowExists from '../../hooks/windowExists';
+import useShadow from '../../hooks/useShadow';
+import { uniqueId } from 'lodash';
 
 
 type ScreensTitlesType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: { [K in keyof RootStackParamList[T]['default']]: string } } : never;
@@ -106,6 +108,8 @@ type ScreenHeaderProviderProps = {
   headerItemsColor?: ColorValue,
   backgroundHeader?: ColorValue,
   backgroundContent?: ColorValue,
+  /**0 will return {} empty object (no shadow), shadow values from 1 to 24 (any value below or above will be ignored and rounded to nearest edge) */
+  shadowDepth?: Parameters<typeof useShadow>[0],
 };
 
 export const SCREEN_HEADER_HEIGHT = 50;
@@ -127,13 +131,15 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   headerItemsColor = Colors.Basic900,
   backgroundHeader,
   backgroundContent,
+  shadowDepth = 0,
 }) => {
   const { backToRemoveParams, back } = useRouter();
-  const { currentScreen, userData, userCompany, windowSizes, swipeablePanelProps, isTabbarVisible, appLoading, blockedScreen } = useTypedSelector(s => s.general);
+  const { currentScreen, userData, userCompany, windowSizes, swipeablePanelProps, isTabbarVisible, appLoading, blockedScreen, loggedOut } = useTypedSelector(s => s.general);
   const { setShowUserShouldBeLogedInModal, setShowUserShouldHaveCompanyModal, setShowExitWarningModal } = useActions();
   const [contentProtected, setContentProtected] = useState<boolean>(true);
   // @ts-ignore
   const currentTitle: string = screensTitles[currentScreen.stack][currentScreen.screen] || '';
+  const randid = useRef(uniqueId());
   const firstRender = useRef(true);
 
   const HeaderSpace = transparent || hide ? 0 : SCREEN_HEADER_HEIGHT;
@@ -142,7 +148,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
 
   useEffect(() => {
     if (!appLoading) {
-      if (firstAppLoading || !firstRender.current) {
+      if (firstAppLoading || !firstRender.current || loggedOut) {
         const { stack, screen } = currentScreen;
         let protectedUrl = true;
 
@@ -160,7 +166,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
       firstRender.current = false;
       firstAppLoading = false;
     }
-  }, [currentScreen, userData, appLoading]);
+  }, [currentScreen, userData, appLoading, loggedOut]);
 
   useEffect(() => {
     if (swipeablePanelProps?.mode === 'screen') {
@@ -178,8 +184,14 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
       <View style={{ maxWidth: 768, width: '100%', flex: 1 }}>
         <View
           style={[styles.Header, {
-            backgroundColor: transparent && backgroundHeader ? backgroundHeader : (transparent ? 'transparent' : Colors.White),
+            backgroundColor:
+              transparent && backgroundHeader ?
+                backgroundHeader
+                :
+                (transparent ? 'transparent' : Colors.White)
+            ,
             display: hide ? 'none' : 'flex',
+            ...useShadow(shadowDepth),
           }]}
         >
           {mode === 'backAction' && (
@@ -191,7 +203,18 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
                 width={50}
                 height='100%'
                 icon={<SvgIcon icon='arrowLeft' fill={headerItemsColor} />}
-                onPress={()=> {callback ? callback() : blockedScreen.blockedBack ? setShowExitWarningModal(true) : (!!swipeablePanelProps ? backToRemoveParams() : back())}}
+                onPress={() => {
+                  !!callback ?
+                    callback()
+                    :
+                    blockedScreen.blockedBack ?
+                      setShowExitWarningModal(true)
+                      :
+                      !!swipeablePanelProps ?
+                        backToRemoveParams()
+                        :
+                        back()
+                }}
               />
               <Typography variant="h4" weight="Bold" style={{ alignSelf: 'center', color: headerItemsColor, paddingRight: 15 }}>
                 {title || currentTitle}

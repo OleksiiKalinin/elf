@@ -153,7 +153,7 @@ const ScreenExitLock = () => {
       onClose={closeHandler}
       withoutUrl
     >
-      <View style={styles.Modal}>
+      <View>
         <View style={styles.TextContainer}>
           <Typography weight='Bold' variant='h4' textAlign='center'>
             Uwaga!
@@ -192,10 +192,6 @@ const ScreenExitLock = () => {
 };
 
 const styles = StyleSheet.create({
-  Modal: {
-    backgroundColor: Colors.White,
-    borderRadius: 4,
-  },
   TextContainer: {
     padding: 15,
     gap: 10

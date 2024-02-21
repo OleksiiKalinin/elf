@@ -47,6 +47,7 @@ export interface generalReducerState {
     showExitWarningModal: boolean,
     showDraftFormModal: ShowDraftFormModalType | null,
     blockedScreen: BlockedScreenType,
+    loggedOut: boolean,
 };
 
 export type ShowUserShouldBeLogedInModalType = {
