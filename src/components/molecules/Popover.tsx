@@ -7,6 +7,7 @@ import Typography from '../atoms/Typography';
 import { isArray, isFunction } from 'lodash';
 import ScrollLock from '../atoms/ScrollLock';
 import useShadow from '../../hooks/useShadow';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
 
 type Props = {
   triggerComponent: (open: () => void) => ReactNode,
@@ -28,27 +29,34 @@ type Props = {
  * - {(close) => <></>}
  * - <></>
 */
+
 const Popover: FC<Props> = ({ triggerComponent, closeButtonComponent, children, hideArrow = false, hideBlur = true, hideCloseButton = false, contentContainerStyle, containerStyle, ...props }) => {
   const [open, setOpen] = useState(!!props.open);
   const [visibleOnNative, setVisibleOnNative] = useState(false);
   const firstLoad = useRef(true);
+  const { windowSizes } = useTypedSelector(s => s.general);
 
   useEffect(() => {
     setOpen(open);
   }, [props.open]);
 
+  // useEffect(() => {
+  //   if (Platform.OS !== 'web') {
+  //     if (open) {
+  //       setTimeout(() => {
+  //         setVisibleOnNative(true);
+  //         firstLoad.current = false;
+  //       }, open && firstLoad.current ? 200 : 0);
+  //     } else {
+  //       setVisibleOnNative(false);
+  //     }
+  //   }
+  // }, [open]);
+
   useEffect(() => {
-    if (Platform.OS !== 'web') {
-      if (open) {
-        setTimeout(() => {
-          setVisibleOnNative(true);
-          firstLoad.current = false;
-        }, open && firstLoad.current ? 200 : 0);
-      } else {
-        setVisibleOnNative(false);
-      }
-    }
-  }, [open]);
+    console.log('changed');
+    
+  }, [windowSizes.width]);
 
   return (
     <View style={containerStyle}>
@@ -67,7 +75,7 @@ const Popover: FC<Props> = ({ triggerComponent, closeButtonComponent, children, 
             style={[
               {
                 ...useShadow(20),
-                opacity: Platform.select({ web: 1, native: visibleOnNative ? 1 : 0 })
+                // opacity: Platform.select({ native: visibleOnNative ? 1 : 0 })
               },
               ...(isArray(contentContainerStyle) ? contentContainerStyle : [contentContainerStyle]),
             ]}

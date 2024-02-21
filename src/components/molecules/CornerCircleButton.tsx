@@ -3,8 +3,10 @@ import SvgIcon from '../atoms/SvgIcon';
 import { BOTTOM_TABS_HEIGHT } from '../organismes/BottomTabs';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import Button from './Button';
+import useShadow from '../../hooks/useShadow';
+import { isArray } from 'lodash';
 
-const CornerCircleButton: React.FC<{ onPress: ((event: GestureResponderEvent) => void) & (() => void) }> = ({ onPress, ...props }) => {
+const CornerCircleButton: React.FC<{ onPress: ((event: GestureResponderEvent) => void) & (() => void) }> = ({ onPress }) => {
     const { isTabbarVisible, windowSizes } = useTypedSelector(s => s.general);
 
     return (
@@ -23,7 +25,16 @@ const CornerCircleButton: React.FC<{ onPress: ((event: GestureResponderEvent) =>
             }),
             zIndex: 1,
         }}>
-            <Button variant='TouchableOpacity' onPress={onPress} {...props}>
+            <Button
+                variant='TouchableOpacity'
+                onPress={onPress}
+                style={{
+                    width: 49,
+                    height: 49,
+                    borderRadius: 49 / 2,
+                    ...useShadow(10)
+                }}
+            >
                 <SvgIcon icon='addBig' />
             </Button>
         </View>

@@ -91,13 +91,15 @@ const androidColor = {
 /**
  * 
  * @param depth 
- * from 1 to 24 (any value below or above will be ignored and rounded to nearest edge)
+ * 0 will return {} empty object (no shadow), shadow values from 1 to 24 (any value below or above will be ignored and rounded to nearest edge)
  * 
  * @returns 
  * StyleSheet style object
  */
 
 export default function useShadow(depth: number) {
+    if (depth === 0) return {};
+
     const d = Math.min(Math.max(depth, 1), 24) - 1;
 
     function interpolate(i: number, a: number, b: number, a2: number, b2: number) {

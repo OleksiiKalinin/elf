@@ -62,16 +62,22 @@ const initialState: generalReducerState = {
         blockedExit: false,
         blockedBack: false
     },
+    loggedOut: false,
 }
 
 export const generalReducer = (state = initialState, action: generalReducerAction): generalReducerState => {
     switch (action.type) {
         case generalActionTypes.SET_TOKEN:
             const { token, refresh_token } = action.payload;
-            if (token && refresh_token) AsyncStorage.multiSet([['token', token], ['refresh_token', refresh_token]]);
-            else AsyncStorage.multiRemove(['token', 'refresh_token']);
+            let loggedOut = true;
+            if (token && refresh_token) {
+                loggedOut = false;
+                AsyncStorage.multiSet([['token', token], ['refresh_token', refresh_token]]);
+            } else {
+                AsyncStorage.multiRemove(['token', 'refresh_token']);
+            }
 
-            return { ...state, token, refresh_token };
+            return { ...state, token, refresh_token, loggedOut };
         case generalActionTypes.SET_APP_DATA:
             return { ...state, ...action.payload, appLoading: false };
         case generalActionTypes.SET_WINDOW_SIZES:
@@ -146,7 +152,8 @@ export const generalReducer = (state = initialState, action: generalReducerActio
                 userCompany: null,
                 userAdverts: [],
                 userEvents: [],
-                appLoading: false
+                appLoading: false,
+                loggedOut: true,
             };
         default: return state;
     }

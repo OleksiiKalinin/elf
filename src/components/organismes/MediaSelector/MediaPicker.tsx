@@ -302,8 +302,8 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
         <>
           <Modal
             visible={previewMode && !!previewFile.length}
-            onRequestClose={() => setPreviewMode(false)} 
             onClose={() => setPreviewMode(false)}
+            resetStyles
           >
             <ScreenHeaderProvider
               backgroundContent={'#000'}
@@ -321,23 +321,20 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
             </ScreenHeaderProvider>
           </Modal>
           <Modal
-            transparent={true}
             visible={sizeInfoModal}
             onClose={() => setSizeInfoModal(false)}
           >
-            <View style={styles.SizeModalContainer}>
-              <View style={styles.SizeModalContent}>
-                <Typography>
-                  Zbyt duży rozmiar pliku. Maksymalny rozmiar wynosi: {Math.round(maxAllowedFileSize / (1024 * 1024) * 100) / 100} MB
-                </Typography>
-                <Button
-                  style={{ height: 30 }}
-                  variant='text'
-                  onPress={() => setSizeInfoModal(false)}
-                >
-                  Ok
-                </Button>
-              </View>
+            <View style={styles.SizeModalContent}>
+              <Typography>
+                Zbyt duży rozmiar pliku. Maksymalny rozmiar wynosi: {Math.round(maxAllowedFileSize / (1024 * 1024) * 100) / 100} MB
+              </Typography>
+              <Button
+                style={{ height: 30 }}
+                variant='text'
+                onPress={() => setSizeInfoModal(false)}
+              >
+                Ok
+              </Button>
             </View>
           </Modal>
         </>
@@ -369,18 +366,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.Basic900,
     justifyContent: 'center',
   },
-  SizeModalContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    height: '100%',
-  },
   SizeModalContent: {
-    width: 300,
-    backgroundColor: Colors.White,
-    borderRadius: 4,
     padding: 20,
-    justifyContent: 'space-between',
     gap: 20,
   },
 });

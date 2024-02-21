@@ -222,6 +222,7 @@ const MainScreen: React.FC = ({ }) => {
         mode="mainTitle"
         mainTitlePosition="flex-start"
         backgroundContent={Colors.Basic200}
+        shadowDepth={5}
         alterTitle={
           <View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 15 }}>
             <View style={{ marginRight: 12 }}>

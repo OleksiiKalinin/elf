@@ -1025,7 +1025,8 @@ const CompanyEditorScreen: React.FC = () => {
                         onPress={() => {
                           (photos.length < companyPhotosLimit) ?
                             onPress()
-                            : setSnackbarMessage({ type: 'error', text: 'Dodałeś maksymalną ilość zdjęć.' })
+                            :
+                            setSnackbarMessage({ type: 'error', text: 'Dodałeś maksymalną ilość zdjęć.' })
                         }}
                       >
                         <PlusCircle />

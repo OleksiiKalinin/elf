@@ -63,7 +63,6 @@ const getAppData = (token: generalReducerState['token']) => async (dispatch: App
         }
 
         await dispatch(generalActions.setAppData({
-
             userData: userData || null,
             userCompany: userCompanyData && userCompanyData[0] ? {
                 ...userCompanyData[0],
