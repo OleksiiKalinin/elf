@@ -394,6 +394,7 @@ export interface CompanyDataType {
     address: AddressType | null,
     description: string | null,
     contactPersons: ContactPersonType[],
+    other_locations: OtherCompanyLocationType[],
     services?: number[] | null,
     logo?: MediaType | null,
     photos?: MediaType[] | null,
@@ -406,14 +407,15 @@ export interface CompanyDataType {
     account_instagram?: string | null,
     account_linkedIn?: string | null,
     is_active?: boolean,
-    other_locations?: OtherCompanyLocationType[],
+
 }
 
 export interface OtherCompanyLocationType {
     id?: number,
     name: string | null,
     location: AddressType | null,
-    contact_persons: ContactPersonType[],
+    contact_persons?: number[],
+    tempContactPersons: ContactPersonType[],
 }
 
 export type MediaType = {

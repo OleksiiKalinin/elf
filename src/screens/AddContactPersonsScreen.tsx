@@ -16,6 +16,7 @@ import { isEqual, isString } from 'lodash';
 import { useActions } from '../hooks/useActions';
 import { useTypedSelector } from '../hooks/useTypedSelector';
 import { uuidv4 } from 'react-native-compressor';
+import { Trash2 } from '@tamagui/lucide-icons';
 
 const emptyPerson: ContactPersonType = {
   email: null,
@@ -146,10 +147,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
   };
 
   return (
-    <ScreenHeaderProvider
-      title='Dane do kontaktu'
-    /* callback={() => { unsavedData ? setShowExitWarningModal({ state: true, callback: backToRemoveParams }) : backToRemoveParams() }} */
-    >
+    <ScreenHeaderProvider title='Dane do kontaktu'>
       <ScrollView style={styles.ScrollView} contentContainerStyle={{ paddingTop: 25 }}>
         {contactPersons.map(({ email, mobile_number, id, contact_hours, preferred_mobile_number, preferred_email }, index) => (
           <View style={styles.ContactPerson} key={id}>
@@ -160,7 +158,9 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
                   variant='TouchableOpacity'
                   onPress={() => deleteContactPerson(index)}
                 >
-                  <Typography color={Colors.Danger}>usuń</Typography>
+                  <Typography color={Colors.Danger}>
+                    <Trash2 />
+                  </Typography>
                 </Button>
               )}
             </View>

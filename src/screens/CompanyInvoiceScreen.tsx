@@ -63,34 +63,6 @@ const CompanyInvoiceScreen: React.FC<CompanyInvoiceScreenProps> = ({
   }, [oldFormData, formData]);
 
   useEffect(() => {
-    /* const beforeUnloadHandler = (event: { preventDefault: () => void; }) => {
-      if (unsavedData) event.preventDefault();
-    };
-
-    if (Platform.OS === 'web') {
-      if (unsavedData) {
-        window.addEventListener("beforeunload", beforeUnloadHandler);
-      } else {
-        window.removeEventListener("beforeunload", beforeUnloadHandler);
-      }
-    } else {
-      if (unsavedData) {
-        const handler = BackHandler.addEventListener('hardwareBackPress', () => {
-          setShowExitWarningModal({ state: true, callback: backToRemoveParams });
-          return true;
-        });
-
-        return () => {
-          handler.remove();
-        };
-      };
-    };
-
-    return () => {
-      if (Platform.OS === 'web') {
-        window.removeEventListener("beforeunload", beforeUnloadHandler);
-      }
-    } */
     setBlockedScreen({...blockedScreen, blockedBack: unsavedData});
   }, [unsavedData]);
 
