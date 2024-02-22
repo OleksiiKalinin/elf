@@ -90,11 +90,7 @@ const CompanyEditorScreen: React.FC = () => {
 
   useLayoutEffect(() => {
     if (userCompany && !formSent) {
-      const updatedContactPersons = userCompany.contactPersons.map(contact => ({
-        ...contact,
-        tempId: contact.tempId || Math.floor(Math.random() * 100000000000)
-      }));
-      const newUserCompany = { ...userCompany, photos: userCompany.photos?.length ? companyData.photos : [], certificates: userCompany.certificates?.length ? userCompany.certificates : [], contactPersons: updatedContactPersons.length ? updatedContactPersons : [] };
+      const newUserCompany = { ...userCompany, photos: userCompany.photos?.length ? companyData.photos : [], certificates: userCompany.certificates?.length ? userCompany.certificates : [] };
       setCompanyData(newUserCompany);
       setOldCompanyData(newUserCompany);
       console.log(newUserCompany);
@@ -114,13 +110,6 @@ const CompanyEditorScreen: React.FC = () => {
       });
     };
   }, [mode, unsavedData]);
-
-  /*   useEffect(() => {
-      const updatedContactPersons = contactPersons.map(contact => ({
-        ...contact,
-        tempId: contact.tempId || generateRandomId() // Dodaj tempId lub wygeneruj losową liczbę
-      }));
-    }, [contactPersons]); */
 
   useEffect(() => {
     const fields: FormFieldType[] = [
@@ -270,7 +259,7 @@ const CompanyEditorScreen: React.FC = () => {
       'editUserCompany' :
       'createUserCompany'
     ]({
-      companyData: newCompanyData, companyLogo: companyData.logo ? companyData.logo : null, companyPhotos: companyData.photos?.length ? companyData.photos : [], companyCertificates: companyData.certificates?.length ? companyData.certificates : [], contactPersons: companyData.contactPersons, oldCompanyData: oldCompanyData
+      companyData: newCompanyData, companyLogo: companyData.logo ? companyData.logo : null, companyPhotos: companyData.photos?.length ? companyData.photos : [], companyCertificates: companyData.certificates?.length ? companyData.certificates : [], contactPersons: companyData.contactPersons, oldCompanyData: oldCompanyData, otherLocations: other_locations?.length ? other_locations : [],
     })
     );
     setLoading(false);
@@ -620,6 +609,7 @@ const CompanyEditorScreen: React.FC = () => {
         </View>
         <View style={{ marginBottom: 24 }}>
           <MapPreview
+            rightIcon='arrowRightSmall'
             label='Lokalizacja*'
             place={address?.formattedAddress}
             statusCircle
@@ -956,7 +946,7 @@ const CompanyEditorScreen: React.FC = () => {
             arrowRight
             borderBottom
             onPress={() => {
-              (!!contactPersons && contactPersons.length) ? goToAddOtherCompanyLocationsScreen() : setSnackbarMessage({type: 'error', text: 'Przed dodaniem dodatkowych lokalizacji uzupełnij dane do kontaktu'})
+              (!!contactPersons && contactPersons.length) ? goToAddOtherCompanyLocationsScreen() : setSnackbarMessage({ type: 'error', text: 'Przed dodaniem dodatkowych lokalizacji uzupełnij dane do kontaktu' })
             }}
           >
             <View style={styles.UnfilledFieldTitle}>

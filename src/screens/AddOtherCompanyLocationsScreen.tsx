@@ -24,6 +24,7 @@ const emptyLocation: OtherCompanyLocationType = {
   name: '',
   location: null,
   contact_persons: [],
+  tempContactPersons: [],
 };
 
 export type AddOtherCompanyLocationsScreenProps = {
@@ -75,7 +76,7 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
       if (
         !!(location.name && location.name.length > 2 && location.name.length <= 100)
         && !!location.location
-        && !!location.contact_persons.length
+        && !!location.tempContactPersons.length
       ) {
         continue;
       } else {
@@ -157,7 +158,7 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
           backgroundContent={'none'}
         >
           <ScrollView style={styles.ScrollView} contentContainerStyle={{ paddingTop: 25 }}>
-            {locations.map(({ name, location, contact_persons }, index) =>
+            {locations.map(({ name, location, tempContactPersons }, index) =>
               <View style={styles.Location} key={index}>
                 <View style={styles.LocationHeader}>
                   <Typography size={18} weight='Bold' style={{ marginVertical: 10 }}>Dodatkowa lokalizacja {index + 1}</Typography>
@@ -172,7 +173,7 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
                 </View>
                 <View style={{ marginBottom: 30, paddingHorizontal: 19 }}>
                   <TextField
-                    label="Nazwa*"
+                    label="Nazwa lokalizacji*"
                     value={name || ''}
                     onChangeText={text => editLocations('name', text, index)}
                     {...(showTips && (!name || !(name && name.length > 2 && name.length <= 100)) && {
@@ -183,6 +184,7 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
                 <View >
                   <Separator />
                   <MapPreview
+                    rightIcon='arrowRightSmall'
                     label='Lokalizacja*'
                     place={location?.formattedAddress}
                     bgColor={Colors.White}
@@ -193,7 +195,7 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
                   />
                   <Separator />
                 </View>
-                {!!contact_persons.length ?
+                {!!tempContactPersons.length ?
                   <>
                     <View style={styles.SelectedItemsContainer}>
                       <View style={styles.SelectedItemsHeader}>
@@ -216,7 +218,7 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
                         </View>
                       </View>
                       <View >
-                        {contact_persons.map(({ id, email, mobile_number }, i) =>
+                        {tempContactPersons.map(({ id, email, mobile_number }, i) =>
                           <View key={id} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 20 }}>
                             <Typography color={Colors.Basic600}>
                               {i + 1}.
@@ -265,7 +267,7 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
                     </View>
                   </Button>
                 }
-                {index + 1 === locations.length && (name && contact_persons) &&
+                {index + 1 === locations.length && (name && tempContactPersons) &&
                   <Button
                     variant='text'
                     onPress={() => validateLocations(index) ? addNewLocations() : displayWarning()}
@@ -303,9 +305,9 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
         >
           <ItemSelectorScreen
             list={contactPersons.map(item => ({ id: item.tempId, name: item.email, icon: item.mobile_number })) as any}
-            initialSelected={getInitialSelectedContacts(locations[currentIndex].contact_persons) as any}
+            initialSelected={getInitialSelectedContacts(locations[currentIndex].tempContactPersons) as any}
             mode='multiple'
-            callback={(contacts) => editLocations('contact_persons', contactPersons.filter(contact => contacts.includes(contact.tempId || 0)), currentIndex)}
+            callback={(contacts) => editLocations('tempContactPersons', contactPersons.filter(contact => contacts.includes(contact.tempId || 0)), currentIndex)}
             closeCallback={() => setMode('locations')}
             labels={{
               searchLabel: 'Znajdź email',

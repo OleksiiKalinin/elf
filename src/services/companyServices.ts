@@ -1,12 +1,13 @@
 import axios, { baseURL, dynamicHeaders, errorHandler } from "./index";
 import { Dispatch } from "react";
 import generalActions from "../store/actionCreators/general/actions";
-import { CompanyDataType, MediaType, ContactPersonType } from "../store/reducers/types";
+import { CompanyDataType, MediaType, ContactPersonType, OtherCompanyLocationType } from "../store/reducers/types";
 import Lodash from 'lodash';
 import { convertToBackEndAddress, convertToFrontEndAddress } from "../hooks/convertAddress";
 import { AppDispatch, rootState } from "../store";
 import { Platform } from "react-native";
 import base64ToBlob from "../hooks/base64ToBlob";
+import { convertToBackEndCompanyOtherLocations, convertToFrontEndCompanyOtherLocations } from "../hooks/convertCompanyOtherLocations";
 
 const createUserCompany = (props: {
   companyData: CompanyDataType,
@@ -14,7 +15,7 @@ const createUserCompany = (props: {
   // companyVideo: MediaType | null,
   companyPhotos: MediaType[],
   companyCertificates: MediaType[],
-  contactPersons: ContactPersonType[]
+  contactPersons: ContactPersonType[],
 }) => async (dispatch: AppDispatch, getState: () => rootState) => {
   const { token } = getState().general;
   try {
@@ -135,11 +136,12 @@ const editUserCompany = (props: {
   // companyVideo: MediaType | null,
   companyPhotos: MediaType[],
   companyCertificates: MediaType[],
-  contactPersons: ContactPersonType[]
+  contactPersons: ContactPersonType[],
+  otherLocations: OtherCompanyLocationType[],
 }) => async (dispatch: AppDispatch, getState: () => rootState) => {
   const { token } = getState().general;
   try {
-    let { companyCertificates, companyData: newCompanyData, oldCompanyData, companyLogo, /* companyVideo, */ companyPhotos, contactPersons: companyContactPersons } = props;
+    let { companyCertificates, companyData: newCompanyData, oldCompanyData, companyLogo, /* companyVideo, */ companyPhotos, contactPersons: companyContactPersons, otherLocations } = props;
     if (oldCompanyData.id) {
       {
         const { photos, certificates, id, logo, contactPersons, ...newMainCompanyData } = newCompanyData;
@@ -239,16 +241,16 @@ const editUserCompany = (props: {
             });
           }
         })
- 
+
         companyPhotosFormData.append("order_list", JSON.stringify(forPushArray.map(({ order }) => order)));
         // @ts-ignore
         companyPhotosFormData.append("company_id", oldCompanyData.id);
 
-/*         console.log('FormData:', ...companyPhotosFormData as any)
-        console.log('Order:', orderData);
-        console.log('All:', companyCertificates);
-        console.log('Push:', forPushArray);
-        console.log('Delete:', forDeleteArray); */
+        /*         console.log('FormData:', ...companyPhotosFormData as any)
+                console.log('Order:', orderData);
+                console.log('All:', companyCertificates);
+                console.log('Push:', forPushArray);
+                console.log('Delete:', forDeleteArray); */
 
         await Promise.all([
           ...(forPushArray.length ? [axios.post(`/employer/company_photos/`, companyPhotosFormData, {
@@ -288,17 +290,17 @@ const editUserCompany = (props: {
             });
           }
         })
-        
+
         companyCertificatesFormData.append("order_list", JSON.stringify(forPushArray.map(({ order }) => order)));
         // @ts-ignore
         companyCertificatesFormData.append("company_id", oldCompanyData.id);
 
-/*         console.log('FormData:', ...companyCertificatesFormData as any) 
-        console.log('Order:', orderData);
-        console.log('All:', companyCertificates);
-        console.log('Push:', forPushArray);
-        console.log('Delete:', forDeleteArray);
- */
+        /*         console.log('FormData:', ...companyCertificatesFormData as any) 
+                console.log('Order:', orderData);
+                console.log('All:', companyCertificates);
+                console.log('Push:', forPushArray);
+                console.log('Delete:', forDeleteArray);
+         */
         await Promise.all([
           ...(forPushArray.length ? [axios.post(`/employer/company_certificates/`, companyCertificatesFormData, {
             headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
@@ -337,7 +339,42 @@ const editUserCompany = (props: {
         });
       };
 
-      await dispatch(generalActions.setUserCompany({...newCompanyData, address: convertToFrontEndAddress(newCompanyData.address as any),}));
+      if (!Lodash.isEqual(oldCompanyData.other_locations, otherLocations)) {
+        console.log('otherLocations', otherLocations);
+
+        const contactPersons = await dispatch(getUserCompanyContactPersons(oldCompanyData.id as number));
+        console.log('contactPersons', contactPersons);
+
+        const filteredOtherLocations = convertToBackEndCompanyOtherLocations(otherLocations, contactPersons);
+
+        console.log('newArray', filteredOtherLocations);
+
+        const company_id = newCompanyData.id;
+
+        const forPushArray = filteredOtherLocations.filter(item => !item.id).map(item => ({ ...item, company_id }));
+
+        const forUpdateArray = filteredOtherLocations.filter(item => item.id && !Lodash.isEqual(item, oldCompanyData.other_locations.find(el => el.id === item.id)));
+
+        const forDeleteArray = oldCompanyData.other_locations?.reduce<number[]>((prev, curr) => {
+          if (curr.id && !filteredOtherLocations.find(el => el.id === curr.id)) return [...prev, curr.id];
+          else return prev;
+        }, []) || [];
+
+        await Promise.all([
+          ...(forPushArray.length ? [axios.post(`/employer/other_locations/`, forPushArray, { headers: dynamicHeaders({ token }) })] : []),
+          ...(forDeleteArray.map(id =>
+            axios.delete(`/employer/other_locations/${id}/`, { headers: dynamicHeaders({ token }) }).catch(() => { })
+          )),
+          ...(forUpdateArray.map(item =>
+            axios.put(`/employer/other_locations/${item.id}/`, item, { headers: dynamicHeaders({ token }) }).catch(() => { })
+          )),
+        ]).then(async () => {
+          const getOtherLocations = await dispatch(getUserCompanyOtherLocations(oldCompanyData.id as number));
+          newCompanyData.other_locations = convertToFrontEndCompanyOtherLocations(getOtherLocations, contactPersons);
+        });
+      };
+
+      await dispatch(generalActions.setUserCompany({ ...newCompanyData, address: convertToFrontEndAddress(newCompanyData.address as any), }));
     }
     return true;
   } catch (error: any) {
@@ -400,11 +437,29 @@ const getUserCompanyContactPersons = (id: number) => async (dispatch: AppDispatc
   const { token } = getState().general;
   try {
     const res = await axios.get(`/employer/company_contact_persons/${id}/`, { headers: dynamicHeaders({ token }) });
-    return res.data;
+
+    const updatedContactPersons = res.data.map((contact: { tempId: number; }) => ({
+      ...contact,
+      tempId: contact.tempId || Math.floor(Math.random() * 100000000000)
+    }));
+
+    return updatedContactPersons;
   } catch (error: any) {
     return await errorHandler({ error, returnDefaulValue: null, dispatch, getState, caller: getUserCompanyContactPersons.bind(this, id) });
   }
 };
+
+const getUserCompanyOtherLocations = (id: number) => async (dispatch: AppDispatch, getState: () => rootState) => {
+  const { token } = getState().general;
+  try {
+    const res = await axios.get(`/employer/other_locations/${id}/`, { headers: dynamicHeaders({ token }) });
+    
+    return res.data;
+  } catch (error: any) {
+    return await errorHandler({ error, returnDefaulValue: null, dispatch, getState, caller: getUserCompanyOtherLocations.bind(this, id) });
+  }
+};
+
 
 const getCompanyRegistrationData = (nip: string) => async (dispatch: AppDispatch, getState: () => rootState) => {
   const { token } = getState().general;
@@ -426,4 +481,5 @@ export default {
   getUserCompanyContactPersons,
   deleteUserCompany,
   getCompanyRegistrationData,
+  getUserCompanyOtherLocations,
 }

@@ -9,7 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import generalServices from '../../services/generalServices';
-import { ContactPersonType, MediaType } from '../../store/reducers/types';
+import { ContactPersonType, MediaType, OtherCompanyLocationType } from '../../store/reducers/types';
 import candidatesServices from '../../services/candidatesServices';
 import companyServices from '../../services/companyServices';
 import { pl, registerTranslation as datePickerLocaleConfig } from '../modified_modules/react-native-paper-dates';
@@ -24,6 +24,7 @@ import SnackbarMessage from '../modals/SnackbarMessage';
 import UserShouldHaveCompanyModal from '../modals/UserShouldHaveCompanyModal';
 import DraftFormModal from '../modals/DraftFormModal';
 import ScreenExitLock from './ScreenExitLock';
+import { convertToFrontEndCompanyOtherLocations } from '../../hooks/convertCompanyOtherLocations';
 
 calendarLocaleConfig();
 geocoder.fallbackToGoogle('AIzaSyCuD83IZtlNNM3sxn9Hac4YSOXkRZurb9c');
@@ -93,6 +94,7 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
       let photos: MediaType[] | null = null;
       let certificates: MediaType[] | null = null;
       let contactPersons: ContactPersonType[] = [];
+      let other_locations: OtherCompanyLocationType[] = [];
 
       dispatch(candidatesServices.getCandidateMarks(userCompany.id));
       dispatch(candidatesServices.getCandidateNotes(userCompany.id));
@@ -116,20 +118,27 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
           ...(userCompany.contactPersons === undefined ? [
             dispatch(companyServices.getUserCompanyContactPersons(userCompany.id))
           ] : []),
+          ...(userCompany.other_locations === undefined ? [
+            dispatch(companyServices.getUserCompanyOtherLocations(userCompany.id))
+          ] : []),
         ]).then((res) => {
           const [getLogo,
             // getVideo, 
-            getPhotos, getCertificates, getcompanyContactPersons] = res as any;
+            getPhotos, getCertificates, getcompanyContactPersons, getCompanyOtherLocations] = res as any;
           if (getLogo) logo = getLogo;
           // if (getVideo) video = getVideo;
           if (getPhotos && getPhotos.length) photos = getPhotos;
           if (getCertificates && getCertificates.length) certificates = getCertificates;
           if (getcompanyContactPersons && getcompanyContactPersons.length) contactPersons = getcompanyContactPersons;
+          if (getCertificates && getCertificates.length) certificates = getCertificates;
+          if (getCompanyOtherLocations && getCompanyOtherLocations.length) other_locations = getCompanyOtherLocations;
           setUserCompany({
             ...userCompany,
             square_footage: userCompany.square_footage ? userCompany.square_footage.replace(/\.00\b/g, "") : null,
             address: convertToFrontEndAddress(userCompany.address as any),
-            logo, photos, certificates, contactPersons
+            other_locations: convertToFrontEndCompanyOtherLocations(other_locations, contactPersons),
+            contactPersons: contactPersons,
+            logo, photos, certificates,
             // video, 
           });
         }).catch(() => { });
