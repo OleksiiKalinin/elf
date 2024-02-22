@@ -7,10 +7,12 @@ import Button from '../molecules/Button';
 import Typography from '../atoms/Typography';
 import Popover from '../molecules/Popover';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
+import useShadow from '../../hooks/useShadow';
 
-export type FormFieldType = {
-  name: string,
+export type FormFieldType<T = string> = {
+  name: T,
   isValid: boolean,
+  isEmpty?: boolean,
   required?: boolean,
   value?: any,
   unpromoted?: boolean,
@@ -18,21 +20,24 @@ export type FormFieldType = {
 
 type FormProgressBarProps = ({
   fields: FormFieldType[],
+  /**0 will return {} empty object (no shadow), shadow values from 1 to 24 (any value below or above will be ignored and rounded to nearest edge) */
+  shadowDepth?: Parameters<typeof useShadow>[0],
+} & ({
   giftInfoText?: {
     requiredFields: string,
     optionalFields: string,
   },
   giftInfo?: never,
 } | {
-  fields: FormFieldType[],
   giftInfoText?: never,
   giftInfo?: React.ReactNode,
-});
+}));
 
 const FormProgressBar: FC<FormProgressBarProps> = ({
   fields,
   giftInfoText,
   giftInfo,
+  shadowDepth = 0,
 }) => {
   const [progressBarWidth, setProgressBarWidth] = useState(0);
   const [stepWidth, setItemWidth] = useState(0);
@@ -76,7 +81,7 @@ const FormProgressBar: FC<FormProgressBarProps> = ({
     return (
       <>
         <Separator />
-        <View style={{ paddingHorizontal }}>
+        <View style={{ paddingHorizontal, ...useShadow(shadowDepth) }}>
           <View style={styles.ProgressBarContainer}>
             {(!!requiredFields.length && stepWidth > 0) &&
               <View style={styles.ProgressBar}>

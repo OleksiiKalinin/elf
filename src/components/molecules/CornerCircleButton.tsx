@@ -24,16 +24,15 @@ const CornerCircleButton: React.FC<{ onPress: ((event: GestureResponderEvent) =>
                 web: 20 + (windowSizes.width > 768 ? (windowSizes.width - 768) / 2 : 0),
             }),
             zIndex: 1,
+            width: 48,
+            height: 48,
+            borderRadius: 48 / 2,
+            overflow: 'hidden',
+            ...useShadow(6),
         }}>
             <Button
                 variant='TouchableOpacity'
                 onPress={onPress}
-                style={{
-                    width: 49,
-                    height: 49,
-                    borderRadius: 49 / 2,
-                    ...useShadow(10)
-                }}
             >
                 <SvgIcon icon='addBig' />
             </Button>

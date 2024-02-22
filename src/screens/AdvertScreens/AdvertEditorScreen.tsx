@@ -40,6 +40,7 @@ import MainDataCard from '../ProfileScreens/CompanyScreenRoutes/MainDataCard/Mai
 import { WebView } from 'react-native-webview';
 import HorizontalButtonsSelector from '../../components/molecules/HorizontalButtonsSelector';
 import FormProgressBar, { FormFieldType } from '../../components/organismes/FormProgressBar';
+import FieldStatusCircle from '../../components/atoms/FieldStatusCircle';
 
 const dutiesList = [
   {
@@ -289,6 +290,8 @@ const salarySetsByContractType: {
 
 const contractTypeCategories = [[2, 4], [3], [5]];
 
+type FieldsType = FormFieldType<keyof NewUserAdvertType | 'trial' | 'working_hours'>;
+
 const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial, stepInitial }) => {
   const dispatch = useTypedDispatch();
   const router = useRouter();
@@ -333,7 +336,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
     working_hour_up: null,
   });
   const prevAdvertData = useRef<NewUserAdvertType>(advertData);
-  const [fields, setFields] = useState<FormFieldType[]>([]);
+  const [fields, setFields] = useState<FieldsType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [woCV, setwoCV] = useState<boolean>(false);
   // ssr fix
@@ -349,38 +352,51 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
   const [mode, setMode] = useState<'draft' | 'edit' | 'new'>('new');
   const [isValid, setIsValid] = useState<'toSaveDraft' | 'toCreateAdvert' | false>(false);
   const [deleteSubView, setDeleteSubView] = useState<{ name: keyof NewUserAdvertType, value: any, text: string } | null>(null);
-  const [showTips, setShowTips] = useState<boolean>(false);
+  const [showTips, setShowTips] = useState<boolean>(true);
 
   const selectedLanguages = useMemo(() => {
     return languages.filter(item => advertData.known_languages_id.includes(item.id));
   }, [advertData.known_languages_id, languages]);
 
   useEffect(() => {
-    const { job_position_id, trial_type_id, trial_time_id, working_hour_down, working_hour_up, known_languages_id, location, job_experience_id, job_mode_id, job_start_id, description, duties_ids, benefits_ids, requirements_ids } = advertData;
-
-    const fields: FormFieldType[] = [
-      { name: 'job_position_id', value: job_position_id, isValid: isNumber(job_position_id), required: true },
-      { name: 'location', value: location, isValid: !!location, required: true },
-      { name: 'job_experience_id', value: job_experience_id, isValid: isNumber(job_experience_id), required: true },
-      { name: 'job_mode_id', value: job_mode_id, isValid: isNumber(job_mode_id), required: true },
-      { name: 'job_start_id', value: job_start_id, isValid: isNumber(job_start_id), required: true },
-      //stawka
-      { name: 'description', value: description, isValid: !!description },
-      { name: 'trial', value: !!(trial_type_id && trial_time_id), isValid: !!(trial_type_id && trial_time_id) },
-      { name: 'working_hours', value: !!(working_hour_down && working_hour_up), isValid: !!(working_hour_down && working_hour_up) },
-      { name: 'duties_ids', value: duties_ids, isValid: !!duties_ids.length },
-      { name: 'languages', value: known_languages_id, isValid: !!known_languages_id.length },
-      { name: 'requirements_ids', value: requirements_ids, isValid: !!requirements_ids.length },
-      { name: 'benefits_ids', value: benefits_ids, isValid: !!benefits_ids.length },
-    ];
-
-    setFields(fields);
+    const { job_position_id, salary, trial_type_id, trial_time_id, working_hour_down, working_hour_up, known_languages_id, location, job_experience_id, job_mode_id, job_start_id, description, duties_ids, benefits_ids, requirements_ids } = advertData;
+    setFields([
+      { name: 'job_position_id', isEmpty: job_position_id === null, isValid: isNumber(job_position_id), required: true },
+      { name: 'location', isEmpty: location === null, isValid: !!location, required: true },
+      { name: 'job_experience_id', isEmpty: job_experience_id === null, isValid: isNumber(job_experience_id), required: true },
+      { name: 'job_mode_id', isEmpty: job_mode_id === null, isValid: isNumber(job_mode_id), required: true },
+      { name: 'job_start_id', isEmpty: job_start_id === null, isValid: isNumber(job_start_id), required: true },
+      {
+        name: 'salary',
+        isEmpty: !salary.length || salary.every(e => !isNumber(e.type_of_contract_id)),
+        isValid: Boolean(
+          !!salary.length &&
+          salary.every(e => Boolean(
+            isNumber(e.type_of_contract_id) &&
+            !!e.salary_amount_low &&
+            !!e.salary_amount_up &&
+            (Number(e.salary_amount_low) <= Number(e.salary_amount_up)))
+          ) &&
+          Boolean(
+            salary.length < 2 ||
+            !contractTypeCategories.find(cat => salary.every(s => s.type_of_contract_id && cat.includes(s.type_of_contract_id)))
+          )
+        )
+      },
+      { name: 'description', isEmpty: description === null, isValid: !!description },
+      { name: 'trial', isEmpty: !(trial_type_id && trial_time_id), isValid: !!(trial_type_id && trial_time_id) },
+      { name: 'working_hours', isEmpty: !(working_hour_down && working_hour_up), isValid: !!(working_hour_down && working_hour_up) },
+      { name: 'duties_ids', isEmpty: !duties_ids.length, isValid: !!duties_ids.length },
+      { name: 'known_languages_id', isEmpty: !known_languages_id.length, isValid: !!known_languages_id.length },
+      { name: 'requirements_ids', isEmpty: !requirements_ids.length, isValid: !!requirements_ids.length },
+      { name: 'benefits_ids', isEmpty: !benefits_ids.length, isValid: !!benefits_ids.length },
+    ]);
     setUnsavedData(!isEqual(prevAdvertData.current, advertData));
   }, [advertData]);
 
-  useEffect(() => {
-    console.log(advertData);
-  }, [advertData]);
+  // useEffect(() => {
+  //   console.log(advertData);
+  // }, [advertData]);
 
   useEffect(() => {
     if (stepInitialParam && stepsOrder.includes(stepInitialParam)) {
@@ -663,6 +679,11 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
     });
   };
 
+  const isFieldValid = (fieldName: FieldsType['name']) => {
+    const fieldIndex = fields.findIndex(item => item.name === fieldName);
+    return fieldIndex !== -1 && fields[fieldIndex].isValid;
+  };
+
   return (
     <ScreenHeaderProvider
       title={advertExists ? existedAdvertHeaders[step] : newAdvertHeaders[step]}
@@ -674,6 +695,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
       })}
     >
       <FormProgressBar
+        shadowDepth={8}
         fields={fields}
         giftInfoText={{
           requiredFields: 'Uzupełnij podstawowe pola, aby zakończyć proces tworzenia ogłoszenia.',
@@ -694,7 +716,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           <View style={{ marginLeft: 19, marginTop: 32, marginBottom: 16 }}>
             <Typography weight="Bold" size={20}>Podstawowe</Typography>
           </View>
-          {!isNumber(advertData.job_position_id) && <Separator />}
+          {!isFieldValid('job_position_id') && <Separator />}
           <Button
             variant='TouchableOpacity'
             onPress={() => router.push({
@@ -704,21 +726,27 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
             })}
             style={{
               flexDirection: 'row', padding: 19,
-              ...(isNumber(advertData.job_position_id) ? { backgroundColor: Colors.White } : {})
+              ...(isFieldValid('job_position_id') ? { backgroundColor: Colors.White } : {})
             }}
           >
+            <FieldStatusCircle
+              status={isFieldValid('job_position_id')}
+              warning={showTips && !isFieldValid('job_position_id')}
+            />
             <View style={{ flex: 1, justifyContent: 'center' }}>
-              <Typography variant='h4' weight='SemiBold'>{currentPositions.find(curr => curr.id === advertData.job_position_id)?.name || 'Wybierz stanowisko*'}</Typography>
+              <Typography size={20}>{currentPositions.find(curr => curr.id === advertData.job_position_id)?.name || 'Wybierz stanowisko*'}</Typography>
             </View>
             <View style={{ justifyContent: 'center' }}>
               <SvgIcon icon={'arrowRightSmall'} fill={Colors.Basic500} />
             </View>
           </Button>
-          {!isNumber(advertData.job_position_id) && <Separator />}
+          {!isFieldValid('job_position_id') && <Separator />}
           <View style={{ marginBottom: 24 }}>
             <MapPreview
               hideMap
               rightIcon='arrowRightSmall'
+              statusCircle
+              statusWarning={showTips && !isFieldValid('location')}
               place={advertData.location?.formattedAddress}
               latitude={advertData.location?.position?.lat}
               longitude={advertData.location?.position?.lng}
@@ -735,11 +763,12 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           </View>
           <Separator />
           <Accordion
-            title={<View style={{ flexDirection: "row", alignItems: 'center' }}>
+            title={<View style={{ flexDirection: "row", alignItems: 'center', height: '100%' }}>
+              <FieldStatusCircle
+                status={isFieldValid('job_experience_id')}
+                warning={showTips && !isFieldValid('job_experience_id')}
+              />
               <Typography variant='h5'>Doświadczenie*</Typography>
-              {isNumber(advertData.job_experience_id) && <View style={{ marginLeft: 10 }}>
-                <SvgIcon icon='doneCircleGreen' />
-              </View>}
             </View>}
           >
             <HorizontalButtonsSelector
@@ -751,11 +780,12 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           </Accordion>
           <Separator />
           <Accordion
-            title={<View style={{ flexDirection: "row", alignItems: 'center' }}>
+            title={<View style={{ flexDirection: "row", alignItems: 'center', height: '100%' }}>
+              <FieldStatusCircle
+                status={isFieldValid('job_mode_id')}
+                warning={showTips && !isFieldValid('job_mode_id')}
+              />
               <Typography variant='h5'>Tryb pracy*</Typography>
-              {isNumber(advertData.job_mode_id) && <View style={{ marginLeft: 10 }}>
-                <SvgIcon icon='doneCircleGreen' />
-              </View>}
             </View>}
           >
             <HorizontalButtonsSelector
@@ -767,11 +797,12 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           </Accordion>
           <Separator />
           <Accordion
-            title={<View style={{ flexDirection: "row", alignItems: 'center' }}>
+            title={<View style={{ flexDirection: "row", alignItems: 'center', height: '100%' }}>
+              <FieldStatusCircle
+                status={isFieldValid('job_start_id')}
+                warning={showTips && !isFieldValid('job_start_id')}
+              />
               <Typography variant='h5'>Termin rozpoczęcia pracy*</Typography>
-              {isNumber(advertData.job_start_id) && <View style={{ marginLeft: 10 }}>
-                <SvgIcon icon='doneCircleGreen' />
-              </View>}
             </View>}
           >
             <HorizontalButtonsSelector
@@ -783,11 +814,12 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           </Accordion>
           <Separator />
           <Accordion
-            title={<View style={{ flexDirection: "row", alignItems: 'center' }}>
+            title={<View style={{ flexDirection: "row", alignItems: 'center', height: '100%' }}>
+              <FieldStatusCircle
+                status={isFieldValid('salary')}
+                warning={showTips && !isFieldValid('salary')}
+              />
               <Typography variant='h5'>Stawka*</Typography>
-              {/* {isNumber(advertData.job_start_id) && <View style={{ marginLeft: 10 }}>
-              <SvgIcon icon='doneCircleGreen' />
-            </View>} */}
             </View>}
           >
             <View style={{ marginBottom: 24 }}>
@@ -854,34 +886,34 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                         ))}
                       </View>
                     </View>
-                    <View style={{ alignItems: "flex-start" }}>
-                      <Button
-                        variant='TouchableOpacity'
-                        style={{ paddingHorizontal: 16, paddingBottom: 14 }}
-                        onPress={() => changeAdvertSalaryHandler({ id: salary_id, toDelete: true })}
-                      >
-                        <Typography color={Colors.Danger} weight='SemiBold' style={{ textDecorationLine: 'underline' }}>
-                          Usuń stawkę
-                        </Typography>
-                      </Button>
-                    </View>
                   </>}
+                  <View style={{ alignItems: "flex-start" }}>
+                    <Button
+                      variant='TouchableOpacity'
+                      style={{ paddingHorizontal: 16, paddingBottom: 14 }}
+                      onPress={() => changeAdvertSalaryHandler({ id: salary_id, toDelete: true })}
+                    >
+                      <Typography color={Colors.Danger} weight='SemiBold' style={{ textDecorationLine: 'underline' }}>
+                        Usuń stawkę
+                      </Typography>
+                    </Button>
+                  </View>
                 </View>
                 {(index < thisArray.length - 1) && <View style={{ marginHorizontal: 19, marginBottom: 10, marginTop: -6 }}>
                   <Typography color={Colors.Basic600} weight='SemiBold' textAlign='center'>{'-lub-'}</Typography>
                 </View>}
               </>))}
-              <View style={{ alignItems: "flex-start" }}>
+              {isFieldValid('salary') && advertData.salary.length < 2 && <View style={{ alignItems: "flex-start" }}>
                 <Button
                   variant='TouchableOpacity'
                   style={{ paddingHorizontal: 19 }}
                   onPress={() => changeAdvertSalaryHandler({ createNew: true })}
                 >
                   <Typography color={Colors.Blue500} weight='SemiBold' style={{ textDecorationLine: 'underline' }}>
-                    Dodaj kolejną
+                    {!!advertData.salary.length ? 'Dodaj kolejną' : 'Dodaj stawkę'}
                   </Typography>
                 </Button>
-              </View>
+              </View>}
             </View>
           </Accordion>
           <Separator />
@@ -895,7 +927,11 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
             <>
               <View style={{ paddingHorizontal: 19, paddingVertical: 12 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <Typography variant='h5' weight='Bold'>
+                  <FieldStatusCircle
+                    status={isFieldValid('description')}
+                    warning={showTips && !isFieldValid('description')}
+                  />
+                  <Typography variant='h5' weight='Bold' style={{ flex: 1 }}>
                     Opis
                   </Typography>
                   <Button
@@ -933,18 +969,25 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
               arrowRight
               onPress={() => goToCompanyDescriptionScreen()}
             >
-              <Typography variant='h5'>
-                Opis
-              </Typography>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <FieldStatusCircle
+                  status={isFieldValid('description')}
+                  warning={showTips && !isFieldValid('description')}
+                />
+                <Typography variant='h5'>
+                  Opis
+                </Typography>
+              </View>
             </Button>
           }
           <Separator />
           <Accordion
-            title={<View style={{ flexDirection: "row", alignItems: 'center' }}>
+            title={<View style={{ flexDirection: "row", alignItems: 'center', height: '100%' }}>
+              <FieldStatusCircle
+                status={isFieldValid('trial')}
+                warning={showTips && !isFieldValid('trial')}
+              />
               <Typography variant='h5'>Okres próbny</Typography>
-              {isNumber(advertData.trial_type_id) && <View style={{ marginLeft: 10 }}>
-                <SvgIcon icon='doneCircleGreen' />
-              </View>}
             </View>}
           >
             <HorizontalButtonsSelector
@@ -971,11 +1014,12 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           </Accordion>
           <Separator />
           <Accordion
-            title={<View style={{ flexDirection: "row", alignItems: 'center' }}>
+            title={<View style={{ flexDirection: "row", alignItems: 'center', height: '100%' }}>
+              <FieldStatusCircle
+                status={isFieldValid('working_hours')}
+                warning={showTips && !isFieldValid('working_hours')}
+              />
               <Typography variant='h5'>Godziny pracy</Typography>
-              {/* {isNumber(advertData.type_of_contract_id) && <View style={{ marginLeft: 10 }}>
-              <SvgIcon icon='doneCircleGreen' />
-            </View>} */}
             </View>}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 19, maxWidth: 320, marginBottom: 24 }}>
@@ -1028,7 +1072,11 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
             <>
               <View style={{ paddingHorizontal: 19, paddingVertical: 12 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <Typography variant='h5' weight='Bold'>
+                  <FieldStatusCircle
+                    status={isFieldValid('duties_ids')}
+                    warning={showTips && !isFieldValid('duties_ids')}
+                  />
+                  <Typography variant='h5' weight='Bold' style={{ flex: 1 }}>
                     Zakres obowiązków
                   </Typography>
                   <Button
@@ -1042,7 +1090,6 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                 </View>
                 <Typography
                   numberOfLines={expanded.duties_ids ? undefined : 3}
-
                 >
                   {advertData.duties_ids.map((e, i, array) => <Typography color={Colors.Basic600}>
                     &#x2022;{' '}{e}{i === array.length - 1 ? '' : '\n'}
@@ -1068,16 +1115,26 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
               arrowRight
               onPress={() => goToSelectDutiesScreen()}
             >
-              <Typography variant='h5'>
-                Zakres obowiązków
-              </Typography>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <FieldStatusCircle
+                  status={isFieldValid('duties_ids')}
+                  warning={showTips && !isFieldValid('duties_ids')}
+                />
+                <Typography variant='h5'>
+                  Zakres obowiązków
+                </Typography>
+              </View>
             </Button>
           }
           <Separator />
           {advertData.known_languages_id.length ?
             <View style={{ paddingHorizontal: 19, paddingVertical: 12 }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                <Typography variant='h5' weight='Bold'>
+                <FieldStatusCircle
+                  status={isFieldValid('known_languages_id')}
+                  warning={showTips && !isFieldValid('known_languages_id')}
+                />
+                <Typography variant='h5' weight='Bold' style={{ flex: 1 }}>
                   Preferowane języki w komunikacji
                 </Typography>
                 <Button
@@ -1099,9 +1156,15 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
               arrowRight
               onPress={() => goToSelectLanguagesScreen()}
             >
-              <Typography variant='h5'>
-                Preferowane języki w komunikacji
-              </Typography>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <FieldStatusCircle
+                  status={isFieldValid('known_languages_id')}
+                  warning={showTips && !isFieldValid('known_languages_id')}
+                />
+                <Typography variant='h5'>
+                  Preferowane języki w komunikacji
+                </Typography>
+              </View>
             </Button>
           }
           <Separator />
@@ -1109,7 +1172,11 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
             <>
               <View style={{ paddingHorizontal: 19, paddingVertical: 12 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <Typography variant='h5' weight='Bold'>
+                  <FieldStatusCircle
+                    status={isFieldValid('requirements_ids')}
+                    warning={showTips && !isFieldValid('requirements_ids')}
+                  />
+                  <Typography variant='h5' weight='Bold' style={{ flex: 1 }}>
                     Wymagania
                   </Typography>
                   <Button
@@ -1148,9 +1215,15 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
               arrowRight
               onPress={() => goToSelectRequirementsScreen()}
             >
-              <Typography variant='h5'>
-                Wymagania
-              </Typography>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <FieldStatusCircle
+                  status={isFieldValid('requirements_ids')}
+                  warning={showTips && !isFieldValid('requirements_ids')}
+                />
+                <Typography variant='h5'>
+                  Wymagania
+                </Typography>
+              </View>
             </Button>
           }
           <Separator />
@@ -1158,7 +1231,11 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
             <>
               <View style={{ paddingHorizontal: 19, paddingVertical: 12 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <Typography variant='h5' weight='Bold'>
+                  <FieldStatusCircle
+                    status={isFieldValid('benefits_ids')}
+                    warning={showTips && !isFieldValid('benefits_ids')}
+                  />
+                  <Typography variant='h5' weight='Bold' style={{ flex: 1 }}>
                     Benefity
                   </Typography>
                   <Button
@@ -1197,9 +1274,15 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
               arrowRight
               onPress={() => goToSelectBenefitsScreen()}
             >
-              <Typography variant='h5'>
-                Benefity
-              </Typography>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <FieldStatusCircle
+                  status={isFieldValid('benefits_ids')}
+                  warning={showTips && !isFieldValid('benefits_ids')}
+                />
+                <Typography variant='h5'>
+                  Benefity
+                </Typography>
+              </View>
             </Button>
           }
           <Separator />

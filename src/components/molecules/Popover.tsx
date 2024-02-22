@@ -51,7 +51,7 @@ const Popover: FC<Props> = ({ triggerComponent, closeButtonComponent, children, 
           setOpen(true);
           resizedTimer.current = null;
           wasOpened.current = false;
-        }, 60);
+        }, 150);
       }
     });
   }, []);

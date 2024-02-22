@@ -11,17 +11,17 @@ import {
 
 const AddBigIcon = (props: SvgProps) => (
     <Svg
-        width={49}
-        height={49}
+        width={48}
+        height={48}
         {...props}
         fill="none"
     >
-        <Circle cx={24.861} cy={24.361} r={24} fill="#4A32CD" />
+        <Circle cx={24} cy={24} r={24} fill="#4A32CD" />
         <Path
             stroke="#fff"
             strokeLinecap="round"
             strokeWidth={2}
-            d="M24.861 16.361v16M16.861 24.361h16"
+            d="M24.600 16.361v16M16.861 24h16"
         />
     </Svg>
 )
