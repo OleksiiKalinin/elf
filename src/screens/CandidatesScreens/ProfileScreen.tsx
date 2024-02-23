@@ -96,6 +96,7 @@ const companyExample: CompanyDataType = {
       path: 'https://img.freepik.com/darmowe-wektory/szablon-certyfikatu_1035-3901.jpg?w=740&t=st=1703257065~exp=1703257665~hmac=0d096cb9f494ed42f182f7b4360eb554f2eb14efc8b3f753a80c0072a4ab29ec',
     },
   ],
+  other_locations: []
 };
 
 /* type InitialParams = NonNullable<ProfileStackParamList['default']['ProfileScreen']>; */

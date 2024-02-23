@@ -16,10 +16,11 @@ const createUserCompany = (props: {
   companyPhotos: MediaType[],
   companyCertificates: MediaType[],
   contactPersons: ContactPersonType[],
+  companyOtherLocations: OtherCompanyLocationType[],
 }) => async (dispatch: AppDispatch, getState: () => rootState) => {
   const { token } = getState().general;
   try {
-    const { companyCertificates, companyData, companyLogo, /* companyVideo,  */companyPhotos, contactPersons: companyContactPersons } = props;
+    const { companyCertificates, companyData, companyLogo, /* companyVideo,  */companyPhotos, contactPersons: companyContactPersons, companyOtherLocations: otherLocations } = props;
     const newCompany = await axios.post(`/employer/companies/`, [{
       ...companyData,
       address: convertToBackEndAddress(companyData.address)
@@ -35,6 +36,7 @@ const createUserCompany = (props: {
       let photos: string[] | null = null;
       let certificates: string[] | null = null;
       let contactPersons: ContactPersonType[] | null = null;
+      let other_locations: OtherCompanyLocationType[] | null = null;
 
       if (companyLogo) {
         if (Platform.OS === 'web' && companyLogo?.path) {
@@ -119,9 +121,23 @@ const createUserCompany = (props: {
         contactPersons = res.data || null;
       }
 
+      if (otherLocations.length) {
+        const getContactPersons = await dispatch(getUserCompanyContactPersons(company_id as number));
+        console.log('contactPersons', contactPersons);
+
+        const convertedOtherLocations = convertToBackEndCompanyOtherLocations(otherLocations, getContactPersons, company_id);
+
+        await axios.post(`/employer/other_locations/`, convertedOtherLocations.map(({ id, ...el }) => ({ ...el, company_id })), { headers: dynamicHeaders({ token }) }
+        ).then(async (res) => {
+          const getContactPersons = await dispatch(getUserCompanyContactPersons(company_id));
+          contactPersons = getContactPersons;
+          other_locations = convertToFrontEndCompanyOtherLocations(res.data, getContactPersons);
+        })
+      };
+
       console.log(newCompany.data[0]);
 
-      await dispatch(generalActions.setUserCompany({ ...newCompany.data[0], address: convertToFrontEndAddress(newCompany.data[0].address), logo, video, photos, certificates, contactPersons }));
+      await dispatch(generalActions.setUserCompany({ ...newCompany.data[0], address: convertToFrontEndAddress(newCompany.data[0].address), logo, video, photos, certificates, contactPersons, other_locations }));
     }
     return true;
   } catch (error: any) {
@@ -137,11 +153,11 @@ const editUserCompany = (props: {
   companyPhotos: MediaType[],
   companyCertificates: MediaType[],
   contactPersons: ContactPersonType[],
-  otherLocations: OtherCompanyLocationType[],
+  companyOtherLocations: OtherCompanyLocationType[],
 }) => async (dispatch: AppDispatch, getState: () => rootState) => {
   const { token } = getState().general;
   try {
-    let { companyCertificates, companyData: newCompanyData, oldCompanyData, companyLogo, /* companyVideo, */ companyPhotos, contactPersons: companyContactPersons, otherLocations } = props;
+    let { companyCertificates, companyData: newCompanyData, oldCompanyData, companyLogo, /* companyVideo, */ companyPhotos, contactPersons: companyContactPersons, companyOtherLocations: otherLocations } = props;
     if (oldCompanyData.id) {
       {
         const { photos, certificates, id, logo, contactPersons, ...newMainCompanyData } = newCompanyData;
@@ -246,12 +262,6 @@ const editUserCompany = (props: {
         // @ts-ignore
         companyPhotosFormData.append("company_id", oldCompanyData.id);
 
-        /*         console.log('FormData:', ...companyPhotosFormData as any)
-                console.log('Order:', orderData);
-                console.log('All:', companyCertificates);
-                console.log('Push:', forPushArray);
-                console.log('Delete:', forDeleteArray); */
-
         await Promise.all([
           ...(forPushArray.length ? [axios.post(`/employer/company_photos/`, companyPhotosFormData, {
             headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
@@ -295,12 +305,6 @@ const editUserCompany = (props: {
         // @ts-ignore
         companyCertificatesFormData.append("company_id", oldCompanyData.id);
 
-        /*         console.log('FormData:', ...companyCertificatesFormData as any) 
-                console.log('Order:', orderData);
-                console.log('All:', companyCertificates);
-                console.log('Push:', forPushArray);
-                console.log('Delete:', forDeleteArray);
-         */
         await Promise.all([
           ...(forPushArray.length ? [axios.post(`/employer/company_certificates/`, companyCertificatesFormData, {
             headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
@@ -340,23 +344,18 @@ const editUserCompany = (props: {
       };
 
       if (!Lodash.isEqual(oldCompanyData.other_locations, otherLocations)) {
-        console.log('otherLocations', otherLocations);
-
-        const contactPersons = await dispatch(getUserCompanyContactPersons(oldCompanyData.id as number));
-        console.log('contactPersons', contactPersons);
-
-        const filteredOtherLocations = convertToBackEndCompanyOtherLocations(otherLocations, contactPersons);
-
-        console.log('newArray', filteredOtherLocations);
-
         const company_id = newCompanyData.id;
+        const getContactPersons = await dispatch(getUserCompanyContactPersons(oldCompanyData.id as number));
 
-        const forPushArray = filteredOtherLocations.filter(item => !item.id).map(item => ({ ...item, company_id }));
+        const convertedOtherLocations = convertToBackEndCompanyOtherLocations(otherLocations, getContactPersons, company_id);
+        const convertedOldOtherLocations = convertToBackEndCompanyOtherLocations(oldCompanyData.other_locations, getContactPersons, company_id);
 
-        const forUpdateArray = filteredOtherLocations.filter(item => item.id && !Lodash.isEqual(item, oldCompanyData.other_locations.find(el => el.id === item.id)));
+        const forPushArray = convertedOtherLocations.filter(item => !item.id).map(item => ({ ...item, company_id }));
 
-        const forDeleteArray = oldCompanyData.other_locations?.reduce<number[]>((prev, curr) => {
-          if (curr.id && !filteredOtherLocations.find(el => el.id === curr.id)) return [...prev, curr.id];
+        const forUpdateArray = convertedOtherLocations.filter(item => item.id && !Lodash.isEqual(item, convertedOldOtherLocations.find(el => el.id === item.id)));
+
+        const forDeleteArray = convertedOldOtherLocations?.reduce<number[]>((prev, curr) => {
+          if (curr.id && !convertedOtherLocations.find(el => el.id === curr.id)) return [...prev, curr.id];
           else return prev;
         }, []) || [];
 
@@ -369,8 +368,11 @@ const editUserCompany = (props: {
             axios.put(`/employer/other_locations/${item.id}/`, item, { headers: dynamicHeaders({ token }) }).catch(() => { })
           )),
         ]).then(async () => {
+          const getContactPersons = await dispatch(getUserCompanyContactPersons(oldCompanyData.id as number));
+          console.log('contactPersons', getContactPersons);
           const getOtherLocations = await dispatch(getUserCompanyOtherLocations(oldCompanyData.id as number));
-          newCompanyData.other_locations = convertToFrontEndCompanyOtherLocations(getOtherLocations, contactPersons);
+          newCompanyData.contactPersons = getContactPersons;
+          newCompanyData.other_locations = convertToFrontEndCompanyOtherLocations(getOtherLocations, getContactPersons);
         });
       };
 
@@ -453,13 +455,12 @@ const getUserCompanyOtherLocations = (id: number) => async (dispatch: AppDispatc
   const { token } = getState().general;
   try {
     const res = await axios.get(`/employer/other_locations/${id}/`, { headers: dynamicHeaders({ token }) });
-    
+
     return res.data;
   } catch (error: any) {
     return await errorHandler({ error, returnDefaulValue: null, dispatch, getState, caller: getUserCompanyOtherLocations.bind(this, id) });
   }
 };
-
 
 const getCompanyRegistrationData = (nip: string) => async (dispatch: AppDispatch, getState: () => rootState) => {
   const { token } = getState().general;

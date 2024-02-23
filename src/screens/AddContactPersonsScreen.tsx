@@ -16,7 +16,9 @@ import { isEqual, isString } from 'lodash';
 import { useActions } from '../hooks/useActions';
 import { useTypedSelector } from '../hooks/useTypedSelector';
 import { uuidv4 } from 'react-native-compressor';
-import { Trash2 } from '@tamagui/lucide-icons';
+import { Pencil, Trash2 } from '@tamagui/lucide-icons';
+import SvgIcon from '../components/atoms/SvgIcon';
+
 
 const emptyPerson: ContactPersonType = {
   email: null,
@@ -25,6 +27,14 @@ const emptyPerson: ContactPersonType = {
   preferred_mobile_number: false,
   preferred_email: false,
 };
+
+type ContactPersonItemType = ({
+  mode: 'new',
+  index?: never,
+} | {
+  mode: 'edit',
+  index: number,
+}) & ContactPersonType;
 
 export type AddContactPersonsScreenProps = {
   initialContactPersons: ContactPersonType[],
@@ -46,16 +56,24 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
     return orderA - orderB;
   }) : [emptyPerson]);
   const [unsavedData, setUnsavedData] = useState<boolean>(false);
+  const [mode, setMode] = useState<'edit' | 'select'>('select');
+  const [inEditing, setInEditing] = useState<number[]>([]);
   const [showTips, setShowTips] = useState<boolean>(false);
   const [showTimepicker, setShowTimepicker] = useState<'start' | 'end' | false>(false);
   const [isDataValid, setIsDataValid] = useState<boolean>(false);
+  const [newPerson, setNewPerson] = useState<ContactPersonType | null>(null);
+  const [selectedPersons, setSelectedPersons] = useState<number[]>([]);
   const { backToRemoveParams } = useRouter();
   const { blockedScreen } = useTypedSelector(s => s.general);
-  const { setBlockedScreen } = useActions();
+  const { setBlockedScreen, setSnackbarMessage } = useActions();
 
   useEffect(() => {
-    setIsDataValid(validateContactPersons());
+    setIsDataValid(validateContactPersons('list'));
   }, [contactPersons]);
+
+  useEffect(() => {
+    console.log(inEditing);
+  }, [inEditing]);
 
   useEffect(() => {
     setUnsavedData(!isEqual(oldContactPersons, contactPersons));
@@ -65,30 +83,44 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
     setBlockedScreen({ ...blockedScreen, blockedBack: unsavedData });
   }, [unsavedData]);
 
-  const validateContactPersons = (index?: number) => {
-    const array = index ? [contactPersons[index]] : contactPersons;
-
-    for (const contact of array) {
+  const validateContactPersons = (mode: 'newPerson' | 'list', index?: number) => {
+    if (mode === 'newPerson') {
       if (
-        contact.email && validateMail(contact.email)
-        && contact.mobile_number && contact.mobile_number.length === 12
-        && (contact.preferred_mobile_number || contact.preferred_email)
-      ) {
-        continue;
-      } else {
-        return false;
-      };
-    };
+        !!newPerson
+        && newPerson.email && validateMail(newPerson.email)
+        && newPerson.mobile_number && newPerson.mobile_number.length === 12
+        && (newPerson.preferred_mobile_number || newPerson.preferred_email)
+      ) return true;
+      return false;
+    } else {
+      const array = index ? [contactPersons[index]] : contactPersons;
 
-    return true;
+      for (const contact of array) {
+        if (
+          contact.email && validateMail(contact.email)
+          && contact.mobile_number && contact.mobile_number.length === 12
+          && (contact.preferred_mobile_number || contact.preferred_email)
+        ) {
+          continue;
+        } else {
+          return false;
+        };
+      };
+
+      return true;
+    };
   };
 
   const addNewContactPerson = () => {
-    setContactPersons(prev => [...prev, emptyPerson])
-
-    if (isDataValid) {
-      setShowTips(false);
+    if (!!newPerson) {
+      setContactPersons(prev => [...prev, newPerson]);
+      setNewPerson(null);
     };
+  };
+
+  const editNewPerson = (key: keyof ContactPersonType, value: any) => {
+    const editedPerson = { ...newPerson, [key]: !isString(value) ? value : value ? value.replace(/\s/g, '') : null }
+    setNewPerson(editedPerson as any)
   };
 
   const editContactPersons = (key: keyof ContactPersonType, value: any, index: number) => {
@@ -119,8 +151,20 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
     });
   };
 
+  const handleSelectedPersons = (id: number) => {
+    const mySet = new Set([...selectedPersons]);
+    if (mySet.has(id)) {
+      mySet.delete(id);
+    } else {
+      mySet.add(id);
+    }
+    setSelectedPersons([...mySet]);
+  };
+
   const handleConfirm = () => {
-    if (isDataValid) {
+    if (inEditing.length) {
+      setSnackbarMessage({ type: 'error', text: 'Dokończ edytowanie kontaktów' })
+    } else if (isDataValid) {
       const updatedContactPersons = contactPersons.map(contact => ({
         ...contact,
         tempId: contact.tempId || Math.floor(Math.random() * 100000000000)
@@ -146,155 +190,271 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
       parseInt(contactHours.substring(9, 10) === '0' ? contactHours.substring(10, 11) : contactHours.substring(9, 11));
   };
 
+  const contactListItem = (email: string, mobile_number: string, index: number) => {
+    return (
+      <>
+        <View>
+          <Typography>
+            {email}
+          </Typography>
+          <Typography>
+            {mobile_number}
+          </Typography>
+        </View>
+        <View style={styles.EditButtons}>
+          <Button
+            variant='TouchableOpacity'
+            style={styles.EditButton}
+            onPress={() => deleteContactPerson(index)}
+          >
+            <Trash2 />
+          </Button>
+          <Button
+            variant='TouchableOpacity'
+            style={styles.EditButton}
+            onPress={() => { setInEditing(prev => [...prev, index]) }}
+          >
+            <Pencil />
+          </Button>
+        </View>
+      </>
+    )
+  };
+
+  const contactPersonItem = (data: ContactPersonItemType) => {
+    const { mode, index, email, mobile_number, preferred_mobile_number, preferred_email, contact_hours } = data;
+    return (
+      <View style={styles.ContactPerson}>
+        <View style={styles.ContactPersonHeader}>
+          <Typography size={18} weight='Bold' style={{ marginVertical: 20 }}>
+            {mode === 'new' ? 'Nowy kontakt' : `Edytowanie kontaktu ${index + 1}`}
+          </Typography>
+          <Button
+            variant='TouchableOpacity'
+            onPress={() => mode === 'new' ? setNewPerson(null) : deleteContactPerson(index)}
+          >
+            <Typography color={Colors.Danger}>
+              <Trash2 />
+            </Typography>
+          </Button>
+        </View>
+        <View style={{ marginBottom: 30 }}>
+          <TextField
+            label="Email"
+            value={email || ''}
+            onChangeText={text => mode === 'new' ? editNewPerson('email', text) : editContactPersons('email', text, index)}
+            {...(showTips && (!email || !validateMail(email)) && {
+              bottomText: !email ? 'Wprowadź adres email' : 'Niepoprawny adres email',
+            })}
+          />
+        </View>
+        <View style={{ marginBottom: 20 }}>
+          <TextField
+            label='Telefon'
+            textContentType='telephoneNumber'
+            keyboardType='phone-pad'
+            mask={['+', '4', '8', ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/]}
+            activeLabel
+            value={mobile_number || ''}
+            onChangeText={(text) => mode === 'new' ? editNewPerson('mobile_number', text) : editContactPersons('mobile_number', text, index)}
+            {...(showTips && (!mobile_number || mobile_number.length < 12) && {
+              bottomText: !mobile_number ? 'Wprowadź nr telefonu' : 'Niepoprawny nr telefonu',
+            })}
+          />
+        </View>
+        <Typography weight="Bold" variant="h5" style={{ marginTop: 20 }}>
+          Preferowane formy kontaktu
+        </Typography>
+        <View style={{ marginTop: 20 }}>
+          <Separator />
+          <CheckBox
+            checked={preferred_mobile_number}
+            onCheckedChange={(value) => mode === 'new' ? editNewPerson('preferred_mobile_number', value) : editContactPersons('preferred_mobile_number', value, index)}
+            leftTextView={
+              <Typography size={16} style={{ paddingVertical: 19 }}>
+                Telefon
+              </Typography>
+            }
+            style={{ marginTop: 20 }}
+          />
+          <Separator />
+          <CheckBox
+            checked={preferred_email}
+            onCheckedChange={(value) => mode === 'new' ? editNewPerson('preferred_email', value) : editContactPersons('preferred_email', value, index)}
+            leftTextView={
+              <Typography size={16} style={{ paddingVertical: 19 }}>
+                Email
+              </Typography>
+            }
+            style={{ marginTop: 20 }}
+          />
+          <Separator />
+          {(showTips && (!preferred_email && !preferred_mobile_number)) &&
+            <Typography size={12} color={Colors.Danger}>
+              Zaznacz co najmniej jedno z pól
+            </Typography>
+          }
+        </View>
+        <View style={styles.ContactHoursHeader}>
+          <Typography weight="Bold" variant="h5">
+            Godziny kontaktu
+          </Typography>
+        </View>
+        <View style={styles.ContactHoursButtons}>
+          <View style={styles.HourButton}>
+            <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>od</Typography>
+            <Button
+              contentWeight='SemiBold'
+              contentVariant='h5'
+              variant="secondary"
+              onPress={() => setShowTimepicker('start')}
+              borderRadius={4}
+            >
+              {contact_hours?.substring(0, contact_hours.length - 6)}
+            </Button>
+          </View>
+          <View style={{ justifyContent: 'center', height: 100, width: 30, alignItems: 'center' }}>
+            <Typography weight='Bold' variant='h4' color={Colors.Basic500}>{'  -  '}</Typography>
+          </View>
+          <View style={styles.HourButton}>
+            <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>do</Typography>
+            <Button
+              contentWeight='SemiBold'
+              contentVariant='h5'
+              variant="secondary"
+              onPress={() => setShowTimepicker('end')}
+              borderRadius={4}
+            >
+              {contact_hours?.substring(6)}
+            </Button>
+          </View>
+        </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View style={{ width: mode === 'new' ? '100%' : '40%' }}>
+            <Button
+            fullwidth={false}
+              variant='text'
+              onPress={() => mode === 'new' ?
+                validateContactPersons('newPerson') ? addNewContactPerson() : setShowTips(true)
+                : validateContactPersons('list', index) ? setInEditing(prevState => prevState.filter(value => value !== index)) : setShowTips(true)
+              }
+            >
+              <Typography color={Colors.Blue500} weight='Bold'>
+                {mode === 'new' ? 'Dodaj kontakt' : 'Zaktualizuj'}
+              </Typography>
+            </Button>
+          </View>
+
+          {mode === 'edit' &&
+            <View style={{ width: '40%' }}>
+              <Button
+              fullwidth={false}
+                variant='text'
+              /* onPress={() => mode === 'new' ?
+                validateContactPersons('newPerson') ? addNewContactPerson() : setShowTips(true)
+                : validateContactPersons('list', index) ? setInEditing(prevState => prevState.filter(value => value !== index)) : setShowTips(true)
+              } */
+              >
+                <Typography color={Colors.Blue500} weight='Bold'>
+                  Anuluj
+                </Typography>
+              </Button>
+            </View>
+          }
+        </View>
+        <TimePickerModal
+          visible={!!showTimepicker}
+          onDismiss={() => setShowTimepicker(false)}
+          hours={startHours(contact_hours as any) ?? '08:00-18:00'}
+          minutes={startMinutes(contact_hours as any) ?? '08:00-18:00'}
+          onConfirm={({ hours, minutes }) => {
+            const time = `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+            if (showTimepicker === 'start') {
+              mode === 'new' ? editNewPerson('contact_hours', (time + contact_hours?.substring(5))) : editContactPersons('contact_hours', (time + contact_hours?.substring(5)), index);
+              setShowTimepicker(false);
+            } else {
+              mode === 'new' ? editNewPerson('contact_hours', (contact_hours?.substring(0, contact_hours.length - 5) + time)) : editContactPersons('contact_hours', (contact_hours?.substring(0, contact_hours.length - 5) + time), index);
+              setShowTimepicker(false);
+            };
+          }}
+        />
+      </View >
+    )
+  }
+
   return (
     <ScreenHeaderProvider title='Dane do kontaktu'>
       <ScrollView style={styles.ScrollView} contentContainerStyle={{ paddingTop: 25 }}>
-        {contactPersons.map(({ email, mobile_number, id, contact_hours, preferred_mobile_number, preferred_email }, index) => (
-          <View style={styles.ContactPerson} key={id}>
-            <View style={styles.ContactPersonHeader}>
-              <Typography size={18} weight='Bold' style={{ marginVertical: 10 }}>Osoba {index + 1}</Typography>
-              {(index !== 0 || contactPersons.length > 1) && (
-                <Button
-                  variant='TouchableOpacity'
-                  onPress={() => deleteContactPerson(index)}
-                >
-                  <Typography color={Colors.Danger}>
-                    <Trash2 />
-                  </Typography>
-                </Button>
-              )}
-            </View>
-            <View style={{ marginBottom: 30 }}>
-              <TextField
-                label="Email"
-                value={email || ''}
-                onChangeText={text => editContactPersons('email', text, index)}
-                {...(showTips && (!email || !validateMail(email)) && {
-                  bottomText: !email ? 'Wprowadź adres email' : 'Niepoprawny adres email',
-                })}
-              />
-            </View>
-            <View style={{ marginBottom: 20 }}>
-              <TextField
-                label='Telefon'
-                textContentType='telephoneNumber'
-                keyboardType='phone-pad'
-                mask={['+', '4', '8', ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/]}
-                activeLabel
-                value={mobile_number || ''}
-                onChangeText={(text) => editContactPersons('mobile_number', text, index)}
-                {...(showTips && (!mobile_number || mobile_number.length < 12) && {
-                  bottomText: !mobile_number ? 'Wprowadź nr telefonu' : 'Niepoprawny nr telefonu',
-                })}
-              />
-            </View>
-            <Typography weight="Bold" variant="h5" style={{ marginTop: 20 }}>
-              Preferowane formy kontaktu
-            </Typography>
-            <View style={{ marginTop: 20 }}>
-              <Separator />
-              <CheckBox
-                checked={preferred_mobile_number}
-                onCheckedChange={(value) => editContactPersons('preferred_mobile_number', value, index,)}
-                leftTextView={
-                  <Typography size={16} style={{ paddingVertical: 19 }}>
-                    Telefon
-                  </Typography>
-                }
-                style={{ marginTop: 20 }}
-              />
-              <Separator />
-              <CheckBox
-                checked={preferred_email}
-                onCheckedChange={(value) => editContactPersons('preferred_email', value, index,)}
-                leftTextView={
-                  <Typography size={16} style={{ paddingVertical: 19 }}>
-                    Email
-                  </Typography>
-                }
-                style={{ marginTop: 20 }}
-              />
-              <Separator />
-              {(showTips && (!preferred_email && !preferred_mobile_number)) &&
-                <Typography size={12} color={Colors.Danger}>
-                  Zaznacz co najmniej jedno z pól
-                </Typography>
-              }
-            </View>
-            <View style={styles.ContactHoursHeader}>
-              <Typography weight="Bold" variant="h5">
-                Godziny kontaktu
+        {!newPerson &&
+          <Button
+            variant='TouchableOpacity'
+            onPress={() => setNewPerson(emptyPerson)}
+            style={{ marginTop: 20 }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+              <SvgIcon icon="createCircleSmall" />
+              <Typography variant="h5" weight='Bold'>
+                {'  '}Dodaj kontakt
               </Typography>
             </View>
-            <View style={styles.ContactHoursButtons}>
-              <View style={styles.HourButton}>
-                <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>od</Typography>
-                <Button
-                  contentWeight='SemiBold'
-                  contentVariant='h5'
-                  variant="secondary"
-                  onPress={() => setShowTimepicker('start')}
-                  borderRadius={4}
-                >
-                  {contact_hours?.substring(0, contact_hours.length - 6)}
-                </Button>
-              </View>
-              <View style={{ justifyContent: 'center', height: 100, width: 30, alignItems: 'center' }}>
-                <Typography weight='Bold' variant='h4' color={Colors.Basic500}>{'  -  '}</Typography>
-              </View>
-              <View style={styles.HourButton}>
-                <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>do</Typography>
-                <Button
-                  contentWeight='SemiBold'
-                  contentVariant='h5'
-                  variant="secondary"
-                  onPress={() => setShowTimepicker('end')}
-                  borderRadius={4}
-                >
-                  {contact_hours?.substring(6)}
-                </Button>
-              </View>
+          </Button>
+        }
+        {!!newPerson &&
+          <>
+            {contactPersonItem({
+              mode: 'new',
+              email: newPerson.email,
+              mobile_number: newPerson.mobile_number,
+              preferred_mobile_number: newPerson.preferred_mobile_number,
+              preferred_email: newPerson.preferred_email,
+              contact_hours: newPerson.contact_hours,
+            })}
+          </>
+        }
+        {!!contactPersons.length &&
+          <View style={{ marginTop: 30, marginHorizontal: 19 }}>
+            <Typography size={18} weight='Bold'>
+              Lista kontaktów
+            </Typography>
+            <View style={{ marginTop: 20, gap: 20 }}>
+              {contactPersons.map(({ email, mobile_number, tempId, contact_hours, preferred_mobile_number, preferred_email }, index) =>
+                !inEditing.includes(index) ?
+
+                  mode === 'edit' ?
+                    <View style={{ backgroundColor: Colors.White, padding: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
+                      {contactListItem(email as string, mobile_number as string, index)}
+                    </View>
+
+                    :
+
+                    <CheckBox
+                      checked={selectedPersons.includes(tempId as number)}
+                      onCheckedChange={() => handleSelectedPersons(tempId as number)}
+                      containerStyle={{ backgroundColor: Colors.White, paddingHorizontal: 19, borderRadius: 4 }}
+                      leftTextView={
+                        <View style={{ backgroundColor: Colors.White, paddingVertical: 10, flexDirection: 'row', justifyContent: 'space-between', paddingRight: 20 }}>
+                          {contactListItem(email as string, mobile_number as string, index)}
+                        </View>
+                      }
+                    />
+
+                  :
+
+                  <>
+                    {contactPersonItem({
+                      mode: 'edit',
+                      index,
+                      email,
+                      mobile_number,
+                      preferred_mobile_number,
+                      preferred_email,
+                      contact_hours,
+                    })}
+                  </>
+              )}
             </View>
-            {index + 1 === contactPersons.length && (email && mobile_number) &&
-              <Button
-                variant='text'
-                onPress={() => validateContactPersons(index) ? addNewContactPerson() : setShowTips(true)}
-              >
-                <Typography color={Colors.Blue500} weight='Bold'>Dodaj kolejną osobę</Typography>
-              </Button>
-            }
-            {contact_hours &&
-              <TimePickerModal
-                key={id}
-                visible={!!showTimepicker}
-                onDismiss={() => setShowTimepicker(false)}
-                hours={startHours(contact_hours) ?? '08:00-18:00'}
-                minutes={startMinutes(contact_hours) ?? '08:00-18:00'}
-                onConfirm={({ hours, minutes }) => {
-                  const time = `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
-                  if (showTimepicker === 'start') {
-                    /* const newStartTime = new Date(0, 0, 0, hours, minutes)
-                    const endTime = new Date(0, 0, 0, parseInt(contact_hours?.substring(6, 8)), parseInt(contact_hours?.substring(9, 11))); */
-                    /* if (newStartTime >= endTime) {
-                      setErrorModal('Godzina początkowa nie może być późniejsza niż godzina końcowa');
-                    } else { */
-                    editContactPersons('contact_hours', (time + contact_hours.substring(5)), index);
-                    setShowTimepicker(false);
-                    /* }; */
-                  } else {
-                    /* const newEndTime = new Date(0, 0, 0, hours, minutes)
-                    const startTime = new Date(0, 0, 0, parseInt(contact_hours.substring(0, 2)), parseInt(contact_hours.substring(3, 5))); */
-                    /* if (newEndTime <= startTime) {
-                      setErrorModal('Godzina końcowa nie może być wcześniejsza niż godzina początkowa');
-                    } else { */
-                    editContactPersons('contact_hours', (contact_hours.substring(0, contact_hours.length - 5) + time), index);
-                    setShowTimepicker(false);
-                    /* } */
-                  }
-                }}
-              />
-            }
-          </View>))}
+          </View>
+        }
       </ScrollView>
       <Button
         stickyBottom
@@ -349,6 +509,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 20,
   },
+  EditButtons: {
+    flexDirection: 'row',
+    gap: 15
+  },
+  EditButton: {
+    width: 'auto',
+    padding: 0,
+    height: 50,
+    justifyContent: 'center'
+  }
 });
 
 export default AddContactPersonsScreen;
