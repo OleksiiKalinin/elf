@@ -17,7 +17,7 @@ const Colors = {
 
   Danger: 'rgba(237, 9, 91, 1)',
   Danger10: 'rgba(237, 9, 91, 0.1)',
-  Danger70: 'rgba(237, 9, 91, 0.7)',
+  Danger70: '#f2528c',
 
   Link: 'rgba(74, 50, 205, 1)',
   Link50: 'rgba(74, 50, 205, 0.5)',

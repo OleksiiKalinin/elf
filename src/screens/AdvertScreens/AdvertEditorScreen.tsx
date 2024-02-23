@@ -1,5 +1,5 @@
 import { CommonActions, CompositeScreenProps, useIsFocused } from '@react-navigation/native';
-import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, Fragment, ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   BackHandler,
@@ -21,7 +21,7 @@ import ScreenHeaderProvider from '../../components/organismes/ScreenHeaderProvid
 import { ScrollView } from '../../components/molecules/ScrollView';
 import Typography from '../../components/atoms/Typography';
 import SvgIcon from '../../components/atoms/SvgIcon';
-import Button from '../../components/molecules/Button';
+import Button, { ButtonPropsGeneral, ButtonPropsOriginal } from '../../components/molecules/Button';
 import TextField from '../../components/molecules/TextField';
 import { useTypedDispatch } from '../../hooks/useTypedDispatch';
 import { createParam } from 'solito';
@@ -41,6 +41,8 @@ import { WebView } from 'react-native-webview';
 import HorizontalButtonsSelector from '../../components/molecules/HorizontalButtonsSelector';
 import FormProgressBar, { FormFieldType } from '../../components/organismes/FormProgressBar';
 import FieldStatusCircle from '../../components/atoms/FieldStatusCircle';
+import { Trash2 as DeleteIcon, Pencil as PencilIcon } from '@tamagui/lucide-icons';
+import useShadow from '../../hooks/useShadow';
 
 const dutiesList = [
   {
@@ -295,6 +297,8 @@ type FieldsType = FormFieldType<keyof NewUserAdvertType | 'trial' | 'working_hou
 const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial, stepInitial }) => {
   const dispatch = useTypedDispatch();
   const router = useRouter();
+  const [subView] = useParam('subView');
+  const { setSwipeablePanelProps } = useActions();
   const { jobIndustries, userCompany, jobSalaryModes, jobSalaryTaxes, jobStartFrom, jobTrials, jobModes, jobContractTypes, jobTrialTimes, jobExperiences, windowSizes, userAdverts, languages } = useTypedSelector(state => state.general);
   const currentPositions = userCompany?.job_industry ? getJobPositionsFrom(jobIndustries, userCompany.job_industry) : [];
   const [stepInitialParam, setStepInitialParam] = useParam('step', { initial: stepInitial });
@@ -590,98 +594,233 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
     }
   }
 
-  const goToSelectLanguagesScreen = () => {
-    router.push({
-      stack: 'AdvertStack',
-      screen: 'AdvertEditorScreen',
-      params: {
-        subView: 'ItemSelectorScreen',
-        mode: 'multiple',
-        highlightPopularItems: true,
-        list: languages,
-        callback: (languages) => changeAdvertDataHandler('known_languages_id', languages),
-        labels: {
-          searchLabel: 'Znajdź język',
-          itemsLabel: 'Pozostałe języki',
-          popularItemsLabel: 'Popularne języki',
-        },
-        headerProps: { title: 'Preferowane języki' },
-        initialSelected: advertData.known_languages_id,
-        allowReturnEmptyList: true,
-      },
-    });
+  const openSubView = (subView: keyof NewUserAdvertType) => {
+    switch (subView) {
+      case 'known_languages_id':
+        router.push({
+          stack: 'AdvertStack',
+          screen: 'AdvertEditorScreen',
+          params: {
+            subView: 'ItemSelectorScreen',
+            mode: 'multiple',
+            highlightPopularItems: true,
+            list: languages,
+            callback: (languages) => changeAdvertDataHandler('known_languages_id', languages),
+            labels: {
+              searchLabel: 'Znajdź język',
+              itemsLabel: 'Pozostałe języki',
+              popularItemsLabel: 'Popularne języki',
+            },
+            headerProps: { title: 'Preferowane języki' },
+            initialSelected: advertData.known_languages_id,
+            allowReturnEmptyList: true,
+          },
+        });
+        break;
+      case 'description':
+        router.push({
+          stack: 'AdvertStack',
+          screen: 'AdvertEditorScreen',
+          params: {
+            subView: 'CompanyDescriptionScreen',
+            callback: (value) => changeAdvertDataHandler('description', value, false),
+            description: advertData.description,
+            title: 'Dodaj opis'
+          },
+        });
+        break;
+      case 'duties_ids':
+        router.push({
+          stack: 'AdvertStack',
+          screen: 'AdvertEditorScreen',
+          params: {
+            subView: 'EditableItemSelectorScreen',
+            callback: (data) => changeAdvertDataHandler('duties_ids', data),
+            itemSelectorList: dutiesList,
+            initialData: advertData.duties_ids,
+            headerProps: { title: 'Zakres obowiązków' },
+            labels: {
+              customInputLabel: 'Obowiązek',
+              searchLabel: 'Znajdź obowiązek',
+            }
+          },
+        });
+        break;
+      case 'requirements_ids':
+        router.push({
+          stack: 'AdvertStack',
+          screen: 'AdvertEditorScreen',
+          params: {
+            subView: 'EditableItemSelectorScreen',
+            callback: (data) => changeAdvertDataHandler('requirements_ids', data),
+            itemSelectorList: requirementsList,
+            initialData: advertData.requirements_ids,
+            headerProps: { title: 'Wymagania' },
+            labels: {
+              customInputLabel: 'Wymaganie',
+              searchLabel: 'Znajdź wymaganie',
+            }
+          },
+        });
+        break;
+      case 'benefits_ids':
+        router.push({
+          stack: 'AdvertStack',
+          screen: 'AdvertEditorScreen',
+          params: {
+            subView: 'EditableItemSelectorScreen',
+            callback: (data) => changeAdvertDataHandler('benefits_ids', data),
+            itemSelectorList: benefitsList,
+            initialData: advertData.benefits_ids,
+            headerProps: { title: 'Wymagania' },
+            labels: {
+              customInputLabel: 'Benefit',
+              searchLabel: 'Znajdź benefit',
+            }
+          },
+        });
+        break;
+      case 'job_position_id':
+        router.push({
+          stack: 'AdvertStack',
+          screen: 'AdvertEditorScreen',
+          params: {
+            subView: 'JobCategoryScreen',
+            mode: 'singlePosition',
+            initialIndustry: userCompany?.job_industry || undefined,
+            callback: (_, id) => changeAdvertDataHandler('job_position_id', id)
+          }
+        });
+        break;
+      case 'location':
+        router.push({
+          stack: 'AdvertStack',
+          screen: 'AdvertEditorScreen',
+          params: {
+            subView: 'GoogleMapScreen',
+            callback: (address) => changeAdvertDataHandler('location', address),
+            initialAddress: advertData.location,
+            optionsType: 'address'
+          }
+        });
+        break;
+      default:
+        break;
+    }
+  }
+
+  const isFieldValid = (name: FieldsType['name'], excludeEmpty: boolean = false) => {
+    const field = fields.find(item => item.name === name);
+    if (field === undefined) return false;
+
+    return field.isValid || (excludeEmpty ? false : Boolean(!field.required && field.isEmpty));
   };
 
-  const goToCompanyDescriptionScreen = () => {
-    router.push({
-      stack: 'AdvertStack',
-      screen: 'AdvertEditorScreen',
-      params: {
-        subView: 'CompanyDescriptionScreen',
-        callback: (value) => changeAdvertDataHandler('description', value, false),
-        description: advertData.description,
-        title: 'Dodaj opis'
-      },
-    });
-  };
+  useEffect(() => {
+    if (subView === undefined) {
+      setDeleteSubView(null);
+    };
+  }, [subView]);
 
-  const goToSelectDutiesScreen = () => {
-    router.push({
-      stack: 'AdvertStack',
-      screen: 'AdvertEditorScreen',
-      params: {
-        subView: 'EditableItemSelectorScreen',
-        callback: (data) => changeAdvertDataHandler('duties_ids', data),
-        itemSelectorList: dutiesList,
-        initialData: advertData.duties_ids,
-        headerProps: { title: 'Zakres obowiązków' },
-        labels: {
-          customInputLabel: 'Obowiązek',
-          searchLabel: 'Znajdź obowiązek',
+  useEffect(() => {
+    if (!!deleteSubView) {
+      router.push({
+        stack: 'AdvertStack',
+        screen: 'AdvertEditorScreen',
+        params: { subView: 'options' }
+      }, undefined, { shallow: true });
+    }
+  }, [deleteSubView]);
+
+  useEffect(() => {
+    if (!!deleteSubView) {
+      setSwipeablePanelProps((() => {
+        if (subView === 'options') return {
+          title: deleteSubView.text,
+          closeButton: true,
+          buttons: [
+            {
+              children: 'TAK',
+              contentColor: Colors.Danger,
+              onPress: () => {
+                changeAdvertDataHandler(deleteSubView.name, deleteSubView.value, false);
+                setDeleteSubView(null);
+              },
+              closeAction: 'props-null',
+            },
+          ]
         }
-      },
-    });
-  };
+        return null;
+      })());
+    };
+  }, [deleteSubView, subView]);
 
-  const goToSelectRequirementsScreen = () => {
-    router.push({
-      stack: 'AdvertStack',
-      screen: 'AdvertEditorScreen',
-      params: {
-        subView: 'EditableItemSelectorScreen',
-        callback: (data) => changeAdvertDataHandler('requirements_ids', data),
-        itemSelectorList: requirementsList,
-        initialData: advertData.requirements_ids,
-        headerProps: { title: 'Wymagania' },
-        labels: {
-          customInputLabel: 'Wymaganie',
-          searchLabel: 'Znajdź wymaganie',
-        }
-      },
-    });
-  };
+  const DeleteButton: FC<ButtonPropsOriginal> = (props) => (
+    <Button
+      variant='text'
+      circular
+      miw={35} mih={35} maw={35} mah={35} br={35 / 2}
+      icon={<DeleteIcon size='$1' color={Colors.Danger70} />}
+      {...props}
+    />
+  );
 
-  const goToSelectBenefitsScreen = () => {
-    router.push({
-      stack: 'AdvertStack',
-      screen: 'AdvertEditorScreen',
-      params: {
-        subView: 'EditableItemSelectorScreen',
-        callback: (data) => changeAdvertDataHandler('benefits_ids', data),
-        itemSelectorList: benefitsList,
-        initialData: advertData.benefits_ids,
-        headerProps: { title: 'Wymagania' },
-        labels: {
-          customInputLabel: 'Benefit',
-          searchLabel: 'Znajdź benefit',
-        }
-      },
-    });
-  };
+  const EditButton: FC<ButtonPropsOriginal> = (props) => (
+    <Button
+      variant='text'
+      circular
+      miw={35} mih={35} maw={35} mah={35} br={35 / 2}
+      icon={<PencilIcon size='$1' color={Colors.Basic700} />}
+      {...props}
+    />
+  );
 
-  const isFieldValid = (fieldName: FieldsType['name']) => {
-    const fieldIndex = fields.findIndex(item => item.name === fieldName);
-    return fieldIndex !== -1 && fields[fieldIndex].isValid;
+  const FieldSectionWithTextPreview: FC<{ name: keyof NewUserAdvertType, title: string, textPreview: string | ReactNode, deleteText: string, deleteValue: any, isFilled: boolean }> = ({ name, textPreview, deleteText, title, deleteValue, isFilled }) => {
+    return isFilled ?
+      <>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingLeft: 19, paddingTop: 10, paddingRight: 11.5, paddingBottom: 5 }}>
+          <FieldStatusCircle
+            status={isFieldValid(name, true)}
+            warning={showTips && !isFieldValid(name)}
+          />
+          <Typography variant='h5' weight='Bold' style={{ flex: 1 }}>
+            {title}
+          </Typography>
+          <DeleteButton onPress={() => setDeleteSubView({ name: name, value: deleteValue, text: deleteText })} />
+          <EditButton onPress={() => openSubView(name)} />
+        </View>
+        <View style={{ paddingRight: 19, paddingLeft: 19, paddingBottom: 12 }}>
+          <Typography
+            numberOfLines={expanded[name] ? undefined : 3}
+            style={{ marginLeft: 36, color: Colors.Basic600 }}
+          >
+            {textPreview}
+          </Typography>
+          <Button
+            variant='text' size='small'
+            onPress={() => setExpanded(prev => ({ ...prev, [name]: !prev[name] }))}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <SvgIcon icon={expanded[name] ? "arrowTop" : "arrowBottom"} fill={Colors.Basic500} />
+              <Typography>
+                {expanded[name] ? 'Ukryj' : 'Rozwiń'}
+              </Typography>
+            </View>
+          </Button>
+        </View>
+      </>
+      :
+      <Button variant='text' arrowRight onPress={() => openSubView(name)}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <FieldStatusCircle
+            status={isFieldValid(name, true)}
+            warning={showTips && !isFieldValid(name)}
+          />
+          <Typography variant='h5'>
+            {title}
+          </Typography>
+        </View>
+      </Button>
   };
 
   return (
@@ -719,11 +858,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           {!isFieldValid('job_position_id') && <Separator />}
           <Button
             variant='TouchableOpacity'
-            onPress={() => router.push({
-              stack: 'AdvertStack',
-              screen: 'AdvertEditorScreen',
-              params: { subView: 'JobCategoryScreen', mode: 'singlePosition', initialIndustry: userCompany?.job_industry || undefined, callback: (_, id) => changeAdvertDataHandler('job_position_id', id) }
-            })}
+            onPress={() => openSubView('job_position_id')}
             style={{
               flexDirection: 'row', padding: 19,
               ...(isFieldValid('job_position_id') ? { backgroundColor: Colors.White } : {})
@@ -734,7 +869,9 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
               warning={showTips && !isFieldValid('job_position_id')}
             />
             <View style={{ flex: 1, justifyContent: 'center' }}>
-              <Typography size={20}>{currentPositions.find(curr => curr.id === advertData.job_position_id)?.name || 'Wybierz stanowisko*'}</Typography>
+              <Typography size={isFieldValid('job_position_id') ? 20 : 16}>
+                {currentPositions.find(curr => curr.id === advertData.job_position_id)?.name || 'Wybierz stanowisko*'}
+              </Typography>
             </View>
             <View style={{ justifyContent: 'center' }}>
               <SvgIcon icon={'arrowRightSmall'} fill={Colors.Basic500} />
@@ -750,14 +887,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
               place={advertData.location?.formattedAddress}
               latitude={advertData.location?.position?.lat}
               longitude={advertData.location?.position?.lng}
-              onPress={() => router.push({
-                stack: 'AdvertStack', screen: 'AdvertEditorScreen', params: {
-                  subView: 'GoogleMapScreen',
-                  callback: (address) => changeAdvertDataHandler('location', address),
-                  initialAddress: advertData.location,
-                  optionsType: 'address'
-                }
-              })}
+              onPress={() => openSubView('location')}
             />
             <Separator />
           </View>
@@ -816,15 +946,18 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           <Accordion
             title={<View style={{ flexDirection: "row", alignItems: 'center', height: '100%' }}>
               <FieldStatusCircle
-                status={isFieldValid('salary')}
+                status={isFieldValid('salary', true)}
                 warning={showTips && !isFieldValid('salary')}
               />
-              <Typography variant='h5'>Stawka*</Typography>
+              <Typography variant='h5'>Stawka</Typography>
             </View>}
           >
-            <View style={{ marginBottom: 24 }}>
+            <View style={{ paddingBottom: 8 }}>
               {advertData.salary.map(({ id: salary_id, salary_amount_low, salary_amount_up, salary_tax_type_id, salary_time_type_id, type_of_contract_id }, index, thisArray) => (<>
-                <View key={salary_id} style={{ margin: 16, marginTop: 0, backgroundColor: Colors.White, borderRadius: 10, paddingTop: 16, paddingBottom: 2 }}>
+                <View key={salary_id} style={{ margin: 16, marginTop: 0, backgroundColor: Colors.White, borderRadius: 10, overflow: 'hidden', ...useShadow(4) }}>
+                  <View style={{ alignItems: "flex-end", padding: 5 }}>
+                    <DeleteButton onPress={() => changeAdvertSalaryHandler({ id: salary_id, toDelete: true })} />
+                  </View>
                   <HorizontalButtonsSelector
                     data={jobContractTypes}
                     selected={type_of_contract_id}
@@ -872,41 +1005,33 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                           <Button
                             key={i}
                             variant='TouchableOpacity'
-                            style={{ justifyContent: 'flex-end', marginBottom: i === 0 ? 10 : 0 }}
+                            style={{
+                              justifyContent: 'flex-end',
+                              marginBottom: i === 0 ? 7 : 0
+                            }}
                             onPress={() => changeAdvertSalaryHandler({ id: salary_id, newValues: { salary_tax_type_id: e.salary_tax_type_id, salary_time_type_id: e.salary_time_type_id } })}
                           >
                             <Typography variant='h5' weight='Bold'>
                               {jobSalaryModes.find(({ id }) => id === e.salary_time_type_id)?.name}{' - '}{jobSalaryTaxes.find(({ id }) => id === e.salary_tax_type_id)?.name}
                             </Typography>
-                            <View style={{
-                              backgroundColor: e.salary_time_type_id === salary_time_type_id && e.salary_tax_type_id === salary_tax_type_id ? Colors.Basic900 : undefined,
+                            {e.salary_time_type_id === salary_time_type_id && e.salary_tax_type_id === salary_tax_type_id && <View style={{
+                              backgroundColor: Colors.Basic900,
                               height: 4, marginTop: 2, borderRadius: 4
-                            }} />
+                            }} />}
                           </Button>
                         ))}
                       </View>
                     </View>
                   </>}
-                  <View style={{ alignItems: "flex-start" }}>
-                    <Button
-                      variant='TouchableOpacity'
-                      style={{ paddingHorizontal: 16, paddingBottom: 14 }}
-                      onPress={() => changeAdvertSalaryHandler({ id: salary_id, toDelete: true })}
-                    >
-                      <Typography color={Colors.Danger} weight='SemiBold' style={{ textDecorationLine: 'underline' }}>
-                        Usuń stawkę
-                      </Typography>
-                    </Button>
-                  </View>
                 </View>
                 {(index < thisArray.length - 1) && <View style={{ marginHorizontal: 19, marginBottom: 10, marginTop: -6 }}>
                   <Typography color={Colors.Basic600} weight='SemiBold' textAlign='center'>{'-lub-'}</Typography>
                 </View>}
               </>))}
-              {isFieldValid('salary') && advertData.salary.length < 2 && <View style={{ alignItems: "flex-start" }}>
+              {(!advertData.salary.length || isFieldValid('salary', true) && advertData.salary.length < 2) && <View style={{ alignItems: "flex-start" }}>
                 <Button
                   variant='TouchableOpacity'
-                  style={{ paddingHorizontal: 19 }}
+                  style={{ paddingHorizontal: 19, paddingBottom: 16 }}
                   onPress={() => changeAdvertSalaryHandler({ createNew: true })}
                 >
                   <Typography color={Colors.Blue500} weight='SemiBold' style={{ textDecorationLine: 'underline' }}>
@@ -917,74 +1042,23 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
             </View>
           </Accordion>
           <Separator />
-
           <View style={{ marginLeft: 19, marginTop: 32, marginBottom: 16 }}>
             <Typography weight="Bold" size={20}>Dodatkowe</Typography>
           </View>
-
           <Separator />
-          {advertData.description ?
-            <>
-              <View style={{ paddingHorizontal: 19, paddingVertical: 12 }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <FieldStatusCircle
-                    status={isFieldValid('description')}
-                    warning={showTips && !isFieldValid('description')}
-                  />
-                  <Typography variant='h5' weight='Bold' style={{ flex: 1 }}>
-                    Opis
-                  </Typography>
-                  <Button
-                    variant='TouchableOpacity'
-                    onPress={() => goToCompanyDescriptionScreen()}
-                  >
-                    <Typography variant='h5' weight='Bold' color={Colors.Blue500} >
-                      Edytuj
-                    </Typography>
-                  </Button>
-                </View>
-                <Typography
-                  numberOfLines={expanded.description ? undefined : 3}
-                  color={Colors.Basic600}
-                >
-                  {advertData.description}
-                </Typography>
-                <Button
-                  variant='text'
-                  size='small'
-                  onPress={() => setExpanded(prev => ({ ...prev, description: !prev.description }))}
-                >
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <SvgIcon icon={expanded.description ? "arrowTop" : "arrowBottom"} fill={Colors.Basic500} />
-                    <Typography>
-                      {expanded.description ? 'Ukryj' : 'Rozwiń'}
-                    </Typography>
-                  </View>
-                </Button>
-              </View>
-            </>
-            :
-            <Button
-              variant='text'
-              arrowRight
-              onPress={() => goToCompanyDescriptionScreen()}
-            >
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <FieldStatusCircle
-                  status={isFieldValid('description')}
-                  warning={showTips && !isFieldValid('description')}
-                />
-                <Typography variant='h5'>
-                  Opis
-                </Typography>
-              </View>
-            </Button>
-          }
+          <FieldSectionWithTextPreview
+            name='description'
+            title='Opis'
+            isFilled={!!advertData.description}
+            deleteText='Czy na pewno chcesz usunąć opis?'
+            deleteValue={null}
+            textPreview={advertData.description || ''}
+          />
           <Separator />
           <Accordion
             title={<View style={{ flexDirection: "row", alignItems: 'center', height: '100%' }}>
               <FieldStatusCircle
-                status={isFieldValid('trial')}
+                status={isFieldValid('trial', true)}
                 warning={showTips && !isFieldValid('trial')}
               />
               <Typography variant='h5'>Okres próbny</Typography>
@@ -1016,7 +1090,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           <Accordion
             title={<View style={{ flexDirection: "row", alignItems: 'center', height: '100%' }}>
               <FieldStatusCircle
-                status={isFieldValid('working_hours')}
+                status={isFieldValid('working_hours', true)}
                 warning={showTips && !isFieldValid('working_hours')}
               />
               <Typography variant='h5'>Godziny pracy</Typography>
@@ -1068,225 +1142,54 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
             />
           </Accordion>
           <Separator />
-          {advertData.duties_ids.length ?
-            <>
-              <View style={{ paddingHorizontal: 19, paddingVertical: 12 }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <FieldStatusCircle
-                    status={isFieldValid('duties_ids')}
-                    warning={showTips && !isFieldValid('duties_ids')}
-                  />
-                  <Typography variant='h5' weight='Bold' style={{ flex: 1 }}>
-                    Zakres obowiązków
-                  </Typography>
-                  <Button
-                    variant='TouchableOpacity'
-                    onPress={() => goToSelectDutiesScreen()}
-                  >
-                    <Typography variant='h5' weight='Bold' color={Colors.Blue500}>
-                      Edytuj
-                    </Typography>
-                  </Button>
-                </View>
-                <Typography
-                  numberOfLines={expanded.duties_ids ? undefined : 3}
-                >
-                  {advertData.duties_ids.map((e, i, array) => <Typography color={Colors.Basic600}>
-                    &#x2022;{' '}{e}{i === array.length - 1 ? '' : '\n'}
-                  </Typography>)}
-                </Typography>
-                <Button
-                  variant='text'
-                  size='small'
-                  onPress={() => setExpanded(prev => ({ ...prev, duties_ids: !prev.duties_ids }))}
-                >
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <SvgIcon icon={expanded.duties_ids ? "arrowTop" : "arrowBottom"} fill={Colors.Basic500} />
-                    <Typography>
-                      {expanded.duties_ids ? 'Ukryj' : 'Rozwiń'}
-                    </Typography>
-                  </View>
-                </Button>
-              </View>
-            </>
-            :
-            <Button
-              variant='text'
-              arrowRight
-              onPress={() => goToSelectDutiesScreen()}
-            >
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <FieldStatusCircle
-                  status={isFieldValid('duties_ids')}
-                  warning={showTips && !isFieldValid('duties_ids')}
-                />
-                <Typography variant='h5'>
-                  Zakres obowiązków
-                </Typography>
-              </View>
-            </Button>
-          }
-          <Separator />
-          {advertData.known_languages_id.length ?
-            <View style={{ paddingHorizontal: 19, paddingVertical: 12 }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                <FieldStatusCircle
-                  status={isFieldValid('known_languages_id')}
-                  warning={showTips && !isFieldValid('known_languages_id')}
-                />
-                <Typography variant='h5' weight='Bold' style={{ flex: 1 }}>
-                  Preferowane języki w komunikacji
-                </Typography>
-                <Button
-                  variant='TouchableOpacity'
-                  onPress={() => goToSelectLanguagesScreen()}
-                >
-                  <Typography variant='h5' weight='Bold' color={Colors.Blue500} >
-                    Edytuj
-                  </Typography>
-                </Button>
-              </View>
+          <FieldSectionWithTextPreview
+            name='duties_ids'
+            title='Zakres obowiązków'
+            isFilled={!!advertData.duties_ids.length}
+            deleteText='Czy na pewno chcesz usunąć zakres obowiązków?'
+            deleteValue={[]}
+            textPreview={advertData.duties_ids.map((e, i, array) => (
               <Typography color={Colors.Basic600}>
-                {selectedLanguages.map(({ name }) => name).join(', ')}
+                &#x2022;{' '}{e}{i === array.length - 1 ? '' : '\n'}
               </Typography>
-            </View>
-            :
-            <Button
-              variant='text'
-              arrowRight
-              onPress={() => goToSelectLanguagesScreen()}
-            >
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <FieldStatusCircle
-                  status={isFieldValid('known_languages_id')}
-                  warning={showTips && !isFieldValid('known_languages_id')}
-                />
-                <Typography variant='h5'>
-                  Preferowane języki w komunikacji
-                </Typography>
-              </View>
-            </Button>
-          }
+            ))}
+          />
           <Separator />
-          {advertData.requirements_ids.length ?
-            <>
-              <View style={{ paddingHorizontal: 19, paddingVertical: 12 }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <FieldStatusCircle
-                    status={isFieldValid('requirements_ids')}
-                    warning={showTips && !isFieldValid('requirements_ids')}
-                  />
-                  <Typography variant='h5' weight='Bold' style={{ flex: 1 }}>
-                    Wymagania
-                  </Typography>
-                  <Button
-                    variant='TouchableOpacity'
-                    onPress={() => goToSelectRequirementsScreen()}
-                  >
-                    <Typography variant='h5' weight='Bold' color={Colors.Blue500}>
-                      Edytuj
-                    </Typography>
-                  </Button>
-                </View>
-                <Typography
-                  numberOfLines={expanded.requirements_ids ? undefined : 3}
-                >
-                  {advertData.requirements_ids.map((e, i, array) => <Typography color={Colors.Basic600}>
-                    &#x2022;{' '}{e}{i === array.length - 1 ? '' : '\n'}
-                  </Typography>)}
-                </Typography>
-                <Button
-                  variant='text'
-                  size='small'
-                  onPress={() => setExpanded(prev => ({ ...prev, requirements_ids: !prev.requirements_ids }))}
-                >
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <SvgIcon icon={expanded.requirements_ids ? "arrowTop" : "arrowBottom"} fill={Colors.Basic500} />
-                    <Typography>
-                      {expanded.requirements_ids ? 'Ukryj' : 'Rozwiń'}
-                    </Typography>
-                  </View>
-                </Button>
-              </View>
-            </>
-            :
-            <Button
-              variant='text'
-              arrowRight
-              onPress={() => goToSelectRequirementsScreen()}
-            >
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <FieldStatusCircle
-                  status={isFieldValid('requirements_ids')}
-                  warning={showTips && !isFieldValid('requirements_ids')}
-                />
-                <Typography variant='h5'>
-                  Wymagania
-                </Typography>
-              </View>
-            </Button>
-          }
+          <FieldSectionWithTextPreview
+            name='known_languages_id'
+            title='Preferowane języki w komunikacji'
+            isFilled={!!advertData.known_languages_id.length}
+            deleteText='Czy na pewno chcesz usunąć języki?'
+            deleteValue={[]}
+            textPreview={selectedLanguages.map(({ name }) => name).join(', ')}
+          />
           <Separator />
-          {advertData.benefits_ids.length ?
-            <>
-              <View style={{ paddingHorizontal: 19, paddingVertical: 12 }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <FieldStatusCircle
-                    status={isFieldValid('benefits_ids')}
-                    warning={showTips && !isFieldValid('benefits_ids')}
-                  />
-                  <Typography variant='h5' weight='Bold' style={{ flex: 1 }}>
-                    Benefity
-                  </Typography>
-                  <Button
-                    variant='TouchableOpacity'
-                    onPress={() => goToSelectBenefitsScreen()}
-                  >
-                    <Typography variant='h5' weight='Bold' color={Colors.Blue500}>
-                      Edytuj
-                    </Typography>
-                  </Button>
-                </View>
-                <Typography
-                  numberOfLines={expanded.benefits_ids ? undefined : 3}
-                >
-                  {advertData.benefits_ids.map((e, i, array) => <Typography color={Colors.Basic600}>
-                    &#x2022;{' '}{e}{i === array.length - 1 ? '' : '\n'}
-                  </Typography>)}
-                </Typography>
-                <Button
-                  variant='text'
-                  size='small'
-                  onPress={() => setExpanded(prev => ({ ...prev, benefits_ids: !prev.benefits_ids }))}
-                >
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <SvgIcon icon={expanded.benefits_ids ? "arrowTop" : "arrowBottom"} fill={Colors.Basic500} />
-                    <Typography>
-                      {expanded.benefits_ids ? 'Ukryj' : 'Rozwiń'}
-                    </Typography>
-                  </View>
-                </Button>
-              </View>
-            </>
-            :
-            <Button
-              variant='text'
-              arrowRight
-              onPress={() => goToSelectBenefitsScreen()}
-            >
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <FieldStatusCircle
-                  status={isFieldValid('benefits_ids')}
-                  warning={showTips && !isFieldValid('benefits_ids')}
-                />
-                <Typography variant='h5'>
-                  Benefity
-                </Typography>
-              </View>
-            </Button>
-          }
+          <FieldSectionWithTextPreview
+            name='requirements_ids'
+            title='Wymagania'
+            isFilled={!!advertData.requirements_ids.length}
+            deleteText='Czy na pewno chcesz usunąć wymagania?'
+            deleteValue={[]}
+            textPreview={advertData.requirements_ids.map((e, i, array) => (
+              <Typography color={Colors.Basic600}>
+                &#x2022;{' '}{e}{i === array.length - 1 ? '' : '\n'}
+              </Typography>
+            ))}
+          />
           <Separator />
-
+          <FieldSectionWithTextPreview
+            name='benefits_ids'
+            title='Benefity'
+            isFilled={!!advertData.benefits_ids.length}
+            deleteText='Czy na pewno chcesz usunąć benefity?'
+            deleteValue={[]}
+            textPreview={advertData.benefits_ids.map((e, i, array) => (
+              <Typography color={Colors.Basic600}>
+                &#x2022;{' '}{e}{i === array.length - 1 ? '' : '\n'}
+              </Typography>
+            ))}
+          />
+          <Separator />
           <CheckBox
             containerStyle={{ paddingHorizontal: 19 }}
             checked={woCV}
@@ -1297,7 +1200,6 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
               </Typography>
             }
           />
-
           <Separator />
         </>}
         {step === 'paymentPlan' && <>
@@ -1469,14 +1371,16 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           </View>
         </>}
       </ScrollView>
-      {!!(advertExists ? existedAdvertSubmitButtonText[step] : newAdvertSubmitButtonText[step]) && <Button
-        onPress={() => submitHandler()}
-        disabled={loading}
-        withLoading
-        stickyBottom
-      >
-        {advertExists ? existedAdvertSubmitButtonText[step] : newAdvertSubmitButtonText[step]}
-      </Button>}
+      {
+        !!(advertExists ? existedAdvertSubmitButtonText[step] : newAdvertSubmitButtonText[step]) && <Button
+          onPress={() => submitHandler()}
+          disabled={loading}
+          withLoading
+          stickyBottom
+        >
+          {advertExists ? existedAdvertSubmitButtonText[step] : newAdvertSubmitButtonText[step]}
+        </Button>
+      }
     </ScreenHeaderProvider >
   );
 };

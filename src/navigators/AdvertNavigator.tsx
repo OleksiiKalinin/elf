@@ -28,6 +28,7 @@ export type AdvertStackParamList = {
       step?: AdvertEditorStepType,
       isMainMenuSender?: 'true' | 'false',
     } & (
+      | { subView?: 'options' }
       | SubView<'GoogleMapScreen'>
       | SubView<'JobCategoryScreen'>
       | SubView<'ItemSelectorScreen'>
