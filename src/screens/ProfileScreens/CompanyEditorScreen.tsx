@@ -88,7 +88,7 @@ const CompanyEditorScreen: React.FC = () => {
   const companyCertificatesLimit = 20;
   const squareFootageIndustries = [2, 3, 5];
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (userCompany && !formSent) {
       const newUserCompany = { ...userCompany, photos: userCompany.photos?.length ? companyData.photos : [], certificates: userCompany.certificates?.length ? userCompany.certificates : [] };
       setCompanyData(newUserCompany);
@@ -112,6 +112,7 @@ const CompanyEditorScreen: React.FC = () => {
   }, [mode, unsavedData]);
 
   useEffect(() => {
+    console.log(companyData);
     const fields: FormFieldType[] = [
       { name: 'name', value: name, isValid: !!(name && name.length > 2 && name.length <= 100), required: true },
       { name: 'address', value: address, isValid: !!address, required: true },
@@ -259,7 +260,7 @@ const CompanyEditorScreen: React.FC = () => {
       'editUserCompany' :
       'createUserCompany'
     ]({
-      companyData: newCompanyData, companyLogo: companyData.logo ? companyData.logo : null, companyPhotos: companyData.photos?.length ? companyData.photos : [], companyCertificates: companyData.certificates?.length ? companyData.certificates : [], contactPersons: companyData.contactPersons, oldCompanyData: oldCompanyData, otherLocations: other_locations?.length ? other_locations : [],
+      companyData: newCompanyData, companyLogo: companyData.logo ? companyData.logo : null, companyPhotos: companyData.photos?.length ? companyData.photos : [], companyCertificates: companyData.certificates?.length ? companyData.certificates : [], contactPersons: companyData.contactPersons, oldCompanyData: oldCompanyData, companyOtherLocations: other_locations?.length ? other_locations : [],
     })
     );
     setLoading(false);

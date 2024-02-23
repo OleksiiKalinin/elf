@@ -1,7 +1,7 @@
 import { AddressType, ContactPersonType, OtherCompanyLocationType } from "../store/reducers/types";
 import { convertToBackEndAddress, convertToFrontEndAddress } from "./convertAddress";
 
-export function convertToBackEndCompanyOtherLocations(otherLocations: OtherCompanyLocationType[], contactPersons: ContactPersonType[]): OtherCompanyLocationType[] {
+export function convertToBackEndCompanyOtherLocations(otherLocations: OtherCompanyLocationType[], contactPersons: ContactPersonType[], companyId: number): OtherCompanyLocationType[] {
     const updatedLocations: OtherCompanyLocationType[] = [];
 
     otherLocations.forEach(location => {
@@ -15,10 +15,12 @@ export function convertToBackEndCompanyOtherLocations(otherLocations: OtherCompa
         });
 
         const updatedLocation: OtherCompanyLocationType = {
+            id: location.id,
             name: location.name,
             location: convertToBackEndAddress(location.location),
             contact_persons: matchedId,
-            tempContactPersons: location.tempContactPersons
+            company_id: companyId,
+            tempContactPersons: location.tempContactPersons,
         };
 
         updatedLocations.push(updatedLocation);
@@ -44,6 +46,7 @@ export function convertToFrontEndCompanyOtherLocations(otherLocations: OtherComp
         };
 
         const updatedLocation: OtherCompanyLocationType = {
+            id: location.id,
             name: location.name,
             location: convertToFrontEndAddress(location.location as any),
             tempContactPersons: matchingPersons

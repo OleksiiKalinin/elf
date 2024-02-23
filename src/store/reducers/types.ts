@@ -414,8 +414,9 @@ export interface OtherCompanyLocationType {
     id?: number,
     name: string | null,
     location: AddressType | null,
-    contact_persons?: number[],
     tempContactPersons: ContactPersonType[],
+    contact_persons?: number[],
+    company_id?: number,
 }
 
 export type MediaType = {
