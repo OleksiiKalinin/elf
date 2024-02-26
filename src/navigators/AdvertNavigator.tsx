@@ -8,7 +8,7 @@ import { PathConfigMap } from '@react-navigation/native';
 import { JobCategoryScreenProps } from '../screens/JobCategoryScreen';
 import { GoogleMapScreenProps } from '../screens/GoogleMapScreen';
 import { ItemSelectorScreenProps } from '../screens/ItemSelectorScreen';
-import { CompanyDescriptionScreenProps } from '../screens/CompanyDescriptionScreen';
+import { FullscreenTextFieldScreenProps } from '../screens/FullscreenTextFieldScreen';
 import PaymentReturnScreen from '../screens/AdvertScreens/PaymentReturnScreen';
 import { EditableItemSelectorScreenProps } from '../screens/EditableItemSelectorScreen';
 
@@ -33,7 +33,7 @@ export type AdvertStackParamList = {
       | SubView<'JobCategoryScreen'>
       | SubView<'ItemSelectorScreen'>
       | SubView<'EditableItemSelectorScreen'>
-      | SubView<'CompanyDescriptionScreen'>
+      | SubView<'FullscreenTextFieldScreen'>
     ),
     PaymentReturnScreen: undefined,
     CandidatesScreen: { id: string },
@@ -43,7 +43,7 @@ export type AdvertStackParamList = {
     JobCategoryScreen: JobCategoryScreenProps,
     ItemSelectorScreen: ItemSelectorScreenProps,
     EditableItemSelectorScreen: EditableItemSelectorScreenProps,
-    CompanyDescriptionScreen: CompanyDescriptionScreenProps,
+    FullscreenTextFieldScreen: FullscreenTextFieldScreenProps,
   }
 };
 

@@ -17,7 +17,7 @@ import JobCategoryScreen from "../screens/JobCategoryScreen";
 import ItemSelectorScreen from "../screens/ItemSelectorScreen";
 import CompanyInvoiceScreen from "../screens/CompanyInvoiceScreen";
 import AddContactPersonsScreen from "../screens/AddContactPersonsScreen";
-import CompanyDescriptionScreen from "../screens/CompanyDescriptionScreen";
+import FullscreenTextFieldScreen from "../screens/FullscreenTextFieldScreen";
 import SocialMediaScreen from "../screens/SocialMediaScreen";
 import ChangePasswordScreen from "../screens/ChangePasswordScreen";
 import EditableItemSelectorScreen from "../screens/EditableItemSelectorScreen";
@@ -88,7 +88,7 @@ const validateUrl = (props: WithUrlProps): string => {
             props.params?.subView === 'JobCategoryScreen' ||
             props.params?.subView === 'ItemSelectorScreen' ||
             props.params?.subView === 'EditableItemSelectorScreen' ||
-            props.params?.subView === 'CompanyDescriptionScreen' ||
+            props.params?.subView === 'FullscreenTextFieldScreen' ||
             props.params?.subView === 'GoogleMapScreen'
         )) ||
         (props.stack === 'ProfileStack' && props.screen === 'CompanyEditorScreen' && (
@@ -96,7 +96,7 @@ const validateUrl = (props: WithUrlProps): string => {
             props.params?.subView === 'JobCategoryScreen' ||
             props.params?.subView === 'CompanyInvoiceScreen' ||
             props.params?.subView === 'AddContactPersonsScreen' ||
-            props.params?.subView === 'CompanyDescriptionScreen' ||
+            props.params?.subView === 'FullscreenTextFieldScreen' ||
             props.params?.subView === 'ItemSelectorScreen' ||
             props.params?.subView === 'SocialMediaScreen' ||
             props.params?.subView === 'AddOtherCompanyLocationsScreen'
@@ -169,11 +169,11 @@ export default function useRouter() {
                         case 'AddContactPersonsScreen':
                             Component = AddContactPersonsScreen;
                             break;
-                        case 'CompanyDescriptionScreen':
-                            Component = CompanyDescriptionScreen;
+                        case 'FullscreenTextFieldScreen':
+                            Component = FullscreenTextFieldScreen;
                             break;
-                        case 'CompanyDescriptionScreen':
-                            Component = CompanyDescriptionScreen;
+                        case 'FullscreenTextFieldScreen':
+                            Component = FullscreenTextFieldScreen;
                             break;
                         case 'SocialMediaScreen':
                             Component = SocialMediaScreen;
@@ -253,7 +253,7 @@ export default function useRouter() {
         backToRemoveParams: () => {
             if (Platform.OS === 'web') {
                 backOrReplaceToRoot();
-                setBlockedScreen({ ...blockedScreen, blockedBack: false, });
+                // setBlockedScreen({ ...blockedScreen, blockedBack: false, });
             } else {
                 replace(getPathnameFromScreen(currentScreen))
                 setSwipeablePanelProps(null);

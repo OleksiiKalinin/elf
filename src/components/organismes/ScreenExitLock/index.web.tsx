@@ -11,7 +11,6 @@ import { createParam } from 'solito';
 import { CurrentScreenType } from '../../../hooks/withUrl';
 import { isEqual } from 'lodash';
 import { BlockedScreenType } from '../../../store/reducers/types';
-import { block } from 'react-native-reanimated';
 
 const { useParam } = createParam<{ subView?: SubViewType }>();
 

@@ -13,6 +13,9 @@ import { uuidv4 } from 'react-native-compressor';
 import { Undo as UndoIcon, Equal as DragIcon } from '@tamagui/lucide-icons';
 import { createParam } from 'solito';
 import DraggableList, { RenderItemParams } from '../components/organismes/DraggableList';
+import { useActions } from '../hooks/useActions';
+import { useTypedSelector } from '../hooks/useTypedSelector';
+import { isEqual } from 'lodash';
 
 export type EditableItemSelectorScreenProps = {
   itemSelectorList: {
@@ -48,10 +51,32 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
   const [stepInitialParam, setStepInitialParam] = useParam('subViewMode', { initial: 'fill' });
   const [step, setStep] = useState<StepType>('fill');
   const [data, setData] = useState<DataType[]>(initialData.map(value => ({ id: uuidv4(), value, valueCopy: value, inEditting: false })));
+  const [oldData] = useState<DataType[]>(data);
   const ElementsViewRef = useRef<ScrollViewNative>(null);
   const MainTextFieldRef = useRef<TextInput>(null);
   const scrollAccess = useRef(false);
+  const submitHandled = useRef(false);
   const { backToRemoveParams } = useRouter();
+  const { setBlockedScreen } = useActions();
+  const { blockedScreen } = useTypedSelector(s => s.general);
+  const [unsavedData, setUnsavedData] = useState<boolean>(false);
+
+  useEffect(() => {
+    setUnsavedData(step === 'fill' && (!isEqual(oldData, data) || !!newItem));
+  }, [oldData, data, newItem, step]);
+
+  useEffect(() => {
+    if (isSubView) {
+      setBlockedScreen({ ...blockedScreen, blockedBack: unsavedData });
+    }
+  }, [unsavedData, isSubView]);
+
+  useEffect(() => {
+    if (submitHandled.current && !blockedScreen.blockedBack) {
+      console.log('biubi');
+      backToRemoveParams();
+    }
+  }, [blockedScreen]);
 
   useEffect(() => {
     setStepInitialParam('fill', { webBehavior: 'replace' });
@@ -168,7 +193,8 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
   const submitHandler = () => {
     callback(data.map(e => e.value));
     if (isSubView) {
-      backToRemoveParams();
+      setUnsavedData(false);
+      submitHandled.current = true;
     };
   }
 

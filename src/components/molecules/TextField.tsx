@@ -13,6 +13,8 @@ import Colors from '../../colors/Colors';
 import SvgIcon from '../atoms/SvgIcon';
 import { Button } from 'tamagui';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
+import correctNumericValue, { CorrectNumericValueOptionsType } from '../../hooks/correctNumericValue';
+import { isBoolean, isPlainObject } from 'lodash';
 
 type TextFieldProps = ({
   autoGrow?: true,
@@ -23,6 +25,7 @@ type TextFieldProps = ({
 }) & {
   lineHeight?: number,
   disableNewLineSymbol?: boolean,
+  formatNumber?: CorrectNumericValueOptionsType | boolean,
   label?: string,
   left?: ReactNode,
   right?: ReactNode,
@@ -50,6 +53,7 @@ const TextField: FC<TextFieldProps> = forwardRef(({
   lineHeight,
   style,
   disableNewLineSymbol = false,
+  formatNumber = false,
   ...props
 }, ref) => {
   const [moveLabelDir, setMoveLabelDir] = useState<boolean>(!!props.value || !!props.defaultValue || !!activeLabel);
@@ -136,9 +140,20 @@ const TextField: FC<TextFieldProps> = forwardRef(({
             textAlignVertical={props.multiline ? 'top' : 'center'}
             {...props}
             onChangeText={(masked, unmasked, obfuscated) => {
-              const [newMasked, newUnmasked, newObfuscated] = [masked, unmasked, obfuscated].map(v => disableNewLineSymbol ? v.replace(/\n/g, '') : v);
+              const [newMasked, newUnmasked, newObfuscated] = [masked, unmasked, obfuscated].map(v => {
+                let value = v;
+                if (!isBoolean(formatNumber)) {
+                  value = correctNumericValue(value, formatNumber)
+                } else if (formatNumber) {
+                  value = correctNumericValue(value);
+                }
+                if (disableNewLineSymbol) {
+                  value = value.replace(/\n/g, '');
+                };
+                return value;
+              });
 
-              props.onChangeText?.(newMasked, newUnmasked, newObfuscated);
+              props.onChangeText?.(newMasked || '', newUnmasked || '', newObfuscated || '');
             }}
             secureTextEntry={isSecured}
             numberOfLines={(autoGrow && Platform.OS === 'web') ? (numberOfLines > lineCount ? numberOfLines : lineCount) : numberOfLines}
