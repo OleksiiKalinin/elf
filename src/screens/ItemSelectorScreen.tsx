@@ -76,10 +76,6 @@ const ItemSelectorScreen: React.FC<ItemSelectorScreenProps> = ({
   const { backToRemoveParams } = useRouter();
 
   useEffect(() => {
-    console.log(initialSelected)
-  }, [initialSelected]);
-
-  useEffect(() => {
     if (mode === 'single' && selectedItems.length > 0) {
       callback(selectedItems[0]);
       if (subViewMode) {

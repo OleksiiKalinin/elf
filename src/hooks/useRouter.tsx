@@ -31,6 +31,11 @@ type AllParams<T> = T extends { subView?: any } ? T['subView'] : never;
 type ReplaceParams = Parameters<ReturnType<typeof useSolitoRouter>['replace']>;
 type PushParams = Parameters<ReturnType<typeof useSolitoRouter>['push']>;
 
+type BackProps = { 
+    /**will forcely pop navigation state ignoring blocked popstate event */
+    force?: boolean 
+};
+
 const { useParams } = createParam<{ subView?: SubViewType }>();
 
 let componentProps: any = null;
@@ -211,8 +216,12 @@ export default function useRouter() {
         }
     }, [params]);
 
-    const backOrReplaceToRoot = () => {
+    const backOrReplaceToRoot = (props?: BackProps) => {
         if (Platform.OS === 'web') {
+            if (props?.force) {
+                window.onpopstate = null;
+            }
+
             const win: any = window;
 
             if (win.prevPage) {
@@ -250,15 +259,13 @@ export default function useRouter() {
         },
         parseNextPath,
         back: backOrReplaceToRoot,
-        backToRemoveParams: () => {
+        backToRemoveParams: (props?: BackProps) => {
             if (Platform.OS === 'web') {
-                backOrReplaceToRoot();
-                // setBlockedScreen({ ...blockedScreen, blockedBack: false, });
+                backOrReplaceToRoot(props);
             } else {
                 replace(getPathnameFromScreen(currentScreen))
                 setSwipeablePanelProps(null);
             }
-            // setSwipeablePanelProps(null);
         },
         push: (url: WithUrlProps, as?: PushParams[1], transitionOptions?: PushParams[2]) => {
             const access = preProcessHandler(url);

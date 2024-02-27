@@ -55,7 +55,6 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
   const ElementsViewRef = useRef<ScrollViewNative>(null);
   const MainTextFieldRef = useRef<TextInput>(null);
   const scrollAccess = useRef(false);
-  const submitHandled = useRef(false);
   const { backToRemoveParams } = useRouter();
   const { setBlockedScreen } = useActions();
   const { blockedScreen } = useTypedSelector(s => s.general);
@@ -70,13 +69,6 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
       setBlockedScreen({ ...blockedScreen, blockedBack: unsavedData });
     }
   }, [unsavedData, isSubView]);
-
-  useEffect(() => {
-    if (submitHandled.current && !blockedScreen.blockedBack) {
-      console.log('biubi');
-      backToRemoveParams();
-    }
-  }, [blockedScreen]);
 
   useEffect(() => {
     setStepInitialParam('fill', { webBehavior: 'replace' });
@@ -193,8 +185,7 @@ const EditableItemSelectorScreen: React.FC<EditableItemSelectorScreenProps> = ({
   const submitHandler = () => {
     callback(data.map(e => e.value));
     if (isSubView) {
-      setUnsavedData(false);
-      submitHandled.current = true;
+      backToRemoveParams({ force: true });
     };
   }
 

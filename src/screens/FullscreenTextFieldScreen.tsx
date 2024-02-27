@@ -5,9 +5,6 @@ import TextField from '../components/molecules/TextField';
 import ScreenHeaderProvider, { ScreenHeaderProviderProps } from '../components/organismes/ScreenHeaderProvider';
 import Button from '../components/molecules/Button';
 import useRouter from '../hooks/useRouter';
-import Popover from '../components/molecules/Popover';
-import SvgIcon from '../components/atoms/SvgIcon';
-import Typography from '../components/atoms/Typography';
 import { useTypedSelector } from '../hooks/useTypedSelector';
 import { isEqual } from 'lodash';
 import { useActions } from '../hooks/useActions';
@@ -39,10 +36,10 @@ const FullscreenTextFieldScreen: React.FC<FullscreenTextFieldScreenProps> = (pro
     setBlockedScreen({ ...blockedScreen, blockedBack: unsavedData });
   }, [unsavedData]);
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (value.length >= minChars && value.length <= maxChars) {
       callback(value.trim());
-      backToRemoveParams();
+      backToRemoveParams({ force: true });
     } else {
       setShowTips(true);
     };
