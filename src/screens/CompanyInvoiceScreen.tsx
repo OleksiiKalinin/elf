@@ -63,7 +63,7 @@ const CompanyInvoiceScreen: React.FC<CompanyInvoiceScreenProps> = ({
   }, [oldFormData, formData]);
 
   useEffect(() => {
-    setBlockedScreen({...blockedScreen, blockedBack: unsavedData});
+    setBlockedScreen({ ...blockedScreen, blockedBack: unsavedData });
   }, [unsavedData]);
 
   const changeFormDataHandler = (name: keyof CompanyRegistrationDataType, text: string) => {
@@ -141,7 +141,7 @@ const CompanyInvoiceScreen: React.FC<CompanyInvoiceScreenProps> = ({
           NrLokalu,
         });
       };
-      backToRemoveParams();
+      backToRemoveParams({ force: true });
     };
   };
 

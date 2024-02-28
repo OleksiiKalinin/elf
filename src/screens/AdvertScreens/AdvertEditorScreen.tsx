@@ -43,6 +43,7 @@ import FormProgressBar, { FormFieldType } from '../../components/organismes/Form
 import FieldStatusCircle from '../../components/atoms/FieldStatusCircle';
 import { Trash2 as DeleteIcon, Pencil as PencilIcon } from '@tamagui/lucide-icons';
 import useShadow from '../../hooks/useShadow';
+import hoursToMinutes from '../../hooks/hoursToMinutes';
 
 const dutiesList = [
   {
@@ -298,7 +299,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
   const dispatch = useTypedDispatch();
   const router = useRouter();
   const [subView] = useParam('subView');
-  const { setSwipeablePanelProps } = useActions();
+  const { setSwipeablePanelProps, setBlockedScreen } = useActions();
   const { jobIndustries, userCompany, jobSalaryModes, jobSalaryTaxes, jobStartFrom, jobTrials, jobModes, jobContractTypes, jobTrialTimes, jobExperiences, windowSizes, userAdverts, languages } = useTypedSelector(state => state.general);
   const currentPositions = userCompany?.job_industry ? getJobPositionsFrom(jobIndustries, userCompany.job_industry) : [];
   const [stepInitialParam, setStepInitialParam] = useParam('step', { initial: stepInitial });
@@ -307,7 +308,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
     //_start to remove
     salary_amount_low: null,
     salary_amount_up: null,
-    salary_tax_type_id: 2,
+    salary_tax_type_id: null,
     salary_time_type_id: null,
     type_of_contract_id: null,
     //_end to remove
@@ -389,7 +390,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
       },
       { name: 'description', isEmpty: description === null, isValid: !!description },
       { name: 'trial', isEmpty: !(trial_type_id && trial_time_id), isValid: !!(trial_type_id && trial_time_id) },
-      { name: 'working_hours', isEmpty: !(working_hour_down && working_hour_up), isValid: !!(working_hour_down && working_hour_up) },
+      { name: 'working_hours', isEmpty: !(working_hour_down && working_hour_up), isValid: Boolean(working_hour_down && working_hour_up /*&& (hoursToMinutes(working_hour_down) < hoursToMinutes(working_hour_up))*/) },
       { name: 'duties_ids', isEmpty: !duties_ids.length, isValid: !!duties_ids.length },
       { name: 'known_languages_id', isEmpty: !known_languages_id.length, isValid: !!known_languages_id.length },
       { name: 'requirements_ids', isEmpty: !requirements_ids.length, isValid: !!requirements_ids.length },
@@ -397,6 +398,10 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
     ]);
     setUnsavedData(!isEqual(prevAdvertData.current, advertData));
   }, [advertData]);
+
+  useEffect(() => {
+    setBlockedScreen({ blockedExit: unsavedData, blockedBack: unsavedData });
+  }, [unsavedData, subView]);
 
   // useEffect(() => {
   //   console.log(advertData);
@@ -622,10 +627,13 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
           stack: 'AdvertStack',
           screen: 'AdvertEditorScreen',
           params: {
-            subView: 'CompanyDescriptionScreen',
+            subView: 'FullscreenTextFieldScreen',
             callback: (value) => changeAdvertDataHandler('description', value, false),
-            description: advertData.description,
-            title: 'Dodaj opis'
+            value: advertData.description,
+            inputPlaceholder: 'Opis ogłoszenia',
+            headerProviderProps: {
+              title: 'Dodaj opis'
+            }
           },
         });
         break;
@@ -955,7 +963,27 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
             <View style={{ paddingBottom: 8 }}>
               {advertData.salary.map(({ id: salary_id, salary_amount_low, salary_amount_up, salary_tax_type_id, salary_time_type_id, type_of_contract_id }, index, thisArray) => (<>
                 <View key={salary_id} style={{ margin: 16, marginTop: 0, backgroundColor: Colors.White, borderRadius: 10, overflow: 'hidden', ...useShadow(4) }}>
-                  <View style={{ alignItems: "flex-end", padding: 5 }}>
+                  <View style={{ flexDirection: 'row', padding: 5 }}>
+                    <View style={{ paddingHorizontal: 10, justifyContent: 'center', flex: 1 }}>
+                      {!isNumber(type_of_contract_id) || !salary_amount_low || !salary_amount_up ?
+                        <Typography size={13} color={Colors.Basic600}>
+                          Podaj stawkę
+                        </Typography>
+                        :
+                        !(Number(salary_amount_low) <= Number(salary_amount_up)) ?
+                          <Typography size={13} color={Colors.Danger70}>
+                            Stawka "do" musi być większa lub równa od stawki "od"
+                          </Typography>
+                          :
+                          thisArray.length > 1 && contractTypeCategories.find(cat => thisArray.every(s => s.type_of_contract_id && cat.includes(s.type_of_contract_id))) ?
+                            <Typography size={13} color={Colors.Danger70}>
+                              {'Nie możesz podać 2 stawki z tej samej kategorii rodzaju umowy: użyto - '}
+                              {thisArray.map(e => `"${jobContractTypes.find(c => c.id === e.type_of_contract_id)?.name || ''}"`).join(', ')}{'.'}
+                            </Typography>
+                            :
+                            <SvgIcon icon='doneCircleGreen' />
+                      }
+                    </View>
                     <DeleteButton onPress={() => changeAdvertSalaryHandler({ id: salary_id, toDelete: true })} />
                   </View>
                   <HorizontalButtonsSelector
@@ -970,12 +998,15 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                         <View style={{ flex: 1 }}>
                           <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>od</Typography>
                           <TextField
-                            // style={{ width: '100%' }}
                             placeholder={salary_time_type_id === 2 ? '3000' : '20'}
                             placeholderTextColor={Colors.Basic600}
                             containerStyles={{ backgroundColor: Colors.Basic300, borderRadius: 4, paddingHorizontal: 16 }}
                             height={44}
-                            keyboardType='decimal-pad'
+                            keyboardType='numeric'
+                            formatNumber={{
+                              max: 9999999,
+                              min: 1,
+                            }}
                             right={<Typography variant='h5'>zł</Typography>}
                             value={salary_amount_low || ''}
                             onChangeText={value => changeAdvertSalaryHandler({ id: salary_id, newValues: { salary_amount_low: value } })}
@@ -987,12 +1018,15 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                         <View style={{ flex: 1 }}>
                           <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>do</Typography>
                           <TextField
-                            // style={{ width: '100%' }}
                             placeholder={salary_time_type_id === 2 ? '4000' : '30'}
                             placeholderTextColor={Colors.Basic600}
                             containerStyles={{ backgroundColor: Colors.Basic300, borderRadius: 4, paddingHorizontal: 16 }}
                             height={44}
-                            keyboardType='decimal-pad'
+                            keyboardType='numeric'
+                            formatNumber={{
+                              max: 9999999,
+                              min: 1,
+                            }}
                             right={<Typography variant='h5'>zł</Typography>}
                             value={salary_amount_up || ''}
                             onChangeText={value => changeAdvertSalaryHandler({ id: salary_id, newValues: { salary_amount_up: value } })}
@@ -1001,7 +1035,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                       </View>
 
                       <View style={{ justifyContent: 'flex-end', paddingHorizontal: 10, paddingBottom: 16 }}>
-                        {salarySetsByContractType[type_of_contract_id].map((e, i) => (
+                        {salarySetsByContractType[type_of_contract_id].map((e, i, thisArray) => (
                           <Button
                             key={i}
                             variant='TouchableOpacity'
@@ -1009,6 +1043,7 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
                               justifyContent: 'flex-end',
                               marginBottom: i === 0 ? 7 : 0
                             }}
+                            disabled={thisArray.length < 2}
                             onPress={() => changeAdvertSalaryHandler({ id: salary_id, newValues: { salary_tax_type_id: e.salary_tax_type_id, salary_time_type_id: e.salary_time_type_id } })}
                           >
                             <Typography variant='h5' weight='Bold'>
@@ -1070,21 +1105,24 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
               onSelect={(id) => changeAdvertDataHandler('trial_type_id', id)}
               contentContainerStyle={{ marginBottom: 24, paddingLeft: 19 }}
               buttonProps={({ selected }) => ({
-                size: 'small',
-                variant: 'text',
-                borderBottomWidth: 4,
-                borderBottomColor: selected ? Colors.Basic900 : 'transparent',
-                borderRadius: 2.5,
-                paddingLeft: 0,
-                paddingRight: 0,
+                size: 'medium',
+                ...(isNumber(advertData.trial_type_id) && {
+                  size: 'small',
+                  variant: 'text',
+                  borderBottomWidth: 4,
+                  borderBottomColor: selected ? Colors.Basic900 : 'transparent',
+                  borderRadius: 2.5,
+                  paddingLeft: 0,
+                  paddingRight: 0,
+                })
               })}
             />
-            <HorizontalButtonsSelector
+            {isNumber(advertData.trial_type_id) && <HorizontalButtonsSelector
               data={jobTrialTimes}
               selected={advertData.trial_time_id}
               onSelect={(id) => changeAdvertDataHandler('trial_time_id', id)}
               contentContainerStyle={{ marginBottom: 24 }}
-            />
+            />}
           </Accordion>
           <Separator />
           <Accordion
@@ -1096,36 +1134,46 @@ const AdvertEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial
               <Typography variant='h5'>Godziny pracy</Typography>
             </View>}
           >
-            <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 19, maxWidth: 320, marginBottom: 24 }}>
-              <View style={{ flex: 1 }}>
-                <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>od</Typography>
-                <Button
-                  size='medium'
-                  contentWeight='SemiBold'
-                  contentVariant='h5'
-                  variant="secondary"
-                  onPress={() => setShowTimepicker('start')}
-                  borderRadius={4}
-                >
-                  {advertData.working_hour_down || 'dodaj'}
-                </Button>
+            <View style={{ paddingHorizontal: 19, paddingBottom: 24 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', maxWidth: 320 }}>
+                <View style={{ flex: 1 }}>
+                  <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>od</Typography>
+                  <Button
+                    size='medium'
+                    contentWeight='SemiBold'
+                    contentVariant='h5'
+                    variant="secondary"
+                    onPress={() => setShowTimepicker('start')}
+                    borderRadius={4}
+                  >
+                    {advertData.working_hour_down || 'dodaj'}
+                  </Button>
+                </View>
+                <View style={{ justifyContent: 'center', height: 44, alignSelf: 'flex-end' }}>
+                  <Typography weight='Bold' variant='h4' color={Colors.Basic500}>{'   -   '}</Typography>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>do</Typography>
+                  <Button
+                    size='medium'
+                    contentWeight='SemiBold'
+                    contentVariant='h5'
+                    variant="secondary"
+                    onPress={() => setShowTimepicker('end')}
+                    borderRadius={4}
+                  >
+                    {advertData.working_hour_up || 'dodaj'}
+                  </Button>
+                </View>
               </View>
-              <View style={{ justifyContent: 'center', height: 44, alignSelf: 'flex-end' }}>
-                <Typography weight='Bold' variant='h4' color={Colors.Basic500}>{'   -   '}</Typography>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Typography style={{ marginBottom: 5 }} variant='h5' weight='SemiBold' color={Colors.Basic600}>do</Typography>
-                <Button
-                  size='medium'
-                  contentWeight='SemiBold'
-                  contentVariant='h5'
-                  variant="secondary"
-                  onPress={() => setShowTimepicker('end')}
-                  borderRadius={4}
-                >
-                  {advertData.working_hour_up || 'dodaj'}
-                </Button>
-              </View>
+              {showTips && !isFieldValid('working_hours') && <Typography
+                variant='small'
+                color={Colors.Danger70}
+                style={{ marginTop: 7 }}
+              >
+                Nie podano zakres
+                {/* , lub godzina "od" nie jest mniejsza od godziny "do". */}
+              </Typography>}
             </View>
             <TimePickerModal
               visible={!!showTimepicker}

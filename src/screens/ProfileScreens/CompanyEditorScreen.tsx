@@ -33,6 +33,7 @@ import { createParam } from 'solito';
 import { Linkedin, Pencil, PlusCircle, Trash2 } from '@tamagui/lucide-icons';
 import FieldStatusCircle from '../../components/atoms/FieldStatusCircle';
 import { uuidv4 } from 'react-native-compressor';
+import Popover from '../../components/molecules/Popover';
 
 const emptyCompanyData = {
   id: -1,
@@ -66,7 +67,7 @@ const CompanyEditorScreen: React.FC = () => {
   const { backToRemoveParams } = useRouter();
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
-  const { jobIndustries, userCompany, languages, services, employeesAmount } = useTypedSelector(state => state.general);
+  const { jobIndustries, userCompany, languages, services, employeesAmount, windowSizes } = useTypedSelector(state => state.general);
   const [companyData, setCompanyData] = useState<CompanyDataType>(userCompany || emptyCompanyData);
   const [oldCompanyData, setOldCompanyData] = useState<CompanyDataType>(userCompany || emptyCompanyData);
   const [logoProgress, setLogoProgress] = useState<number | null>(null);
@@ -460,10 +461,40 @@ const CompanyEditorScreen: React.FC = () => {
       stack: 'ProfileStack',
       screen: 'CompanyEditorScreen',
       params: {
-        subView: 'CompanyDescriptionScreen',
+        subView: 'FullscreenTextFieldScreen',
         callback: (value) => changeCompanyDataHandler('description', value, false),
-        description: description,
-        title: 'Dodaj opis firmy'
+        value: description,
+        inputPlaceholder: 'Opis firmy',
+        headerProviderProps: {
+          title: 'Dodaj opis firmy',
+          otherActions: (
+            <Popover
+              hideBlur
+              placement='left-start'
+              triggerComponent={(open) => (
+                <Button
+                  variant='text'
+                  circular
+                  icon={<SvgIcon icon="threeDots" />}
+                  onPress={open}
+                />
+              )}
+              contentContainerStyle={{ width: windowSizes.width * 0.85, maxWidth: 500, marginTop: 60, backgroundColor: Colors.White }}
+            >
+              <View style={{ padding: 19, }}>
+                <Typography variant='h5' weight='Bold'>
+                  Przykładowy opis
+                </Typography>
+                <Typography style={{ marginTop: 20 }}>
+                  Prowadzimy kameralną restaurację w centrum Wrocławia, w której serwujemy oryginalne dania kuchni włoskiej. Przyrządzając je wyłącznie z wysokiej jakości składników, pozwalamy naszym klientom odkrywać wyjątkowe smaki Półwyspu Apenińskiego.
+                </Typography>
+                <Typography style={{ marginTop: 20 }}>
+                  Zatrudniamy 12 wykwalifikowanych pracowników, którzy dbają nie tylko o profesjonalną obsługę, lecz również odpowiednią atmosferę. Oferujemy usługi cateringowe, umożliwiając zamawianie jedzenia za pomocą najpopularniejszych aplikacji kurierskich.
+                </Typography>
+              </View>
+            </Popover>
+          )
+        }
       },
     });
   };

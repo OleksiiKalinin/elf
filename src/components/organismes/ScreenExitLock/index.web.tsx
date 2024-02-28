@@ -11,7 +11,6 @@ import { createParam } from 'solito';
 import { CurrentScreenType } from '../../../hooks/withUrl';
 import { isEqual } from 'lodash';
 import { BlockedScreenType } from '../../../store/reducers/types';
-import { block } from 'react-native-reanimated';
 
 const { useParam } = createParam<{ subView?: SubViewType }>();
 
@@ -56,21 +55,19 @@ const ScreenExitLock = () => {
   }, [currentScreen]);
 
   useEffect(() => {
-    const beforeUnloadHandler = (event: { preventDefault: () => void; }) => {
-      event.preventDefault();
-    };
+    const beforeUnloadHandler = (e: BeforeUnloadEvent) => e.preventDefault();
 
     if ((blockedScreen.blockedExit || blockedScreen.blockedBack) && subView !== 'options') {
-      window.addEventListener("beforeunload", beforeUnloadHandler);
-      window.addEventListener('popstate', popstateHandler);
+      window.onpopstate = popstateHandler;
+      window.onbeforeunload = beforeUnloadHandler;
     } else {
-      window.removeEventListener("beforeunload", beforeUnloadHandler);
-      window.removeEventListener('popstate', popstateHandler);
+      window.onpopstate = null;
+      window.onbeforeunload = null;
     };
 
     return () => {
-      window.removeEventListener("beforeunload", beforeUnloadHandler);
-      window.removeEventListener('popstate', popstateHandler);
+      window.onpopstate = null;
+      window.onbeforeunload = null;
     }
   }, [blockedScreen, showExitWarningModal, subView]);
 

@@ -17,7 +17,7 @@ import JobCategoryScreen from "../screens/JobCategoryScreen";
 import ItemSelectorScreen from "../screens/ItemSelectorScreen";
 import CompanyInvoiceScreen from "../screens/CompanyInvoiceScreen";
 import AddContactPersonsScreen from "../screens/AddContactPersonsScreen";
-import CompanyDescriptionScreen from "../screens/CompanyDescriptionScreen";
+import FullscreenTextFieldScreen from "../screens/FullscreenTextFieldScreen";
 import SocialMediaScreen from "../screens/SocialMediaScreen";
 import ChangePasswordScreen from "../screens/ChangePasswordScreen";
 import EditableItemSelectorScreen from "../screens/EditableItemSelectorScreen";
@@ -30,6 +30,11 @@ type AllParams<T> = T extends { subView?: any } ? T['subView'] : never;
 
 type ReplaceParams = Parameters<ReturnType<typeof useSolitoRouter>['replace']>;
 type PushParams = Parameters<ReturnType<typeof useSolitoRouter>['push']>;
+
+type BackProps = { 
+    /**will forcely pop navigation state ignoring blocked popstate event */
+    force?: boolean 
+};
 
 const { useParams } = createParam<{ subView?: SubViewType }>();
 
@@ -88,7 +93,7 @@ const validateUrl = (props: WithUrlProps): string => {
             props.params?.subView === 'JobCategoryScreen' ||
             props.params?.subView === 'ItemSelectorScreen' ||
             props.params?.subView === 'EditableItemSelectorScreen' ||
-            props.params?.subView === 'CompanyDescriptionScreen' ||
+            props.params?.subView === 'FullscreenTextFieldScreen' ||
             props.params?.subView === 'GoogleMapScreen'
         )) ||
         (props.stack === 'ProfileStack' && props.screen === 'CompanyEditorScreen' && (
@@ -96,7 +101,7 @@ const validateUrl = (props: WithUrlProps): string => {
             props.params?.subView === 'JobCategoryScreen' ||
             props.params?.subView === 'CompanyInvoiceScreen' ||
             props.params?.subView === 'AddContactPersonsScreen' ||
-            props.params?.subView === 'CompanyDescriptionScreen' ||
+            props.params?.subView === 'FullscreenTextFieldScreen' ||
             props.params?.subView === 'ItemSelectorScreen' ||
             props.params?.subView === 'SocialMediaScreen' ||
             props.params?.subView === 'AddOtherCompanyLocationsScreen'
@@ -169,11 +174,11 @@ export default function useRouter() {
                         case 'AddContactPersonsScreen':
                             Component = AddContactPersonsScreen;
                             break;
-                        case 'CompanyDescriptionScreen':
-                            Component = CompanyDescriptionScreen;
+                        case 'FullscreenTextFieldScreen':
+                            Component = FullscreenTextFieldScreen;
                             break;
-                        case 'CompanyDescriptionScreen':
-                            Component = CompanyDescriptionScreen;
+                        case 'FullscreenTextFieldScreen':
+                            Component = FullscreenTextFieldScreen;
                             break;
                         case 'SocialMediaScreen':
                             Component = SocialMediaScreen;
@@ -211,8 +216,12 @@ export default function useRouter() {
         }
     }, [params]);
 
-    const backOrReplaceToRoot = () => {
+    const backOrReplaceToRoot = (props?: BackProps) => {
         if (Platform.OS === 'web') {
+            if (props?.force) {
+                window.onpopstate = null;
+            }
+
             const win: any = window;
 
             if (win.prevPage) {
@@ -250,15 +259,13 @@ export default function useRouter() {
         },
         parseNextPath,
         back: backOrReplaceToRoot,
-        backToRemoveParams: () => {
+        backToRemoveParams: (props?: BackProps) => {
             if (Platform.OS === 'web') {
-                backOrReplaceToRoot();
-                setBlockedScreen({ ...blockedScreen, blockedBack: false, });
+                backOrReplaceToRoot(props);
             } else {
                 replace(getPathnameFromScreen(currentScreen))
                 setSwipeablePanelProps(null);
             }
-            // setSwipeablePanelProps(null);
         },
         push: (url: WithUrlProps, as?: PushParams[1], transitionOptions?: PushParams[2]) => {
             const access = preProcessHandler(url);

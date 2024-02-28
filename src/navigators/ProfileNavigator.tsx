@@ -18,7 +18,7 @@ import PackagesScreen from '../screens/ProfileScreens/PackagesScreen';
 import SettingsScreen from '../screens/ProfileScreens/SettingsScreen';
 import { PathConfigMap } from '@react-navigation/native';
 import { AddContactPersonsScreenProps } from '../screens/AddContactPersonsScreen';
-import { CompanyDescriptionScreenProps } from '../screens/CompanyDescriptionScreen';
+import { FullscreenTextFieldScreenProps } from '../screens/FullscreenTextFieldScreen';
 import { CompanyInvoiceScreenProps } from '../screens/CompanyInvoiceScreen';
 import { GoogleMapScreenProps } from '../screens/GoogleMapScreen';
 import { JobCategoryScreenProps } from '../screens/JobCategoryScreen';
@@ -41,7 +41,7 @@ export type ProfileStackParamList = {
       | SubView<'JobCategoryScreen'>
       | SubView<'ItemSelectorScreen'>
       | SubView<'AddContactPersonsScreen'>
-      | SubView<'CompanyDescriptionScreen'>
+      | SubView<'FullscreenTextFieldScreen'>
       | SubView<'ItemSelectorScreen'>
       | SubView<'SocialMediaScreen'>
       | SubView<'AddOtherCompanyLocationsScreen'>
@@ -82,7 +82,7 @@ export type ProfileStackParamList = {
   extended: {
     GoogleMapScreen: GoogleMapScreenProps,
     AddContactPersonsScreen: AddContactPersonsScreenProps,
-    CompanyDescriptionScreen: CompanyDescriptionScreenProps,
+    FullscreenTextFieldScreen: FullscreenTextFieldScreenProps,
     CompanyInvoiceScreen: CompanyInvoiceScreenProps,
     JobCategoryScreen: JobCategoryScreenProps,
     ItemSelectorScreen: ItemSelectorScreenProps,

@@ -90,7 +90,7 @@ export const screensTitles: ScreensTitlesType = {
   },
 };
 
-type ScreenHeaderProviderProps = {
+export type ScreenHeaderProviderProps = {
   children: ReactNode;
   mode?: 'backAction' | 'mainTitle';
   mainTitlePosition?: 'flex-start' | 'center';

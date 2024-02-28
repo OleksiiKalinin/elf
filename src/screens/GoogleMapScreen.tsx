@@ -217,7 +217,7 @@ const GoogleMapScreen: FC<GoogleMapScreenProps> = ({ callback, initialAddress, h
                     onPress={() => {
                         if (location) {
                             callback(location);
-                            !!closeCallback ? closeCallback() : backToRemoveParams();
+                            !!closeCallback ? closeCallback() : backToRemoveParams({ force: true });
                         }
                     }}
                 >
