@@ -9,7 +9,7 @@ export type CorrectNumericValueOptionsType = {
     maxLength?: number,
     /**@default 2 */
     toFixed?: number,
-    /**@default , */
+    /**@default "," */
     decimalSeparator?: string,
 }
 

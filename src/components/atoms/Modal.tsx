@@ -10,8 +10,16 @@ import { isArray } from 'lodash';
 
 const MARGIN = 15;
 
+type ModalProps = {
+	onClose: () => void,
+	withoutUrl?: boolean,
+	resetStyles?: boolean,
+	disableDefaultWrapper?: boolean,
+	contentContainerStyle?: StyleProp<ViewStyle>
+} & ComponentProps<typeof RNModal>;
+
 /** Custom Modal with good web support, including support onClose event (web history back button, dismiss, native hardware back button, etc.) */
-const Modal: FC<ComponentProps<typeof RNModal> & { onClose: () => void, withoutUrl?: boolean, resetStyles?: boolean, contentContainerStyle?: StyleProp<ViewStyle> }> = ({ onClose, withoutUrl = false, children, resetStyles = false, contentContainerStyle, ...props }) => {
+const Modal: FC<ModalProps> = ({ onClose, withoutUrl = false, children, resetStyles = false, disableDefaultWrapper = false, contentContainerStyle, ...props }) => {
 	const { windowSizes } = useTypedSelector(s => s.general);
 	const [sizes, setSizes] = useState({ height: 0, width: 0 });
 	const wasVisible = useRef<boolean>(false);
@@ -54,45 +62,48 @@ const Modal: FC<ComponentProps<typeof RNModal> & { onClose: () => void, withoutU
 				onDismiss={closeRequest}
 				{...props}
 			>
-				{Platform.OS === 'web' ?
-					<Button
-						variant='TouchableOpacity'
-						activeOpacity={1}
-						containerStyle={{ flex: 1 }}
-						style={{ flex: 1, backgroundColor: Colors.Black50, cursor: 'default' }}
-						onPress={closeRequest}
-					/>
-					:
-					<TouchableOpacity
-						activeOpacity={1}
-						style={{ flex: 1, backgroundColor: Colors.Black50 }}
-						onPress={closeRequest}
-					/>
-				}
-				<View
-					onLayout={({ nativeEvent: { layout } }) => {
-						const { height, width } = layout;
-						setSizes({ height, width });
-					}}
-					style={[{
-						margin: MARGIN,
-						position: 'absolute',
-						maxHeight: '100%',
-						maxWidth: '100%',
-						visibility: sizes.height ? 'visible' : 'hidden',
-						top: windowSizes.height / 2 - MARGIN - (sizes.height > 0 ? sizes.height / 2 : sizes.height),
-						left: windowSizes.width / 2 - MARGIN - (sizes.width > 0 ? sizes.width / 2 : sizes.width),
-					}, resetStyles ? {} : {
-						backgroundColor: Colors.White,
-						borderRadius: 4,
-						maxWidth: 450,
-						...useShadow(15),
-					},
-					...(isArray(contentContainerStyle) ? contentContainerStyle : [contentContainerStyle]),
-					]}
-				>
-					{children}
-				</View>
+				{disableDefaultWrapper ? children : <>
+					{Platform.OS === 'web' ?
+						<Button
+							variant='TouchableOpacity'
+							activeOpacity={1}
+							containerStyle={{ flex: 1 }}
+							style={{ flex: 1, backgroundColor: Colors.Black50, cursor: 'default' }}
+							onPress={closeRequest}
+						/>
+						:
+						<TouchableOpacity
+							activeOpacity={1}
+							style={{ flex: 1, backgroundColor: Colors.Black50 }}
+							onPress={closeRequest}
+						/>
+					}
+					<View
+						onLayout={({ nativeEvent: { layout } }) => {
+							const { height, width } = layout;
+							setSizes({ height, width });
+						}}
+						style={[{
+							margin: MARGIN,
+							position: 'absolute',
+							maxHeight: '100%',
+							maxWidth: '100%',
+							opacity: sizes.height ? 1 : 0,
+							top: windowSizes.height / 2 - MARGIN - (sizes.height > 0 ? sizes.height / 2 : sizes.height),
+							left: windowSizes.width / 2 - MARGIN - (sizes.width > 0 ? sizes.width / 2 : sizes.width),
+						}, resetStyles ? {} : {
+							backgroundColor: Colors.White,
+							borderRadius: 4,
+							overflow: 'hidden',
+							maxWidth: 450,
+							...useShadow(15),
+						},
+						...(isArray(contentContainerStyle) ? contentContainerStyle : [contentContainerStyle]),
+						]}
+					>
+						{children}
+					</View>
+				</>}
 			</RNModal>
 		</ScrollLock>
 	);

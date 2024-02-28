@@ -32,7 +32,7 @@ type ReplaceParams = Parameters<ReturnType<typeof useSolitoRouter>['replace']>;
 type PushParams = Parameters<ReturnType<typeof useSolitoRouter>['push']>;
 
 type BackProps = { 
-    /**will forcely pop navigation state ignoring blocked popstate event */
+    /**will forcely pop navigation state ignoring popstate event block */
     force?: boolean 
 };
 
@@ -46,7 +46,7 @@ let prevParams: string | undefined = undefined;
 
 type ProtectedUrlsType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: Array<keyof RootStackParamList[T]['default']> | ['all'] } : never;
 
-export const notPublicUrls: ProtectedUrlsType = {
+export const protectedUrls: ProtectedUrlsType = {
     AuthStack: [],
     AdvertStack: ['all'],
     CandidatesStack: ['VideoScreen', 'FavouritesScreen', 'FavSettingsScreen',],
@@ -119,7 +119,7 @@ const validateUrl = (props: WithUrlProps): string => {
 
 export default function useRouter() {
     const { currentScreen, userData, userCompany, swipeablePanelProps, blockedScreen } = useTypedSelector(s => s.general);
-    const { setSwipeablePanelProps, setShowUserShouldBeLogedInModal, setShowUserShouldHaveCompanyModal, setBlockedScreen } = useActions();
+    const { setSwipeablePanelProps, setShowUserShouldBeLogedInModal, setShowUserShouldHaveCompanyModal } = useActions();
     const { back, parseNextPath, push, replace } = useSolitoRouter();
     const { params, setParams } = useParams();
     const id = useRef(uuidv4());
@@ -127,7 +127,7 @@ export default function useRouter() {
     const preProcessHandler = ({ stack, screen }: WithUrlProps): boolean => {
         let access = false;
 
-        if (!userData && !!notPublicUrls[stack].find(e => e === 'all' || e === screen)) {
+        if (!userData && !!protectedUrls[stack].find(e => e === 'all' || e === screen)) {
             setShowUserShouldBeLogedInModal({ state: true, closeAction: 'close' });
         } else if (userData && !userCompany && !!withCompanyUrls[stack].find(e => e === 'all' || e === screen)) {
             setShowUserShouldHaveCompanyModal({ state: true, closeAction: 'close' });
@@ -253,6 +253,7 @@ export default function useRouter() {
                 onPress: (e) => {
                     const access = preProcessHandler(href);
                     if (!access) return;
+                    
                     linking.onPress(e);
                 }
             }
@@ -270,11 +271,11 @@ export default function useRouter() {
         push: (url: WithUrlProps, as?: PushParams[1], transitionOptions?: PushParams[2]) => {
             const access = preProcessHandler(url);
             if (!access) return;
+
             push(validateUrl(url), as, transitionOptions);
         },
         replace: (url: WithUrlProps, as?: ReplaceParams[1], transitionOptions?: ReplaceParams[2]) => {
             const access = preProcessHandler(url);
-
             if (!access) return;
 
             let options: any = {};

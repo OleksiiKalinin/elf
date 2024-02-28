@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { Image, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
-import RNCarousel from 'react-native-reanimated-carousel';
+import RNCarousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import Colors from '../../colors/Colors';
@@ -12,17 +12,20 @@ import Button from '../molecules/Button';
 
 type Props = {
     close: () => void,
+    onChange?: (index: number) => void,
     visible: boolean,
+    hideArrows?: boolean,
     index?: number,
     data: any[]
 }
 
-const ImageViewer: FC<Props> = ({ close, visible, index = 0, data }) => {
+const ImageViewer: FC<Props> = ({ close, visible, index = 0, hideArrows = false, data, onChange }) => {
     const { windowSizes } = useTypedSelector(s => s.general);
     const [currIndex, setCurrIndex] = useState<number>(index);
     const [colorTransparent, setColorTransparent] = useState<boolean>(false);
     const snapCloseRequested = useRef<boolean>(false);
     const [carouselEnabled, setCarouselEnabled] = useState(true);
+    const ref = useRef<ICarouselInstance>(null);
 
     const closeOnSnapRequest = () => {
         if (snapCloseRequested.current) {
@@ -68,9 +71,31 @@ const ImageViewer: FC<Props> = ({ close, visible, index = 0, data }) => {
                     <>
                         {data.length > 1 && renderIndicator(currIndex + 1, data.length)}
                         {CloseButton}
+                        {!hideArrows && <>
+                            <Button
+                                variant='TouchableOpacity'
+                                onPress={ref.current?.prev}
+                                containerStyle={styles.ButtonLeftWrapper}
+                                style={styles.ButtonLeft}
+                            >
+                                <SvgIcon icon='arrowLeft' fill={Colors.White} />
+                            </Button>
+                            <Button
+                                variant='TouchableOpacity'
+                                onPress={ref.current?.next}
+                                containerStyle={styles.ButtonRightWrapper}
+                                style={styles.ButtonRight}
+                            >
+                                <SvgIcon icon='arrowRight' fill={Colors.White} />
+                            </Button>
+                        </>}
                         <RNCarousel
+                            ref={ref}
                             data={data}
-                            onSnapToItem={setCurrIndex}
+                            onSnapToItem={index => {
+                                if (onChange) onChange(index);
+                                else setCurrIndex(index);
+                            }}
                             height={windowSizes.height || 1}
                             width={windowSizes.width || 1}
                             enabled={carouselEnabled}
@@ -165,6 +190,34 @@ const styles = StyleSheet.create({
         padding: 10,
         backgroundColor: Colors.Black20,
         borderBottomRightRadius: 10
+    },
+    ButtonLeftWrapper: {
+        position: 'absolute',
+        top: '50%',
+        left: 0,
+        transform: [{ translateY: -20.5 }],
+        zIndex: 10,
+    },
+    ButtonLeft: {
+        padding: 10,
+        paddingRight: 13,
+        backgroundColor: Colors.Black20,
+        borderTopRightRadius: 10,
+        borderBottomRightRadius: 10,
+    },
+    ButtonRightWrapper: {
+        position: 'absolute',
+        top: '50%',
+        right: 0,
+        transform: [{ translateY: -20.5 }],
+        zIndex: 10,
+    },
+    ButtonRight: {
+        padding: 10,
+        paddingLeft: 13,
+        backgroundColor: Colors.Black20,
+        borderTopLeftRadius: 10,
+        borderBottomLeftRadius: 10,
     },
 })
 

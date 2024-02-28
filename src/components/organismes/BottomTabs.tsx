@@ -8,7 +8,7 @@ import Button from '../molecules/Button';
 import Typography from '../atoms/Typography';
 import withUrl from '../../hooks/withUrl';
 import { RootStackParamList } from '../../navigators/RootNavigator';
-import { notPublicUrls, withCompanyUrls } from '../../hooks/useRouter';
+import { protectedUrls, withCompanyUrls } from '../../hooks/useRouter';
 import { useRouter } from 'solito/router';
 import useShadow from '../../hooks/useShadow';
 
@@ -68,7 +68,7 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes }) => {
     useEffect(() => {
         const { stack, screen } = currentScreen;
         if (
-            (!userData && !!notPublicUrls[stack].find(e => e === 'all' || e === screen)) ||
+            (!userData && !!protectedUrls[stack].find(e => e === 'all' || e === screen)) ||
             (userData && !userCompany && !!withCompanyUrls[stack].find(e => e === 'all' || e === screen))
         ) {
             setIsTabbarVisible(false);
@@ -91,7 +91,7 @@ const BottomTabs: FC<BottomTabsProps> = ({ routes }) => {
                     const isFocused = (currentScreen.stack === stack) || (stack === 'MenuStack' && currentScreen.stack === 'ProfileStack');
 
                     const excludedStacks: Array<keyof RootStackParamList> = ['AuthStack', 'ProfileStack'];
-                    if (!userData && notPublicUrls[stack].find(e => e === 'all')) return null;
+                    if (!userData && protectedUrls[stack].find(e => e === 'all')) return null;
                     if (excludedStacks.includes(stack)) return null;
 
                     return (

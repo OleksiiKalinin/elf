@@ -1,13 +1,15 @@
-import { LayoutChangeEvent, Platform, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { LayoutChangeEvent, Platform, StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import RNCarousel, { ICarouselInstance, TCarouselProps } from 'react-native-reanimated-carousel';
 import { FC, useEffect, useRef, useState } from 'react';
 import Colors from '../../colors/Colors';
 import { PartialBy } from '../../hooks/types';
 import ImageViewer from './ImageViewer';
 import Button from '../molecules/Button';
+import SvgIcon from '../atoms/SvgIcon';
 
 type Props = {
     hidePagination?: boolean,
+    hideArrows?: boolean,
     innerPagination?: boolean,
     disableImageViewer?: boolean,
     getCurrentIndex?: (index: number) => void,
@@ -18,6 +20,7 @@ type Props = {
 
 const Carousel: FC<Props> = ({
     hidePagination = false,
+    hideArrows = false,
     innerPagination = false,
     disableImageViewer = false,
     stylePaginationContainer,
@@ -28,7 +31,7 @@ const Carousel: FC<Props> = ({
 }) => {
     const [itemWidth, setItemWidth] = useState<number>(1);
     const [currIndex, setCurrIndex] = useState<number>(0);
-    const [viewerIndex, setViewerIndex] = useState<number | undefined>(undefined);
+    const [isOpenedViewer, setIsOpenedViewer] = useState<boolean>(false);
     const scrolling = useRef<boolean>(false);
     const ref = useRef<ICarouselInstance>(null);
 
@@ -47,7 +50,7 @@ const Carousel: FC<Props> = ({
                 activeOpacity={1}
                 onPress={() => {
                     if (Platform.OS !== 'web' || !scrolling.current) {
-                        setViewerIndex(currIndex);
+                        setIsOpenedViewer(true);
                     } else {
                         scrolling.current = false;
                     }
@@ -63,6 +66,24 @@ const Carousel: FC<Props> = ({
                     onSnapToItem={setCurrIndex}
                 />
             </Button>
+            {!hideArrows && <>
+                <Button
+                    variant='TouchableOpacity'
+                    onPress={ref.current?.prev}
+                    containerStyle={styles.ButtonLeftWrapper}
+                    style={styles.ButtonLeft}
+                >
+                    <SvgIcon icon='arrowLeft' fill={Colors.White} />
+                </Button>
+                <Button
+                    variant='TouchableOpacity'
+                    onPress={ref.current?.next}
+                    containerStyle={styles.ButtonRightWrapper}
+                    style={styles.ButtonRight}
+                >
+                    <SvgIcon icon='arrowRight' fill={Colors.White} />
+                </Button>
+            </>}
             {!hidePagination && <View style={[
                 { width: '100%', paddingVertical: 5, paddingHorizontal: 15, flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap' },
                 innerPagination && { position: 'absolute', bottom: 0, left: 0 },
@@ -70,7 +91,7 @@ const Carousel: FC<Props> = ({
             ]}>
                 {props.data.map((_, index) => <Button
                     variant='TouchableOpacity'
-                    onPress={() => ref.current?.scrollTo({ index, animated: true, onFinished: () => setCurrIndex(index) })}
+                    onPress={() => ref.current?.scrollTo({ index, animated: index !== props.data.length - 1, onFinished: () => setCurrIndex(index) })}
                     containerStyle={[{
                         padding: 2.5,
                         opacity: currIndex === index ? 1 : 0.6
@@ -87,13 +108,46 @@ const Carousel: FC<Props> = ({
                 </Button>)}
             </View>}
             {!disableImageViewer && <ImageViewer
-                visible={viewerIndex !== undefined}
-                close={() => setViewerIndex(undefined)}
-                index={viewerIndex}
+                visible={isOpenedViewer}
+                close={() => setIsOpenedViewer(false)}
+                index={currIndex}
+                onChange={(index) => ref.current?.scrollTo({ index, animated: false, onFinished: () => setCurrIndex(index) })}
                 data={props.data}
+                hideArrows={hideArrows}
             />}
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    ButtonLeftWrapper: {
+        position: 'absolute',
+        top: '50%',
+        left: 0,
+        transform: [{ translateY: -20.5 }],
+        zIndex: 10,
+    },
+    ButtonLeft: {
+        padding: 10,
+        paddingRight: 13,
+        backgroundColor: Colors.Black20,
+        borderTopRightRadius: 10,
+        borderBottomRightRadius: 10,
+    },
+    ButtonRightWrapper: {
+        position: 'absolute',
+        top: '50%',
+        right: 0,
+        transform: [{ translateY: -20.5 }],
+        zIndex: 10,
+    },
+    ButtonRight: {
+        padding: 10,
+        paddingLeft: 13,
+        backgroundColor: Colors.Black20,
+        borderTopLeftRadius: 10,
+        borderBottomLeftRadius: 10,
+    },
+})
 
 export default Carousel;

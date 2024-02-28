@@ -1,3 +1,4 @@
+import { isArray } from 'lodash'
 import * as React from 'react'
 import { TextInput } from 'react-native-paper'
 
@@ -77,6 +78,18 @@ function TextInputWithMask(
     <TextInput
       ref={ref}
       {...rest}
+      style={[
+        {
+          borderRadius: 4
+        },
+        ...(isArray(rest.style) ? rest.style : [rest.style]),
+      ]}
+      underlineStyle={[
+        {
+          display: 'none'
+        },
+        ...(isArray(rest.underlineStyle) ? rest.underlineStyle : [rest.underlineStyle]),
+      ]}
       disabled={disabled}
       value={controlledValue}
       onChangeText={onInnerChange}

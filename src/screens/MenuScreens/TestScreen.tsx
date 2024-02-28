@@ -100,9 +100,9 @@ const TestScreen: React.FC<InitialPropsFromParams<Params>> = () => {
           Job category - mode 2 (initial id)
         </Button>
 
-        <View style={{flexDirection: 'row', flexWrap: 'wrap', height: 1500}}>
+        <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
           {icons.map(item =>
-            <View style={{width: 150, height: 150}}>
+            <View style={{minWidth: 150, minHeight: 150}} key={item.name}>
               <SvgIcon icon={item.name} />
               <Typography>
                 {item.name}

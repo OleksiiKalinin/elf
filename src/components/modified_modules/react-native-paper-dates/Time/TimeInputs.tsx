@@ -19,6 +19,7 @@ import AmPmSwitcher from './AmPmSwitcher'
 import { useLatest } from '../utils'
 import Color from 'color'
 import { getTranslation } from '../translations/utils'
+import Typography from '../../../atoms/Typography'
 
 function TimeInputs({
   hours,
@@ -117,9 +118,9 @@ function TimeInputs({
           }}
         />
         {inputType === 'keyboard' ? (
-          <Text maxFontSizeMultiplier={1.5} variant="bodySmall">
+          <Typography>
             {hourLabel}
-          </Text>
+          </Typography>
         ) : null}
       </View>
       <View
@@ -182,9 +183,9 @@ function TimeInputs({
           }}
         />
         {inputType === 'keyboard' ? (
-          <Text maxFontSizeMultiplier={1.5} variant="bodySmall">
+          <Typography>
             {minuteLabel}
-          </Text>
+          </Typography>
         ) : null}
       </View>
       {!is24Hour && (
