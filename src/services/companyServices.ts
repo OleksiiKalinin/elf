@@ -121,11 +121,11 @@ const createUserCompany = (props: {
         contactPersons = res.data || null;
       }
 
-      if (otherLocations.length) {
+      if (otherLocations.length && contactPersons) {
         const getContactPersons = await dispatch(getUserCompanyContactPersons(company_id as number));
         console.log('contactPersons', contactPersons);
 
-        const convertedOtherLocations = convertToBackEndCompanyOtherLocations(otherLocations, getContactPersons, company_id);
+        const convertedOtherLocations = convertToBackEndCompanyOtherLocations(otherLocations, contactPersons, getContactPersons, company_id);
 
         await axios.post(`/employer/other_locations/`, convertedOtherLocations.map(({ id, ...el }) => ({ ...el, company_id })), { headers: dynamicHeaders({ token }) }
         ).then(async (res) => {
@@ -347,8 +347,17 @@ const editUserCompany = (props: {
         const company_id = newCompanyData.id;
         const getContactPersons = await dispatch(getUserCompanyContactPersons(oldCompanyData.id as number));
 
-        const convertedOtherLocations = convertToBackEndCompanyOtherLocations(otherLocations, getContactPersons, company_id);
-        const convertedOldOtherLocations = convertToBackEndCompanyOtherLocations(oldCompanyData.other_locations, getContactPersons, company_id);
+        console.log('oldCompanyData', oldCompanyData);
+        console.log('oldCompanyData.other_locations', oldCompanyData.other_locations);
+        console.log('otherLocations', otherLocations);
+        console.log('oldCompanyData.contactPersons', oldCompanyData.contactPersons);
+        console.log('getContactPersons', getContactPersons);
+
+        const convertedOtherLocations = convertToBackEndCompanyOtherLocations(otherLocations, oldCompanyData.contactPersons, getContactPersons, company_id);
+        console.log('convertedOtherLocations', convertedOtherLocations);
+
+        const convertedOldOtherLocations = convertToBackEndCompanyOtherLocations(oldCompanyData.other_locations, oldCompanyData.contactPersons, getContactPersons, company_id);
+        console.log('convertedOldOtherLocations', convertedOldOtherLocations);
 
         const forPushArray = convertedOtherLocations.filter(item => !item.id).map(item => ({ ...item, company_id }));
 
@@ -456,7 +465,12 @@ const getUserCompanyOtherLocations = (id: number) => async (dispatch: AppDispatc
   try {
     const res = await axios.get(`/employer/other_locations/${id}/`, { headers: dynamicHeaders({ token }) });
 
-    return res.data;
+    const updatedLocations = res.data.map((location: { tempId: number; }) => ({
+      ...location,
+      tempId: location.tempId || Math.floor(Math.random() * 100000000000)
+    }));
+
+    return updatedLocations;
   } catch (error: any) {
     return await errorHandler({ error, returnDefaulValue: null, dispatch, getState, caller: getUserCompanyOtherLocations.bind(this, id) });
   }

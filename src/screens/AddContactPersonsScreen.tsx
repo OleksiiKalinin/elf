@@ -18,9 +18,12 @@ import { useTypedSelector } from '../hooks/useTypedSelector';
 import { uuidv4 } from 'react-native-compressor';
 import { Pencil, Trash2 } from '@tamagui/lucide-icons';
 import SvgIcon from '../components/atoms/SvgIcon';
+import Modal from '../components/atoms/Modal';
 
 
 const emptyPerson: ContactPersonType = {
+  first_name: null,
+  last_name: null,
   email: null,
   mobile_number: null,
   contact_hours: '08:00-18:00',
@@ -36,33 +39,46 @@ type ContactPersonItemType = ({
   index: number,
 }) & ContactPersonType;
 
-export type AddContactPersonsScreenProps = {
+export type AddContactPersonsScreenProps = ({
+  mode: 'edit'
   initialContactPersons: ContactPersonType[],
-  callback: (contactPersons: ContactPersonType[]) => void,
+  selectedContactPersonsCallback?: never,
+  initialSelected?: never,
+} | {
+  mode: 'select'
+  initialContactPersons: ContactPersonType[],
+  initialSelected: number[],
+  selectedContactPersonsCallback: (contactPersons: number[]) => void,
+}) & {
+  contactPersonsCallback: (contactPersons: ContactPersonType[]) => void,
 };
 
 const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
+  mode,
+  initialSelected,
   initialContactPersons,
-  callback,
+  contactPersonsCallback,
+  selectedContactPersonsCallback,
 }) => {
   const oldContactPersons = initialContactPersons && initialContactPersons.length ? [...initialContactPersons].sort((a, b) => {
     const orderA = a.id ?? Number.MAX_SAFE_INTEGER;
     const orderB = b.id ?? Number.MAX_SAFE_INTEGER;
     return orderA - orderB;
-  }) : [emptyPerson];
+  }) : [];
   const [contactPersons, setContactPersons] = useState<ContactPersonType[]>(initialContactPersons && initialContactPersons.length ? [...initialContactPersons].sort((a, b) => {
     const orderA = a.id ?? Number.MAX_SAFE_INTEGER;
     const orderB = b.id ?? Number.MAX_SAFE_INTEGER;
     return orderA - orderB;
-  }) : [emptyPerson]);
+  }) : []);
   const [unsavedData, setUnsavedData] = useState<boolean>(false);
-  const [mode, setMode] = useState<'edit' | 'select'>('select');
   const [inEditing, setInEditing] = useState<number[]>([]);
   const [showTips, setShowTips] = useState<boolean>(false);
   const [showTimepicker, setShowTimepicker] = useState<'start' | 'end' | false>(false);
   const [isDataValid, setIsDataValid] = useState<boolean>(false);
   const [newPerson, setNewPerson] = useState<ContactPersonType | null>(null);
-  const [selectedPersons, setSelectedPersons] = useState<number[]>([]);
+  const [selectedPersons, setSelectedPersons] = useState<number[]>(initialSelected || []);
+  const [beforeEditing, setBeforeEditing] = useState<ContactPersonType[]>([]);
+  const [deleteModal, setDeleteModal] = useState<{ active: boolean, index?: number }>({ active: false });
   const { backToRemoveParams } = useRouter();
   const { blockedScreen } = useTypedSelector(s => s.general);
   const { setBlockedScreen, setSnackbarMessage } = useActions();
@@ -72,32 +88,31 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
   }, [contactPersons]);
 
   useEffect(() => {
-    console.log(inEditing);
-  }, [inEditing]);
+    setUnsavedData(!!(!!newPerson || !isEqual(oldContactPersons, contactPersons) || !!inEditing.length));
+  }, [oldContactPersons, contactPersons, newPerson]);
 
-  useEffect(() => {
-    setUnsavedData(!isEqual(oldContactPersons, contactPersons));
-  }, [oldContactPersons, contactPersons]);
-
-  useEffect(() => {
-    setBlockedScreen({ ...blockedScreen, blockedBack: unsavedData });
-  }, [unsavedData]);
-
+  /*  useEffect(() => {
+     setBlockedScreen({ ...blockedScreen, blockedBack: unsavedData });
+   }, [unsavedData]);
+  */
   const validateContactPersons = (mode: 'newPerson' | 'list', index?: number) => {
     if (mode === 'newPerson') {
-      if (
+      return !!(
         !!newPerson
+        && (newPerson.first_name && (newPerson.first_name.length >= 2 && newPerson.first_name.length <= 100))
+        && (newPerson.last_name && (newPerson.last_name.length >= 2 && newPerson.last_name.length <= 100))
         && newPerson.email && validateMail(newPerson.email)
         && newPerson.mobile_number && newPerson.mobile_number.length === 12
         && (newPerson.preferred_mobile_number || newPerson.preferred_email)
-      ) return true;
-      return false;
+      )
     } else {
       const array = index ? [contactPersons[index]] : contactPersons;
 
       for (const contact of array) {
         if (
-          contact.email && validateMail(contact.email)
+          (contact.first_name && (contact.first_name.length >= 2 && contact.first_name.length <= 100))
+          && (contact.last_name && (contact.last_name.length >= 2 && contact.last_name.length <= 100))
+          && contact.email && validateMail(contact.email)
           && contact.mobile_number && contact.mobile_number.length === 12
           && (contact.preferred_mobile_number || contact.preferred_email)
         ) {
@@ -113,13 +128,13 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
 
   const addNewContactPerson = () => {
     if (!!newPerson) {
-      setContactPersons(prev => [...prev, newPerson]);
+      setContactPersons(prev => [...prev, { ...newPerson, tempId: Math.floor(Math.random() * 100000000000) }]);
       setNewPerson(null);
     };
   };
 
   const editNewPerson = (key: keyof ContactPersonType, value: any) => {
-    const editedPerson = { ...newPerson, [key]: !isString(value) ? value : value ? value.replace(/\s/g, '') : null }
+    const editedPerson = { ...newPerson, [key]: !isString(value) ? value : value ? value.replace(/\s/g, '') : null };
     setNewPerson(editedPerson as any)
   };
 
@@ -151,28 +166,54 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
     });
   };
 
+  const cancelEditing = (tempIdToFind: number, index: number) => {
+    const beforeEditingIndex = beforeEditing.findIndex(item => item.tempId === tempIdToFind);
+
+    console.log('beforeEditingIndex', beforeEditingIndex)
+
+    if (beforeEditingIndex !== -1) {
+      const updatedContactPersons = [...contactPersons];
+      const objectToReplace = beforeEditing[beforeEditingIndex];
+      const indexOfObjectToReplace = updatedContactPersons.findIndex(item => item.tempId === tempIdToFind);
+      if (indexOfObjectToReplace !== -1) {
+        updatedContactPersons[indexOfObjectToReplace] = objectToReplace;
+        const updatedBeforeEditing = beforeEditing.filter(item => item.tempId !== tempIdToFind);
+        setContactPersons(updatedContactPersons);
+        setBeforeEditing(updatedBeforeEditing);
+      };
+    };
+
+    setInEditing(prevState => prevState.filter(value => value !== index));
+  };
+
   const handleSelectedPersons = (id: number) => {
     const mySet = new Set([...selectedPersons]);
     if (mySet.has(id)) {
       mySet.delete(id);
     } else {
       mySet.add(id);
-    }
+    };
     setSelectedPersons([...mySet]);
   };
 
   const handleConfirm = () => {
-    if (inEditing.length) {
-      setSnackbarMessage({ type: 'error', text: 'Dokończ edytowanie kontaktów' })
+    if (!!newPerson) {
+      setSnackbarMessage({ type: 'error', text: 'Dokończ tworzenie kontaktu' });
+    } else if (!!inEditing.length) {
+      setSnackbarMessage({ type: 'error', text: 'Dokończ edytowanie kontaktu' });
+    } else if (mode === 'select' && !selectedPersons.length) {
+      setSnackbarMessage({ type: 'error', text: 'Wybierz co najmniej jeden kontakt' });
+    } else if (!contactPersons.length) {
+      setSnackbarMessage({ type: 'error', text: 'Musisz dodać co najmniej jeden kontakt' });
     } else if (isDataValid) {
-      const updatedContactPersons = contactPersons.map(contact => ({
-        ...contact,
-        tempId: contact.tempId || Math.floor(Math.random() * 100000000000)
-      }));
-      callback(updatedContactPersons);
+      if (!isEqual(contactPersons, oldContactPersons)) {
+        contactPersonsCallback(contactPersons);
+        setSnackbarMessage({ type: 'success', text: 'Zaktualizowano listę kontaktów' });
+      };
+      if (mode === 'select') {
+        selectedContactPersonsCallback(selectedPersons);
+      };
       backToRemoveParams();
-    } else {
-      setShowTips(true);
     };
   };
 
@@ -205,14 +246,19 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
           <Button
             variant='TouchableOpacity'
             style={styles.EditButton}
-            onPress={() => deleteContactPerson(index)}
+            onPress={() => {
+              setDeleteModal({ active: true, index: index });
+            }}
           >
             <Trash2 />
           </Button>
           <Button
             variant='TouchableOpacity'
             style={styles.EditButton}
-            onPress={() => { setInEditing(prev => [...prev, index]) }}
+            onPress={() => {
+              setInEditing(prev => [...prev, index]);
+              setBeforeEditing(prev => [...prev, contactPersons[index]]);
+            }}
           >
             <Pencil />
           </Button>
@@ -221,26 +267,50 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
     )
   };
 
-  const contactPersonItem = (data: ContactPersonItemType) => {
-    const { mode, index, email, mobile_number, preferred_mobile_number, preferred_email, contact_hours } = data;
+  const contactFormItem = (data: ContactPersonItemType) => {
+    const { mode, index, first_name, last_name, email, mobile_number, preferred_mobile_number, preferred_email, contact_hours, tempId } = data;
     return (
       <View style={styles.ContactPerson}>
         <View style={styles.ContactPersonHeader}>
           <Typography size={18} weight='Bold' style={{ marginVertical: 20 }}>
             {mode === 'new' ? 'Nowy kontakt' : `Edytowanie kontaktu ${index + 1}`}
           </Typography>
-          <Button
-            variant='TouchableOpacity'
-            onPress={() => mode === 'new' ? setNewPerson(null) : deleteContactPerson(index)}
-          >
-            <Typography color={Colors.Danger}>
-              <Trash2 />
-            </Typography>
-          </Button>
+          {mode === 'edit' &&
+            <Button
+              variant='TouchableOpacity'
+              onPress={() => setDeleteModal({ active: true, index: index })}
+            >
+              <Typography color={Colors.Danger}>
+                <Trash2 />
+              </Typography>
+            </Button>
+          }
         </View>
-        <View style={{ marginBottom: 30 }}>
+        <View style={{ marginBottom: 20 }}>
           <TextField
-            label="Email"
+            label='Imię*'
+            value={first_name || ''}
+            maxLength={100}
+            onChangeText={text => mode === 'new' ? editNewPerson('first_name', text) : editContactPersons('first_name', text, index)}
+            {...(showTips && (!first_name || (first_name.length < 2 && first_name.length > 100)) && {
+              bottomText: 'Imię musi zawierać od 2 do 100 znaków',
+            })}
+          />
+        </View>
+        <View style={{ marginBottom: 20 }}>
+          <TextField
+            label='Nazwisko*'
+            value={last_name || ''}
+            maxLength={100}
+            onChangeText={text => mode === 'new' ? editNewPerson('last_name', text) : editContactPersons('last_name', text, index)}
+            {...(showTips && (!last_name || (last_name.length < 2 && last_name.length > 100)) && {
+              bottomText: 'Nazwisko musi zawierać od 2 do 100 znaków',
+            })}
+          />
+        </View>
+        <View style={{ marginBottom: 20 }}>
+          <TextField
+            label='Email*'
             value={email || ''}
             onChangeText={text => mode === 'new' ? editNewPerson('email', text) : editContactPersons('email', text, index)}
             {...(showTips && (!email || !validateMail(email)) && {
@@ -250,7 +320,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
         </View>
         <View style={{ marginBottom: 20 }}>
           <TextField
-            label='Telefon'
+            label='Telefon*'
             textContentType='telephoneNumber'
             keyboardType='phone-pad'
             mask={['+', '4', '8', ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/]}
@@ -332,7 +402,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <View style={{ width: mode === 'new' ? '100%' : '40%' }}>
             <Button
-            fullwidth={false}
+              fullwidth={false}
               variant='text'
               onPress={() => mode === 'new' ?
                 validateContactPersons('newPerson') ? addNewContactPerson() : setShowTips(true)
@@ -348,12 +418,9 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
           {mode === 'edit' &&
             <View style={{ width: '40%' }}>
               <Button
-              fullwidth={false}
+                fullwidth={false}
                 variant='text'
-              /* onPress={() => mode === 'new' ?
-                validateContactPersons('newPerson') ? addNewContactPerson() : setShowTips(true)
-                : validateContactPersons('list', index) ? setInEditing(prevState => prevState.filter(value => value !== index)) : setShowTips(true)
-              } */
+                onPress={() => cancelEditing(tempId as number, index)}
               >
                 <Typography color={Colors.Blue500} weight='Bold'>
                   Anuluj
@@ -385,7 +452,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
   return (
     <ScreenHeaderProvider title='Dane do kontaktu'>
       <ScrollView style={styles.ScrollView} contentContainerStyle={{ paddingTop: 25 }}>
-        {!newPerson &&
+        {!newPerson ?
           <Button
             variant='TouchableOpacity'
             onPress={() => setNewPerson(emptyPerson)}
@@ -398,36 +465,43 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
               </Typography>
             </View>
           </Button>
-        }
-        {!!newPerson &&
-          <>
-            {contactPersonItem({
+
+          :
+
+          <View style={{ paddingHorizontal: 19 }}>
+            {contactFormItem({
               mode: 'new',
+              first_name: newPerson.first_name,
+              last_name: newPerson.last_name,
               email: newPerson.email,
               mobile_number: newPerson.mobile_number,
               preferred_mobile_number: newPerson.preferred_mobile_number,
               preferred_email: newPerson.preferred_email,
               contact_hours: newPerson.contact_hours,
             })}
-          </>
+          </View>
         }
         {!!contactPersons.length &&
-          <View style={{ marginTop: 30, marginHorizontal: 19 }}>
+          <View style={{ marginVertical: 30, marginHorizontal: 19 }}>
             <Typography size={18} weight='Bold'>
               Lista kontaktów
             </Typography>
             <View style={{ marginTop: 20, gap: 20 }}>
-              {contactPersons.map(({ email, mobile_number, tempId, contact_hours, preferred_mobile_number, preferred_email }, index) =>
+              {contactPersons.map(({ first_name, last_name, email, mobile_number, tempId, contact_hours, preferred_mobile_number, preferred_email }, index) =>
                 !inEditing.includes(index) ?
 
                   mode === 'edit' ?
-                    <View style={{ backgroundColor: Colors.White, padding: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <View
+                      key={index}
+                      style={{ backgroundColor: Colors.White, padding: 10, flexDirection: 'row', justifyContent: 'space-between', borderRadius: 4 }}
+                    >
                       {contactListItem(email as string, mobile_number as string, index)}
                     </View>
 
                     :
 
                     <CheckBox
+                      key={index}
                       checked={selectedPersons.includes(tempId as number)}
                       onCheckedChange={() => handleSelectedPersons(tempId as number)}
                       containerStyle={{ backgroundColor: Colors.White, paddingHorizontal: 19, borderRadius: 4 }}
@@ -441,14 +515,17 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
                   :
 
                   <>
-                    {contactPersonItem({
+                    {contactFormItem({
                       mode: 'edit',
                       index,
+                      first_name,
+                      last_name,
                       email,
                       mobile_number,
                       preferred_mobile_number,
                       preferred_email,
                       contact_hours,
+                      tempId
                     })}
                   </>
               )}
@@ -462,6 +539,46 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
       >
         Potwierdź
       </Button>
+      {deleteModal.active &&
+        <Modal
+          onClose={() => setDeleteModal({ active: false })}
+        >
+          <View style={{ padding: 40, gap: 30 }}>
+            <View style={{ alignItems: 'center' }}>
+              <Typography variant='h5' >
+                Na pewno chcesz usunąć lokalizację?
+              </Typography>
+              <Typography variant='h5'>
+                Lokalizacja może być powiązana z ofertami pracy.
+              </Typography>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <Button
+                fullwidth={false}
+                size='medium'
+                borderRadius={4}
+                style={{ width: 120 }}
+                onClick={() => {
+                  deleteContactPerson(deleteModal.index as number)
+                  setDeleteModal({ active: false })
+                }}
+              >
+                Usuń
+              </Button>
+              <Button
+                fullwidth={false}
+                size='medium'
+                variant='secondary'
+                borderRadius={4}
+                style={{ width: 120 }}
+                onClick={() => setDeleteModal({ active: false })}
+              >
+                Anuluj
+              </Button>
+            </View>
+          </View>
+        </Modal>
+      }
     </ScreenHeaderProvider>
   );
 };
@@ -474,7 +591,8 @@ const styles = StyleSheet.create({
   ContactPerson: {
     paddingHorizontal: 19,
     backgroundColor: Colors.White,
-    marginBottom: 24
+    marginBottom: 24,
+    borderRadius: 4,
   },
   ContactPersonHeader: {
     flexDirection: 'row',
