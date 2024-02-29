@@ -81,7 +81,7 @@ const MainScreen: FC = () => {
         variant="text"
         contentVariant="h5"
         contentWeight="SemiBold"
-        onPress={back}
+        onPress={() => back()}
       >
         Anuluj
       </Button>

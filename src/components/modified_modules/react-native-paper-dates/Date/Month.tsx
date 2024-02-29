@@ -362,7 +362,8 @@ const styles = StyleSheet.create({
     marginBottom: weekMargin,
     height: daySize,
   },
-  month: {},
+  month: {
+  },
   monthHeader: {
     height: montHeaderHeight,
     justifyContent: 'center',

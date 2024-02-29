@@ -6,7 +6,7 @@ import Button from '../molecules/Button';
 import Colors from '../../colors/Colors';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { RootStackParamList } from '../../navigators/RootNavigator';
-import useRouter, { notPublicUrls, withCompanyUrls } from '../../hooks/useRouter';
+import useRouter, { protectedUrls, withCompanyUrls } from '../../hooks/useRouter';
 import { BOTTOM_TABS_HEIGHT } from './BottomTabs';
 import { useActions } from '../../hooks/useActions';
 import windowExists from '../../hooks/windowExists';
@@ -139,7 +139,6 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   const [contentProtected, setContentProtected] = useState<boolean>(true);
   // @ts-ignore
   const currentTitle: string = screensTitles[currentScreen.stack][currentScreen.screen] || '';
-  const randid = useRef(uniqueId());
   const firstRender = useRef(true);
 
   const HeaderSpace = transparent || hide ? 0 : SCREEN_HEADER_HEIGHT;
@@ -152,14 +151,14 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
         const { stack, screen } = currentScreen;
         let protectedUrl = true;
 
-        if (!userData && !!notPublicUrls[stack].find(e => e === 'all' || e === screen)) {
+        if (!userData && !!protectedUrls[stack].find(e => e === 'all' || e === screen)) {
           setShowUserShouldBeLogedInModal({ state: true, closeAction: 'redirectToRoot' });
         } else if (userData && !userCompany && !!withCompanyUrls[stack].find(e => e === 'all' || e === screen)) {
           setShowUserShouldHaveCompanyModal({ state: true, closeAction: 'redirectToRoot' });
         } else {
           protectedUrl = false;
         }
-
+        
         setContentProtected(protectedUrl);
       }
 

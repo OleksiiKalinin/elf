@@ -55,8 +55,9 @@ export default function DatePickerModalHeader(
           <Button
             variant='text'
             width='auto'
-            height={40}
+            size='small'
             contentColor={Colors.Blue500}
+            contentVariant='h5'
             contentWeight={props.uppercase ? 'CAPS' : 'SemiBold'}
             onPress={props.onSave}
             disabled={props.saveLabelDisabled ?? false}

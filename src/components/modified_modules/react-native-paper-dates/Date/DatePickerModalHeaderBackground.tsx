@@ -2,6 +2,7 @@ import { Animated, StyleSheet } from 'react-native'
 import * as React from 'react'
 import { useHeaderBackgroundColor } from '../utils'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import useShadow from '../../../../hooks/useShadow'
 
 export default function DatePickerModalHeaderBackground({
   children,
@@ -28,6 +29,6 @@ export default function DatePickerModalHeaderBackground({
 
 const styles = StyleSheet.create({
   animated: {
-    elevation: 4,
+    ...useShadow(4),
   },
 })

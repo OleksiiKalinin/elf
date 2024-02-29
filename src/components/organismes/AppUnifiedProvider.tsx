@@ -146,9 +146,9 @@ const AppUnifiedProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
   }, [userCompany, token]);
 
-  if (userData && !(userData.email && userData.first_name && userData.last_name)) {
-    router.replace({ stack: 'AuthStack', screen: 'FillUserDataScreen' });
-  }
+  // if (userData && !(userData.email && userData.first_name && userData.last_name)) {
+  //   router.replace({ stack: 'AuthStack', screen: 'FillUserDataScreen' });
+  // }
 
   return (
     <GoogleSigninProvider>

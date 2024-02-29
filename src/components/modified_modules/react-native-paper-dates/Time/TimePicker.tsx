@@ -91,17 +91,17 @@ function TimePicker({
         style={
           isLandscape
             ? [
-                styles.rootLandscape,
-                {
-                  width:
-                    24 * 3 +
-                    96 * 2 +
-                    52 +
-                    (inputType === inputTypes.picker
-                      ? circleSize
-                      : -circleSize),
-                },
-              ]
+              styles.rootLandscape,
+              {
+                width:
+                  24 * 3 +
+                  96 * 2 +
+                  52 +
+                  (inputType === inputTypes.picker
+                    ? circleSize
+                    : -circleSize),
+              },
+            ]
             : styles.rootPortrait
         }
       >
@@ -142,7 +142,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  clockContainer: { paddingTop: 36, paddingLeft: 12, paddingRight: 12 },
+  clockContainer: {
+    paddingTop: 36,
+    paddingLeft: 12,
+    paddingRight: 12
+  },
 })
 
 export default React.memo(TimePicker)

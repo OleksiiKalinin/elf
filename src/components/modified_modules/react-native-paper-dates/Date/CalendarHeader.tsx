@@ -6,6 +6,7 @@ import type { DisableWeekDaysType } from './dateUtils'
 import { getTranslation } from '../translations/utils'
 import Button from '../../../molecules/Button'
 import SvgIcon from '../../../atoms/SvgIcon'
+import Colors from '../../../../colors/Colors'
 
 const buttonContainerHeight = 56
 const buttonContainerMarginTop = 4
@@ -46,7 +47,6 @@ function CalendarHeader({
           <View
             style={[
               styles.buttonWrapper,
-              { backgroundColor: theme.colors.surface },
             ]}
           >
             <Button 
@@ -60,7 +60,6 @@ function CalendarHeader({
           <View
             style={[
               styles.buttonWrapper,
-              { backgroundColor: theme.colors.surface },
             ]}
           >
             <Button
@@ -94,7 +93,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonWrapper: {
-    marginRight: 10,
+    paddingRight: 10,
+    backgroundColor: '#fffbfe',
   },
   spacer: { flex: 1 },
 })

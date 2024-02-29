@@ -136,7 +136,7 @@ function Calendar(
   const onPressDate = useCallback(
     (d: Date) => {
       if (mode === 'single') {
-        ;(onChangeRef.current as SingleChange)({
+        ; (onChangeRef.current as SingleChange)({
           date: dateMode === 'start' ? d : getEndOfDay(d),
         })
       } else if (mode === 'range') {
@@ -146,7 +146,7 @@ function Calendar(
         if (sd && !ed && dateToUnix(d) >= dateToUnix(sd!)) {
           isStart = false
         }
-        ;(onChangeRef.current as RangeChange)({
+        ; (onChangeRef.current as RangeChange)({
           startDate: isStart ? d : sd,
           endDate: !isStart ? getEndOfDay(d) : undefined,
         })
@@ -159,11 +159,11 @@ function Calendar(
           : [...datesRef.current, d]
 
         newDates.sort((a, b) => a.getTime() - b.getTime())
-        ;(onChangeRef.current as MultiChange)({
-          dates: newDates,
-          datePressed: d,
-          change: exists ? 'removed' : 'added',
-        })
+          ; (onChangeRef.current as MultiChange)({
+            dates: newDates,
+            datePressed: d,
+            change: exists ? 'removed' : 'added',
+          })
       }
     },
     [mode, dateMode, onChangeRef, startDateRef, endDateRef, datesRef]
@@ -177,6 +177,15 @@ function Calendar(
         initialIndex={getInitialIndex(firstDate)}
         selectedYear={selectedYear}
         scrollMode={scrollMode}
+        renderHeader={({ onPrev, onNext }) => (
+          <CalendarHeader
+            locale={locale}
+            onPrev={onPrev}
+            onNext={onNext}
+            scrollMode={scrollMode}
+            disableWeekDays={disableWeekDays}
+          />
+        )}
         renderItem={({ index }) => (
           <Month
             locale={locale}
@@ -195,15 +204,6 @@ function Calendar(
             primaryColor={theme.colors.primary}
             selectColor={selectColor}
             roundness={theme.roundness}
-            disableWeekDays={disableWeekDays}
-          />
-        )}
-        renderHeader={({ onPrev, onNext }) => (
-          <CalendarHeader
-            locale={locale}
-            onPrev={onPrev}
-            onNext={onNext}
-            scrollMode={scrollMode}
             disableWeekDays={disableWeekDays}
           />
         )}
