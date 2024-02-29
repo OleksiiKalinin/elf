@@ -88,13 +88,13 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
   }, [contactPersons]);
 
   useEffect(() => {
-    setUnsavedData(!!(!!newPerson || !isEqual(oldContactPersons, contactPersons) || !!inEditing.length));
+    setUnsavedData(!!(!!newPerson || !isEqual(oldContactPersons, contactPersons) || !!inEditing.length) || (mode === 'select' && !isEqual(initialSelected, selectedPersons)));
   }, [oldContactPersons, contactPersons, newPerson]);
 
-  /*  useEffect(() => {
-     setBlockedScreen({ ...blockedScreen, blockedBack: unsavedData });
-   }, [unsavedData]);
-  */
+  useEffect(() => {
+    setBlockedScreen({ ...blockedScreen, blockedBack: unsavedData });
+  }, [unsavedData]);
+
   const validateContactPersons = (mode: 'newPerson' | 'list', index?: number) => {
     if (mode === 'newPerson') {
       return !!(
@@ -134,8 +134,10 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
   };
 
   const editNewPerson = (key: keyof ContactPersonType, value: any) => {
-    const editedPerson = { ...newPerson, [key]: !isString(value) ? value : value ? value.replace(/\s/g, '') : null };
-    setNewPerson(editedPerson as any)
+    if (!!newPerson) {
+      const editedPerson = { ...newPerson, [key]: !isString(value) ? value : value ? value.replace(/\s/g, '') : null };
+      setNewPerson(editedPerson);
+    };
   };
 
   const editContactPersons = (key: keyof ContactPersonType, value: any, index: number) => {
@@ -213,7 +215,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
       if (mode === 'select') {
         selectedContactPersonsCallback(selectedPersons);
       };
-      backToRemoveParams();
+      backToRemoveParams({ force: true });
     };
   };
 
@@ -231,18 +233,18 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
       parseInt(contactHours.substring(9, 10) === '0' ? contactHours.substring(10, 11) : contactHours.substring(9, 11));
   };
 
-  const contactListItem = (email: string, mobile_number: string, index: number) => {
+  const contactListItem = (first_name: string, last_name: string, email: string, index: number) => {
     return (
       <>
-        <View>
-          <Typography>
+        <View style={{ gap: 10, padding: 20, width: '70%' }}>
+          <Typography variant='h5'>
+            {first_name} {last_name}
+          </Typography>
+          <Typography variant='h5'>
             {email}
           </Typography>
-          <Typography>
-            {mobile_number}
-          </Typography>
         </View>
-        <View style={styles.EditButtons}>
+        <View style={[styles.EditButtons, { padding: mode === 'select' ? 0 : 10 }]}>
           <Button
             variant='TouchableOpacity'
             style={styles.EditButton}
@@ -400,7 +402,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
           </View>
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <View style={{ width: mode === 'new' ? '100%' : '40%' }}>
+          <View style={{ width: '40%' }}>
             <Button
               fullwidth={false}
               variant='text'
@@ -414,20 +416,17 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
               </Typography>
             </Button>
           </View>
-
-          {mode === 'edit' &&
-            <View style={{ width: '40%' }}>
-              <Button
-                fullwidth={false}
-                variant='text'
-                onPress={() => cancelEditing(tempId as number, index)}
-              >
-                <Typography color={Colors.Blue500} weight='Bold'>
-                  Anuluj
-                </Typography>
-              </Button>
-            </View>
-          }
+          <View style={{ width: '40%' }}>
+            <Button
+              fullwidth={false}
+              variant='text'
+              onPress={() => mode === 'new' ? setNewPerson(null) : cancelEditing(tempId as number, index as number)}
+            >
+              <Typography color={Colors.Blue500} weight='Bold'>
+                Anuluj
+              </Typography>
+            </Button>
+          </View>
         </View>
         <TimePickerModal
           visible={!!showTimepicker}
@@ -489,25 +488,26 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
             <View style={{ marginTop: 20, gap: 20 }}>
               {contactPersons.map(({ first_name, last_name, email, mobile_number, tempId, contact_hours, preferred_mobile_number, preferred_email }, index) =>
                 !inEditing.includes(index) ?
-
                   mode === 'edit' ?
+                    (first_name && last_name && email) &&
                     <View
                       key={index}
-                      style={{ backgroundColor: Colors.White, padding: 10, flexDirection: 'row', justifyContent: 'space-between', borderRadius: 4 }}
+                      style={{ backgroundColor: Colors.White, flexDirection: 'row', justifyContent: 'space-between', borderRadius: 4 }}
                     >
-                      {contactListItem(email as string, mobile_number as string, index)}
+                      {contactListItem(first_name, last_name, email, index)}
                     </View>
 
-                    :
 
+                    :
+                    (first_name && last_name && email && tempId) &&
                     <CheckBox
                       key={index}
-                      checked={selectedPersons.includes(tempId as number)}
-                      onCheckedChange={() => handleSelectedPersons(tempId as number)}
-                      containerStyle={{ backgroundColor: Colors.White, paddingHorizontal: 19, borderRadius: 4 }}
+                      checked={selectedPersons.includes(tempId)}
+                      onCheckedChange={() => handleSelectedPersons(tempId)}
+                      containerStyle={{ backgroundColor: Colors.White, paddingLeft: 10, paddingRight: 19, borderRadius: 4 }}
                       leftTextView={
-                        <View style={{ backgroundColor: Colors.White, paddingVertical: 10, flexDirection: 'row', justifyContent: 'space-between', paddingRight: 20 }}>
-                          {contactListItem(email as string, mobile_number as string, index)}
+                        <View style={{ backgroundColor: Colors.White, flexDirection: 'row', justifyContent: 'space-between', paddingRight: 20, alignItems: 'center' }}>
+                          {contactListItem(first_name, last_name, email, index)}
                         </View>
                       }
                     />
@@ -539,17 +539,18 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
       >
         Potwierdź
       </Button>
-      {deleteModal.active &&
+      {
+        deleteModal.active &&
         <Modal
           onClose={() => setDeleteModal({ active: false })}
         >
           <View style={{ padding: 40, gap: 30 }}>
             <View style={{ alignItems: 'center' }}>
               <Typography variant='h5' >
-                Na pewno chcesz usunąć lokalizację?
+                Na pewno chcesz usunąć osobę?
               </Typography>
-              <Typography variant='h5'>
-                Lokalizacja może być powiązana z ofertami pracy.
+              <Typography variant='h5' style={{ textAlign: 'center' }}>
+                Kontakt może być przypisany do lokalizacji lub oferty pracy.
               </Typography>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -579,7 +580,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
           </View>
         </Modal>
       }
-    </ScreenHeaderProvider>
+    </ScreenHeaderProvider >
   );
 };
 
@@ -629,7 +630,7 @@ const styles = StyleSheet.create({
   },
   EditButtons: {
     flexDirection: 'row',
-    gap: 15
+    gap: 15,
   },
   EditButton: {
     width: 'auto',

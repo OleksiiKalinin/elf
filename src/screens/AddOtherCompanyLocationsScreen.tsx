@@ -15,11 +15,12 @@ import { useActions } from '../hooks/useActions';
 import { useTypedSelector } from '../hooks/useTypedSelector';
 import MapPreview from '../components/molecules/MapPreview';
 import GoogleMapScreen from './GoogleMapScreen';
-import { AtSign, Pencil, Phone, Trash2 } from '@tamagui/lucide-icons';
+import { Pencil, Trash2 } from '@tamagui/lucide-icons';
 import AddContactPersonsScreen from './AddContactPersonsScreen';
 import { createParam } from 'solito';
 import SvgIcon from '../components/atoms/SvgIcon';
 import Modal from '../components/atoms/Modal';
+import style from '../components/modified_modules/react-native-calendars/src/calendar/header/style';
 
 type LocationItemType = ({
   mode: 'new',
@@ -32,16 +33,17 @@ type LocationItemType = ({
 const emptyLocation: OtherCompanyLocationType = {
   name: '',
   location: null,
-  contact_persons: [],
   tempContactPersons: [],
 };
 
 export type AddOtherCompanyLocationsScreenProps = ({
   mode: 'edit',
   selectedLocationsCallback?: never,
+  initialSelectedLocations?: never,
 } | {
   mode: 'select',
   selectedLocationsCallback: (selectedLocations: number[]) => void,
+  initialSelectedLocations: number[],
 }) & {
   contactPersons: ContactPersonType[],
   initialLocations: OtherCompanyLocationType[],
@@ -58,6 +60,7 @@ const { useParam } = createParam<{ subViewMode: StepType }>();
 const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenProps> = ({
   contactPersons,
   initialLocations,
+  initialSelectedLocations,
   locationsCallback,
   contactPersonsCallback,
   selectedLocationsCallback,
@@ -83,7 +86,7 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
   const [newLocationEditing, setNewLocationEditing] = useState<boolean>(false);
   const [inEditing, setInEditing] = useState<number[]>([]);
   const [beforeEditing, setBeforeEditing] = useState<OtherCompanyLocationType[]>([]);
-  const [selectedLocations, setSelectedLocations] = useState<number[]>([]);
+  const [selectedLocations, setSelectedLocations] = useState<number[]>(initialSelectedLocations || []);
   const [currentContactPersons, setCurrentContactPersons] = useState<ContactPersonType[]>(contactPersons);
   const [deleteModal, setDeleteModal] = useState<{ active: boolean, index?: number }>({ active: false });
   const { backToRemoveParams } = useRouter();
@@ -94,10 +97,6 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
     setStepInitialParam('locations', { webBehavior: 'replace' });
     setStep('locations');
   }, []);
-
-  useEffect(() => {
-    console.log(locations);
-  }, [locations]);
 
   useEffect(() => {
     if (step === 'locations') {
@@ -129,26 +128,41 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
   }, [oldLocations, locations]);
 
   useEffect(() => {
-    if (!!contactPersons && contactPersons.length) {
-      const updatedLocations = locations.map(location => {
-        const filteredTempContactPersons = location.tempContactPersons.filter(tempId => {
-          return currentContactPersons.some(person => person.tempId === tempId);
-        });
-        return { ...location, tempContactPersons: filteredTempContactPersons };
-      });
-      setLocations(updatedLocations);
-    };
+    const updatedLocations: OtherCompanyLocationType[] = [];
+    const updatedInEditing: number[] = [];
+
+    locations.forEach((location, locationIndex) => {
+      const updatedLocation = {
+        ...location,
+        tempContactPersons: location.tempContactPersons.filter(tempId => {
+          return currentContactPersons.some(contactPerson => contactPerson.tempId === tempId);
+        })
+      };
+
+      if (updatedLocation.tempContactPersons.length !== location.tempContactPersons.length) {
+        updatedInEditing.push(locationIndex);
+      }
+
+      updatedLocations.push(updatedLocation);
+    });
+
+    setLocations(updatedLocations);
+    setInEditing(updatedInEditing);
   }, [currentContactPersons]);
 
-  /*   useEffect(() => {
-      setBlockedScreen({ ...blockedScreen, blockedBack: unsavedData });
-    }, [unsavedData]); */
+  useEffect(() => {
+    if (step === 'locations') {
+      setBlockedScreen({ ...blockedScreen, blockedBack: unsavedData, /* optionalParam: {before: 'locations', current: ''} */ });
+    } else if (step === 'map') {
+      setBlockedScreen({ ...blockedScreen, blockedBack: false, /* optionalParam: {before: 'locations', current: ''} */ });
+    };
+  }, [unsavedData, step]);
 
   const backHandler = () => {
     if ((step === 'map' || step === 'contactPersons') && Platform.OS !== 'web') {
       setStepInitialParam('locations');
     } else {
-      backToRemoveParams();
+      backToRemoveParams({ force: true });
     };
   };
 
@@ -204,8 +218,10 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
   };
 
   const editNewLocation = (key: keyof OtherCompanyLocationType, value: any) => {
-    const editedLocation = { ...newLocation, [key]: !isString(value) ? value : value ? value.replace(/\s/g, '') : null };
-    setNewLocation(editedLocation as any)
+    if (!!newLocation) {
+      const editedLocation = { ...newLocation, [key]: !isString(value) ? value : value ? value.replace(/\s/g, '') : null };
+      setNewLocation(editedLocation);
+    };
   };
 
   const editLocations = (key: keyof OtherCompanyLocationType, value: any, index: number) => {
@@ -254,7 +270,7 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
     setInEditing(prevState => prevState.filter(value => value !== index));
   };
 
-  const googleMapCallback = (address: AddressType) => {
+  const handleGoogleMap = (address: AddressType) => {
     if (newLocationEditing) {
       editNewLocation('location', address);
     } else {
@@ -262,7 +278,7 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
     };
   };
 
-  const selectedContactPersonsCallback = (selectedContactPersons: number[]) => {
+  const handleSelectedContactPersons = (selectedContactPersons: number[]) => {
     if (newLocationEditing) {
       editNewLocation('tempContactPersons', selectedContactPersons);
     } else {
@@ -304,18 +320,18 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
   const locationListItem = (name: string, location: AddressType, index: number) => {
     return (
       <>
-        <View style={{ gap: 10, padding: 20 }}>
+        <View style={styles.NameAndLocationContainer}>
           <Typography variant='h5'>
             {name}
           </Typography>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            <SvgIcon icon='mapMarker' />
+          <View style={styles.LocationContainer}>
+            <SvgIcon icon='mapMarker' style={{ minWidth: 18 }} />
             <Typography variant='h5' color={Colors.Basic600}>
-              {location.locality}
+              {location.formattedAddress}
             </Typography>
           </View>
         </View>
-        <View style={styles.EditButtons}>
+        <View style={[styles.EditButtons, { padding: mode === 'select' ? 0 : 10 }]}>
           <Button
             variant='TouchableOpacity'
             style={styles.EditButton}
@@ -341,146 +357,141 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
   };
 
   const locationFormItem = (data: LocationItemType) => {
-    const { tempId, mode, index, name, location, tempContactPersons } = data;
+    const { tempId, mode, index = 0, name, location, tempContactPersons } = data;
     return (
-      <View style={styles.Location} key={tempId}>
-        <View style={styles.LocationHeader}>
-          <Typography size={18} weight='Bold' style={{ marginVertical: 20 }}>
-            {mode === 'new' ? 'Nowa lokalizacja' : `Edytowanie lokalizacji ${index + 1}`}
-          </Typography>
-          {mode === 'edit' &&
-            <Button
-              variant='TouchableOpacity'
-              onPress={() => setDeleteModal({ active: true, index: index })}
-            >
-              <Trash2 />
-            </Button>
-          }
-        </View>
-        <View style={{ marginBottom: 30, paddingHorizontal: 19 }}>
-          <TextField
-            label="Nazwa lokalizacji*"
-            value={name || ''}
-            onChangeText={text => mode === 'new' ? editNewLocation('name', text) : editLocations('name', text, index as number)}
-            {...(showTips && (!name || !(name && name.length > 2 && name.length <= 100)) && {
-              bottomText: 'Nazwa firmy musi zawierać od 3 do 100 znaków',
-            })}
-          />
-        </View>
-        <View >
-          <Separator />
-          <MapPreview
-            rightIcon='arrowRightSmall'
-            label='Lokalizacja*'
-            place={location?.formattedAddress}
-            bgColor={Colors.White}
-            onPress={() => {
-              mode === 'new' ? setNewLocationEditing(true) : setCurrentIndex(index as number);
-              setStepInitialParam('map', { webBehavior: 'push' })
-            }}
-          />
-          <Separator />
-        </View>
-        {!!tempContactPersons.length ?
-          <>
-            <View style={styles.SelectedItemsContainer}>
-              <View style={styles.SelectedItemsHeader}>
-                <View style={styles.FilledFieldTitle}>
-                  <Typography variant='h5' weight='Bold'>
-                    Dane do kontaktu
-                  </Typography>
-                </View>
-                <View style={styles.EditButtons}>
-                  <Button
-                    variant='TouchableOpacity'
-                    style={styles.EditButton}
-                    onPress={() => {
-                      mode === 'new' ? setNewLocationEditing(true) : setCurrentIndex(index as number);
-                      setStepInitialParam('contactPersons', { webBehavior: 'push' })
-                    }}
-                  >
-                    <Pencil />
-                  </Button>
-                </View>
-              </View>
-              <View >
-                {currentContactPersons.filter(person => tempContactPersons.includes(person.tempId as number)).map(({ id, email, mobile_number }, i) =>
-                  <View key={id} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 20 }}>
-                    <Typography color={Colors.Basic600}>
-                      {i + 1}.
-                    </Typography>
-                    <View key={id} style={{ gap: 10 }}>
-                      <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                        <AtSign size={16} color={Colors.Basic600} />
-                        <Typography color={Colors.Basic600}>
-                          {email}
-                        </Typography>
-                      </View>
-                      <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                        <Phone size={16} color={Colors.Basic600} />
-                        <Typography color={Colors.Basic600}>
-                          {mobile_number}
-                        </Typography>
-                      </View>
+      <>
+        {(mode === 'new' || (mode === 'edit' && index !== null)) &&
+          <View style={styles.Location} key={tempId}>
+            <View style={styles.LocationHeader}>
+              <Typography size={18} weight='Bold' style={{ marginVertical: 20 }}>
+                {mode === 'new' ? 'Nowa lokalizacja' : `Edytowanie lokalizacji ${index + 1}`}
+              </Typography>
+              {mode === 'edit' &&
+                <Button
+                  variant='TouchableOpacity'
+                  onPress={() => setDeleteModal({ active: true, index: index })}
+                >
+                  <Trash2 />
+                </Button>
+              }
+            </View>
+            <View style={styles.LocationNameField}>
+              <TextField
+                label="Nazwa lokalizacji*"
+                value={name || ''}
+                onChangeText={text => mode === 'new' && index ? editNewLocation('name', text) : editLocations('name', text, index)}
+                {...(showTips && (!name || !(name && name.length > 2 && name.length <= 100)) && {
+                  bottomText: 'Nazwa firmy musi zawierać od 3 do 100 znaków',
+                })}
+              />
+            </View>
+            <View >
+              <Separator />
+              <MapPreview
+                rightIcon='arrowRightSmall'
+                label='Lokalizacja*'
+                place={location?.formattedAddress}
+                bgColor={Colors.White}
+                onPress={() => {
+                  mode === 'new' ? setNewLocationEditing(true) : setCurrentIndex(index);
+                  setStepInitialParam('map', { webBehavior: 'push' })
+                }}
+              />
+              <Separator />
+            </View>
+            {(!!tempContactPersons.length && currentContactPersons && !!currentContactPersons.length) ?
+              <>
+                <View style={styles.SelectedItemsContainer}>
+                  <View style={styles.SelectedItemsHeader}>
+                    <View style={styles.FilledFieldTitle}>
+                      <Typography variant='h5' weight='Bold'>
+                        Dane do kontaktu
+                      </Typography>
+                    </View>
+                    <View style={styles.EditButtons}>
+                      <Button
+                        variant='TouchableOpacity'
+                        style={styles.EditButton}
+                        onPress={() => {
+                          mode === 'new' ? setNewLocationEditing(true) : setCurrentIndex(index);
+                          setStepInitialParam('contactPersons', { webBehavior: 'push' })
+                        }}
+                      >
+                        <Pencil />
+                      </Button>
                     </View>
                   </View>
-                )}
-              </View>
-            </View>
-            <Separator marginTop={12} />
-          </>
+                  <View >
+                    {currentContactPersons.filter(person => tempContactPersons.includes(person.tempId || 0)).map(({ id, first_name, last_name }, i) =>
+                      <View
+                        key={id}
+                        style={styles.FilledContactPersons}
+                      >
+                        <Typography color={Colors.Basic600}>
+                          {i + 1}.
+                        </Typography>
+                        <View style={{ gap: 10 }}>
+                          <Typography color={Colors.Basic600}>
+                            {first_name} {last_name}
+                          </Typography>
+                        </View>
+                      </View>
+                    )}
+                  </View>
+                </View>
+                <Separator marginTop={12} />
+              </>
 
-          :
+              :
 
-          <Button
-            variant='text'
-            arrowRight
-            borderBottom
-            onPress={() => {
-              mode === 'new' ? setNewLocationEditing(true) : setCurrentIndex(index as number);
-              setStepInitialParam('contactPersons', { webBehavior: 'push' })
-            }}
-          >
-            <View style={styles.UnfilledFieldTitle}>
-              <Typography
-                variant='h5'
+              <Button
+                variant='text'
+                arrowRight
+                borderBottom
+                onPress={() => {
+                  mode === 'new' ? setNewLocationEditing(true) : setCurrentIndex(index);
+                  setStepInitialParam('contactPersons', { webBehavior: 'push' })
+                }}
               >
-                Dane do kontaktu
-              </Typography>
-              <Typography style={{ color: Colors.Red }}>
-                *
-              </Typography>
-            </View>
-          </Button>
-        }
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <View style={{ width: '40%' }}>
-            <Button
-              fullwidth={false}
-              variant='text'
-              onPress={() => mode === 'new' ?
-                addNewLocation()
-                : confirmEditingLocation(index)
+                <View style={styles.UnfilledFieldTitle}>
+                  <Typography variant='h5'>
+                    Dane do kontaktu
+                  </Typography>
+                  <Typography style={{ color: Colors.Red }}>
+                    *
+                  </Typography>
+                </View>
+              </Button>
+            }
+            <View style={styles.FormButtons}>
+              <View style={{ width: !(mode === 'edit' && !tempContactPersons.length) ? '40%' : '100%' }}>
+                <Button
+                  fullwidth={false}
+                  variant='text'
+                  onPress={() => mode === 'new' ? addNewLocation() : confirmEditingLocation(index)}
+                >
+                  <Typography style={styles.FormButtonText} weight='Bold'>
+                    {mode === 'new' ? 'Utwórz' : 'Zaktualizuj'}
+                  </Typography>
+                </Button>
+              </View>
+              {!(mode === 'edit' && !tempContactPersons.length) &&
+                <View style={{ width: '40%' }}>
+                  <Button
+                    fullwidth={false}
+                    variant='text'
+                    onPress={() => mode === 'new' ? setNewLocation(null) : cancelEditing(tempId as number, index)}
+                  >
+                    <Typography style={styles.FormButtonText} weight='Bold'>
+                      Anuluj
+                    </Typography>
+                  </Button>
+                </View>
               }
-            >
-              <Typography color={Colors.Blue500} weight='Bold'>
-                {mode === 'new' ? 'Utwórz lokalizację' : 'Zaktualizuj'}
-              </Typography>
-            </Button>
+            </View>
           </View>
-          <View style={{ width: '40%' }}>
-            <Button
-              fullwidth={false}
-              variant='text'
-              onPress={() => mode === 'new' ? setNewLocation(null) : cancelEditing(tempId as number, index)}
-            >
-              <Typography color={Colors.Blue500} weight='Bold'>
-                Anuluj
-              </Typography>
-            </Button>
-          </View>
-        </View>
-      </View>
+        }
+      </>
     );
   };
 
@@ -498,7 +509,7 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
                 onPress={() => setNewLocation(emptyLocation)}
                 style={{ marginTop: 20 }}
               >
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                <View style={styles.AddLocationButton}>
                   <SvgIcon icon="createCircleSmall" />
                   <Typography variant="h5" weight='Bold'>
                     {'  '}Dodaj lokalizację
@@ -508,7 +519,7 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
 
               :
 
-              <View style={{ paddingHorizontal: 19 }}>
+              <View style={styles.NewLocationForm}>
                 {locationFormItem({
                   mode: 'new',
                   name: newLocation.name,
@@ -518,31 +529,34 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
               </View>
             }
             {!!locations.length &&
-              <View style={{ marginVertical: 30, marginHorizontal: 19 }}>
+              <View style={styles.LocationListContainer}>
                 <Typography size={18} weight='Bold'>
                   Lista lokalizacji
                 </Typography>
-                <View style={{ marginTop: 20, gap: 20 }}>
+                <View style={styles.LocationList}>
                   {locations.map(({ tempId, name, location, tempContactPersons }, index) =>
                     !inEditing.includes(index) && validateLocations('list', index) ?
                       mode === 'edit' ?
+                        (name && location) &&
                         <View
                           key={index}
-                          style={{ backgroundColor: Colors.White, flexDirection: 'row', justifyContent: 'space-between', borderRadius: 4 }}
+                          style={styles.LocationItem}
                         >
-                          {locationListItem(name as string, location as any, index)}
+                          {locationListItem(name, location, index)}
                         </View>
 
                         :
 
+                        (name && location && tempId) &&
                         <CheckBox
                           key={index}
-                          checked={selectedLocations.includes(tempId as number)}
-                          onCheckedChange={() => handleSelectedLocations(tempId as number)}
-                          containerStyle={{ backgroundColor: Colors.White, paddingLeft: 10, paddingRight: 19, borderRadius: 4 }}
+                          checked={selectedLocations.includes(tempId)}
+                          onCheckedChange={() => handleSelectedLocations(tempId)}
+                          containerStyle={styles.LocationCheckbox}
                           leftTextView={
-                            <View style={{ backgroundColor: Colors.White, flexDirection: 'row', justifyContent: 'space-between', paddingRight: 20, alignItems: 'center' }}>
-                              {locationListItem(name as string, location as any, index)}
+
+                            <View style={styles.LocationCheckboxItem}>
+                              {locationListItem(name, location, index)}
                             </View>
                           }
                         />
@@ -575,9 +589,8 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
       {step === 'map' &&
         <View>
           <GoogleMapScreen
-            callback={(address) => googleMapCallback(address)}
-            initialAddress={newLocationEditing ? newLocation?.location : locations[currentIndex].location as any}
-          /* closeCallback={() => { backHandler() }} */
+            callback={(address) => handleGoogleMap(address)}
+            initialAddress={newLocationEditing ? newLocation?.location || null : locations[currentIndex].location}
           />
         </View>
       }
@@ -586,7 +599,7 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
           mode='select'
           initialContactPersons={currentContactPersons}
           initialSelected={(newLocationEditing && !!newLocation) ? newLocation.tempContactPersons : locations[currentIndex].tempContactPersons}
-          selectedContactPersonsCallback={(contacts) => selectedContactPersonsCallback(contacts)}
+          selectedContactPersonsCallback={(contacts) => handleSelectedContactPersons(contacts)}
           contactPersonsCallback={(contactPersons) => { contactPersonsCallback(contactPersons), setCurrentContactPersons(contactPersons) }}
         />
       }
@@ -594,8 +607,8 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
         <Modal
           onClose={() => setDeleteModal({ active: false })}
         >
-          <View style={{ padding: 40, gap: 30 }}>
-            <View style={{ alignItems: 'center' }}>
+          <View style={styles.ModalContent}>
+            <View style={styles.ModalTextContainer}>
               <Typography variant='h5' >
                 Na pewno chcesz usunąć lokalizację?
               </Typography>
@@ -603,15 +616,15 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
                 Lokalizacja może być powiązana z ofertami pracy.
               </Typography>
             </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <View style={styles.ModalButtons}>
               <Button
                 fullwidth={false}
                 size='medium'
                 borderRadius={4}
-                style={{ width: 120 }}
+                style={styles.ModalButton}
                 onClick={() => {
-                  deleteLocation(deleteModal.index as number)
-                  setDeleteModal({ active: false })
+                  deleteLocation(deleteModal.index as number);
+                  setDeleteModal({ active: false });
                 }}
               >
                 Usuń
@@ -621,7 +634,7 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
                 size='medium'
                 variant='secondary'
                 borderRadius={4}
-                style={{ width: 120 }}
+                style={styles.ModalButton}
                 onClick={() => setDeleteModal({ active: false })}
               >
                 Anuluj
@@ -663,7 +676,6 @@ const styles = StyleSheet.create({
   EditButtons: {
     flexDirection: 'row',
     gap: 15,
-    padding: 10
   },
   EditButton: {
     width: 'auto',
@@ -682,6 +694,80 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  NameAndLocationContainer: {
+    gap: 10,
+    padding: 20,
+    width: '75%',
+  },
+  LocationContainer: {
+    flexDirection: 'row', alignItems: 'center', gap: 10
+  },
+  LocationNameField: {
+    marginBottom: 30,
+    paddingHorizontal: 19
+  },
+  FilledContactPersons: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+    marginBottom: 20,
+  },
+  FormButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  FormButtonText: {
+    color: Colors.Blue500,
+  },
+  AddLocationButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  NewLocationForm: {
+    paddingHorizontal: 19
+  },
+  LocationListContainer: {
+    marginVertical: 30,
+    marginHorizontal: 19
+  },
+  LocationList: {
+    marginTop: 20,
+    gap: 20
+  },
+  LocationItem: {
+    backgroundColor: Colors.White,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    borderRadius: 4
+  },
+  LocationCheckbox: {
+    backgroundColor: Colors.White,
+    paddingLeft: 10,
+    paddingRight: 19,
+    borderRadius: 4,
+  },
+  LocationCheckboxItem: {
+    backgroundColor: Colors.White,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingRight: 20,
+    alignItems: 'center',
+  },
+  ModalContent: {
+    padding: 20,
+    gap: 30,
+  },
+  ModalTextContainer: {
+    alignItems: 'center'
+  },
+  ModalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  ModalButton: {
+    width: 120
+  }
 });
 
 export default AddOtherCompanyLocationsScreen;
