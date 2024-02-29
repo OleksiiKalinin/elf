@@ -12,6 +12,7 @@ import { useActions } from '../../hooks/useActions';
 import windowExists from '../../hooks/windowExists';
 import useShadow from '../../hooks/useShadow';
 import { uniqueId } from 'lodash';
+import isDev from '../../hooks/isDev';
 
 
 type ScreensTitlesType<T extends keyof RootStackParamList = keyof RootStackParamList> = T extends T ? { [T in keyof RootStackParamList]: { [K in keyof RootStackParamList[T]['default']]: string } } : never;
@@ -136,7 +137,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   const { backToRemoveParams, back } = useRouter();
   const { currentScreen, userData, userCompany, windowSizes, swipeablePanelProps, isTabbarVisible, appLoading, blockedScreen, loggedOut } = useTypedSelector(s => s.general);
   const { setShowUserShouldBeLogedInModal, setShowUserShouldHaveCompanyModal, setShowExitWarningModal } = useActions();
-  const [contentProtected, setContentProtected] = useState<boolean>(true);
+  const [contentProtected, setContentProtected] = useState<boolean>(!isDev);
   // @ts-ignore
   const currentTitle: string = screensTitles[currentScreen.stack][currentScreen.screen] || '';
   const firstRender = useRef(true);
@@ -146,7 +147,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   const StaticHeightForWeb = windowSizes.height - HeaderSpace - BottomSpace;
 
   useEffect(() => {
-    if (!appLoading) {
+    if (!appLoading && !isDev) {
       if (firstAppLoading || !firstRender.current || loggedOut) {
         const { stack, screen } = currentScreen;
         let protectedUrl = true;
@@ -158,7 +159,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
         } else {
           protectedUrl = false;
         }
-        
+
         setContentProtected(protectedUrl);
       }
 
@@ -196,7 +197,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
           {mode === 'backAction' && (
             <View style={{ flex: 1, height: '100%', alignItems: 'flex-start', flexDirection: 'row' }}>
               <Button
-                variant='text'
+                variant={transparent ? 'transparent' : 'text'}
                 p={0}
                 alignItems='center'
                 width={50}
@@ -242,7 +243,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
                   <View style={{ marginLeft: 20 }} key={index}>
                     <Button
                       circular
-                      backgroundColor='transparent'
+                      variant={transparent ? 'transparent' : 'text'}
                       icon={(typeof icon === 'string' ? <SvgIcon fill={headerItemsColor ?? backgroundContent} icon={icon as IconTypes} /> : (typeof icon === 'object' ? icon : undefined)) as any}
                       onPress={onPress}
                     />

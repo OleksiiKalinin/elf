@@ -59,7 +59,7 @@ const { useParam } = createParam<Props>();
 const EventEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial }) => {
   const dispatch = useTypedDispatch();
   const router = useRouter();
-  const [id] = useParam('id', { initial: idInitial });
+  // const [id] = useParam('id', { initial: idInitial });
   const { token, userCompany, userEvents } = useTypedSelector(state => state.general);
   const [loading, setLoading] = useState<boolean>(false);
   const [eventType, setEventType] = useState<'meeting' | 'call'>('meeting');
@@ -72,7 +72,7 @@ const EventEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial 
   const [selectedAdvert, setSelectedAdvert] = useState<UserAdvertType | null>(null);
   const [selectedCandidate, setSelectedCandidate] = useState<CandidateDataType | null>(null);
   const [location, setLocation] = useState<AddressType | null>(null);
-  const { setSwipeablePanelProps } = useActions();
+  const { setSwipeablePanelProps, setSnackbarMessage } = useActions();
 
   const [displayStartHours, displayStartMinutes] = [startTime.getHours(), startTime.getMinutes()];
   const [displayEndHours, displayEndMinutes] = [endTime.getHours(), endTime.getMinutes()];
@@ -115,29 +115,31 @@ const EventEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial 
         is_phone: eventType === 'call',
         location,
         candidate_id: selectedCandidate?.id,
-        candidate_first_name: selectedCandidate?.first_name,
-        candidate_second_name: selectedCandidate?.last_name,
-        company_name: userCompany?.name as string,
+        candidate_first_name: selectedCandidate?.first_name, //to delete
+        candidate_second_name: selectedCandidate?.last_name, //to delete
+        company_name: userCompany?.name as string, //to delete
         start_time: new Date(startDate.toISOString().split('T')[0] + 'T' + startTime.toISOString().split('T')[1]).toISOString(),
         end_time: new Date(endDate.toISOString().split('T')[0] + 'T' + endTime.toISOString().split('T')[1]).toISOString(),
         job_offer: selectedAdvert?.id as number,
-        job_position: selectedAdvert?.job_position_id as number,
+        job_position: selectedAdvert?.job_position_id as number, //to delete
       }, userEvents));
 
       setLoading(false);
 
-      setSwipeablePanelProps({
-        title: 'Wydarzenie zostało stworzone!',
-        defaultCloseAction: 'none',
-        buttons: [
-          {
-            children: 'OK',
-            closeAction: 'props-null',
-            icon: <SvgIcon icon='check' />,
-            onPress: () => router.replace({ stack: 'CalendarStack' }),
-          },
-        ],
-      })
+      setSnackbarMessage({ type: 'success', text: 'Wydarzenie zostało stworzone!' });
+      router.replace({ stack: 'CalendarStack' });
+      // setSwipeablePanelProps({
+      //   title: 'Wydarzenie zostało stworzone!',
+      //   defaultCloseAction: 'none',
+      //   buttons: [
+      //     {
+      //       children: 'OK',
+      //       closeAction: 'props-null',
+      //       icon: <SvgIcon icon='check' />,
+      //       onPress: () => router.replace({ stack: 'CalendarStack' }),
+      //     },
+      //   ],
+      // })
     }
   }
 

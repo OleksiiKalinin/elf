@@ -25,6 +25,7 @@ const UserShouldBeLogedInModal = () => {
         <Modal
             visible={showUserShouldBeLogedInModal.state}
             onClose={closeHandler}
+            withoutUrl
         >
             <View>
                 <View style={{ padding: 15 }}>

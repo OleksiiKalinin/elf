@@ -24,6 +24,7 @@ const UserShouldHaveCompanyModal = () => {
         <Modal
             visible={showUserShouldHaveCompanyModal.state}
             onClose={closeHandler}
+            withoutUrl
         >
             <View>
                 <View style={{ padding: 15 }}>

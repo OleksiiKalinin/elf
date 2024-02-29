@@ -8,7 +8,7 @@ import { Separator } from 'tamagui';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { isArray } from 'lodash';
 
-type VariantType = 'primary' | 'secondary' | 'secondarySelected' | 'light' | 'info' | 'info_alter' | 'text' | 'disabled' | 'active' | 'white';
+type VariantType = 'primary' | 'transparent' | 'secondary' | 'secondarySelected' | 'light' | 'info' | 'info_alter' | 'text' | 'disabled' | 'active' | 'white';
 type Sizes = 'small' | 'medium' | 'large';
 
 export type ButtonPropsOriginal = {
@@ -86,6 +86,12 @@ const variants: { [k in VariantType]: {
     disabledColor: 'transparent',
     contentColor: Colors.Basic600,
     hoverColor: Colors.Basic200,
+  },
+  transparent: {
+    activeColor: 'transparent',
+    disabledColor: 'transparent',
+    contentColor: Colors.White,
+    hoverColor: Colors.Black30,
   },
   disabled: {
     activeColor: Colors.Basic400,

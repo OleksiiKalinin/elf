@@ -7,6 +7,7 @@ import Button from '../molecules/Button';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import useShadow from '../../hooks/useShadow';
 import { isArray } from 'lodash';
+import { useRouter } from 'solito/router';
 
 const MARGIN = 15;
 
@@ -16,23 +17,29 @@ type ModalProps = {
 	resetStyles?: boolean,
 	disableDefaultWrapper?: boolean,
 	contentContainerStyle?: StyleProp<ViewStyle>
-} & ComponentProps<typeof RNModal>;
+} & Omit<ComponentProps<typeof RNModal>, 'onDismiss'>;
 
-/** Custom Modal with good web support, including support onClose event (web history back button, dismiss, native hardware back button, etc.) */
-const Modal: FC<ModalProps> = ({ onClose, withoutUrl = false, children, resetStyles = false, disableDefaultWrapper = false, contentContainerStyle, ...props }) => {
+/** Custom Modal with good web support
+ * @todo back event bugs
+ */
+const Modal: FC<ModalProps> = ({ onClose, withoutUrl = true, children, resetStyles = false, disableDefaultWrapper = false, contentContainerStyle, ...props }) => {
 	const { windowSizes } = useTypedSelector(s => s.general);
 	const [sizes, setSizes] = useState({ height: 0, width: 0 });
 	const wasVisible = useRef<boolean>(false);
+	const router = useRouter();
 
 	const closeRequest = () => {
 		onClose();
 		if (Platform.OS === 'web' && windowExists() && !withoutUrl) {
-			// if (wasVisible.current) {
-			// 	window.history.back();
-			// } else {
-			// 	window.location.hash = '';
-			// }
-			window.location.hash = '';
+			if (wasVisible.current) {
+				window.history.back();
+			} else {
+				const uri = window.location.toString();
+				if (uri.indexOf("#") > 0) {
+					const clean_uri = uri.substring(0, uri.indexOf("#"));
+					router.replace(clean_uri, undefined, { shallow: true });
+				}
+			}
 		}
 	}
 
@@ -59,8 +66,8 @@ const Modal: FC<ModalProps> = ({ onClose, withoutUrl = false, children, resetSty
 				animationType="fade"
 				transparent
 				onRequestClose={closeRequest}
-				onDismiss={closeRequest}
 				{...props}
+				onDismiss={undefined}
 			>
 				{disableDefaultWrapper ? children : <>
 					{Platform.OS === 'web' ?
@@ -69,13 +76,13 @@ const Modal: FC<ModalProps> = ({ onClose, withoutUrl = false, children, resetSty
 							activeOpacity={1}
 							containerStyle={{ flex: 1 }}
 							style={{ flex: 1, backgroundColor: Colors.Black50, cursor: 'default' }}
-							onPress={closeRequest}
+							onPress={onClose}
 						/>
 						:
 						<TouchableOpacity
 							activeOpacity={1}
 							style={{ flex: 1, backgroundColor: Colors.Black50 }}
-							onPress={closeRequest}
+							onPress={onClose}
 						/>
 					}
 					<View

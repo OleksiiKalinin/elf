@@ -41,6 +41,7 @@ const frame = {
 const initialMetrics = { insets, frame };
 
 const routesToRetain: CurrentScreenType[] = [
+  // { stack: 'CalendarStack', screen: 'MainScreen' },
   { stack: 'CalendarStack', screen: 'EventEditorScreen' },
   // other routes
 ];

@@ -27,6 +27,7 @@ const Carousel: FC<Props> = ({
     stylePaginationDot,
     stylePaginationDotContainer,
     getCurrentIndex,
+    data,
     ...props
 }) => {
     const [itemWidth, setItemWidth] = useState<number>(1);
@@ -45,74 +46,74 @@ const Carousel: FC<Props> = ({
 
     return (
         <View onLayout={onLayout} style={{ position: 'relative' }}>
-            <Button
-                variant='TouchableOpacity'
-                activeOpacity={1}
-                onPress={() => {
-                    if (Platform.OS !== 'web' || !scrolling.current) {
-                        setIsOpenedViewer(true);
-                    } else {
-                        scrolling.current = false;
-                    }
-                }}
-            >
-                <RNCarousel
-                    onScrollBegin={() => scrolling.current = true}
-                    onScrollEnd={() => scrolling.current = false}
-                    height={200}
-                    width={itemWidth}
-                    {...props as any}
-                    ref={ref}
-                    onSnapToItem={setCurrIndex}
-                />
-            </Button>
-            {!hideArrows && <>
+            <View style={{ position: 'relative', flex: 1 }}>
                 <Button
                     variant='TouchableOpacity'
-                    onPress={ref.current?.prev}
-                    containerStyle={styles.ButtonLeftWrapper}
-                    style={styles.ButtonLeft}
+                    activeOpacity={1}
+                    onPress={() => {
+                        if (Platform.OS !== 'web' || !scrolling.current) {
+                            setIsOpenedViewer(true);
+                        } else {
+                            scrolling.current = false;
+                        }
+                    }}
                 >
-                    <SvgIcon icon='arrowLeft' fill={Colors.White} />
-                </Button>
-                <Button
-                    variant='TouchableOpacity'
-                    onPress={ref.current?.next}
-                    containerStyle={styles.ButtonRightWrapper}
-                    style={styles.ButtonRight}
-                >
-                    <SvgIcon icon='arrowRight' fill={Colors.White} />
-                </Button>
-            </>}
-            {!hidePagination && <View style={[
-                { width: '100%', paddingVertical: 5, paddingHorizontal: 15, flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap' },
-                innerPagination && { position: 'absolute', bottom: 0, left: 0 },
-                stylePaginationContainer
-            ]}>
-                {props.data.map((_, index) => <Button
-                    variant='TouchableOpacity'
-                    onPress={() => ref.current?.scrollTo({ index, animated: index !== props.data.length - 1, onFinished: () => setCurrIndex(index) })}
-                    containerStyle={[{
-                        padding: 2.5,
-                        opacity: currIndex === index ? 1 : 0.6
-                    }, stylePaginationDotContainer]}
-                >
-                    <View
-                        style={[{
-                            width: 8,
-                            height: 8,
-                            borderRadius: 4,
-                            backgroundColor: Colors.Basic700,
-                        }, stylePaginationDot]}
+                    <RNCarousel
+                        onScrollBegin={() => scrolling.current = true}
+                        onScrollEnd={() => scrolling.current = false}
+                        height={200}
+                        width={itemWidth}
+                        {...props as any}
+                        data={data}
+                        ref={ref}
+                        onSnapToItem={setCurrIndex}
                     />
-                </Button>)}
-            </View>}
+                </Button>
+                {!hideArrows && <>
+                    <Button
+                        variant='TouchableOpacity'
+                        onPress={ref.current?.prev}
+                        containerStyle={styles.ButtonLeftWrapper}
+                        style={styles.ButtonLeft}
+                    >
+                        <SvgIcon icon='arrowLeft' fill={Colors.White} />
+                    </Button>
+                    <Button
+                        variant='TouchableOpacity'
+                        onPress={ref.current?.next}
+                        containerStyle={styles.ButtonRightWrapper}
+                        style={styles.ButtonRight}
+                    >
+                        <SvgIcon icon='arrowRight' fill={Colors.White} />
+                    </Button>
+                </>}
+            </View>
+            {!hidePagination && (
+                <View
+                    style={[
+                        styles.PaginationContainer,
+                        innerPagination && { position: 'absolute', bottom: 0, left: 0 },
+                        stylePaginationContainer
+                    ]}
+                >
+                    {data.map((_, index) => <Button
+                        variant='TouchableOpacity'
+                        onPress={() => ref.current?.scrollTo({ index, animated: index !== data.length - 1, onFinished: () => setCurrIndex(index) })}
+                        containerStyle={[{
+                            padding: 2.5,
+                            opacity: currIndex === index ? 1 : 0.6
+                        }, stylePaginationDotContainer]}
+                    >
+                        <View style={[styles.PaginationDot, stylePaginationDot]} />
+                    </Button>)}
+                </View>
+            )}
             {!disableImageViewer && <ImageViewer
                 visible={isOpenedViewer}
                 close={() => setIsOpenedViewer(false)}
                 index={currIndex}
                 onChange={(index) => ref.current?.scrollTo({ index, animated: false, onFinished: () => setCurrIndex(index) })}
-                data={props.data}
+                data={data}
                 hideArrows={hideArrows}
             />}
         </View>
@@ -120,6 +121,20 @@ const Carousel: FC<Props> = ({
 }
 
 const styles = StyleSheet.create({
+    PaginationContainer: {
+        width: '100%',
+        paddingVertical: 5,
+        paddingHorizontal: 15,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        flexWrap: 'wrap'
+    },
+    PaginationDot: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: Colors.Basic700,
+    },
     ButtonLeftWrapper: {
         position: 'absolute',
         top: '50%',
