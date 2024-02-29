@@ -412,9 +412,10 @@ export interface CompanyDataType {
 
 export interface OtherCompanyLocationType {
     id?: number,
+    tempId?: number,
     name: string | null,
     location: AddressType | null,
-    tempContactPersons: ContactPersonType[],
+    tempContactPersons: number[],
     contact_persons?: number[],
     company_id?: number,
 }
@@ -433,6 +434,8 @@ export interface ContactPersonType {
     id?: number,
     tempId?: number,
     company_id?: number,
+    first_name: string | null,
+    last_name: string | null,
     email: string | null,
     mobile_number: string | null,
     contact_hours: string | null,

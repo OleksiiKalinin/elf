@@ -113,7 +113,6 @@ const CompanyEditorScreen: React.FC = () => {
   }, [mode, unsavedData]);
 
   useEffect(() => {
-    console.log(companyData);
     const fields: FormFieldType[] = [
       { name: 'name', value: name, isValid: !!(name && name.length > 2 && name.length <= 100), required: true },
       { name: 'address', value: address, isValid: !!address, required: true },
@@ -133,6 +132,8 @@ const CompanyEditorScreen: React.FC = () => {
 
     const squareFootage = { name: 'square_footage', value: square_footage, isValid: !!(square_footage && square_footage.length && square_footage.length <= 8) };
 
+    console.log(fields);
+
     if (job_industry && squareFootageIndustries.includes(job_industry)) {
       setFields([...fields, squareFootage]);
     } else {
@@ -141,12 +142,43 @@ const CompanyEditorScreen: React.FC = () => {
   }, [companyData]);
 
   useEffect(() => {
+    if (!!other_locations && other_locations.length) {
+      const validOtherLocations = () => {
+        if (!contactPersons || (contactPersons && !contactPersons.length)) {
+          return false
+        };
+
+        let isValid = true;
+
+        other_locations.forEach(location => {
+          location.tempContactPersons.forEach(tempId => {
+            if (!contactPersons.some(person => person.tempId === tempId)) {
+              isValid = false;
+            }
+          });
+        });
+
+        return isValid;
+      };
+
+      const index = fields.findIndex(field => field.name === 'other_locations');
+      if (index !== -1) {
+        setFields(prevFields => {
+          const updatedFields = [...prevFields];
+          updatedFields[index] = { ...updatedFields[index], isValid: validOtherLocations() };
+          return updatedFields;
+        });
+      };
+    };
+  }, [contactPersons])
+
+  useEffect(() => {
     setUnsavedData(!isEqual(oldCompanyData, companyData));
   }, [oldCompanyData, companyData]);
 
-  useEffect(() => {
-    setBlockedScreen({ blockedExit: unsavedData, blockedBack: unsavedData });
-  }, [unsavedData, subView]);
+    useEffect(() => {
+      setBlockedScreen({ blockedExit: unsavedData, blockedBack: unsavedData });
+    }, [unsavedData, subView]);
 
   useEffect(() => {
     if (validateDataToCreateCompany()) {
@@ -414,8 +446,9 @@ const CompanyEditorScreen: React.FC = () => {
       screen: 'CompanyEditorScreen',
       params: {
         subView: 'AddContactPersonsScreen',
+        mode: 'edit',
         initialContactPersons: contactPersons,
-        callback: (contactPersons) => changeCompanyDataHandler('contactPersons', contactPersons, false),
+        contactPersonsCallback: (contactPersons) => changeCompanyDataHandler('contactPersons', contactPersons, false),
       },
     });
   };
@@ -480,10 +513,12 @@ const CompanyEditorScreen: React.FC = () => {
       stack: 'ProfileStack',
       screen: 'CompanyEditorScreen',
       params: {
+        mode: 'edit',
         subView: 'AddOtherCompanyLocationsScreen',
         initialLocations: other_locations || [],
-        contactPersons: contactPersons,
-        callback: (locations) => changeCompanyDataHandler('other_locations', locations, false),
+        contactPersons: contactPersons || [],
+        locationsCallback: (locations) => changeCompanyDataHandler('other_locations', locations, false),
+        contactPersonsCallback: (contactPersons) => changeCompanyDataHandler('contactPersons', contactPersons, false),
       },
     });
   };
@@ -944,7 +979,7 @@ const CompanyEditorScreen: React.FC = () => {
           <>
             <View style={styles.FilledField}>
               <View style={styles.FilledFieldTitle}>
-                <FieldStatusCircle status={true} />
+                <FieldStatusCircle status={isFieldValid('other_locations')} warning={showTips} />
                 <Typography variant='h5' weight='Bold'>
                   Dodatkowe lokalizacje
                 </Typography>
@@ -978,7 +1013,7 @@ const CompanyEditorScreen: React.FC = () => {
             arrowRight
             borderBottom
             onPress={() => {
-              (!!contactPersons && contactPersons.length) ? goToAddOtherCompanyLocationsScreen() : setSnackbarMessage({ type: 'error', text: 'Przed dodaniem dodatkowych lokalizacji uzupełnij dane do kontaktu' })
+              goToAddOtherCompanyLocationsScreen();
             }}
           >
             <View style={styles.UnfilledFieldTitle}>
