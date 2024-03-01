@@ -20,8 +20,8 @@ type AdvertSmallProps = {
   hideFooter?: boolean,
 } & UserAdvertType;
 
-const AdvertSmall: FC<AdvertSmallProps> = (advert) => {
-  const { onChooseButton, hideOptions = false, hideCandidatesButton = false, hideExtendActivityButton = false, hideFooter = false, is_active, containerStyle, benefits_ids, company_id, description, duties_ids, expiration_time, job_experience_id, job_mode_id, job_position_id, job_start_id, known_languages_id, location, requirements_ids, salary_amount_low, salary_amount_up, salary_tax_type_id, salary_time_type_id, trial_time_id, trial_type_id, type_of_contract_id, working_hour_down, working_hour_up, id, num_views, candidate_data } = advert;
+const AdvertSmall: FC<AdvertSmallProps> = ({ onChooseButton, hideOptions = false, hideCandidatesButton = false, hideExtendActivityButton = false, hideFooter = false, ...advert }) => {
+  const { is_active, containerStyle, benefits_ids, company_id, description, duties_ids, expiration_time, job_experience_id, job_mode_id, job_position_id, job_start_id, known_languages_id, location, requirements_ids, salary_amount_low, salary_amount_up, salary_tax_type_id, salary_time_type_id, trial_time_id, trial_type_id, type_of_contract_id, working_hour_down, working_hour_up, id, num_views, candidate_data } = advert;
   const { jobSalaryModes, jobSalaryTaxes, jobIndustries, userCompany } = useTypedSelector(state => state.general);
   const router = useRouter();
   // const [optionsVisible, setOptionsVisible] = useState(false);

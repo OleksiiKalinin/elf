@@ -137,7 +137,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   const { backToRemoveParams, back } = useRouter();
   const { currentScreen, userData, userCompany, windowSizes, swipeablePanelProps, isTabbarVisible, appLoading, blockedScreen, loggedOut } = useTypedSelector(s => s.general);
   const { setShowUserShouldBeLogedInModal, setShowUserShouldHaveCompanyModal, setShowExitWarningModal } = useActions();
-  const [contentProtected, setContentProtected] = useState<boolean>(!isDev);
+  const [contentProtected, setContentProtected] = useState<boolean>(!isDev());
   // @ts-ignore
   const currentTitle: string = screensTitles[currentScreen.stack][currentScreen.screen] || '';
   const firstRender = useRef(true);
@@ -147,7 +147,7 @@ const ScreenHeaderProvider: React.FC<ScreenHeaderProviderProps> = ({
   const StaticHeightForWeb = windowSizes.height - HeaderSpace - BottomSpace;
 
   useEffect(() => {
-    if (!appLoading && !isDev) {
+    if (!appLoading && !isDev()) {
       if (firstAppLoading || !firstRender.current || loggedOut) {
         const { stack, screen } = currentScreen;
         let protectedUrl = true;

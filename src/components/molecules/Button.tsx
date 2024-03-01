@@ -36,72 +36,84 @@ export type ButtonPropsGeneral = ButtonPropsOriginal | ButtonPropsTouchableOpaci
 const variants: { [k in VariantType]: {
   activeColor: string,
   disabledColor: string,
+  disabledContentColor: string,
   contentColor: string,
   hoverColor: string,
 } } = {
   primary: {
     activeColor: Colors.Basic900,
     disabledColor: Colors.Basic600,
+    disabledContentColor: Colors.Basic100,
     contentColor: Colors.Basic100,
     hoverColor: Colors.Basic800,
   },
   secondary: {
     activeColor: Colors.Basic400,
-    disabledColor: Colors.Basic400,
+    disabledColor: Colors.Basic300,
+    disabledContentColor: Colors.Basic500,
     contentColor: Colors.Basic900,
     hoverColor: Colors.Basic300,
   },
   secondarySelected: {
     activeColor: Colors.Basic500,
-    disabledColor: Colors.Basic500,
+    disabledColor: Colors.Basic300,
+    disabledContentColor: Colors.Basic500,
     contentColor: Colors.Basic900,
     hoverColor: Colors.Basic400,
   },
   light: {
     activeColor: Colors.Basic200,
     disabledColor: Colors.Basic200,
+    disabledContentColor: Colors.Basic900,
     contentColor: Colors.Basic900,
     hoverColor: Colors.Basic100,
   },
   white: {
     activeColor: Colors.White,
     disabledColor: Colors.White,
+    disabledContentColor: Colors.Basic900,
     contentColor: Colors.Basic900,
     hoverColor: Colors.Basic200,
   },
   info: {
     activeColor: Colors.Sea200,
     disabledColor: 'transparent',
+    disabledContentColor: Colors.Basic900,
     contentColor: Colors.Basic900,
     hoverColor: Colors.Sea300,
   },
   info_alter: {
     activeColor: Colors.Sea300,
     disabledColor: 'transparent',
+    disabledContentColor: Colors.Basic900,
     contentColor: Colors.Basic900,
     hoverColor: Colors.Sea200,
   },
   text: {
     activeColor: 'transparent',
     disabledColor: 'transparent',
+    disabledContentColor: Colors.Basic600,
     contentColor: Colors.Basic600,
     hoverColor: Colors.Basic200,
   },
   transparent: {
     activeColor: 'transparent',
     disabledColor: 'transparent',
+    disabledContentColor: Colors.White,
     contentColor: Colors.White,
     hoverColor: Colors.Black30,
   },
   disabled: {
     activeColor: Colors.Basic400,
     disabledColor: Colors.Basic400,
+    disabledContentColor: Colors.White,
     contentColor: Colors.White,
     hoverColor: Colors.Basic300,
   },
   active: {
     activeColor: Colors.Basic300,
     disabledColor: Colors.Basic400,
+    disabledContentColor: Colors.Basic900,
     contentColor: Colors.Basic900,
     hoverColor: Colors.Basic200,
   },
@@ -177,7 +189,7 @@ const Button: React.FC<ButtonPropsGeneral> = (props) => {
           <Typography
             variant={contentVariant}
             weight={contentWeight}
-            color={contentColor || variants[variant].contentColor}
+            color={contentColor || (props.disabled ? variants[variant].disabledContentColor : variants[variant].contentColor)}
             {...(arrowRight ? { style: { flex: 1, textAlign: 'left', width: '100%'} } : {style: { width: props.w || undefined as any}})}
           >
             {children}

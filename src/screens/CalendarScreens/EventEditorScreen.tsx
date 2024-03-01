@@ -29,6 +29,8 @@ import { DatePickerModal } from '../../components/modified_modules/react-native-
 import { TimePickerModal } from '../../components/modified_modules/react-native-paper-dates/Time/TimePickerModal';
 import MapPreview from '../../components/molecules/MapPreview';
 import { InitialPropsFromParams } from '../../hooks/types';
+import FieldStatusCircle from '../../components/atoms/FieldStatusCircle';
+import HorizontalButtonsSelector from '../../components/molecules/HorizontalButtonsSelector';
 // import CandidateCard from '../../components/organisms/CandidateCard/CandidateCard';
 
 const START_END_MINUTES_SPACE = 30;
@@ -73,9 +75,12 @@ const EventEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial 
   const [selectedCandidate, setSelectedCandidate] = useState<CandidateDataType | null>(null);
   const [location, setLocation] = useState<AddressType | null>(null);
   const { setSwipeablePanelProps, setSnackbarMessage } = useActions();
+  const [showTips, setShowTips] = useState<boolean>(true);
 
   const [displayStartHours, displayStartMinutes] = [startTime.getHours(), startTime.getMinutes()];
   const [displayEndHours, displayEndMinutes] = [endTime.getHours(), endTime.getMinutes()];
+
+  const phoneNumber = true ? '+48 456 789 987' : null;
 
   // useEffect(() => {
   //   if (!isFocused && route.params?.isMainMenuSender) {
@@ -154,9 +159,19 @@ const EventEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial 
   return (
     <ScreenHeaderProvider backgroundContent={Colors.Basic100}>
       <ScrollView>
-        <Typography weight="Bold" variant='h5' style={styles.Title}>
-          Data i godzina*
-        </Typography>
+        <View style={styles.Title}>
+          <FieldStatusCircle
+            status={true}
+          />
+          <View style={{ flex: 1 }}>
+            <Typography weight="Bold" variant='h5' color='inherit'>
+              Data i godzina
+            </Typography>
+            <Typography color={Colors.Basic600}>
+              {new Date().toString().replace(/^.*(GMT)/i, '$1')}
+            </Typography>
+          </View>
+        </View>
         <View style={{ margin: 18, flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
           <View style={{ flex: 1 }}>
             <Button
@@ -235,82 +250,107 @@ const EventEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial 
           minutes={showTimepicker === 'start' ? displayStartMinutes : displayEndMinutes}
         />
         <Separator />
-        <View style={{ marginVertical: 24 }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}>
-            <Typography weight="Bold" variant='h5' style={[styles.Title, { marginTop: 0 }]}>
-              Ogłoszenie*
-            </Typography>
-            {selectedAdvert && <Button
-              variant='TouchableOpacity'
-              style={{ marginRight: 18 }}
-              onPress={goToChooseAdvertScreen}
-            >
-              <Typography style={{ textDecorationLine: 'underline' }} color={Colors.Blue500}>
-                Zmień wybór
-              </Typography>
-            </Button>}
-          </View>
-          {selectedAdvert ?
-            <AdvertSmall
-              hideOptions
-              hideCandidatesButton
-              hideExtendActivityButton
-              hideFooter
-              {...selectedAdvert}
+        <View style={{ marginBottom: 19 }}>
+          <View style={styles.Title}>
+            <FieldStatusCircle
+              status={!!selectedAdvert}
+              warning={showTips && !selectedAdvert}
             />
-            :
+            <Typography weight="Bold" variant='h5' color='inherit' style={{ flex: 1 }}>
+              Ogłoszenie
+            </Typography>
             <Button
-              variant='secondary'
+              variant='TouchableOpacity'
               onPress={goToChooseAdvertScreen}
             >
-              Wybierz Ogłoszenie
+              <Typography style={{ textDecorationLine: 'underline' }} color={Colors.Blue500}>
+                {selectedAdvert ? 'Zmień wybór' : 'Dodaj'}
+              </Typography>
             </Button>
-          }
+          </View>
+          {selectedAdvert && (
+            <View style={{ marginHorizontal: 18, marginTop: 15, borderRadius: 4, overflow: 'hidden' }}>
+              <AdvertSmall
+                hideOptions
+                hideCandidatesButton
+                hideExtendActivityButton
+                hideFooter
+                {...selectedAdvert}
+              />
+            </View>
+          )}
         </View>
-        {!!selectedAdvert && <View style={{ marginBottom: 24 }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}>
-            <Typography weight="Bold" variant='h5' style={[styles.Title, { marginTop: 0 }]}>
-              Kandydat*
+        <Separator />
+        <View style={{ marginBottom: 19 }}>
+          <View style={styles.Title}>
+            <FieldStatusCircle
+              status={!!selectedCandidate}
+              warning={showTips && !selectedCandidate}
+            />
+            <Typography weight="Bold" variant='h5' color='inherit' style={{ flex: 1 }}>
+              Kandydat
             </Typography>
-            {selectedCandidate && <Button
+            <Button
               variant='TouchableOpacity'
-              style={{ marginRight: 18 }}
-              onPress={goToChooseCandidateScreen}
+              onPress={() => !!selectedAdvert ? goToChooseCandidateScreen() : setSnackbarMessage({ type: 'error', text: 'Najpierw wybierz ogłoszenie!' })}
             >
               <Typography style={{ textDecorationLine: 'underline' }} color={Colors.Blue500}>
-                Zmień wybór
+                {selectedCandidate ? 'Zmień wybór' : 'Dodaj'}
               </Typography>
-            </Button>}
+            </Button>
           </View>
-          {selectedCandidate ?
-            <Button
-              variant='TouchableOpacity'
-              style={{ marginBottom: 10 }}
-            // onPress={() => navigation.navigate('ProfileScreen', { candidateData: selectedCandidate })}
-            >
-              <CandidateCard {...selectedCandidate} />
-            </Button>
-            :
-            <Button
-              variant='secondary'
-              onPress={goToChooseCandidateScreen}
-            >
-              Wybierz Kandydata
-            </Button>
-          }
-        </View>}
+          {selectedCandidate && (<>
+            <View style={{ marginHorizontal: 18, marginTop: 15, borderRadius: 4, overflow: 'hidden' }}>
+              <Button
+                variant='TouchableOpacity'
+              // onPress={() => navigation.navigate('ProfileScreen', { candidateData: selectedCandidate })}
+              >
+                <CandidateCard {...selectedCandidate} />
+              </Button>
+            </View>
+            <View style={{ marginHorizontal: 18, marginTop: 10 }}>
+              {!!phoneNumber ? (
+                <Typography>
+                  {'Numer kontaktowy: '}
+                  <Typography weight='Bold'>
+                    {phoneNumber}
+                  </Typography>
+                </Typography>
+              ) : (
+                <Typography color={Colors.Danger70}>
+                  Brak numeru kontaktowego
+                </Typography>
+              )}
+            </View>
+          </>)}
+        </View>
         <Separator />
         <View>
-          <Typography weight="Bold" variant='h5' style={[styles.Title, { marginTop: 24 }]}>
-            Wybierz rodzaj wydarzenia
-          </Typography>
-          <RadioGroup
-            name='eventType' ml={18} mt={10} mb={15}
+          <View style={styles.Title}>
+            <FieldStatusCircle
+              status={!!eventType}
+              warning={showTips && !selectedCandidate}
+            />
+            <Typography weight="Bold" variant='h5' color='inherit' style={{ flex: 1 }}>
+              Rodzaj wydarzenia
+            </Typography>
+          </View>
+          <HorizontalButtonsSelector
+            data={[
+              { id: 'call', name: 'Telefonicznie', disabled: !phoneNumber },
+              { id: 'meeting', name: 'Na miejscu' }
+            ]}
+            selected={eventType}
+            onSelect={(id) => setEventType(id as 'meeting' | 'call')}
+            contentContainerStyle={{ marginVertical: 19 }}
+          />
+          {/* <RadioGroup
+            name='eventType' mx={18} mt={10} mb={15}
             value={eventType} onValueChange={value => setEventType(value as 'meeting' | 'call')}
           >
-            <RadioGroup.Item value="call" my={1} label='Połaczenie telefoniczne' />
-            <RadioGroup.Item value="meeting" my={1} label='Spotkanie pod adresem' />
-          </RadioGroup>
+            <RadioGroup.Item containerProps={{ flexDirection: 'row-reverse' }} value="call" my={1} label='Połaczenie telefoniczne' />
+            <RadioGroup.Item containerProps={{ flexDirection: 'row-reverse' }} value="meeting" my={1} label='Spotkanie pod adresem' />
+          </RadioGroup> */}
         </View>
         {eventType === 'meeting' && <>
           <Separator />
@@ -348,9 +388,12 @@ const EventEditorScreen: React.FC<InitialPropsFromParams<Props>> = ({ idInitial 
 
 const styles = StyleSheet.create({
   Title: {
-    color: Colors.Basic600,
-    marginLeft: 18,
-    marginTop: 24,
+    // color: Colors.Basic600,
+    marginHorizontal: 19,
+    marginTop: 19,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   Date: {
     marginLeft: 18,

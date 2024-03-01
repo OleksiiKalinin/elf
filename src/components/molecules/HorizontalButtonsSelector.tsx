@@ -5,15 +5,15 @@ import Button, { ButtonPropsOriginal } from './Button';
 import Colors from '../../colors/Colors';
 import { isArray } from 'lodash';
 
-type Props = {
-    data: { id: number, name: string }[],
-    onSelect: (id: number | null) => void,
-    selected: number | null,
+type Props<T = number> = {
+    data: { id: T, name: string, disabled?: boolean }[],
+    onSelect: (id: T | null) => void,
+    selected: T | null,
     contentContainerStyle?: StyleProp<ViewStyle>,
     buttonProps?: (props: { selected: boolean }) => ButtonPropsOriginal,
 };
 
-const HorizontalButtonsSelector: FC<Props> = ({ data, selected, onSelect, contentContainerStyle, buttonProps }) => {
+function HorizontalButtonsSelector<T = number>({ data, selected, onSelect, contentContainerStyle, buttonProps }: Props<T>) {
     return (
         <ScrollView
             horizontal
@@ -24,7 +24,7 @@ const HorizontalButtonsSelector: FC<Props> = ({ data, selected, onSelect, conten
                 ...(isArray(contentContainerStyle) ? contentContainerStyle : [contentContainerStyle])
             ]}
         >
-            {data.map(({ id, name }) => {
+            {data.map(({ id, name, disabled }) => {
                 const props = buttonProps?.({ selected: selected === id });
                 return (
                     <Button
@@ -33,8 +33,8 @@ const HorizontalButtonsSelector: FC<Props> = ({ data, selected, onSelect, conten
                         variant={selected === id ? 'secondarySelected' : 'secondary'}
                         contentWeight={selected === id ? 'Bold' : 'SemiBold'}
                         contentVariant='h5'
-                        contentColor={Colors.Basic900}
                         borderRadius={4}
+                        disabled={disabled}
                         {...props}
                         style={[
                             {
@@ -44,7 +44,7 @@ const HorizontalButtonsSelector: FC<Props> = ({ data, selected, onSelect, conten
                             },
                             ...(isArray(props?.style) ? props?.style : [props?.style])
                         ]}
-                        onPress={() => onSelect(selected === id ? null : id)}
+                        onPress={() => onSelect(disabled || selected === id ? null : id)}
                     >
                         {name}
                     </Button>

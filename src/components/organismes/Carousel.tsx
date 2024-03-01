@@ -69,7 +69,7 @@ const Carousel: FC<Props> = ({
                         onSnapToItem={setCurrIndex}
                     />
                 </Button>
-                {!hideArrows && <>
+                {!hideArrows && Platform.OS === 'web' && <>
                     <Button
                         variant='TouchableOpacity'
                         onPress={ref.current?.prev}
