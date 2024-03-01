@@ -10,7 +10,7 @@ import useRouter from '../hooks/useRouter';
 import { ScrollView } from '../components/molecules/ScrollView';
 import CheckBox from '../components/atoms/CheckBox';
 import { Separator } from 'tamagui';
-import { isEqual, isString } from 'lodash';
+import { escape, isEqual, isString } from 'lodash';
 import { useActions } from '../hooks/useActions';
 import { useTypedSelector } from '../hooks/useTypedSelector';
 import MapPreview from '../components/molecules/MapPreview';
@@ -166,20 +166,32 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
     };
   };
 
+  const isNameUnique = (name: string, mode: 'new' | 'edit', index?: number) => {
+    if (mode === 'new') {
+      return !locations.some(item => item.name === name);
+    } else {
+      return !locations.some((item, i) => !!(item.name === name && i !== index));
+    };
+  };
+
   const validateLocations = (mode: 'newLocation' | 'list', index?: number) => {
     if (mode === 'newLocation') {
       return !!(
         !!newLocation
-        && (newLocation.name && newLocation.name.length > 2 && newLocation.name.length <= 100)
+        && newLocation.name
+        && isNameUnique(newLocation.name, 'new')
+        && (newLocation.name.length > 2 && newLocation.name.length <= 100)
         && !!newLocation.location
         && !!newLocation.tempContactPersons.length
       )
     } else {
-      const array = index ? [locations[index]] : locations;
+      const array = index !== undefined ? [locations[index]] : locations;
 
-      for (const location of array) {
+      for (const [i, location] of array.entries()) {
         if (
-          !!(location.name && location.name.length > 2 && location.name.length <= 100)
+          !!location.name
+          && isNameUnique(location.name, 'edit', index !== undefined ? index : i)
+          && !!(location.name.length > 2 && location.name.length <= 100)
           && !!location.location
           && !!location.tempContactPersons.length
         ) {
@@ -195,7 +207,7 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
 
   const displayWarning = () => {
     setShowTips(true);
-    setSnackbarMessage({ type: 'error', text: 'Wypełnij wszystkie pola' });
+    setSnackbarMessage({ type: 'error', text: 'Wypełnij poprawnie wszystkie pola' });
   };
 
   const addNewLocation = () => {
@@ -313,7 +325,7 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
       if (mode === 'select') {
         selectedLocationsCallback(selectedLocations);
       };
-      backToRemoveParams();
+      backToRemoveParams({ force: true });
     };
   };
 
@@ -331,7 +343,7 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
             </Typography>
           </View>
         </View>
-        <View style={[styles.EditButtons, { padding: mode === 'select' ? 0 : 10 }]}>
+        <View style={[styles.EditButtons, { padding: mode === 'select' ? 0 : 10, paddingRight: 'edit' ? 19 : 0 }]}>
           <Button
             variant='TouchableOpacity'
             style={styles.EditButton}
@@ -379,9 +391,9 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
               <TextField
                 label="Nazwa lokalizacji*"
                 value={name || ''}
-                onChangeText={text => mode === 'new' && index ? editNewLocation('name', text) : editLocations('name', text, index)}
-                {...(showTips && (!name || !(name && name.length > 2 && name.length <= 100)) && {
-                  bottomText: 'Nazwa firmy musi zawierać od 3 do 100 znaków',
+                onChangeText={text => mode === 'new' ? editNewLocation('name', text) : editLocations('name', text, index)}
+                {...(showTips && (!name || !(!!name && name.length > 2 && name.length <= 100) || !isNameUnique(name, mode, index)) && {
+                  bottomText: !!(!!name && !isNameUnique(name, mode, index)) ? 'Taka nazwa lokalizacji już istnieje' : 'Nazwa firmy musi zawierać od 3 do 100 znaków',
                 })}
               />
             </View>
@@ -552,9 +564,9 @@ const AddOtherCompanyLocationsScreen: React.FC<AddOtherCompanyLocationsScreenPro
                           key={index}
                           checked={selectedLocations.includes(tempId)}
                           onCheckedChange={() => handleSelectedLocations(tempId)}
+                          flexDirection='row-reverse'
                           containerStyle={styles.LocationCheckbox}
                           leftTextView={
-
                             <View style={styles.LocationCheckboxItem}>
                               {locationListItem(name, location, index)}
                             </View>
@@ -743,15 +755,14 @@ const styles = StyleSheet.create({
   },
   LocationCheckbox: {
     backgroundColor: Colors.White,
-    paddingLeft: 10,
-    paddingRight: 19,
+    paddingLeft: 19,
+    paddingRight: 9,
     borderRadius: 4,
   },
   LocationCheckboxItem: {
     backgroundColor: Colors.White,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingRight: 20,
     alignItems: 'center',
   },
   ModalContent: {

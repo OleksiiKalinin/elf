@@ -95,24 +95,32 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
     setBlockedScreen({ ...blockedScreen, blockedBack: unsavedData });
   }, [unsavedData]);
 
+  const isEmailUnique = (email: string, mode: 'new' | 'edit', index?: number) => {
+    if (mode === 'new') {
+      return !contactPersons.some(item => item.email === email);
+    } else {
+      return !contactPersons.some((item, i) => !!(item.email === email && i !== index));
+    };
+  };
+
   const validateContactPersons = (mode: 'newPerson' | 'list', index?: number) => {
     if (mode === 'newPerson') {
       return !!(
         !!newPerson
         && (newPerson.first_name && (newPerson.first_name.length >= 2 && newPerson.first_name.length <= 100))
         && (newPerson.last_name && (newPerson.last_name.length >= 2 && newPerson.last_name.length <= 100))
-        && newPerson.email && validateMail(newPerson.email)
+        && !!(newPerson.email && validateMail(newPerson.email) && isEmailUnique(newPerson.email, 'new'))
         && newPerson.mobile_number && newPerson.mobile_number.length === 12
         && (newPerson.preferred_mobile_number || newPerson.preferred_email)
       )
     } else {
-      const array = index ? [contactPersons[index]] : contactPersons;
+      const array = index !== undefined ? [contactPersons[index]] : contactPersons;
 
-      for (const contact of array) {
+      for (const [i, contact] of array.entries()) {
         if (
           (contact.first_name && (contact.first_name.length >= 2 && contact.first_name.length <= 100))
           && (contact.last_name && (contact.last_name.length >= 2 && contact.last_name.length <= 100))
-          && contact.email && validateMail(contact.email)
+          && !!(contact.email && validateMail(contact.email) && isEmailUnique(contact.email, 'edit', index !== undefined ? index : i))
           && contact.mobile_number && contact.mobile_number.length === 12
           && (contact.preferred_mobile_number || contact.preferred_email)
         ) {
@@ -170,8 +178,6 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
 
   const cancelEditing = (tempIdToFind: number, index: number) => {
     const beforeEditingIndex = beforeEditing.findIndex(item => item.tempId === tempIdToFind);
-
-    console.log('beforeEditingIndex', beforeEditingIndex)
 
     if (beforeEditingIndex !== -1) {
       const updatedContactPersons = [...contactPersons];
@@ -236,7 +242,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
   const contactListItem = (first_name: string, last_name: string, email: string, index: number) => {
     return (
       <>
-        <View style={{ gap: 10, padding: 20, width: '70%' }}>
+        <View style={styles.NameAndEmailContainer}>
           <Typography variant='h5'>
             {first_name} {last_name}
           </Typography>
@@ -244,7 +250,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
             {email}
           </Typography>
         </View>
-        <View style={[styles.EditButtons, { padding: mode === 'select' ? 0 : 10 }]}>
+        <View style={[styles.EditButtons, { padding: mode === 'edit' ? 10 : 0, paddingRight: 'edit' ? 19 : 0 }]}>
           <Button
             variant='TouchableOpacity'
             style={styles.EditButton}
@@ -274,7 +280,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
     return (
       <View style={styles.ContactPerson}>
         <View style={styles.ContactPersonHeader}>
-          <Typography size={18} weight='Bold' style={{ marginVertical: 20 }}>
+          <Typography size={18} weight='Bold' style={styles.FormItemHeader}>
             {mode === 'new' ? 'Nowy kontakt' : `Edytowanie kontaktu ${index + 1}`}
           </Typography>
           {mode === 'edit' &&
@@ -315,8 +321,8 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
             label='Email*'
             value={email || ''}
             onChangeText={text => mode === 'new' ? editNewPerson('email', text) : editContactPersons('email', text, index)}
-            {...(showTips && (!email || !validateMail(email)) && {
-              bottomText: !email ? 'Wprowadź adres email' : 'Niepoprawny adres email',
+            {...(showTips && (!email || !validateMail(email) || !isEmailUnique(email, mode, index)) && {
+              bottomText: !email ? 'Wprowadź adres email' : !isEmailUnique(email, mode, index) ? 'Taki adres email już istnieje' : 'Niepoprawny adres email',
             })}
           />
         </View>
@@ -385,7 +391,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
               {contact_hours?.substring(0, contact_hours.length - 6)}
             </Button>
           </View>
-          <View style={{ justifyContent: 'center', height: 100, width: 30, alignItems: 'center' }}>
+          <View style={styles.HourDivider}>
             <Typography weight='Bold' variant='h4' color={Colors.Basic500}>{'  -  '}</Typography>
           </View>
           <View style={styles.HourButton}>
@@ -401,8 +407,8 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
             </Button>
           </View>
         </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <View style={{ width: '40%' }}>
+        <View style={styles.FormButtons}>
+          <View style={styles.FormButton}>
             <Button
               fullwidth={false}
               variant='text'
@@ -416,7 +422,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
               </Typography>
             </Button>
           </View>
-          <View style={{ width: '40%' }}>
+          <View style={styles.FormButton}>
             <Button
               fullwidth={false}
               variant='text'
@@ -481,32 +487,33 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
           </View>
         }
         {!!contactPersons.length &&
-          <View style={{ marginVertical: 30, marginHorizontal: 19 }}>
+          <View style={styles.ContactListContainer}>
             <Typography size={18} weight='Bold'>
               Lista kontaktów
             </Typography>
-            <View style={{ marginTop: 20, gap: 20 }}>
+            <View style={styles.ContactList}>
               {contactPersons.map(({ first_name, last_name, email, mobile_number, tempId, contact_hours, preferred_mobile_number, preferred_email }, index) =>
                 !inEditing.includes(index) ?
                   mode === 'edit' ?
                     (first_name && last_name && email) &&
                     <View
                       key={index}
-                      style={{ backgroundColor: Colors.White, flexDirection: 'row', justifyContent: 'space-between', borderRadius: 4 }}
+                      style={styles.ContactItem}
                     >
                       {contactListItem(first_name, last_name, email, index)}
                     </View>
 
-
                     :
+
                     (first_name && last_name && email && tempId) &&
                     <CheckBox
                       key={index}
                       checked={selectedPersons.includes(tempId)}
                       onCheckedChange={() => handleSelectedPersons(tempId)}
-                      containerStyle={{ backgroundColor: Colors.White, paddingLeft: 10, paddingRight: 19, borderRadius: 4 }}
+                      containerStyle={styles.ContactCheckbox}
+                      flexDirection='row-reverse'
                       leftTextView={
-                        <View style={{ backgroundColor: Colors.White, flexDirection: 'row', justifyContent: 'space-between', paddingRight: 20, alignItems: 'center' }}>
+                        <View style={styles.ContactCheckboxItem}>
                           {contactListItem(first_name, last_name, email, index)}
                         </View>
                       }
@@ -544,21 +551,21 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
         <Modal
           onClose={() => setDeleteModal({ active: false })}
         >
-          <View style={{ padding: 40, gap: 30 }}>
-            <View style={{ alignItems: 'center' }}>
+          <View style={styles.ModalContent}>
+            <View style={styles.ModalTextContainer}>
               <Typography variant='h5' >
                 Na pewno chcesz usunąć osobę?
               </Typography>
-              <Typography variant='h5' style={{ textAlign: 'center' }}>
+              <Typography variant='h5' style={styles.ModalText}>
                 Kontakt może być przypisany do lokalizacji lub oferty pracy.
               </Typography>
             </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <View style={styles.ModalButtons}>
               <Button
                 fullwidth={false}
                 size='medium'
                 borderRadius={4}
-                style={{ width: 120 }}
+                style={styles.ModalButton}
                 onClick={() => {
                   deleteContactPerson(deleteModal.index as number)
                   setDeleteModal({ active: false })
@@ -571,7 +578,7 @@ const AddContactPersonsScreen: React.FC<AddContactPersonsScreenProps> = ({
                 size='medium'
                 variant='secondary'
                 borderRadius={4}
-                style={{ width: 120 }}
+                style={styles.ModalButton}
                 onClick={() => setDeleteModal({ active: false })}
               >
                 Anuluj
@@ -637,6 +644,69 @@ const styles = StyleSheet.create({
     padding: 0,
     height: 50,
     justifyContent: 'center'
+  },
+  NameAndEmailContainer: {
+    gap: 10,
+    padding: 20,
+    width: '70%'
+  },
+  FormItemHeader: {
+    marginVertical: 20
+  },
+  HourDivider: {
+    justifyContent: 'center',
+    height: 100,
+    width: 30,
+    alignItems: 'center'
+  },
+  FormButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  FormButton: {
+    width: '40%'
+  },
+  ContactListContainer: {
+    marginVertical: 30,
+    marginHorizontal: 19
+  },
+  ContactList: {
+    marginTop: 20, gap: 20,
+  },
+  ContactItem: {
+    backgroundColor: Colors.White,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    borderRadius: 4,
+  },
+  ContactCheckbox: {
+    backgroundColor: Colors.White,
+    paddingLeft: 19,
+    paddingRight: 9,
+    borderRadius: 4
+  },
+  ContactCheckboxItem: {
+    backgroundColor: Colors.White,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  ModalContent: {
+    padding: 20,
+    gap: 30,
+  },
+  ModalTextContainer: {
+    alignItems: 'center'
+  },
+  ModalText: {
+    alignItems: 'center'
+  },
+  ModalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  ModalButton: {
+    width: 120
   }
 });
 

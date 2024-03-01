@@ -127,7 +127,7 @@ const CompanyEditorScreen: React.FC = () => {
       { name: 'employees_amount', value: employees_amount, isValid: !!employees_amount },
       { name: 'languages', value: languages, isValid: !!companyData.languages?.length },
       { name: 'socialMedia', value: !!(account_instagram || account_facebook || account_linkedIn || website) ?? null, isValid: !!(account_instagram || account_facebook || account_linkedIn || website) },
-      { name: 'other_locations', value: other_locations, isValid: (!!other_locations && !!other_locations.length), unpromoted: true },
+      { name: 'other_locations', value: other_locations, isValid: !!(!!other_locations && other_locations.length), unpromoted: true },
     ];
 
     const squareFootage = { name: 'square_footage', value: square_footage, isValid: !!(square_footage && square_footage.length && square_footage.length <= 8) };
@@ -170,15 +170,15 @@ const CompanyEditorScreen: React.FC = () => {
         });
       };
     };
-  }, [contactPersons])
+  }, [contactPersons, other_locations])
 
   useEffect(() => {
     setUnsavedData(!isEqual(oldCompanyData, companyData));
   }, [oldCompanyData, companyData]);
 
-    useEffect(() => {
-      setBlockedScreen({ blockedExit: unsavedData, blockedBack: unsavedData });
-    }, [unsavedData, subView]);
+  useEffect(() => {
+    setBlockedScreen({ blockedExit: unsavedData, blockedBack: unsavedData });
+  }, [unsavedData, subView]);
 
   useEffect(() => {
     if (validateDataToCreateCompany()) {

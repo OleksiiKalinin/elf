@@ -130,6 +130,7 @@ import EventsHistoryIcon from "../../assets/icons/EventsHistoryIcon";
 import DoneCircleIcon from "../../assets/icons/DoneCircleIcon";
 import CloseCircleAltIcon from "../../assets/icons/CloseCircleAltIcon";
 import DoneCircleGreenIcon from "../../assets/icons/DoneCircleGreenIcon";
+import AlertIcon from "../../assets/icons/AlertIcon";
 
 export const icons = [
     {
@@ -591,6 +592,10 @@ export const icons = [
     {
         name: 'doneCircleGreen',
         value: <DoneCircleGreenIcon />
+    },
+    {
+        name: 'alert',
+        value: <AlertIcon />
     },
 ] as const;
 
