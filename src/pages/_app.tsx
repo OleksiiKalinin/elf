@@ -91,11 +91,12 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
           __html: "document.documentElement.classList.add('t_unmounted')",
         }}
       />
+      <div>Under maintenance</div>
       {/* don't touch googleapis */}
-      {!noLayoutPage && <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCuD83IZtlNNM3sxn9Hac4YSOXkRZurb9c&libraries=places&language=pl&region=pl"></script>}
+{/*       {!noLayoutPage && <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCuD83IZtlNNM3sxn9Hac4YSOXkRZurb9c&libraries=places&language=pl&region=pl"></script>} */}
       {/* don't touch googleapis */}
 
-      {appLoading && !noLayoutPage && <View
+{/*       {appLoading && !noLayoutPage && <View
         style={{
           position: 'fixed',
           top: 0,
@@ -113,10 +114,10 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
           animationData={splashScreenLogo}
           loop
         />
-      </View>}
+      </View>} */}
 
 
-      <NextThemeProvider enableSystem={false} onChangeTheme={setTheme}>
+{/*       <NextThemeProvider enableSystem={false} onChangeTheme={setTheme}>
         <TamaguiProvider
           config={config}
           disableInjectCSS
@@ -134,9 +135,9 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
                 </Layout>
                 :
                 <AppUnifiedProvider>
-                  <Layout>
+                  <Layout> */}
                     {/* __start Retained Components */}
-                    <View style={{ display: isRetainableRoute ? 'flex' : 'none', width: '100%', height: '100%' }}>
+{/*                     <View style={{ display: isRetainableRoute ? 'flex' : 'none', width: '100%', height: '100%' }}>
                       {Object.entries(retainedComponents.current).map(([key, value]) => (
                         <View
                           key={key}
@@ -145,16 +146,16 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
                           {value.component}
                         </View>
                       ))}
-                    </View>
+                    </View> */}
                     {/* __end Retained Components */}
-                    {!isRetainableRoute && <Component {...pageProps} />}
+{/*                     {!isRetainableRoute && <Component {...pageProps} />}
                   </Layout>
                 </AppUnifiedProvider>
               }
             </GestureHandlerRootView>
           </SafeAreaProvider>
         </TamaguiProvider>
-      </NextThemeProvider>
+      </NextThemeProvider> */}
     </>
   );
 }
